@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>com.phloc</groupId>
+    <artifactId>parent-pom</artifactId>
+    <version>22.5</version>
+    <relativePath>../phloc-parent-pom/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.helger</groupId>
+  <artifactId>ph-as2-lib</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <name>ph-as2-lib</name>
+  
+  <licenses>
+    <license>
+      <name>BSD</name>
+      <url>http://www.freebsd.org/copyright/freebsd-license.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+ 
+  <scm>
+    <url>http://code.google.com/p/philiphelger/source/browse/</url>
+    <connection>scm:svn:http://philiphelger.googlecode.com/svn/trunk/ph-as2-lib</connection>
+    <developerConnection>scm:svn:https://philiphelger.googlecode.com/svn/trunk/ph-as2-lib</developerConnection>
+  </scm>
+  
+  <repositories>
+    <repository>
+      <id>phloc.com</id>
+      <url>http://repo.phloc.com/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>phloc.com</id>
+      <url>http://repo.phloc.com/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>  
+
+  <dependencies>
+    <dependency>
+      <groupId>com.phloc</groupId>
+      <artifactId>phloc-commons</artifactId>
+      <version>4.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcmail-jdk16</artifactId>
+      <version>1.46</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.mail</groupId>
+      <artifactId>javax.mail</artifactId>
+      <version>1.5.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>com.helger.as2lib.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

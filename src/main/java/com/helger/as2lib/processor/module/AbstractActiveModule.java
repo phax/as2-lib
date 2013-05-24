@@ -1,0 +1,108 @@
+/**
+ * The FreeBSD Copyright
+ * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
+ * Copyright (C) 2013 Philip Helger ph[at]phloc[dot]com
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *    1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation
+ * are those of the authors and should not be interpreted as representing
+ * official policies, either expressed or implied, of the FreeBSD Project.
+ */
+package com.helger.as2lib.processor.module;
+
+import java.util.Map;
+
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.processor.exception.ForcedStopException;
+import com.helger.as2lib.processor.exception.UnsupportedException;
+
+public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
+{
+  private boolean m_bRunning;
+
+  public boolean isRunning ()
+  {
+    return m_bRunning;
+  }
+
+  public abstract void doStart () throws OpenAS2Exception;
+
+  public abstract void doStop () throws OpenAS2Exception;
+
+  public boolean canHandle (final String action, final IMessage msg, final Map <String, Object> options)
+  {
+    return false;
+  }
+
+  public void forceStop (final Exception cause)
+  {
+    try
+    {
+      throw new ForcedStopException (cause);
+    }
+    catch (final ForcedStopException fse)
+    {
+      fse.terminate ();
+    }
+
+    try
+    {
+      stop ();
+    }
+    catch (final OpenAS2Exception oae)
+    {
+      oae.terminate ();
+    }
+  }
+
+  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  {
+    throw new UnsupportedException ("Active modules don't handle anything by default");
+  }
+
+  private void _setRunning (final boolean running)
+  {
+    m_bRunning = running;
+  }
+
+  public void start () throws OpenAS2Exception
+  {
+    _setRunning (true);
+    doStart ();
+  }
+
+  public void stop () throws OpenAS2Exception
+  {
+    _setRunning (false);
+    doStop ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return getClass ().getName () + ": " + getParameters ();
+  }
+}
