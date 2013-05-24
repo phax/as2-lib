@@ -7,6 +7,7 @@ org.eclipse.jdt.core.compiler.annotation.nullanalysis=enabled
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
 org.eclipse.jdt.core.compiler.compliance=1.6
 org.eclipse.jdt.core.compiler.problem.explicitlyClosedAutoCloseable=ignore
+org.eclipse.jdt.core.compiler.problem.forbiddenReference=warning
 org.eclipse.jdt.core.compiler.problem.missingDefaultCase=ignore
 org.eclipse.jdt.core.compiler.problem.missingEnumCaseDespiteDefault=disabled
 org.eclipse.jdt.core.compiler.problem.nullAnnotationInferenceConflict=error

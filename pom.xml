@@ -8,10 +8,10 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.helger</groupId>
-  <artifactId>ph-as2-lib</artifactId>
+  <artifactId>as2-lib</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>ph-as2-lib</name>
+  <name>as2-lib</name>
   
   <licenses>
     <license>
@@ -22,9 +22,9 @@
   </licenses>
  
   <scm>
-    <url>http://code.google.com/p/philiphelger/source/browse/</url>
-    <connection>scm:svn:http://philiphelger.googlecode.com/svn/trunk/ph-as2-lib</connection>
-    <developerConnection>scm:svn:https://philiphelger.googlecode.com/svn/trunk/ph-as2-lib</developerConnection>
+    <url>https://github.com/phax/as2-lib</url>
+    <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
+    <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
   </scm>
   
   <repositories>
