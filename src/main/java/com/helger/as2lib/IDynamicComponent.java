@@ -34,8 +34,8 @@ package com.helger.as2lib;
 
 import java.util.Map;
 
+import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
 
 /**
  * The Component interface provides a standard way to dynamically create and

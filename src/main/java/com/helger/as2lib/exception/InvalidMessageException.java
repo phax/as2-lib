@@ -30,16 +30,15 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.exception;
+package com.helger.as2lib.exception;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
 
-public class UnsupportedException extends OpenAS2Exception
+public class InvalidMessageException extends OpenAS2Exception
 {
-  public UnsupportedException ()
+  public InvalidMessageException ()
   {}
 
-  public UnsupportedException (final String sMsg)
+  public InvalidMessageException (final String sMsg)
   {
     super (sMsg);
   }

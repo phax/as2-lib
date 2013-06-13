@@ -30,46 +30,38 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util;
+package com.helger.as2lib.exception;
+
+import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
 
-public class DispositionException extends OpenAS2Exception
+public class CertificateNotFoundException extends OpenAS2Exception
 {
-  private final DispositionType m_aDisposition;
-  private String m_sText;
+  private String m_sPartnershipType;
+  private final String m_aAlias;
 
-  public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
+  public CertificateNotFoundException (final String sPartnershipType, final String sAlias)
   {
-    this (aDisposition, sText, null);
+    super ("Type: " + sPartnershipType + ", Alias: " + sAlias);
+    m_sPartnershipType = sPartnershipType;
+    m_aAlias = sAlias;
   }
 
-  public DispositionException (@Nonnull final DispositionType aDisposition,
-                               @Nullable final String sText,
-                               @Nullable final Throwable aCause)
+  public CertificateNotFoundException (@Nonnull final X509Certificate aCert)
   {
-    super (aDisposition.toString (), aCause);
-    m_aDisposition = aDisposition;
-    m_sText = sText;
+    super ("Certificate not in store: " + aCert.toString ());
+    m_aAlias = null;
   }
 
-  @Nonnull
-  public DispositionType getDisposition ()
+  public String getPartnershipType ()
   {
-    return m_aDisposition;
+    return m_sPartnershipType;
   }
 
-  @Nullable
-  public String getText ()
+  public String getAlias ()
   {
-    return m_sText;
-  }
-
-  public void setText (@Nullable final String sText)
-  {
-    m_sText = sText;
+    return m_aAlias;
   }
 }

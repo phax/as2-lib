@@ -34,10 +34,10 @@ package com.helger.as2lib.processor.module;
 
 import java.util.Map;
 
+import com.helger.as2lib.exception.ForcedStopException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.UnsupportedException;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.processor.exception.ForcedStopException;
-import com.helger.as2lib.processor.exception.UnsupportedException;
 
 public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
 {

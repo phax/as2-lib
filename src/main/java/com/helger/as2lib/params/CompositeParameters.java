@@ -39,6 +39,8 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.helger.as2lib.exception.InvalidParameterException;
+
 public class CompositeParameters extends AbstractParameterParser
 {
   private Map <String, AbstractParameterParser> m_aParameterParsers;

@@ -38,6 +38,7 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.mail.internet.ContentDisposition;
 
+import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.IMessage;
 
 public class MessageParameters extends AbstractParameterParser

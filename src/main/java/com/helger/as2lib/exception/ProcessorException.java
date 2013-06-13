@@ -30,55 +30,58 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.params;
+package com.helger.as2lib.exception;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import java.io.PrintWriter;
+import java.util.List;
 
-public class InvalidParameterException extends OpenAS2Exception
+import javax.annotation.Nonnull;
+
+import com.helger.as2lib.processor.IProcessor;
+import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.commons.io.streams.NonBlockingStringWriter;
+
+public final class ProcessorException extends OpenAS2Exception
 {
-  private final Object m_aTarget;
-  private final String m_sKey;
-  private final String m_sValue;
+  private final IProcessor m_aProcessor;
+  private final List <Throwable> m_aCauses;
 
-  public InvalidParameterException (final String sMsg, final Object aTarget, final String sKey, final String sValue)
+  public ProcessorException (@Nonnull final IProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super (sMsg + " - " + toString (sKey, sValue));
-    m_aTarget = aTarget;
-    m_sKey = sKey;
-    m_sValue = sValue;
+    if (aProcessor == null)
+      throw new NullPointerException ("processor");
+    if (ContainerHelper.isEmpty (aCauses))
+      throw new IllegalArgumentException ("causes may be empty");
+    m_aProcessor = aProcessor;
+    m_aCauses = ContainerHelper.newList (aCauses);
   }
 
-  public InvalidParameterException (final String sMsg)
+  @Nonnull
+  public IProcessor getProcessor ()
   {
-    super (sMsg);
-    m_aTarget = null;
-    m_sKey = null;
-    m_sValue = null;
+    return m_aProcessor;
   }
 
-  public String getKey ()
+  @Nonnull
+  @Nonempty
+  public List <Throwable> getCauses ()
   {
-    return m_sKey;
+    return ContainerHelper.newList (m_aCauses);
   }
 
-  public Object getTarget ()
+  @Override
+  public String getMessage ()
   {
-    return m_aTarget;
-  }
-
-  public String getValue ()
-  {
-    return m_sValue;
-  }
-
-  public static void checkValue (final Object aTarget, final String sValueName, final Object aValue) throws InvalidParameterException
-  {
-    if (aValue == null)
-      throw new InvalidParameterException ("Value is missing", aTarget, sValueName, null);
-  }
-
-  public static String toString (final String sKey, final String sValue)
-  {
-    return "Invalid parameter value for " + sKey + ": " + sValue;
+    final NonBlockingStringWriter aStrWriter = new NonBlockingStringWriter ();
+    final PrintWriter aWriter = new PrintWriter (aStrWriter);
+    aWriter.print (super.getMessage ());
+    for (final Throwable e : m_aCauses)
+    {
+      aWriter.println ();
+      e.printStackTrace (aWriter);
+    }
+    aWriter.flush ();
+    return aStrWriter.getAsString ();
   }
 }

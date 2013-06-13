@@ -30,59 +30,46 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.exception;
-
-import java.io.PrintWriter;
-import java.util.List;
+package com.helger.as2lib.exception;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.processor.IProcessor;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.streams.NonBlockingStringWriter;
+import com.helger.as2lib.util.DispositionType;
 
-public final class ProcessorException extends OpenAS2Exception
+public class DispositionException extends OpenAS2Exception
 {
-  private final IProcessor m_aProcessor;
-  private final List <Throwable> m_aCauses;
+  private final DispositionType m_aDisposition;
+  private String m_sText;
 
-  public ProcessorException (@Nonnull final IProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
+  public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
   {
-    if (aProcessor == null)
-      throw new NullPointerException ("processor");
-    if (ContainerHelper.isEmpty (aCauses))
-      throw new IllegalArgumentException ("causes may be empty");
-    m_aProcessor = aProcessor;
-    m_aCauses = ContainerHelper.newList (aCauses);
+    this (aDisposition, sText, null);
+  }
+
+  public DispositionException (@Nonnull final DispositionType aDisposition,
+                               @Nullable final String sText,
+                               @Nullable final Throwable aCause)
+  {
+    super (aDisposition.toString (), aCause);
+    m_aDisposition = aDisposition;
+    m_sText = sText;
   }
 
   @Nonnull
-  public IProcessor getProcessor ()
+  public DispositionType getDisposition ()
   {
-    return m_aProcessor;
+    return m_aDisposition;
   }
 
-  @Nonnull
-  @Nonempty
-  public List <Throwable> getCauses ()
+  @Nullable
+  public String getText ()
   {
-    return ContainerHelper.newList (m_aCauses);
+    return m_sText;
   }
 
-  @Override
-  public String getMessage ()
+  public void setText (@Nullable final String sText)
   {
-    final NonBlockingStringWriter aStrWriter = new NonBlockingStringWriter ();
-    final PrintWriter aWriter = new PrintWriter (aStrWriter);
-    aWriter.print (super.getMessage ());
-    for (final Throwable e : m_aCauses)
-    {
-      aWriter.println ();
-      e.printStackTrace (aWriter);
-    }
-    aWriter.flush ();
-    return aStrWriter.getAsString ();
+    m_sText = sText;
   }
 }

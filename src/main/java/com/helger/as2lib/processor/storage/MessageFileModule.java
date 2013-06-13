@@ -43,16 +43,16 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.exception.DispositionException;
+import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
-import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
-import com.helger.as2lib.util.DispositionException;
 import com.helger.as2lib.util.DispositionType;
 import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 

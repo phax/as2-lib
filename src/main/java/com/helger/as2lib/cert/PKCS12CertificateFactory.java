@@ -52,11 +52,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 
 import com.helger.as2lib.ISession;
+import com.helger.as2lib.exception.CertificateExistsException;
+import com.helger.as2lib.exception.CertificateNotFoundException;
+import com.helger.as2lib.exception.InvalidParameterException;
+import com.helger.as2lib.exception.KeyNotFoundException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.AS2Util;

@@ -36,6 +36,8 @@ import java.security.Key;
 import java.security.cert.Certificate;
 import java.util.List;
 
+import com.helger.as2lib.exception.CertificateException;
+
 public interface ICertificateStore
 {
   List <String> getAliases () throws CertificateException;

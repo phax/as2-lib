@@ -30,14 +30,13 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.cert;
+package com.helger.as2lib.exception;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
 
-public class CertificateExistsException extends OpenAS2Exception
+public class ForcedStopException extends WrappedException
 {
-  public CertificateExistsException (final String sAlias)
+  public ForcedStopException (final Throwable aSource)
   {
-    super (sAlias);
+    super (aSource);
   }
 }

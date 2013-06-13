@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.params;
 
+import com.helger.as2lib.exception.InvalidParameterException;
 import com.phloc.commons.random.VerySecureRandom;
 import com.phloc.commons.string.StringHelper;
 

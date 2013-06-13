@@ -30,17 +30,20 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.message;
+package com.helger.as2lib.exception;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import java.security.cert.X509Certificate;
 
-public class InvalidMessageException extends OpenAS2Exception
+
+public class KeyNotFoundException extends OpenAS2Exception
 {
-  public InvalidMessageException ()
-  {}
-
-  public InvalidMessageException (final String sMsg)
+  public KeyNotFoundException (final X509Certificate aCert, final String sAlias)
   {
-    super (sMsg);
+    this (aCert, sAlias, null);
+  }
+
+  public KeyNotFoundException (final X509Certificate aCert, final String sAlias, final Throwable aCause)
+  {
+    super ("Certificate: " + aCert + ", Alias: " + sAlias, aCause);
   }
 }

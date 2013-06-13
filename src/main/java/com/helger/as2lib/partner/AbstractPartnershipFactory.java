@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.BaseComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.PartnershipNotFoundException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
@@ -60,7 +61,7 @@ public abstract class AbstractPartnershipFactory extends BaseComponent implement
       aRealPartnership = getPartnership (aPartnership.getSenderIDs (), aPartnership.getReceiverIDs ());
 
     if (aRealPartnership == null)
-      throw new PartnershipNotFoundException (aPartnership);
+      throw new PartnershipNotFoundException ("Partnership not found: " + aPartnership);
     return aRealPartnership;
   }
 

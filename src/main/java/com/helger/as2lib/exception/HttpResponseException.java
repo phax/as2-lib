@@ -30,14 +30,36 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.exception;
+package com.helger.as2lib.exception;
 
-import com.helger.as2lib.exception.WrappedException;
 
-public class ForcedStopException extends WrappedException
+public class HttpResponseException extends OpenAS2Exception
 {
-  public ForcedStopException (final Throwable aSource)
+  private final String m_sURL;
+  private final int m_nCode;
+  private final String m_sMessage;
+
+  public HttpResponseException (final String sUrl, final int nCode, final String sMessage)
   {
-    super (aSource);
+    super ("Http Response from " + sUrl + ": " + Integer.toString (nCode) + " - " + sMessage);
+    m_sURL = sUrl;
+    m_nCode = nCode;
+    m_sMessage = sMessage;
+  }
+
+  public String getUrl ()
+  {
+    return m_sURL;
+  }
+
+  public int getCode ()
+  {
+    return m_nCode;
+  }
+
+  @Override
+  public String getMessage ()
+  {
+    return m_sMessage;
   }
 }
