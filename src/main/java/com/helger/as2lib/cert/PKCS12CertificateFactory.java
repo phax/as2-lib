@@ -57,7 +57,7 @@ import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.InvalidParameterException;
-import com.helger.as2lib.partner.CSecurePartnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.AS2Util;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
@@ -76,10 +76,10 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   {
     String sAlias = null;
     if (Partnership.PTYPE_RECEIVER.equals (sPartnershipType))
-      sAlias = aPartnership.getReceiverID (CSecurePartnership.PID_X509_ALIAS);
+      sAlias = aPartnership.getReceiverID (CPartnershipIDs.PID_X509_ALIAS);
     else
       if (Partnership.PTYPE_SENDER.equals (sPartnershipType))
-        sAlias = aPartnership.getSenderID (CSecurePartnership.PID_X509_ALIAS);
+        sAlias = aPartnership.getSenderID (CPartnershipIDs.PID_X509_ALIAS);
 
     if (sAlias == null)
       throw new CertificateNotFoundException (sPartnershipType, null);

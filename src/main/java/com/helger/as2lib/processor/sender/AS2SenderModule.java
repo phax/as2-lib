@@ -58,8 +58,7 @@ import com.helger.as2lib.message.DataHistoryItem;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.InvalidParameterException;
-import com.helger.as2lib.partner.CAS2Partnership;
-import com.helger.as2lib.partner.CSecurePartnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.util.AS2Util;
@@ -103,7 +102,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.setContentType (aSecuredData.getContentType ());
 
       // Create the HTTP connection and set up headers
-      final String sUrl = aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_URL);
+      final String sUrl = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_URL);
       final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
       try
       {
@@ -119,7 +118,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                                      aDispOptions.getMICAlg (),
                                                                      bIncludeHeaders);
 
-        if (aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) != null)
+        if (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
         {
           // if yes : PA_AS2_RECEIPT_OPTION) != null
           // then keep the original mic & message id.
@@ -167,7 +166,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           if (aMsg.isRequestingMDN ())
           {
             // Check if the AsyncMDN is required
-            if (aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) == null)
+            if (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) == null)
             {
               // go ahead to receive sync MDN
               receiveMDN ((AS2Message) aMsg, aConn, sMIC);
@@ -256,8 +255,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
-      aMdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+      aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
+      aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
       getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
@@ -331,14 +330,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
       InvalidParameterException.checkValue (aMsg,
-                                            "Attribute: " + CAS2Partnership.PA_AS2_URL,
-                                            aPartnership.getAttribute (CAS2Partnership.PA_AS2_URL));
+                                            "Attribute: " + CPartnershipIDs.PA_AS2_URL,
+                                            aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
       InvalidParameterException.checkValue (aMsg,
-                                            "Receiver: " + CAS2Partnership.PID_AS2,
-                                            aPartnership.getReceiverID (CAS2Partnership.PID_AS2));
+                                            "Receiver: " + CPartnershipIDs.PID_AS2,
+                                            aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
       InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + CAS2Partnership.PID_AS2,
-                                            aPartnership.getSenderID (CAS2Partnership.PID_AS2));
+                                            "Sender: " + CPartnershipIDs.PID_AS2,
+                                            aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
       InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
       InvalidParameterException.checkValue (aMsg,
                                             "Sender: " + Partnership.PID_EMAIL,
@@ -369,8 +368,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     MimeBodyPart aDataBP = aMsg.getData ();
 
     final Partnership aPartnership = aMsg.getPartnership ();
-    final boolean bEncrypt = aPartnership.getAttribute (CSecurePartnership.PA_ENCRYPT) != null;
-    final boolean bSign = aPartnership.getAttribute (CSecurePartnership.PA_SIGN) != null;
+    final boolean bEncrypt = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT) != null;
+    final boolean bSign = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN) != null;
 
     // Encrypt and/or sign the data if requested
     if (bEncrypt || bSign)
@@ -382,7 +381,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
-        final String sAlgorithm = aPartnership.getAttribute (CSecurePartnership.PA_SIGN);
+        final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
 
         aDataBP = AS2Util.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, sAlgorithm);
 
@@ -398,7 +397,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Encrypt the data if requested
       if (bEncrypt)
       {
-        final String sAlgorithm = aPartnership.getAttribute (CSecurePartnership.PA_ENCRYPT);
+        final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
 
         final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_RECEIVER);
         aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, sAlgorithm);
@@ -429,22 +428,22 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty ("Mime-Version", "1.0");
     aConn.setRequestProperty ("Content-type", aMsg.getContentType ());
     aConn.setRequestProperty (CAS2Header.AS2_VERSION, "1.1");
-    aConn.setRequestProperty ("Recipient-Address", aPartnership.getAttribute (CAS2Partnership.PA_AS2_URL));
-    aConn.setRequestProperty (CAS2Header.AS2_TO, aPartnership.getReceiverID (CAS2Partnership.PID_AS2));
-    aConn.setRequestProperty (CAS2Header.AS2_FROM, aPartnership.getSenderID (CAS2Partnership.PID_AS2));
+    aConn.setRequestProperty ("Recipient-Address", aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+    aConn.setRequestProperty (CAS2Header.AS2_TO, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
+    aConn.setRequestProperty (CAS2Header.AS2_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
     aConn.setRequestProperty ("Subject", aMsg.getSubject ());
     aConn.setRequestProperty ("From", aPartnership.getSenderID (Partnership.PID_EMAIL));
 
-    final String sDispTo = aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO);
+    final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
     if (sDispTo != null)
       aConn.setRequestProperty ("Disposition-Notification-To", sDispTo);
 
-    final String sDispOptions = aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS);
+    final String sDispOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
     if (sDispOptions != null)
       aConn.setRequestProperty ("Disposition-Notification-Options", sDispOptions);
 
     // Asynch MDN 2007-03-12
-    final String sReceiptOption = aPartnership.getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION);
+    final String sReceiptOption = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
     if (sReceiptOption != null)
       aConn.setRequestProperty ("Receipt-delivery-option", sReceiptOption);
 

@@ -36,8 +36,7 @@ import java.text.DecimalFormat;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.partner.CAS2Partnership;
-import com.helger.as2lib.partner.CCustomIDPartnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateUtil;
@@ -63,7 +62,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public String generateMessageID ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    String sDateFormat = getPartnership ().getAttribute (CCustomIDPartnership.PA_DATE_FORMAT);
+    String sDateFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_DATE_FORMAT);
     if (sDateFormat == null)
       sDateFormat = "ddMMyyyyHHmmssZ";
     aSB.append ("<OPENAS2-").append (DateUtil.getFormattedDateNow (sDateFormat));
@@ -74,8 +73,8 @@ public class AS2MessageMDN extends AbstractMessageMDN
     if (getMessage () != null)
     {
       final Partnership aPartnership = getMessage ().getPartnership ();
-      final String sSenderID = aPartnership.getSenderID (CAS2Partnership.PID_AS2);
-      final String sReceiverID = aPartnership.getReceiverID (CAS2Partnership.PID_AS2);
+      final String sSenderID = aPartnership.getSenderID (CPartnershipIDs.PID_AS2);
+      final String sReceiverID = aPartnership.getReceiverID (CPartnershipIDs.PID_AS2);
 
       aSB.append ("@").append (sReceiverID).append ("_").append (sSenderID);
     }

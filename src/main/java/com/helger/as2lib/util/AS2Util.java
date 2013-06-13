@@ -54,8 +54,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.partner.CAS2Partnership;
-import com.helger.as2lib.partner.CASXPartnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.phloc.commons.mime.CMimeType;
 
@@ -87,16 +86,16 @@ public final class AS2Util
     aMdn.setHeader ("Date", DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
     aMdn.setHeader ("Server", CInfo.NAME_VERSION);
     aMdn.setHeader ("Mime-Version", "1.0");
-    aMdn.setHeader (CAS2Header.AS2_TO, aMsg.getPartnership ().getSenderID (CAS2Partnership.PID_AS2));
-    aMdn.setHeader (CAS2Header.AS2_FROM, aMsg.getPartnership ().getReceiverID (CAS2Partnership.PID_AS2));
+    aMdn.setHeader (CAS2Header.AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
+    aMdn.setHeader (CAS2Header.AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
 
     // get the MDN partnership info
-    aMdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
-    aMdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+    aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
+    aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
     aSession.getPartnershipFactory ().updatePartnership (aMdn, true);
 
     aMdn.setHeader ("From", aMsg.getPartnership ().getReceiverID (Partnership.PID_EMAIL));
-    final String sSubject = aMdn.getPartnership ().getAttribute (CASXPartnership.PA_MDN_SUBJECT);
+    final String sSubject = aMdn.getPartnership ().getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
     if (sSubject != null)
     {
       aMdn.setHeader ("Subject", AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
@@ -114,7 +113,7 @@ public final class AS2Util
                            aMsg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
     aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.AS2_TO));
     aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                       "rfc822; " + aMsg.getPartnership ().getReceiverID (CAS2Partnership.PID_AS2));
+                       "rfc822; " + aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
     aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader ("Message-ID"));
     aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.toString ());
 

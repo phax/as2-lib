@@ -36,15 +36,15 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.partner.CAS2Partnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 
 public class AS2MDNReceiverModule extends AbstractNetModule
 {
   // Macros for responses
-  public static final String MSG_SENDER = "$" + MessageParameters.KEY_SENDER + "." + CAS2Partnership.PID_AS2 + "$";
-  public static final String MSG_RECEIVER = "$" + MessageParameters.KEY_RECEIVER + "." + CAS2Partnership.PID_AS2 + "$";
+  public static final String MSG_SENDER = "$" + MessageParameters.KEY_SENDER + "." + CPartnershipIDs.PID_AS2 + "$";
+  public static final String MSG_RECEIVER = "$" + MessageParameters.KEY_RECEIVER + "." + CPartnershipIDs.PID_AS2 + "$";
   public static final String MSG_DATE = "$" + MessageParameters.KEY_HEADERS + ".date" + "$";
   public static final String MSG_SUBJECT = "$" + MessageParameters.KEY_HEADERS + ".subject" + "$";
   public static final String MSG_SOURCE_ADDRESS = "$" +

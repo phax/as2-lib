@@ -38,7 +38,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
-import com.helger.as2lib.partner.CAS2Partnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 
 public class AS2Message extends AbstractMessage
@@ -57,7 +57,7 @@ public class AS2Message extends AbstractMessage
                                                                       .add ("msg", new MessageParameters (this))
                                                                       .add ("rand", new RandomParameters ());
 
-    String sIDFormat = getPartnership ().getAttribute (CAS2Partnership.PA_MESSAGEID);
+    String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID);
     if (sIDFormat == null)
       sIDFormat = "OPENAS2-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
@@ -79,8 +79,8 @@ public class AS2Message extends AbstractMessage
   public boolean isRequestingMDN ()
   {
     final Partnership aPartnership = getPartnership ();
-    final boolean bRequesting = aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO) != null ||
-                                aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS) != null;
+    final boolean bRequesting = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null ||
+                                aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null;
     if (bRequesting)
       return true;
 
@@ -92,8 +92,8 @@ public class AS2Message extends AbstractMessage
   public boolean isRequestingAsynchMDN ()
   {
     final Partnership aPartnership = getPartnership ();
-    final boolean bRequesting = (aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO) != null || aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS) != null) &&
-                                aPartnership.getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) != null;
+    final boolean bRequesting = (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null || aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null) &&
+                                aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null;
     if (bRequesting)
       return true;
 

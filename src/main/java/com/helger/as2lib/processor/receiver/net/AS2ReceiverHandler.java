@@ -54,8 +54,7 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.partner.CAS2Partnership;
-import com.helger.as2lib.partner.CASXPartnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
@@ -165,8 +164,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // update the message
         try
         {
-          aMsg.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMsg.getHeader (CAS2Header.AS2_FROM));
-          aMsg.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMsg.getHeader (CAS2Header.AS2_TO));
+          aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.AS2_FROM));
+          aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.AS2_TO));
           getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
         }
         catch (final OpenAS2Exception ex)
@@ -313,7 +312,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                           final DispositionType aDisposition,
                           final String sText)
   {
-    final boolean bMdnBlocked = aMsg.getPartnership ().getAttribute (CASXPartnership.PA_BLOCK_ERROR_MDN) != null;
+    final boolean bMdnBlocked = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN) != null;
     if (!bMdnBlocked)
     {
       try
