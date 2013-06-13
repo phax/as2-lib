@@ -91,20 +91,20 @@ public class MDNFileModule extends AbstractStorageModule
     // write headers to the string buffer
     aMdnBuf.append ("Headers:\r\n");
 
-    final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
-    while (aHeaders.hasMoreElements ())
+    final Enumeration <?> aHeaderLines = aMdn.getHeaders ().getAllHeaderLines ();
+    while (aHeaderLines.hasMoreElements ())
     {
-      final String sHeader = (String) aHeaders.nextElement ();
-      aMdnBuf.append (sHeader).append ("\r\n");
+      final String sHeaderLine = (String) aHeaderLines.nextElement ();
+      aMdnBuf.append (sHeaderLine).append ("\r\n");
     }
 
     aMdnBuf.append ("\r\n");
 
     // write attributes to the string buffer
     aMdnBuf.append ("Attributes:\r\n");
-    for (final Map.Entry <String, String> attrEntry : aMdn.getAttributes ().entrySet ())
+    for (final Map.Entry <String, String> aEntry : aMdn.getAttributes ().entrySet ())
     {
-      aMdnBuf.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
+      aMdnBuf.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append ("\r\n");
     }
     // finally, write the MDN text
     aMdnBuf.append ("Text:\r\n").append (aMdn.getText ());

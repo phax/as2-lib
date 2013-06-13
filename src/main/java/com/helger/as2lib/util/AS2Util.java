@@ -188,7 +188,7 @@ public final class AS2Util
       final ICertificateFactory aCertFactory = aSession.getCertificateFactory ();
       try
       {
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PTYPE_SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PARTNERSHIP_TYPE_SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMdn, aSenderCert);
         final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport, aSenderCert, aSenderKey, sMicAlg);
         aMdn.setData (aSignedReport);

@@ -264,7 +264,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // Decrypt
         s_aLogger.debug ("decrypting" + aMsg.getLoggingText ());
 
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_RECEIVER);
+        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_RECEIVER);
         final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
         final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (), aReceiverCert, aReceiverKey);
         aMsg.setData (aDecryptedData);
@@ -290,7 +290,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       {
         s_aLogger.debug ("verifying signature" + aMsg.getLoggingText ());
 
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_SENDER);
         aMsg.setData (aCryptoHelper.verify (aMsg.getData (), aSenderCert));
       }
     }

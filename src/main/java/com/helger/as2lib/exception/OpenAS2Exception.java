@@ -38,10 +38,17 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.collections.ContainerHelper;
+
 public class OpenAS2Exception extends Exception
 {
   public static final String SOURCE_MESSAGE = "message";
   public static final String SOURCE_FILE = "file";
+  private static final Logger s_aLogger = LoggerFactory.getLogger (OpenAS2Exception.class);
 
   private Map <String, Object> m_aSources;
 
@@ -66,22 +73,23 @@ public class OpenAS2Exception extends Exception
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public final Map <String, Object> getSources ()
   {
-    if (m_aSources == null)
-      m_aSources = new LinkedHashMap <String, Object> ();
-    return m_aSources;
+    return ContainerHelper.newMap (m_aSources);
   }
 
   @Nullable
   public final Object getSource (@Nullable final String sID)
   {
-    return getSources ().get (sID);
+    return m_aSources == null ? null : m_aSources.get (sID);
   }
 
   public final void addSource (@Nonnull final String sID, @Nullable final Object aSource)
   {
-    getSources ().put (sID, aSource);
+    if (m_aSources == null)
+      m_aSources = new LinkedHashMap <String, Object> ();
+    m_aSources.put (sID, aSource);
   }
 
   public final void terminate ()
@@ -94,5 +102,11 @@ public class OpenAS2Exception extends Exception
    *        <code>true</code> if the exception was terminated
    */
   protected void log (final boolean bTerminated)
-  {}
+  {
+    s_aLogger.info ("OpenASException " +
+                    (bTerminated ? "terminated" : " caught") +
+                    ": " +
+                    getMessage () +
+                    (m_aSources == null ? "" : "; sources: " + m_aSources));
+  }
 }

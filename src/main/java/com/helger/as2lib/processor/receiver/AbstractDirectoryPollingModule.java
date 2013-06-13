@@ -63,7 +63,6 @@ import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.phloc.commons.annotations.ReturnsMutableObject;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.file.FileIOError;
-import com.phloc.commons.io.file.FileOperations;
 import com.phloc.commons.io.file.SimpleFileIO;
 import com.phloc.commons.mime.CMimeType;
 
@@ -242,7 +241,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       {
         final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_PENDING),
                                             aMsg.getAttribute (CFileAttribute.MA_PENDINGFILE));
-        final FileIOError aIOErr = FileOperations.copyFile (aFile, aPendingFile);
+        final FileIOError aIOErr = IOUtil.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
                                       aPendingFile +

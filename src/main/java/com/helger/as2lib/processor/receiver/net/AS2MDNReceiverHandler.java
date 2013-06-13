@@ -165,7 +165,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PTYPE_SENDER);
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PARTNERSHIP_TYPE_SENDER);
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 
@@ -334,7 +334,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       // Retrieve the message content
       final long nContentLength = StringParser.parseLong (mdn.getHeader ("Content-Length"), -1);
       if (nContentLength >= 0)
-        IOUtil.copy (connIn, mdnStream, nContentLength);
+        StreamUtils.copyInputStreamToOutputStreamWithLimit (connIn, mdnStream, nContentLength);
       else
         StreamUtils.copyInputStreamToOutputStream (connIn, mdnStream);
     }

@@ -36,6 +36,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 
@@ -46,48 +47,52 @@ public final class DispositionOptions
   private String m_sProtocol;
   private String m_sProtocolImportance;
 
-  public DispositionOptions (final String sOptions) throws OpenAS2Exception
+  public DispositionOptions (@Nonnull final String sOptions) throws OpenAS2Exception
   {
     parseOptions (sOptions);
   }
 
-  public void setMICAlg (final String sMICAlg)
+  public void setMICAlg (@Nullable final String sMICAlg)
   {
     m_sMICAlg = sMICAlg;
   }
 
   // signed-receipt-protocol=optional, pkcs7-signature;
   // signed-receipt-micalg=optional, sha1
+  @Nullable
   public String getMICAlg ()
   {
     return m_sMICAlg;
   }
 
-  public void setMICAlgImportance (final String sMICAlgImportance)
+  public void setMICAlgImportance (@Nullable final String sMICAlgImportance)
   {
     m_sMICAlgImportance = sMICAlgImportance;
   }
 
+  @Nullable
   public String getMICAlgImportance ()
   {
     return m_sMICAlgImportance;
   }
 
-  public void setProtocol (final String sProtocol)
+  public void setProtocol (@Nullable final String sProtocol)
   {
     m_sProtocol = sProtocol;
   }
 
+  @Nullable
   public String getProtocol ()
   {
     return m_sProtocol;
   }
 
-  public void setProtocolImportance (final String sProtocolImportance)
+  public void setProtocolImportance (@Nullable final String sProtocolImportance)
   {
     m_sProtocolImportance = sProtocolImportance;
   }
 
+  @Nullable
   public String getProtocolImportance ()
   {
     return m_sProtocolImportance;
@@ -116,7 +121,7 @@ public final class DispositionOptions
     return aOptions.toString ();
   }
 
-  public void parseOptions (final String sOptions) throws OpenAS2Exception
+  public void parseOptions (@Nonnull final String sOptions) throws OpenAS2Exception
   {
     setProtocolImportance (null);
     setProtocol (null);

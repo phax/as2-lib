@@ -44,9 +44,9 @@ import com.phloc.commons.equals.EqualsUtils;
 public class Partnership implements Serializable
 {
   // Sender partner type
-  public static final String PTYPE_SENDER = "sender";
+  public static final String PARTNERSHIP_TYPE_SENDER = "sender";
   // Receiver partner type
-  public static final String PTYPE_RECEIVER = "receiver";
+  public static final String PARTNERSHIP_TYPE_RECEIVER = "receiver";
   // Email address
   public static final String PID_EMAIL = "email";
   // AS1 or AS2
@@ -61,9 +61,9 @@ public class Partnership implements Serializable
   private Map <String, String> m_aSenderIDs;
   private String m_sName;
 
-  public void setName (final String sName)
+  public void setName (final String sKey)
   {
-    m_sName = sName;
+    m_sName = sKey;
   }
 
   public String getName ()
@@ -71,15 +71,15 @@ public class Partnership implements Serializable
     return m_sName;
   }
 
-  public void setAttribute (final String sName, final String sValue)
+  public void setAttribute (final String sKey, final String sValue)
   {
-    getAttributes ().put (sName, sValue);
+    getAttributes ().put (sKey, sValue);
   }
 
   @Nullable
-  public String getAttribute (final String sName)
+  public String getAttribute (final String sKey)
   {
-    return getAttributes ().get (sName);
+    return getAttributes ().get (sKey);
   }
 
   public void setAttributes (@Nullable final Map <String, String> aAttributes)
@@ -95,15 +95,15 @@ public class Partnership implements Serializable
     return m_aAttributes;
   }
 
-  public void setReceiverID (final String sName, final String sValue)
+  public void setReceiverID (@Nullable final String sKey, final String sValue)
   {
-    getReceiverIDs ().put (sName, sValue);
+    getReceiverIDs ().put (sKey, sValue);
   }
 
   @Nullable
-  public String getReceiverID (final String sName)
+  public String getReceiverID (@Nullable final String sKey)
   {
-    return getReceiverIDs ().get (sName);
+    return getReceiverIDs ().get (sKey);
   }
 
   public void setReceiverIDs (@Nullable final Map <String, String> aReceiverIDs)
@@ -119,15 +119,15 @@ public class Partnership implements Serializable
     return m_aReceiverIDs;
   }
 
-  public void setSenderID (final String sName, final String sValue)
+  public void setSenderID (final String sKey, final String sValue)
   {
-    getSenderIDs ().put (sName, sValue);
+    getSenderIDs ().put (sKey, sValue);
   }
 
   @Nullable
-  public String getSenderID (final String sName)
+  public String getSenderID (@Nullable final String sKey)
   {
-    return getSenderIDs ().get (sName);
+    return getSenderIDs ().get (sKey);
   }
 
   public void setSenderIDs (@Nullable final Map <String, String> aSenderIDs)
@@ -151,19 +151,7 @@ public class Partnership implements Serializable
     return compareIDs (aSenderIDs, getSenderIDs ()) && compareIDs (aReceiverIDs, getReceiverIDs ());
   }
 
-  @Override
-  public String toString ()
-  {
-    final StringBuilder buf = new StringBuilder ();
-    buf.append ("Partnership ").append (getName ());
-    buf.append (" Sender IDs = ").append (getSenderIDs ());
-    buf.append (" Receiver IDs = ").append (getReceiverIDs ());
-    buf.append (" Attributes = ").append (getAttributes ());
-
-    return buf.toString ();
-  }
-
-  protected boolean compareIDs (@Nonnull final Map <String, String> aIDs, final Map <String, String> aCompareTo)
+  protected boolean compareIDs (@Nonnull final Map <String, String> aIDs, @Nonnull final Map <String, String> aCompareTo)
   {
     if (aIDs.isEmpty ())
       return false;
@@ -186,5 +174,16 @@ public class Partnership implements Serializable
     getSenderIDs ().putAll (aPartnership.getSenderIDs ());
     getReceiverIDs ().putAll (aPartnership.getReceiverIDs ());
     getAttributes ().putAll (aPartnership.getAttributes ());
+  }
+
+  @Override
+  public String toString ()
+  {
+    final StringBuilder buf = new StringBuilder ();
+    buf.append ("Partnership ").append (getName ());
+    buf.append (" Sender IDs = ").append (getSenderIDs ());
+    buf.append (" Receiver IDs = ").append (getReceiverIDs ());
+    buf.append (" Attributes = ").append (getAttributes ());
+    return buf.toString ();
   }
 }

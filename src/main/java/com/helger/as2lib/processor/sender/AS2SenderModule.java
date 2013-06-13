@@ -150,7 +150,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
             nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
-          s_aLogger.error ("error url " +
+          s_aLogger.error ("Error url " +
                            sUrl.toString () +
                            " rc " +
                            nResponseCode +
@@ -248,7 +248,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Retrieve the message content
       final long nContentLength = StringParser.parseLong (aMdn.getHeader ("Content-Length"), -1);
       if (nContentLength >= 0)
-        IOUtil.copy (aConnIn, mdnStream, nContentLength);
+        StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIn, mdnStream, nContentLength);
       else
         StreamUtils.copyInputStreamToOutputStream (aConnIn, mdnStream);
 
@@ -261,7 +261,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PTYPE_SENDER);
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PARTNERSHIP_TYPE_SENDER);
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 
@@ -380,7 +380,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Sign the data if requested
       if (bSign)
       {
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
         final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
 
@@ -400,7 +400,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
 
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_RECEIVER);
+        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_RECEIVER);
         aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, sAlgorithm);
 
         // Asynch MDN 2007-03-12

@@ -39,6 +39,7 @@ import java.io.OutputStream;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
@@ -63,6 +64,13 @@ public final class IOUtil
   private IOUtil ()
   {}
 
+  @Nonnull
+  public static FileOperationManager getFileOperationManager ()
+  {
+    return s_aFOM;
+  }
+
+  @Nonnegative
   public static long copy (@WillClose final InputStream aIS, @WillNotClose final OutputStream aOS)
   {
     final MutableLong aML = new MutableLong ();
@@ -70,26 +78,17 @@ public final class IOUtil
     return aML.longValue ();
   }
 
-  public static void copy (@WillClose final InputStream aIS,
-                           @WillNotClose final OutputStream aOS,
-                           @Nonnegative final long nContentSize)
-  {
-    StreamUtils.copyInputStreamToOutputStream (aIS,
-                                               aOS,
-                                               new byte [16 * CGlobal.BYTES_PER_KILOBYTE],
-                                               null,
-                                               Long.valueOf (nContentSize));
-  }
-
   @Nonnull
-  public static File getDirectoryFile (final String sDirectory)
+  public static File getDirectoryFile (@Nonnull final String sDirectory)
   {
     final File aDir = new File (sDirectory);
     s_aFOM.createDirRecursiveIfNotExisting (aDir);
     return aDir;
   }
 
-  public static String getTransferRate (final long nBytes, final StopWatch aSW)
+  @Nonnull
+  @Nonempty
+  public static String getTransferRate (final long nBytes, @Nonnull final StopWatch aSW)
   {
     final StringBuilder aSB = new StringBuilder ();
     aSB.append (nBytes).append (" bytes in ").append (aSW.getMillis () / 1000.0).append ("seconds at ");
@@ -114,21 +113,36 @@ public final class IOUtil
   private static String _getTransferRate (final long nBytesPerSecond)
   {
     final StringBuilder aSB = new StringBuilder ();
-    if (nBytesPerSecond < 1024)
+    if (nBytesPerSecond < CGlobal.BYTES_PER_KILOBYTE)
+    {
+      // < 1024
       aSB.append (nBytesPerSecond).append (" Bps");
+    }
     else
     {
-      final long nKBytesPerSecond = nBytesPerSecond / 1024;
-      if (nKBytesPerSecond < 1024)
-        aSB.append (nKBytesPerSecond).append (".").append (nBytesPerSecond % 1024).append (" KBps");
+      final long nKBytesPerSecond = nBytesPerSecond / CGlobal.BYTES_PER_KILOBYTE;
+      if (nKBytesPerSecond < CGlobal.BYTES_PER_KILOBYTE)
+      {
+        // < 1048576
+        aSB.append (nKBytesPerSecond)
+           .append (".")
+           .append (nBytesPerSecond % CGlobal.BYTES_PER_KILOBYTE)
+           .append (" KBps");
+      }
       else
-        aSB.append (nKBytesPerSecond / 1024).append (".").append (nKBytesPerSecond % 1024).append (" MBps");
+      {
+        // >= 1048576
+        aSB.append (nKBytesPerSecond / CGlobal.BYTES_PER_KILOBYTE)
+           .append (".")
+           .append (nKBytesPerSecond % CGlobal.BYTES_PER_KILOBYTE)
+           .append (" MBps");
+      }
     }
     return aSB.toString ();
   }
 
   @Nonnull
-  public static File getUniqueFile (final File aDir, final String sFilename)
+  public static File getUniqueFile (@Nonnull final File aDir, @Nullable final String sFilename)
   {
     int nCounter = -1;
     final String sBaseFilename = FilenameHelper.getAsSecureValidFilename (sFilename);
@@ -145,7 +159,7 @@ public final class IOUtil
   }
 
   // move the file to an error directory
-  public static void handleError (final File aFile, final String sErrorDirectory) throws OpenAS2Exception
+  public static void handleError (@Nonnull final File aFile, @Nonnull final String sErrorDirectory) throws OpenAS2Exception
   {
     File aDestFile = null;
 

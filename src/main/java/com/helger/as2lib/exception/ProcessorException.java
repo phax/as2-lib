@@ -42,7 +42,7 @@ import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.streams.NonBlockingStringWriter;
 
-public final class ProcessorException extends OpenAS2Exception
+public class ProcessorException extends OpenAS2Exception
 {
   private final IProcessor m_aProcessor;
   private final List <Throwable> m_aCauses;
@@ -58,14 +58,14 @@ public final class ProcessorException extends OpenAS2Exception
   }
 
   @Nonnull
-  public IProcessor getProcessor ()
+  public final IProcessor getProcessor ()
   {
     return m_aProcessor;
   }
 
   @Nonnull
   @Nonempty
-  public List <Throwable> getCauses ()
+  public final List <Throwable> getCauses ()
   {
     return ContainerHelper.newList (m_aCauses);
   }

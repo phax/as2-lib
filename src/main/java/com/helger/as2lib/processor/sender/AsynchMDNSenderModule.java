@@ -126,10 +126,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         while (aHeaders.hasMoreElements ())
         {
           final Header aHeader = (Header) aHeaders.nextElement ();
-          String sHeaderValue = aHeader.getValue ();
-          sHeaderValue = sHeaderValue.replace ('\t', ' ');
-          sHeaderValue = sHeaderValue.replace ('\n', ' ');
-          sHeaderValue = sHeaderValue.replace ('\r', ' ');
+          final String sHeaderValue = aHeader.getValue ().replace ('\t', ' ').replace ('\n', ' ').replace ('\r', ' ');
           aConn.setRequestProperty (aHeader.getName (), sHeaderValue);
         }
 

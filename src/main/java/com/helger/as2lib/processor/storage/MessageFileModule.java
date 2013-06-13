@@ -121,11 +121,11 @@ public class MessageFileModule extends AbstractStorageModule
     // write headers to the string buffer
     aHeaderBuf.append ("Headers:\r\n");
 
-    final Enumeration <?> aHeaders = aMsg.getHeaders ().getAllHeaderLines ();
-    while (aHeaders.hasMoreElements ())
+    final Enumeration <?> aHeaderLines = aMsg.getHeaders ().getAllHeaderLines ();
+    while (aHeaderLines.hasMoreElements ())
     {
-      final String sHeader = (String) aHeaders.nextElement ();
-      aHeaderBuf.append (sHeader).append ("\r\n");
+      final String sHeaderLine = (String) aHeaderLines.nextElement ();
+      aHeaderBuf.append (sHeaderLine).append ("\r\n");
     }
 
     aHeaderBuf.append ("\r\n");

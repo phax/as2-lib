@@ -78,10 +78,10 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   public String getAlias (@Nonnull final Partnership aPartnership, @Nonnull final String sPartnershipType) throws OpenAS2Exception
   {
     String sAlias = null;
-    if (Partnership.PTYPE_RECEIVER.equals (sPartnershipType))
+    if (Partnership.PARTNERSHIP_TYPE_RECEIVER.equals (sPartnershipType))
       sAlias = aPartnership.getReceiverID (CPartnershipIDs.PID_X509_ALIAS);
     else
-      if (Partnership.PTYPE_SENDER.equals (sPartnershipType))
+      if (Partnership.PARTNERSHIP_TYPE_SENDER.equals (sPartnershipType))
         sAlias = aPartnership.getSenderID (CPartnershipIDs.PID_X509_ALIAS);
 
     if (sAlias == null)

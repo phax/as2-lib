@@ -45,27 +45,27 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public class DispositionType
 {
   private String m_sAction;
-  private String m_sMdnAction;
+  private String m_sMDNAction;
   private String m_sStatus;
   private String m_sStatusDescription;
   private String m_sStatusModifier;
 
   public DispositionType (final String sAction,
-                          final String sMdnAction,
+                          final String sMDNAction,
                           final String sStatus,
                           final String sStatusModifier,
                           final String sStatusDescription)
   {
     m_sAction = sAction;
-    m_sMdnAction = sMdnAction;
+    m_sMDNAction = sMDNAction;
     m_sStatus = sStatus;
     m_sStatusModifier = sStatusModifier;
     m_sStatusDescription = sStatusDescription;
   }
 
-  public DispositionType (final String sAction, final String sMdnAction, final String sStatus)
+  public DispositionType (final String sAction, final String sMDNAction, final String sStatus)
   {
-    this (sAction, sMdnAction, sStatus, null, null);
+    this (sAction, sMDNAction, sStatus, null, null);
   }
 
   public DispositionType (@Nullable final String sDisposition) throws OpenAS2Exception
@@ -84,14 +84,14 @@ public class DispositionType
     return m_sAction;
   }
 
-  public void setMdnAction (final String sMdnAction)
+  public void setMDNAction (final String sMDNAction)
   {
-    m_sMdnAction = sMdnAction;
+    m_sMDNAction = sMDNAction;
   }
 
-  public String getMdnAction ()
+  public String getMDNAction ()
   {
-    return m_sMdnAction;
+    return m_sMDNAction;
   }
 
   public void setStatus (final String sStatus)
@@ -154,7 +154,7 @@ public class DispositionType
   protected String makeDisposition ()
   {
     final StringBuilder aDispBuf = new StringBuilder ();
-    aDispBuf.append (getAction ()).append ("/").append (getMdnAction ()).append ("; ").append (getStatus ());
+    aDispBuf.append (getAction ()).append ("/").append (getMDNAction ()).append ("; ").append (getStatus ());
 
     if (getStatusModifier () != null)
     {
@@ -172,7 +172,7 @@ public class DispositionType
     try
     {
       setAction (aDispTokens.nextToken ().toLowerCase (Locale.US));
-      setMdnAction (aDispTokens.nextToken ().toLowerCase (Locale.US));
+      setMDNAction (aDispTokens.nextToken ().toLowerCase (Locale.US));
       setStatus (aDispTokens.nextToken ().trim ().toLowerCase (Locale.US));
       setStatusModifier (null);
       setStatusDescription (null);
