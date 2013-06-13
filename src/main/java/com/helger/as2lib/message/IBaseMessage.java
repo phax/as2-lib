@@ -32,39 +32,61 @@
  */
 package com.helger.as2lib.message;
 
-import javax.mail.internet.MimeBodyPart;
+import java.io.Serializable;
+import java.util.Map;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.mail.internet.InternetHeaders;
 
-public interface IMessage extends IBaseMessage
+import com.helger.as2lib.partner.Partnership;
+
+/**
+ * Base interface for {@link IMessage} and {@link IMessageMDN}.
+ * 
+ * @author Philip Helger
+ */
+public interface IBaseMessage extends Serializable
 {
-  String getContentType ();
+  @Nullable
+  String getAttribute (String sKey);
 
-  void setContentType (String sContentType);
+  @Nonnull
+  Map <String, String> getAttributes ();
 
-  String getContentDisposition ();
+  void setAttribute (String sKey, String sValue);
 
-  void setContentDisposition (String sContentDisposition);
+  void setAttributes (@Nullable Map <String, String> aAttributes);
 
-  MimeBodyPart getData ();
+  @Nullable
+  String getHeader (String sKey);
 
-  void setData (MimeBodyPart aData, DataHistoryItem aHistoryItem) throws OpenAS2Exception;
+  String getHeader (String sKey, String sDelimiter);
 
-  DataHistoryItem setData (MimeBodyPart aData) throws OpenAS2Exception;
+  @Nonnull
+  InternetHeaders getHeaders ();
 
-  IMessageMDN getMDN ();
+  void setHeader (String sKey, String sValue);
 
-  void setMDN (IMessageMDN aMDN);
+  void addHeader (String sKey, String sValue);
 
-  String getProtocol ();
+  void setHeaders (@Nullable InternetHeaders aHeaders);
 
-  boolean isRequestingMDN ();
+  @Nonnull
+  DataHistory getHistory ();
 
-  boolean isRequestingAsynchMDN ();
+  void setHistory (@Nullable DataHistory aHistory);
 
-  String getSubject ();
+  String getMessageID ();
 
-  void setSubject (String sSubject);
+  void setMessageID (String sMessageID);
 
-  String getLoggingText ();
+  @Nonnull
+  Partnership getPartnership ();
+
+  void setPartnership (@Nullable Partnership aPartnership);
+
+  String generateMessageID ();
+
+  void updateMessageID ();
 }

@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
@@ -48,13 +49,15 @@ public class DataHistoryItem implements Serializable
   private ContentType m_aContentType;
   private Map <String, String> m_aAttributes;
 
-  public DataHistoryItem (final String sContentType) throws ParseException
+  public DataHistoryItem (@Nullable final String sContentType) throws ParseException
   {
     this (new ContentType (sContentType));
   }
 
   public DataHistoryItem (@Nonnull final ContentType aContentType)
   {
+    if (aContentType == null)
+      throw new NullPointerException ("ContentType");
     m_aContentType = aContentType;
   }
 
@@ -66,19 +69,22 @@ public class DataHistoryItem implements Serializable
     return m_aAttributes;
   }
 
+  @Nonnull
   public ContentType getContentType ()
   {
     return m_aContentType;
   }
 
   @SuppressWarnings ("unchecked")
-  private void readObject (final ObjectInputStream aOIS) throws ParseException, IOException, ClassNotFoundException
+  private void readObject (@Nonnull final ObjectInputStream aOIS) throws ParseException,
+                                                                 IOException,
+                                                                 ClassNotFoundException
   {
     m_aContentType = new ContentType ((String) aOIS.readObject ());
     m_aAttributes = (Map <String, String>) aOIS.readObject ();
   }
 
-  private void writeObject (final ObjectOutputStream aOOS) throws IOException
+  private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
     aOOS.writeObject (m_aContentType.toString ());
     aOOS.writeObject (m_aAttributes);

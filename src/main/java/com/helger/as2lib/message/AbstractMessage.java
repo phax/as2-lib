@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -51,41 +50,13 @@ import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.partner.Partnership;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 
-public abstract class AbstractMessage implements IMessage
+public abstract class AbstractMessage extends AbstractBaseMessage implements IMessage
 {
-  private DataHistory m_aHistory;
-  private InternetHeaders m_aHeaders;
-  private Map <String, String> m_aAttributes;
   private IMessageMDN m_aMDN;
   private MimeBodyPart m_aData;
-  private Partnership m_aPartnership;
 
   public AbstractMessage ()
   {}
-
-  public void setAttribute (final String sKey, final String sValue)
-  {
-    getAttributes ().put (sKey, sValue);
-  }
-
-  @Nullable
-  public String getAttribute (final String sKey)
-  {
-    return getAttributes ().get (sKey);
-  }
-
-  public void setAttributes (final Map <String, String> aAttributes)
-  {
-    m_aAttributes = aAttributes;
-  }
-
-  @Nonnull
-  public Map <String, String> getAttributes ()
-  {
-    if (m_aAttributes == null)
-      m_aAttributes = new HashMap <String, String> ();
-    return m_aAttributes;
-  }
 
   public void setContentType (final String sContentType)
   {
@@ -161,47 +132,6 @@ public abstract class AbstractMessage implements IMessage
     return m_aData;
   }
 
-  public void setHeader (final String sKey, final String sValue)
-  {
-    getHeaders ().setHeader (sKey, sValue);
-  }
-
-  public String getHeader (final String sKey)
-  {
-    return getHeader (sKey, ", ");
-  }
-
-  public String getHeader (final String sKey, final String sDelimiter)
-  {
-    return getHeaders ().getHeader (sKey, sDelimiter);
-  }
-
-  public void setHeaders (@Nullable final InternetHeaders aHeaders)
-  {
-    m_aHeaders = aHeaders;
-  }
-
-  @Nonnull
-  public InternetHeaders getHeaders ()
-  {
-    if (m_aHeaders == null)
-      m_aHeaders = new InternetHeaders ();
-    return m_aHeaders;
-  }
-
-  public void setHistory (@Nullable final DataHistory aHistory)
-  {
-    m_aHistory = aHistory;
-  }
-
-  @Nonnull
-  public DataHistory getHistory ()
-  {
-    if (m_aHistory == null)
-      m_aHistory = new DataHistory ();
-    return m_aHistory;
-  }
-
   public void setMDN (@Nullable final IMessageMDN aMDN)
   {
     m_aMDN = aMDN;
@@ -211,29 +141,6 @@ public abstract class AbstractMessage implements IMessage
   public IMessageMDN getMDN ()
   {
     return m_aMDN;
-  }
-
-  public void setMessageID (final String sMessageID)
-  {
-    setHeader ("Message-ID", sMessageID);
-  }
-
-  public String getMessageID ()
-  {
-    return getHeader ("Message-ID");
-  }
-
-  public void setPartnership (@Nullable final Partnership aPartnership)
-  {
-    m_aPartnership = aPartnership;
-  }
-
-  @Nonnull
-  public Partnership getPartnership ()
-  {
-    if (m_aPartnership == null)
-      m_aPartnership = new Partnership ();
-    return m_aPartnership;
   }
 
   public abstract String generateMessageID ();
@@ -246,11 +153,6 @@ public abstract class AbstractMessage implements IMessage
   public String getSubject ()
   {
     return getHeader ("Subject");
-  }
-
-  public void addHeader (final String sKey, final String sValue)
-  {
-    getHeaders ().addHeader (sKey, sValue);
   }
 
   @Override
@@ -276,11 +178,6 @@ public abstract class AbstractMessage implements IMessage
       aSB.append ("\nMDN:").append (aMDN.toString ());
 
     return aSB.toString ();
-  }
-
-  public void updateMessageID ()
-  {
-    setMessageID (generateMessageID ());
   }
 
   @SuppressWarnings ("unchecked")

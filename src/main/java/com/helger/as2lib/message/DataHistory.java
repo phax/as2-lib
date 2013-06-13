@@ -52,6 +52,9 @@ public class DataHistory implements Serializable
 
   public void addItem (@Nonnull final DataHistoryItem aItem)
   {
+    if (aItem == null)
+      throw new NullPointerException ("Item");
+
     m_aItems.add (aItem);
   }
 

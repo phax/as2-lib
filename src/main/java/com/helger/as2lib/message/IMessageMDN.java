@@ -32,61 +32,19 @@
  */
 package com.helger.as2lib.message;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.partner.Partnership;
-
-public interface IMessageMDN extends Serializable
+public interface IMessageMDN extends IBaseMessage
 {
-  void setAttribute (String sKey, String sValue);
-
-  String getAttribute (String sKey);
-
-  void setAttributes (Map <String, String> aAttributes);
-
-  Map <String, String> getAttributes ();
+  MimeBodyPart getData ();
 
   void setData (MimeBodyPart aData);
 
-  MimeBodyPart getData ();
-
-  void setHeader (String sKey, String sValue);
-
-  String getHeader (String sKey);
-
-  String getHeader (String sKey, String sDelimiter);
-
-  void setHeaders (InternetHeaders aHeaders);
-
-  InternetHeaders getHeaders ();
-
-  void setHistory (DataHistory aHistory);
-
-  DataHistory getHistory ();
+  IMessage getMessage ();
 
   void setMessage (IMessage aMessage);
 
-  IMessage getMessage ();
-
-  void setMessageID (String sMessageID);
-
-  String getMessageID ();
-
-  void setPartnership (Partnership aPartnership);
-
-  Partnership getPartnership ();
-
-  void setText (String sText);
-
   String getText ();
 
-  void addHeader (String sKey, String sValue);
-
-  String generateMessageID ();
-
-  void updateMessageID ();
+  void setText (String sText);
 }
