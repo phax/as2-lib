@@ -40,23 +40,23 @@ import com.helger.as2lib.params.InvalidParameterException;
 
 public interface IStorableCertificateFactory extends ICertificateFactory
 {
-  void setFilename (String filename);
+  void setFilename (String sFilename);
 
   String getFilename () throws InvalidParameterException;
 
-  void setPassword (char [] password);
+  void setPassword (char [] aPassword);
 
   char [] getPassword () throws InvalidParameterException;
 
   void load () throws OpenAS2Exception;
 
-  void load (String filename, char [] password) throws OpenAS2Exception;
+  void load (String sFilename, char [] aPassword) throws OpenAS2Exception;
 
-  void load (InputStream in, char [] password) throws OpenAS2Exception;
+  void load (InputStream aIS, char [] aPassword) throws OpenAS2Exception;
 
   void save () throws OpenAS2Exception;
 
-  void save (String filename, char [] password) throws OpenAS2Exception;
+  void save (String sFilename, char [] aPassword) throws OpenAS2Exception;
 
-  void save (OutputStream out, char [] password) throws OpenAS2Exception;
+  void save (OutputStream aOS, char [] aPassword) throws OpenAS2Exception;
 }

@@ -36,5 +36,5 @@ import com.helger.as2lib.BaseComponent;
 
 public abstract class AbstractCertificateFactory extends BaseComponent implements ICertificateFactory
 {
-
+  /* empty */
 }

@@ -35,6 +35,7 @@ package com.helger.as2lib.params;
 import java.io.File;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
 import javax.mail.internet.ContentDisposition;
 
 import com.helger.as2lib.message.IMessage;
@@ -47,120 +48,82 @@ public class MessageParameters extends AbstractParameterParser
   public static final String KEY_HEADERS = "headers";
   public static final String KEY_CONTENT_FILENAME = "content-disposition";
 
-  private IMessage m_aTarget;
+  private final IMessage m_aTarget;
 
-  public MessageParameters (final IMessage target)
+  public MessageParameters (@Nonnull final IMessage aTarget)
   {
-    m_aTarget = target;
+    m_aTarget = aTarget;
   }
 
-  @Override
-  public void setParameter (final String key, final String value) throws InvalidParameterException
-  {
-    final StringTokenizer keyParts = new StringTokenizer (key, ".", false);
-
-    if (keyParts.countTokens () != 2)
-    {
-      throw new InvalidParameterException ("Invalid key format", this, key, null);
-    }
-
-    final String area = keyParts.nextToken ();
-    final String areaID = keyParts.nextToken ();
-
-    if (area.equals (KEY_SENDER))
-    {
-      getTarget ().getPartnership ().setSenderID (areaID, value);
-    }
-    else
-      if (area.equals (KEY_RECEIVER))
-      {
-        getTarget ().getPartnership ().setReceiverID (areaID, value);
-      }
-      else
-        if (area.equals (KEY_ATTRIBUTES))
-        {
-          getTarget ().setAttribute (areaID, value);
-        }
-        else
-          if (area.equals (KEY_HEADERS))
-          {
-            getTarget ().setHeader (areaID, value);
-          }
-          else
-          {
-            throw new InvalidParameterException ("Invalid area in key", this, key, null);
-          }
-  }
-
-  @Override
-  public String getParameter (final String key) throws InvalidParameterException
-  {
-    final StringTokenizer keyParts = new StringTokenizer (key, ".", false);
-
-    if (keyParts.countTokens () != 2)
-    {
-      throw new InvalidParameterException ("Invalid key format", this, key, null);
-    }
-
-    final String area = keyParts.nextToken ();
-    final String areaID = keyParts.nextToken ();
-
-    if (area.equals (KEY_SENDER))
-    {
-      return getTarget ().getPartnership ().getSenderID (areaID);
-    }
-    else
-      if (area.equals (KEY_RECEIVER))
-      {
-        return getTarget ().getPartnership ().getReceiverID (areaID);
-      }
-      else
-        if (area.equals (KEY_ATTRIBUTES))
-        {
-          return getTarget ().getAttribute (areaID);
-        }
-        else
-          if (area.equals (KEY_HEADERS))
-          {
-            return getTarget ().getHeader (areaID);
-          }
-          else
-            if (area.equals (KEY_CONTENT_FILENAME) && areaID.equals ("filename"))
-            {
-              String returnFilename = "noContentDispositionFilename";
-              final String filename = m_aTarget.getContentDisposition ();
-              if (filename == null || filename.length () < 1)
-                return returnFilename;
-              try
-              {
-                final int pos = filename.lastIndexOf (File.separator);
-                if (pos >= 0)
-                  returnFilename = filename.substring (0, pos + 1);
-
-                final ContentDisposition cd = new ContentDisposition (filename);
-
-                returnFilename = cd.getParameter ("filename");
-
-              }
-              catch (final Exception e)
-              {
-                e.printStackTrace ();
-              }
-              return returnFilename;
-            }
-            else
-            {
-              throw new InvalidParameterException ("Invalid area in key", this, key, null);
-            }
-  }
-
-  public void setTarget (final IMessage message)
-  {
-    m_aTarget = message;
-  }
-
+  @Nonnull
   public IMessage getTarget ()
   {
     return m_aTarget;
+  }
+
+  @Override
+  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
+  {
+    final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
+    if (aKeyParts.countTokens () != 2)
+      throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+
+    final String sArea = aKeyParts.nextToken ();
+    final String sAreaID = aKeyParts.nextToken ();
+
+    if (sArea.equals (KEY_SENDER))
+      getTarget ().getPartnership ().setSenderID (sAreaID, sValue);
+    else
+      if (sArea.equals (KEY_RECEIVER))
+        getTarget ().getPartnership ().setReceiverID (sAreaID, sValue);
+      else
+        if (sArea.equals (KEY_ATTRIBUTES))
+          getTarget ().setAttribute (sAreaID, sValue);
+        else
+          if (sArea.equals (KEY_HEADERS))
+            getTarget ().setHeader (sAreaID, sValue);
+          else
+            throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
+  }
+
+  @Override
+  public String getParameter (final String sKey) throws InvalidParameterException
+  {
+    final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
+    if (aKeyParts.countTokens () != 2)
+      throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+
+    final String sArea = aKeyParts.nextToken ();
+    final String sAreaID = aKeyParts.nextToken ();
+    if (sArea.equals (KEY_SENDER))
+      return getTarget ().getPartnership ().getSenderID (sAreaID);
+    if (sArea.equals (KEY_RECEIVER))
+      return getTarget ().getPartnership ().getReceiverID (sAreaID);
+    if (sArea.equals (KEY_ATTRIBUTES))
+      return getTarget ().getAttribute (sAreaID);
+    if (sArea.equals (KEY_HEADERS))
+      return getTarget ().getHeader (sAreaID);
+    if (sArea.equals (KEY_CONTENT_FILENAME) && sAreaID.equals ("filename"))
+    {
+      String sReturnFilename = "noContentDispositionFilename";
+      final String sFilename = m_aTarget.getContentDisposition ();
+      if (sFilename == null || sFilename.length () < 1)
+        return sReturnFilename;
+      try
+      {
+        final int nPos = sFilename.lastIndexOf (File.separator);
+        if (nPos >= 0)
+          sReturnFilename = sFilename.substring (0, nPos + 1);
+
+        final ContentDisposition aContentDisposition = new ContentDisposition (sFilename);
+        sReturnFilename = aContentDisposition.getParameter ("filename");
+      }
+      catch (final Exception ex)
+      {
+        ex.printStackTrace ();
+      }
+      return sReturnFilename;
+    }
+    throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
   }
 }

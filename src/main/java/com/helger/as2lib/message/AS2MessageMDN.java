@@ -34,6 +34,7 @@ package com.helger.as2lib.message;
 
 import java.text.DecimalFormat;
 
+import javax.annotation.Nonnull;
 
 import com.helger.as2lib.partner.CAS2Partnership;
 import com.helger.as2lib.partner.CCustomIDPartnership;
@@ -51,39 +52,36 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public static final String MDNA_DISPOSITION = "DISPOSITION";
   public static final String MDNA_MIC = "MIC";
 
-  public AS2MessageMDN (final AS2Message msg)
+  public AS2MessageMDN (@Nonnull final AS2Message aMsg)
   {
-    super (msg);
-    setHeader (CAS2Header.AS2_TO, msg.getHeader (CAS2Header.AS2_FROM));
-    setHeader (CAS2Header.AS2_FROM, msg.getHeader (CAS2Header.AS2_TO));
+    super (aMsg);
+    setHeader (CAS2Header.AS2_TO, aMsg.getHeader (CAS2Header.AS2_FROM));
+    setHeader (CAS2Header.AS2_FROM, aMsg.getHeader (CAS2Header.AS2_TO));
   }
 
   @Override
   public String generateMessageID ()
   {
-    final StringBuilder buf = new StringBuilder ();
-    String dateFormat = getPartnership ().getAttribute (CCustomIDPartnership.PA_DATE_FORMAT);
-    if (dateFormat == null)
-    {
-      dateFormat = "ddMMyyyyHHmmssZ";
-    }
-    buf.append ("<OPENAS2-").append (DateUtil.formatDate (dateFormat));
+    final StringBuilder aSB = new StringBuilder ();
+    String sDateFormat = getPartnership ().getAttribute (CCustomIDPartnership.PA_DATE_FORMAT);
+    if (sDateFormat == null)
+      sDateFormat = "ddMMyyyyHHmmssZ";
+    aSB.append ("<OPENAS2-").append (DateUtil.formatDate (sDateFormat));
 
-    final DecimalFormat randomFormatter = new DecimalFormat ("0000");
-    buf.append ("-").append (randomFormatter.format (VerySecureRandom.getInstance ().nextInt (10000)));
+    final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
+    aSB.append ("-").append (aRandomFormatter.format (VerySecureRandom.getInstance ().nextInt (10000)));
 
     if (getMessage () != null)
     {
-      final Partnership partnership = getMessage ().getPartnership ();
-      final String senderID = partnership.getSenderID (CAS2Partnership.PID_AS2);
-      final String receiverID = partnership.getReceiverID (CAS2Partnership.PID_AS2);
+      final Partnership aPartnership = getMessage ().getPartnership ();
+      final String sSenderID = aPartnership.getSenderID (CAS2Partnership.PID_AS2);
+      final String sReceiverID = aPartnership.getReceiverID (CAS2Partnership.PID_AS2);
 
-      buf.append ("@").append (receiverID);
-      buf.append ("_").append (senderID);
+      aSB.append ("@").append (sReceiverID).append ("_").append (sSenderID);
     }
 
-    buf.append (">");
+    aSB.append (">");
 
-    return buf.toString ();
+    return aSB.toString ();
   }
 }

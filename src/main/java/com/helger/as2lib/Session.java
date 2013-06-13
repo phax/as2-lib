@@ -59,10 +59,10 @@ public class Session implements ISession
      * These handlers are used by the JavaMail API to encode and decode
      * information of specific mime types.
      */
-    final MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    mc.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
+    final MailcapCommandMap aCommandCap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
+    aCommandCap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
                    DispositionDataContentHandler.class.getName ());
-    CommandMap.setDefaultCommandMap (mc);
+    CommandMap.setDefaultCommandMap (aCommandCap);
   }
 
   public ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
@@ -70,18 +70,18 @@ public class Session implements ISession
     return (ICertificateFactory) getComponent (ICertificateFactory.COMPID_CERTIFICATE_FACTORY);
   }
 
-  public void setComponent (final String componentID, final IDynamicComponent comp)
+  public void setComponent (final String sComponentID, final IDynamicComponent aComponent)
   {
-    getComponents ().put (componentID, comp);
+    getComponents ().put (sComponentID, aComponent);
   }
 
   @Nonnull
-  public IDynamicComponent getComponent (final String componentID) throws ComponentNotFoundException
+  public IDynamicComponent getComponent (final String sComponentID) throws ComponentNotFoundException
   {
-    final IDynamicComponent aComp = getComponents ().get (componentID);
-    if (aComp == null)
-      throw new ComponentNotFoundException (componentID);
-    return aComp;
+    final IDynamicComponent aComponent = getComponents ().get (sComponentID);
+    if (aComponent == null)
+      throw new ComponentNotFoundException (sComponentID);
+    return aComponent;
   }
 
   @Nonnull

@@ -55,10 +55,10 @@ public class DataHistory implements Serializable
     m_aItems.add (aItem);
   }
 
-  boolean contains (@Nonnull final ContentType type)
+  boolean contains (@Nonnull final ContentType aContentType)
   {
     for (final DataHistoryItem aItem : m_aItems)
-      if (aItem.getContentType () != null && aItem.getContentType ().match (type))
+      if (aItem.getContentType () != null && aItem.getContentType ().match (aContentType))
         return true;
     return false;
   }

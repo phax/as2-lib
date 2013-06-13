@@ -40,18 +40,18 @@ public class CryptoException extends OpenAS2Exception
     super ();
   }
 
-  public CryptoException (final String msg)
+  public CryptoException (final String sMsg)
   {
-    super (msg);
+    super (sMsg);
   }
 
-  public CryptoException (final String msg, final Throwable cause)
+  public CryptoException (final String sMsg, final Throwable aCause)
   {
-    super (msg, cause);
+    super (sMsg, aCause);
   }
 
-  public CryptoException (final Throwable cause)
+  public CryptoException (final Throwable aCause)
   {
-    super (cause);
+    super (aCause);
   }
 }

@@ -44,11 +44,11 @@ public interface ICertificateFactory extends IDynamicComponent
 {
   String COMPID_CERTIFICATE_FACTORY = "certificatefactory";
 
-  X509Certificate getCertificate (IMessage msg, String partnershipType) throws OpenAS2Exception;
+  X509Certificate getCertificate (IMessage aMsg, String sPartnershipType) throws OpenAS2Exception;
 
-  PrivateKey getPrivateKey (IMessage msg, X509Certificate cert) throws OpenAS2Exception;
+  PrivateKey getPrivateKey (IMessage aMsg, X509Certificate aCert) throws OpenAS2Exception;
 
-  X509Certificate getCertificate (IMessageMDN msg, String partnershipType) throws OpenAS2Exception;
+  X509Certificate getCertificate (IMessageMDN aMsg, String sPartnershipType) throws OpenAS2Exception;
 
-  PrivateKey getPrivateKey (IMessageMDN msg, X509Certificate cert) throws OpenAS2Exception;
+  PrivateKey getPrivateKey (IMessageMDN aMsg, X509Certificate aCert) throws OpenAS2Exception;
 }

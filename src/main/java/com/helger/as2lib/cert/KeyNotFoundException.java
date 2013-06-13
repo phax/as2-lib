@@ -38,15 +38,13 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class KeyNotFoundException extends OpenAS2Exception
 {
-
-  public KeyNotFoundException (final X509Certificate cert, final String alias)
+  public KeyNotFoundException (final X509Certificate aCert, final String sAlias)
   {
-    super ("Certificate: " + cert + ", Alias: " + alias);
+    this (aCert, sAlias, null);
   }
 
-  public KeyNotFoundException (final X509Certificate cert, final String alias, final Throwable cause)
+  public KeyNotFoundException (final X509Certificate aCert, final String sAlias, final Throwable aCause)
   {
-    super ("Certificate: " + cert + ", Alias: " + alias);
-    initCause (cause);
+    super ("Certificate: " + aCert + ", Alias: " + sAlias, aCause);
   }
 }

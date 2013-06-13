@@ -35,6 +35,7 @@ package com.helger.as2lib;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
@@ -51,49 +52,50 @@ public class BaseComponent implements IDynamicComponent
     return CGStringHelper.getClassLocalName (this);
   }
 
-  public void setParameter (final String key, final String value)
+  public void setParameter (final String sKey, final String sValue)
   {
-    getParameters ().put (key, value);
+    getParameters ().put (sKey, sValue);
   }
 
-  public void setParameter (final String key, final int value)
+  public void setParameter (final String sKey, final int nValue)
   {
-    setParameter (key, Integer.toString (value));
+    setParameter (sKey, Integer.toString (nValue));
   }
 
-  public String getParameterNotRequired (final String key)
+  public String getParameterNotRequired (final String sKey)
   {
-    return getParameters ().get (key);
+    return getParameters ().get (sKey);
   }
 
-  public String getParameter (final String key, final String defaultValue)
+  public String getParameter (final String sKey, final String sDefaultValue)
   {
-    final String value = getParameterNotRequired (key);
-    return value == null ? defaultValue : value;
+    final String value = getParameterNotRequired (sKey);
+    return value == null ? sDefaultValue : value;
   }
 
-  public String getParameterRequired (final String key) throws InvalidParameterException
+  public String getParameterRequired (final String sKey) throws InvalidParameterException
   {
-    final String parameter = getParameterNotRequired (key);
-    if (parameter == null)
-      throw new InvalidParameterException (this, key, null);
-    return parameter;
+    final String sValue = getParameterNotRequired (sKey);
+    if (sValue == null)
+      throw new InvalidParameterException (this, sKey, null);
+    return sValue;
   }
 
-  public int getParameterInt (final String key) throws InvalidParameterException
+  public int getParameterInt (final String sKey) throws InvalidParameterException
   {
-    final String value = getParameterRequired (key);
-    if (value != null)
-      return Integer.parseInt (value);
+    final String sValue = getParameterRequired (sKey);
+    if (sValue != null)
+      return Integer.parseInt (sValue);
     return 0;
   }
 
-  public int getParameterInt (final String key, final int nDefault)
+  public int getParameterInt (final String sKey, final int nDefault)
   {
-    final String value = getParameterNotRequired (key);
-    return StringParser.parseInt (value, nDefault);
+    final String sValue = getParameterNotRequired (sKey);
+    return StringParser.parseInt (sValue, nDefault);
   }
 
+  @Nonnull
   public Map <String, String> getParameters ()
   {
     if (m_aParameters == null)
@@ -106,9 +108,9 @@ public class BaseComponent implements IDynamicComponent
     return m_aSession;
   }
 
-  public void initDynamicComponent (final ISession session, final Map <String, String> parameters) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aParameters) throws OpenAS2Exception
   {
-    m_aSession = session;
-    m_aParameters = parameters;
+    m_aSession = aSession;
+    m_aParameters = aParameters;
   }
 }

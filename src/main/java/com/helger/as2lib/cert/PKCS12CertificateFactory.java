@@ -72,61 +72,61 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   private KeyStore m_aKeyStore;
 
   @Nonnull
-  public String getAlias (final Partnership partnership, final String partnershipType) throws OpenAS2Exception
+  public String getAlias (final Partnership aPartnership, final String sPartnershipType) throws OpenAS2Exception
   {
-    String alias = null;
-    if (Partnership.PTYPE_RECEIVER.equals (partnershipType))
-      alias = partnership.getReceiverID (CSecurePartnership.PID_X509_ALIAS);
+    String sAlias = null;
+    if (Partnership.PTYPE_RECEIVER.equals (sPartnershipType))
+      sAlias = aPartnership.getReceiverID (CSecurePartnership.PID_X509_ALIAS);
     else
-      if (Partnership.PTYPE_SENDER.equals (partnershipType))
-        alias = partnership.getSenderID (CSecurePartnership.PID_X509_ALIAS);
+      if (Partnership.PTYPE_SENDER.equals (sPartnershipType))
+        sAlias = aPartnership.getSenderID (CSecurePartnership.PID_X509_ALIAS);
 
-    if (alias == null)
-      throw new CertificateNotFoundException (partnershipType, null);
-    return alias;
+    if (sAlias == null)
+      throw new CertificateNotFoundException (sPartnershipType, null);
+    return sAlias;
   }
 
   @Nonnull
-  public X509Certificate getCertificate (final String alias) throws OpenAS2Exception
+  public X509Certificate getCertificate (final String sAlias) throws OpenAS2Exception
   {
     try
     {
-      final KeyStore ks = getKeyStore ();
-      final X509Certificate cert = (X509Certificate) ks.getCertificate (alias);
-      if (cert == null)
-        throw new CertificateNotFoundException (null, alias);
-      return cert;
+      final KeyStore aKeyStore = getKeyStore ();
+      final X509Certificate aCert = (X509Certificate) aKeyStore.getCertificate (sAlias);
+      if (aCert == null)
+        throw new CertificateNotFoundException (null, sAlias);
+      return aCert;
     }
-    catch (final KeyStoreException kse)
+    catch (final KeyStoreException ex)
     {
-      throw new WrappedException (kse);
+      throw new WrappedException (ex);
     }
   }
 
-  public X509Certificate getCertificate (final IMessage msg, final String partnershipType) throws OpenAS2Exception
+  public X509Certificate getCertificate (@Nonnull final IMessage aMsg, final String sPartnershipType) throws OpenAS2Exception
   {
     try
     {
-      final String sAlias = getAlias (msg.getPartnership (), partnershipType);
+      final String sAlias = getAlias (aMsg.getPartnership (), sPartnershipType);
+      return getCertificate (sAlias);
+    }
+    catch (final CertificateNotFoundException ex)
+    {
+      ex.setPartnershipType (sPartnershipType);
+      throw ex;
+    }
+  }
+
+  public X509Certificate getCertificate (@Nonnull final IMessageMDN aMDN, final String sPartnershipType) throws OpenAS2Exception
+  {
+    try
+    {
+      final String sAlias = getAlias (aMDN.getPartnership (), sPartnershipType);
       return getCertificate (sAlias);
     }
     catch (final CertificateNotFoundException cnfe)
     {
-      cnfe.setPartnershipType (partnershipType);
-      throw cnfe;
-    }
-  }
-
-  public X509Certificate getCertificate (final IMessageMDN mdn, final String partnershipType) throws OpenAS2Exception
-  {
-    try
-    {
-      final String sAlias = getAlias (mdn.getPartnership (), partnershipType);
-      return getCertificate (sAlias);
-    }
-    catch (final CertificateNotFoundException cnfe)
-    {
-      cnfe.setPartnershipType (partnershipType);
+      cnfe.setPartnershipType (sPartnershipType);
       throw cnfe;
     }
   }
@@ -135,28 +135,28 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   @ReturnsMutableCopy
   public Map <String, Certificate> getCertificates () throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
+    final KeyStore aKeyStore = getKeyStore ();
 
     try
     {
-      final Map <String, Certificate> certs = new HashMap <String, Certificate> ();
-      final Enumeration <String> e = ks.aliases ();
-      while (e.hasMoreElements ())
+      final Map <String, Certificate> aCerts = new HashMap <String, Certificate> ();
+      final Enumeration <String> aAliases = aKeyStore.aliases ();
+      while (aAliases.hasMoreElements ())
       {
-        final String certAlias = e.nextElement ();
-        certs.put (certAlias, ks.getCertificate (certAlias));
+        final String sCertAlias = aAliases.nextElement ();
+        aCerts.put (sCertAlias, aKeyStore.getCertificate (sCertAlias));
       }
-      return certs;
+      return aCerts;
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
   }
 
-  public void setFilename (final String filename)
+  public void setFilename (final String sFilename)
   {
-    getParameters ().put (PARAM_FILENAME, filename);
+    getParameters ().put (PARAM_FILENAME, sFilename);
   }
 
   public String getFilename () throws InvalidParameterException
@@ -164,9 +164,9 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     return getParameterRequired (PARAM_FILENAME);
   }
 
-  public void setKeyStore (final KeyStore keyStore)
+  public void setKeyStore (final KeyStore aKeyStore)
   {
-    m_aKeyStore = keyStore;
+    m_aKeyStore = aKeyStore;
   }
 
   public KeyStore getKeyStore ()
@@ -174,9 +174,9 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     return m_aKeyStore;
   }
 
-  public void setPassword (final char [] password)
+  public void setPassword (final char [] aPassword)
   {
-    getParameters ().put (PARAM_PASSWORD, new String (password));
+    getParameters ().put (PARAM_PASSWORD, new String (aPassword));
   }
 
   @Nonnull
@@ -185,142 +185,142 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     return getParameterRequired (PARAM_PASSWORD).toCharArray ();
   }
 
-  public PrivateKey getPrivateKey (final X509Certificate cert) throws OpenAS2Exception
+  public PrivateKey getPrivateKey (final X509Certificate aCert) throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
-    String alias = null;
+    final KeyStore aKeyStore = getKeyStore ();
+    String sAlias = null;
 
     try
     {
-      alias = ks.getCertificateAlias (cert);
-      if (alias == null)
-        throw new KeyNotFoundException (cert, null);
+      sAlias = aKeyStore.getCertificateAlias (aCert);
+      if (sAlias == null)
+        throw new KeyNotFoundException (aCert, null);
 
-      final PrivateKey key = (PrivateKey) ks.getKey (alias, getPassword ());
+      final PrivateKey key = (PrivateKey) aKeyStore.getKey (sAlias, getPassword ());
       if (key == null)
-        throw new KeyNotFoundException (cert, null);
+        throw new KeyNotFoundException (aCert, null);
 
       return key;
     }
-    catch (final GeneralSecurityException e)
+    catch (final GeneralSecurityException ex)
     {
-      throw new KeyNotFoundException (cert, alias, e);
+      throw new KeyNotFoundException (aCert, sAlias, ex);
     }
   }
 
-  public PrivateKey getPrivateKey (final IMessage msg, final X509Certificate cert) throws OpenAS2Exception
+  public PrivateKey getPrivateKey (final IMessage aMsg, final X509Certificate aCert) throws OpenAS2Exception
   {
-    return getPrivateKey (cert);
+    return getPrivateKey (aCert);
   }
 
-  public PrivateKey getPrivateKey (final IMessageMDN mdn, final X509Certificate cert) throws OpenAS2Exception
+  public PrivateKey getPrivateKey (final IMessageMDN aMDN, final X509Certificate aCert) throws OpenAS2Exception
   {
-    return getPrivateKey (cert);
+    return getPrivateKey (aCert);
   }
 
-  public void addCertificate (final String alias, final X509Certificate cert, final boolean overwrite) throws OpenAS2Exception
+  public void addCertificate (final String sAlias, final X509Certificate aCert, final boolean bOverwrite) throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
+    final KeyStore aKeyStore = getKeyStore ();
 
     try
     {
-      if (ks.containsAlias (alias) && !overwrite)
-        throw new CertificateExistsException (alias);
+      if (aKeyStore.containsAlias (sAlias) && !bOverwrite)
+        throw new CertificateExistsException (sAlias);
 
-      ks.setCertificateEntry (alias, cert);
+      aKeyStore.setCertificateEntry (sAlias, aCert);
       save (getFilename (), getPassword ());
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
   }
 
-  public void addPrivateKey (final String alias, final Key key, final String password) throws OpenAS2Exception
+  public void addPrivateKey (final String sAlias, final Key aKey, final String sPassword) throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
+    final KeyStore aKeyStore = getKeyStore ();
     try
     {
-      if (!ks.containsAlias (alias))
-        throw new CertificateNotFoundException (null, alias);
+      if (!aKeyStore.containsAlias (sAlias))
+        throw new CertificateNotFoundException (null, sAlias);
 
-      final Certificate [] certChain = ks.getCertificateChain (alias);
-      ks.setKeyEntry (alias, key, password.toCharArray (), certChain);
+      final Certificate [] aCertChain = aKeyStore.getCertificateChain (sAlias);
+      aKeyStore.setKeyEntry (sAlias, aKey, sPassword.toCharArray (), aCertChain);
       save (getFilename (), getPassword ());
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
   }
 
   public void clearCertificates () throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
+    final KeyStore aKeyStore = getKeyStore ();
     try
     {
-      final Enumeration <String> aliases = ks.aliases ();
-      while (aliases.hasMoreElements ())
-        ks.deleteEntry (aliases.nextElement ());
+      final Enumeration <String> aAliases = aKeyStore.aliases ();
+      while (aAliases.hasMoreElements ())
+        aKeyStore.deleteEntry (aAliases.nextElement ());
       save (getFilename (), getPassword ());
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
   }
 
   @Override
-  public void initDynamicComponent (final ISession session, final Map <String, String> options) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
   {
-    super.initDynamicComponent (session, options);
+    super.initDynamicComponent (aSession, aOptions);
 
     try
     {
       m_aKeyStore = AS2Util.getCryptoHelper ().getKeyStore ();
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      throw new WrappedException (e);
+      throw new WrappedException (ex);
     }
 
     load (getFilename (), getPassword ());
   }
 
-  public void load (final String filename, final char [] password) throws OpenAS2Exception
+  public void load (final String sFilename, final char [] aPassword) throws OpenAS2Exception
   {
     try
     {
-      final FileInputStream fIn = new FileInputStream (filename);
-      load (fIn, password);
+      final FileInputStream aFIS = new FileInputStream (sFilename);
+      load (aFIS, aPassword);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedException (ex);
     }
   }
 
-  public void load (@WillClose final InputStream in, final char [] password) throws OpenAS2Exception
+  public void load (@WillClose final InputStream aIS, final char [] aPassword) throws OpenAS2Exception
   {
     try
     {
-      final KeyStore ks = getKeyStore ();
-      synchronized (ks)
+      final KeyStore aKeyStore = getKeyStore ();
+      synchronized (aKeyStore)
       {
-        ks.load (in, password);
+        aKeyStore.load (aIS, aPassword);
       }
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedException (ex);
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
     finally
     {
-      StreamUtils.close (in);
+      StreamUtils.close (aIS);
     }
   }
 
@@ -329,37 +329,37 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     load (getFilename (), getPassword ());
   }
 
-  public void removeCertificate (final X509Certificate cert) throws OpenAS2Exception
+  public void removeCertificate (final X509Certificate aCert) throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
+    final KeyStore aKeyStore = getKeyStore ();
 
     try
     {
-      final String alias = ks.getCertificateAlias (cert);
-      if (alias == null)
-        throw new CertificateNotFoundException (cert);
-      removeCertificate (alias);
+      final String sAlias = aKeyStore.getCertificateAlias (aCert);
+      if (sAlias == null)
+        throw new CertificateNotFoundException (aCert);
+      removeCertificate (sAlias);
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
   }
 
-  public void removeCertificate (final String alias) throws OpenAS2Exception
+  public void removeCertificate (final String sAlias) throws OpenAS2Exception
   {
-    final KeyStore ks = getKeyStore ();
+    final KeyStore aKeyStore = getKeyStore ();
     try
     {
-      if (ks.getCertificate (alias) == null)
-        throw new CertificateNotFoundException (null, alias);
+      if (aKeyStore.getCertificate (sAlias) == null)
+        throw new CertificateNotFoundException (null, sAlias);
 
-      ks.deleteEntry (alias);
+      aKeyStore.deleteEntry (sAlias);
       save (getFilename (), getPassword ());
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
   }
 
@@ -368,36 +368,36 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     save (getFilename (), getPassword ());
   }
 
-  public void save (final String filename, final char [] password) throws OpenAS2Exception
+  public void save (final String sFilename, final char [] aPassword) throws OpenAS2Exception
   {
     try
     {
-      final FileOutputStream fOut = new FileOutputStream (filename, false);
-      save (fOut, password);
+      final FileOutputStream fOut = new FileOutputStream (sFilename, false);
+      save (fOut, aPassword);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedException (ex);
     }
   }
 
-  public void save (@WillClose final OutputStream out, final char [] password) throws OpenAS2Exception
+  public void save (@WillClose final OutputStream aOS, final char [] aPassword) throws OpenAS2Exception
   {
     try
     {
-      getKeyStore ().store (out, password);
+      getKeyStore ().store (aOS, aPassword);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedException (ex);
     }
-    catch (final GeneralSecurityException gse)
+    catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (gse);
+      throw new WrappedException (ex);
     }
     finally
     {
-      StreamUtils.close (out);
+      StreamUtils.close (aOS);
     }
   }
 }

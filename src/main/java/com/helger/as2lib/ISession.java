@@ -67,24 +67,24 @@ public interface ISession
   /**
    * Registers a component to a specified ID.
    * 
-   * @param componentID
+   * @param sComponentID
    *        registers the component to this ID
-   * @param comp
+   * @param aComponent
    *        component to register
    * @see IDynamicComponent
    */
-  void setComponent (String componentID, IDynamicComponent comp);
+  void setComponent (String sComponentID, IDynamicComponent aComponent);
 
   /**
    * Gets the <code>Component</code> currently registered with an ID
    * 
-   * @param componentID
+   * @param sComponentID
    *        ID to search for
    * @return the component registered to the ID or null
    * @throws ComponentNotFoundException
    *         If a component is not registered with the ID
    */
-  IDynamicComponent getComponent (String componentID) throws ComponentNotFoundException;
+  IDynamicComponent getComponent (String sComponentID) throws ComponentNotFoundException;
 
   /**
    * Return a map of component ID's to <code>Component</code> objects.

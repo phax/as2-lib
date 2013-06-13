@@ -48,16 +48,17 @@ public class DataHistoryItem implements Serializable
   private ContentType m_aContentType;
   private Map <String, String> m_aAttributes;
 
-  public DataHistoryItem (final String contentType) throws ParseException
+  public DataHistoryItem (final String sContentType) throws ParseException
   {
-    this (new ContentType (contentType));
+    this (new ContentType (sContentType));
   }
 
-  public DataHistoryItem (@Nonnull final ContentType type)
+  public DataHistoryItem (@Nonnull final ContentType aContentType)
   {
-    m_aContentType = type;
+    m_aContentType = aContentType;
   }
 
+  @Nonnull
   public Map <String, String> getAttributes ()
   {
     if (m_aAttributes == null)
@@ -71,15 +72,15 @@ public class DataHistoryItem implements Serializable
   }
 
   @SuppressWarnings ("unchecked")
-  private void readObject (final ObjectInputStream in) throws ParseException, IOException, ClassNotFoundException
+  private void readObject (final ObjectInputStream aOIS) throws ParseException, IOException, ClassNotFoundException
   {
-    m_aContentType = new ContentType ((String) in.readObject ());
-    m_aAttributes = (Map <String, String>) in.readObject ();
+    m_aContentType = new ContentType ((String) aOIS.readObject ());
+    m_aAttributes = (Map <String, String>) aOIS.readObject ();
   }
 
-  private void writeObject (final ObjectOutputStream out) throws IOException
+  private void writeObject (final ObjectOutputStream aOOS) throws IOException
   {
-    out.writeObject (m_aContentType.toString ());
-    out.writeObject (m_aAttributes);
+    aOOS.writeObject (m_aContentType.toString ());
+    aOOS.writeObject (m_aAttributes);
   }
 }

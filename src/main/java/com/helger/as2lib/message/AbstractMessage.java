@@ -32,13 +32,15 @@
  */
 package com.helger.as2lib.message;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
@@ -47,6 +49,7 @@ import javax.mail.internet.MimeBodyPart;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.partner.Partnership;
+import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public abstract class AbstractMessage implements IMessage
 {
@@ -60,34 +63,33 @@ public abstract class AbstractMessage implements IMessage
   public AbstractMessage ()
   {}
 
-  public void setAttribute (final String key, final String value)
+  public void setAttribute (final String sKey, final String sValue)
   {
-    getAttributes ().put (key, value);
+    getAttributes ().put (sKey, sValue);
   }
 
-  public String getAttribute (final String key)
+  @Nullable
+  public String getAttribute (final String sKey)
   {
-    return getAttributes ().get (key);
+    return getAttributes ().get (sKey);
   }
 
-  public void setAttributes (final Map <String, String> attributes)
+  public void setAttributes (final Map <String, String> aAttributes)
   {
-    m_aAttributes = attributes;
+    m_aAttributes = aAttributes;
   }
 
+  @Nonnull
   public Map <String, String> getAttributes ()
   {
     if (m_aAttributes == null)
-    {
       m_aAttributes = new HashMap <String, String> ();
-    }
-
     return m_aAttributes;
   }
 
-  public void setContentType (final String contentType)
+  public void setContentType (final String sContentType)
   {
-    setHeader ("Content-Type", contentType);
+    setHeader ("Content-Type", sContentType);
   }
 
   public String getContentType ()
@@ -97,11 +99,11 @@ public abstract class AbstractMessage implements IMessage
 
   /**
    * @since 2007-06-01
-   * @param contentDisposition
+   * @param sContentDisposition
    */
-  public void setContentDisposition (final String contentDisposition)
+  public void setContentDisposition (final String sContentDisposition)
   {
-    setHeader ("Content-Disposition", contentDisposition);
+    setHeader ("Content-Disposition", sContentDisposition);
   }
 
   /**
@@ -112,47 +114,45 @@ public abstract class AbstractMessage implements IMessage
     return getHeader ("Content-Disposition");
   }
 
-  public void setData (final MimeBodyPart data, final DataHistoryItem historyItem)
+  public void setData (@Nullable final MimeBodyPart aData, @Nullable final DataHistoryItem aHistoryItem)
   {
-    m_aData = data;
-
-    if (data != null)
+    m_aData = aData;
+    if (aData != null)
     {
       try
       {
-        setContentType (data.getContentType ());
+        setContentType (aData.getContentType ());
       }
-      catch (final MessagingException e)
+      catch (final MessagingException ex)
       {
         setContentType (null);
       }
       try
       {
-        setContentDisposition (data.getHeader ("Content-Disposition", null));
+        setContentDisposition (aData.getHeader ("Content-Disposition", null));
       }
-      catch (final MessagingException e)
+      catch (final MessagingException ex)
       {
         setContentDisposition (null);
       }
     }
 
-    if (historyItem != null)
-    {
-      getHistory ().addItem (historyItem);
-    }
+    if (aHistoryItem != null)
+      getHistory ().addItem (aHistoryItem);
   }
 
-  public DataHistoryItem setData (final MimeBodyPart data) throws OpenAS2Exception
+  @Nonnull
+  public DataHistoryItem setData (@Nonnull final MimeBodyPart aData) throws OpenAS2Exception
   {
     try
     {
-      final DataHistoryItem historyItem = new DataHistoryItem (data.getContentType ());
-      setData (data, historyItem);
-      return historyItem;
+      final DataHistoryItem aHistoryItem = new DataHistoryItem (aData.getContentType ());
+      setData (aData, aHistoryItem);
+      return aHistoryItem;
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      throw new WrappedException (e);
+      throw new WrappedException (ex);
     }
   }
 
@@ -161,26 +161,27 @@ public abstract class AbstractMessage implements IMessage
     return m_aData;
   }
 
-  public void setHeader (final String key, final String value)
+  public void setHeader (final String sKey, final String sValue)
   {
-    getHeaders ().setHeader (key, value);
+    getHeaders ().setHeader (sKey, sValue);
   }
 
-  public String getHeader (final String key)
+  public String getHeader (final String sKey)
   {
-    return getHeader (key, ", ");
+    return getHeader (sKey, ", ");
   }
 
-  public String getHeader (final String key, final String delimiter)
+  public String getHeader (final String sKey, final String sDelimiter)
   {
-    return getHeaders ().getHeader (key, delimiter);
+    return getHeaders ().getHeader (sKey, sDelimiter);
   }
 
-  public void setHeaders (final InternetHeaders headers)
+  public void setHeaders (@Nullable final InternetHeaders aHeaders)
   {
-    m_aHeaders = headers;
+    m_aHeaders = aHeaders;
   }
 
+  @Nonnull
   public InternetHeaders getHeaders ()
   {
     if (m_aHeaders == null)
@@ -188,11 +189,12 @@ public abstract class AbstractMessage implements IMessage
     return m_aHeaders;
   }
 
-  public void setHistory (final DataHistory history)
+  public void setHistory (@Nullable final DataHistory aHistory)
   {
-    m_aHistory = history;
+    m_aHistory = aHistory;
   }
 
+  @Nonnull
   public DataHistory getHistory ()
   {
     if (m_aHistory == null)
@@ -200,19 +202,20 @@ public abstract class AbstractMessage implements IMessage
     return m_aHistory;
   }
 
-  public void setMDN (final IMessageMDN mdn)
+  public void setMDN (@Nullable final IMessageMDN aMDN)
   {
-    m_aMDN = mdn;
+    m_aMDN = aMDN;
   }
 
+  @Nullable
   public IMessageMDN getMDN ()
   {
     return m_aMDN;
   }
 
-  public void setMessageID (final String messageID)
+  public void setMessageID (final String sMessageID)
   {
-    setHeader ("Message-ID", messageID);
+    setHeader ("Message-ID", sMessageID);
   }
 
   public String getMessageID ()
@@ -220,9 +223,9 @@ public abstract class AbstractMessage implements IMessage
     return getHeader ("Message-ID");
   }
 
-  public void setPartnership (final Partnership partnership)
+  public void setPartnership (@Nullable final Partnership aPartnership)
   {
-    m_aPartnership = partnership;
+    m_aPartnership = aPartnership;
   }
 
   @Nonnull
@@ -235,9 +238,9 @@ public abstract class AbstractMessage implements IMessage
 
   public abstract String generateMessageID ();
 
-  public void setSubject (final String subject)
+  public void setSubject (final String sSubject)
   {
-    setHeader ("Subject", subject);
+    setHeader ("Subject", sSubject);
   }
 
   public String getSubject ()
@@ -245,37 +248,34 @@ public abstract class AbstractMessage implements IMessage
     return getHeader ("Subject");
   }
 
-  public void addHeader (final String key, final String value)
+  public void addHeader (final String sKey, final String sValue)
   {
-    getHeaders ().addHeader (key, value);
+    getHeaders ().addHeader (sKey, sValue);
   }
 
   @Override
   public String toString ()
   {
-    final StringBuilder buf = new StringBuilder ();
-    buf.append ("Message From:").append (getPartnership ().getSenderIDs ());
-    buf.append ("\nTo:").append (getPartnership ().getReceiverIDs ());
+    final StringBuilder aSB = new StringBuilder ();
+    aSB.append ("Message From:").append (getPartnership ().getSenderIDs ());
+    aSB.append ("\nTo:").append (getPartnership ().getReceiverIDs ());
 
-    final Enumeration <?> headerEn = getHeaders ().getAllHeaders ();
-    buf.append ("\nHeaders:{");
-
-    while (headerEn.hasMoreElements ())
+    aSB.append ("\nHeaders:{");
+    final Enumeration <?> aHeaders = getHeaders ().getAllHeaders ();
+    while (aHeaders.hasMoreElements ())
     {
-      final Header header = (Header) headerEn.nextElement ();
-      buf.append (header.getName ()).append ("=").append (header.getValue ());
-      if (headerEn.hasMoreElements ())
-        buf.append (", ");
+      final Header aHeader = (Header) aHeaders.nextElement ();
+      aSB.append (aHeader.getName ()).append ("=").append (aHeader.getValue ());
+      if (aHeaders.hasMoreElements ())
+        aSB.append (", ");
     }
+    aSB.append ("}").append ("\nAttributes:").append (getAttributes ());
 
-    buf.append ("}");
-    buf.append ("\nAttributes:").append (getAttributes ());
+    final IMessageMDN aMDN = getMDN ();
+    if (aMDN != null)
+      aSB.append ("\nMDN:").append (aMDN.toString ());
 
-    final IMessageMDN mdn = getMDN ();
-    if (mdn != null)
-      buf.append ("\nMDN:").append (mdn.toString ());
-
-    return buf.toString ();
+    return aSB.toString ();
   }
 
   public void updateMessageID ()
@@ -284,87 +284,81 @@ public abstract class AbstractMessage implements IMessage
   }
 
   @SuppressWarnings ("unchecked")
-  private void readObject (final java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+  private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     // read in partnership
-    m_aPartnership = (Partnership) in.readObject ();
+    m_aPartnership = (Partnership) aOIS.readObject ();
 
     // read in attributes
-    m_aAttributes = (Map <String, String>) in.readObject ();
+    m_aAttributes = (Map <String, String>) aOIS.readObject ();
 
     // read in data history
-    m_aHistory = (DataHistory) in.readObject ();
+    m_aHistory = (DataHistory) aOIS.readObject ();
 
     try
     {
       // read in message headers
-      m_aHeaders = new InternetHeaders (in);
+      m_aHeaders = new InternetHeaders (aOIS);
 
       // read in mime body
-      if (in.read () == 1)
-      {
-        m_aData = new MimeBodyPart (in);
-      }
+      if (aOIS.read () == 1)
+        m_aData = new MimeBodyPart (aOIS);
     }
-    catch (final MessagingException me)
+    catch (final MessagingException ex)
     {
-      throw new IOException ("Messaging exception: " + me.getMessage ());
+      throw new IOException ("Messaging exception: " + ex.getMessage ());
     }
 
     // read in MDN
-    m_aMDN = (IMessageMDN) in.readObject ();
-
+    m_aMDN = (IMessageMDN) aOIS.readObject ();
     if (m_aMDN != null)
-    {
       m_aMDN.setMessage (this);
-    }
   }
 
-  private void writeObject (final java.io.ObjectOutputStream out) throws IOException
+  private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
     // write partnership info
-    out.writeObject (m_aPartnership);
+    aOOS.writeObject (m_aPartnership);
 
     // write attributes
-    out.writeObject (m_aAttributes);
+    aOOS.writeObject (m_aAttributes);
 
     // write data history
-    out.writeObject (m_aHistory);
+    aOOS.writeObject (m_aHistory);
 
     // write message headers
     final Enumeration <?> en = m_aHeaders.getAllHeaderLines ();
     while (en.hasMoreElements ())
     {
-      out.writeBytes (en.nextElement ().toString () + "\r\n");
+      aOOS.writeBytes (en.nextElement ().toString () + "\r\n");
     }
 
-    out.writeBytes (new String ("\r\n"));
+    aOOS.writeBytes ("\r\n");
 
     // write the mime body
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-
+    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     try
     {
       if (m_aData != null)
       {
-        baos.write (1);
-        m_aData.writeTo (baos);
+        aBAOS.write (1);
+        m_aData.writeTo (aBAOS);
       }
       else
       {
-        baos.write (0);
+        aBAOS.write (0);
       }
     }
-    catch (final MessagingException e)
+    catch (final MessagingException ex)
     {
-      throw new IOException ("Messaging exception: " + e.getMessage ());
+      throw new IOException ("Messaging exception: " + ex.getMessage ());
     }
 
-    out.write (baos.toByteArray ());
-    baos.close ();
+    aOOS.write (aBAOS.toByteArray ());
+    aBAOS.close ();
 
     // write the message's MDN
-    out.writeObject (m_aMDN);
+    aOOS.writeObject (m_aMDN);
   }
 
   public String getLoggingText ()

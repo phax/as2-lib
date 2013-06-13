@@ -43,51 +43,51 @@ import com.helger.as2lib.partner.Partnership;
 
 public interface IMessage extends Serializable
 {
-  void setAttribute (String key, String value);
+  void setAttribute (String sKey, String sValue);
 
-  String getAttribute (String key);
+  String getAttribute (String sKey);
 
-  void setAttributes (Map <String, String> attributes);
+  void setAttributes (Map <String, String> aAttributes);
 
   Map <String, String> getAttributes ();
 
-  void setContentType (String contentType);
+  void setContentType (String sContentType);
 
   String getContentType ();
 
-  void setContentDisposition (String contentDisposition);
+  void setContentDisposition (String sContentDisposition);
 
   String getContentDisposition ();
 
-  void setData (MimeBodyPart data, DataHistoryItem historyItem) throws OpenAS2Exception;
+  void setData (MimeBodyPart aData, DataHistoryItem aHistoryItem) throws OpenAS2Exception;
 
-  DataHistoryItem setData (MimeBodyPart data) throws OpenAS2Exception;
+  DataHistoryItem setData (MimeBodyPart aData) throws OpenAS2Exception;
 
   MimeBodyPart getData ();
 
-  void setHeader (String key, String value);
+  void setHeader (String sKey, String sValue);
 
-  String getHeader (String key);
+  String getHeader (String sKey);
 
-  String getHeader (String key, String delimiter);
+  String getHeader (String sKey, String sDelimiter);
 
-  void setHeaders (InternetHeaders headers);
+  void setHeaders (InternetHeaders aHeaders);
 
   InternetHeaders getHeaders ();
 
-  void setHistory (DataHistory history);
+  void setHistory (DataHistory aHistory);
 
   DataHistory getHistory ();
 
-  void setMDN (IMessageMDN mdn);
+  void setMDN (IMessageMDN aMDN);
 
   IMessageMDN getMDN ();
 
-  void setMessageID (String messageID);
+  void setMessageID (String sMessageID);
 
   String getMessageID ();
 
-  void setPartnership (Partnership partnership);
+  void setPartnership (Partnership aPartnership);
 
   Partnership getPartnership ();
 
@@ -97,11 +97,11 @@ public interface IMessage extends Serializable
 
   boolean isRequestingAsynchMDN ();
 
-  void setSubject (String subject);
+  void setSubject (String sSubject);
 
   String getSubject ();
 
-  void addHeader (String key, String value);
+  void addHeader (String sKey, String sValue);
 
   String generateMessageID ();
 

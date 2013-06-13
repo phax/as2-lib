@@ -34,6 +34,8 @@ package com.helger.as2lib.cert;
 
 import java.security.cert.X509Certificate;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class CertificateNotFoundException extends OpenAS2Exception
@@ -41,21 +43,16 @@ public class CertificateNotFoundException extends OpenAS2Exception
   private String m_aAlias;
   private String m_sPartnershipType;
 
-  public CertificateNotFoundException (final String partnershipType, final String alias)
+  public CertificateNotFoundException (final String sPartnershipType, final String sAlias)
   {
-    super ("Type: " + partnershipType + ", Alias: " + alias);
-    m_sPartnershipType = partnershipType;
-    m_aAlias = alias;
+    super ("Type: " + sPartnershipType + ", Alias: " + sAlias);
+    m_sPartnershipType = sPartnershipType;
+    m_aAlias = sAlias;
   }
 
-  public CertificateNotFoundException (final X509Certificate cert)
+  public CertificateNotFoundException (@Nonnull final X509Certificate aCert)
   {
-    super ("Certificate not in store: " + cert.toString ());
-  }
-
-  public void setAlias (final String string)
-  {
-    m_aAlias = string;
+    super ("Certificate not in store: " + aCert.toString ());
   }
 
   public String getAlias ()
@@ -63,9 +60,9 @@ public class CertificateNotFoundException extends OpenAS2Exception
     return m_aAlias;
   }
 
-  public void setPartnershipType (final String string)
+  public void setPartnershipType (final String sPartnershipFactory)
   {
-    m_sPartnershipType = string;
+    m_sPartnershipType = sPartnershipFactory;
   }
 
   public String getPartnershipType ()

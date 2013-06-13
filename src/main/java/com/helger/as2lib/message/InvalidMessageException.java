@@ -37,12 +37,10 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public class InvalidMessageException extends OpenAS2Exception
 {
   public InvalidMessageException ()
-  {
-    super ();
-  }
+  {}
 
-  public InvalidMessageException (final String msg)
+  public InvalidMessageException (final String sMsg)
   {
-    super (msg);
+    super (sMsg);
   }
 }

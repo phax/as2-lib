@@ -35,23 +35,21 @@ package com.helger.as2lib.exception;
 public class WrappedException extends OpenAS2Exception
 {
   public WrappedException ()
+  {}
+
+  public WrappedException (final String sMsg)
   {
-    super ();
+    super (sMsg);
   }
 
-  public WrappedException (final String msg)
+  public WrappedException (final String sMsg, final Throwable aCause)
   {
-    super (msg);
+    super (sMsg, aCause);
   }
 
-  public WrappedException (final String msg, final Throwable cause)
+  public WrappedException (final Throwable aCause)
   {
-    super (msg, cause);
-  }
-
-  public WrappedException (final Throwable cause)
-  {
-    super (cause);
+    super (aCause);
   }
 
   public void rethrow () throws Exception

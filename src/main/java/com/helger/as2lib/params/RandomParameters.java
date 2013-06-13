@@ -38,19 +38,19 @@ import com.phloc.commons.string.StringHelper;
 public class RandomParameters extends AbstractParameterParser
 {
   @Override
-  public void setParameter (final String key, final String value) throws InvalidParameterException
+  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
-    throw new InvalidParameterException ("Set not supported", this, key, value);
+    throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
 
   @Override
-  public String getParameter (final String key) throws InvalidParameterException
+  public String getParameter (final String sKey) throws InvalidParameterException
   {
-    if (key == null)
-      throw new InvalidParameterException ("Invalid key", this, key, null);
+    if (sKey == null)
+      throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
-    final int wanted = key.length ();
-    final int max = (int) Math.pow (10, wanted);
-    return StringHelper.getLeadingZero (VerySecureRandom.getInstance ().nextInt (max), wanted);
+    final int nWanted = sKey.length ();
+    final int nMax = (int) Math.pow (10, nWanted);
+    return StringHelper.getLeadingZero (VerySecureRandom.getInstance ().nextInt (nMax), nWanted);
   }
 }

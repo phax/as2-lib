@@ -32,26 +32,23 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class MDNException extends OpenAS2Exception
 {
   public MDNException ()
+  {}
+
+  public MDNException (final String sMsg)
   {
-    super ();
+    super (sMsg);
   }
 
-  public MDNException (final String msg)
+  public MDNException (final String sMsg, final Throwable aCause)
   {
-    super (msg);
+    super (sMsg, aCause);
   }
 
-  public MDNException (final String msg, final Throwable cause)
+  public MDNException (final Throwable aCause)
   {
-    super (msg, cause);
-  }
-
-  public MDNException (final Throwable cause)
-  {
-    super (cause);
+    super (aCause);
   }
 }

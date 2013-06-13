@@ -57,45 +57,49 @@ public class AS2Message extends AbstractMessage
                                                                       .add ("msg", new MessageParameters (this))
                                                                       .add ("rand", new RandomParameters ());
 
-    String idFormat = getPartnership ().getAttribute (CAS2Partnership.PA_MESSAGEID);
-    if (idFormat == null)
-      idFormat = "OPENAS2-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+    String sIDFormat = getPartnership ().getAttribute (CAS2Partnership.PA_MESSAGEID);
+    if (sIDFormat == null)
+      sIDFormat = "OPENAS2-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
-    final StringBuilder messageId = new StringBuilder ();
-    messageId.append ('<');
+    final StringBuilder sMessageID = new StringBuilder ();
+    sMessageID.append ('<');
     try
     {
-      messageId.append (AbstractParameterParser.parse (idFormat, params));
+      sMessageID.append (AbstractParameterParser.parse (sIDFormat, params));
     }
-    catch (final InvalidParameterException e)
+    catch (final InvalidParameterException ex)
     {
       // useless, but what to do?
-      messageId.append (idFormat);
+      sMessageID.append (sIDFormat);
     }
-    messageId.append ('>');
-    return messageId.toString ();
+    sMessageID.append ('>');
+    return sMessageID.toString ();
   }
 
   public boolean isRequestingMDN ()
   {
-    final Partnership p = getPartnership ();
-    final boolean bRequesting = p.getAttribute (CAS2Partnership.PA_AS2_MDN_TO) != null ||
-                                p.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS) != null;
+    final Partnership aPartnership = getPartnership ();
+    final boolean bRequesting = aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO) != null ||
+                                aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS) != null;
+    if (bRequesting)
+      return true;
+
     final boolean bRequested = getHeader ("Disposition-Notification-To") != null ||
                                getHeader ("Disposition-Notification-Options") != null;
-
-    return bRequesting || bRequested;
+    return bRequested;
   }
 
   public boolean isRequestingAsynchMDN ()
   {
-    final Partnership p = getPartnership ();
-    final boolean bRequesting = (p.getAttribute (CAS2Partnership.PA_AS2_MDN_TO) != null || p.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS) != null) &&
-                                p.getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) != null;
+    final Partnership aPartnership = getPartnership ();
+    final boolean bRequesting = (aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO) != null || aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS) != null) &&
+                                aPartnership.getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) != null;
+    if (bRequesting)
+      return true;
+
     final boolean bRequested = (getHeader ("Disposition-Notification-To") != null || (getHeader ("Disposition-Notification-Options") != null)) &&
                                (getHeader ("Receipt-Delivery-Option") != null);
-
-    return bRequesting || bRequested;
+    return bRequested;
   }
 
   public String getAsyncMDNurl ()

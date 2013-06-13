@@ -34,21 +34,16 @@ package com.helger.as2lib.exception;
 
 public class ComponentNotFoundException extends OpenAS2Exception
 {
-  private String m_sComponentName;
+  private final String m_sComponentName;
 
-  public ComponentNotFoundException (final String componentName)
+  public ComponentNotFoundException (final String sComponentName)
   {
-    super (componentName);
-    m_sComponentName = componentName;
+    super (sComponentName);
+    m_sComponentName = sComponentName;
   }
 
   public String getComponentName ()
   {
     return m_sComponentName;
-  }
-
-  public void setComponentName (final String componentName)
-  {
-    m_sComponentName = componentName;
   }
 }

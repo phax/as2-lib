@@ -36,8 +36,8 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class CertificateExistsException extends OpenAS2Exception
 {
-  public CertificateExistsException (final String alias)
+  public CertificateExistsException (final String sAlias)
   {
-    super (alias);
+    super (sAlias);
   }
 }

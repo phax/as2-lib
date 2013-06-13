@@ -40,40 +40,30 @@ public class InvalidParameterException extends OpenAS2Exception
   private String m_sKey;
   private String m_sValue;
 
-  public InvalidParameterException (final String msg, final Object target, final String key, final String value)
+  public InvalidParameterException (final String sMsg, final Object aTarget, final String sKey, final String sValue)
   {
-    super (msg + " - " + toString (key, value));
-    m_aTarget = target;
-    m_sKey = key;
-    m_sValue = value;
+    super (sMsg + " - " + toString (sKey, sValue));
+    m_aTarget = aTarget;
+    m_sKey = sKey;
+    m_sValue = sValue;
   }
 
-  public InvalidParameterException (final Object target, final String key, final String value)
+  public InvalidParameterException (final Object aTarget, final String sKey, final String sValue)
   {
-    super (toString (key, value));
-    m_aTarget = target;
-    m_sKey = key;
-    m_sValue = value;
+    super (toString (sKey, sValue));
+    m_aTarget = aTarget;
+    m_sKey = sKey;
+    m_sValue = sValue;
   }
 
-  public InvalidParameterException (final String msg)
+  public InvalidParameterException (final String sMsg)
   {
-    super (msg);
-  }
-
-  public void setKey (final String string)
-  {
-    m_sKey = string;
+    super (sMsg);
   }
 
   public String getKey ()
   {
     return m_sKey;
-  }
-
-  public void setTarget (final Object object)
-  {
-    m_aTarget = object;
   }
 
   public Object getTarget ()
@@ -86,22 +76,14 @@ public class InvalidParameterException extends OpenAS2Exception
     return m_sValue;
   }
 
-  public void setValue (final String value)
+  public static void checkValue (final Object aTarget, final String sValueName, final Object aValue) throws InvalidParameterException
   {
-    m_sValue = value;
+    if (aValue == null)
+      throw new InvalidParameterException (aTarget, sValueName, null);
   }
 
-  public static void checkValue (final Object target, final String valueName, final Object value) throws InvalidParameterException
+  public static String toString (final String sKey, final String sValue)
   {
-    if (value == null)
-    {
-      throw new InvalidParameterException (target, valueName, null);
-    }
+    return "Invalid parameter value for " + sKey + ": " + sValue;
   }
-
-  public static String toString (final String key, final String value)
-  {
-    return "Invalid parameter value for " + key + ": " + value;
-  }
-
 }
