@@ -77,7 +77,7 @@ public class DefaultProcessor extends AbstractProcessor
 
   public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    ProcessorException pex = null;
+    final List <Throwable> aCauses = new ArrayList <Throwable> ();
     boolean bModuleFound = false;
 
     for (final IProcessorModule aModule : getModules ())
@@ -91,15 +91,13 @@ public class DefaultProcessor extends AbstractProcessor
         }
         catch (final OpenAS2Exception ex)
         {
-          if (pex == null)
-            pex = new ProcessorException (this);
-          pex.getCauses ().add (ex);
+          aCauses.add (ex);
         }
       }
     }
 
-    if (pex != null)
-      throw pex;
+    if (!aCauses.isEmpty ())
+      throw new ProcessorException (this, aCauses);
     if (!bModuleFound)
       throw new NoModuleException (sAction, aMsg, aOptions);
   }

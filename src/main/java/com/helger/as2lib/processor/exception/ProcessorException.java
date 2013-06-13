@@ -33,42 +33,42 @@
 package com.helger.as2lib.processor.exception;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.IProcessor;
+import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.streams.NonBlockingStringWriter;
 
-public class ProcessorException extends OpenAS2Exception
+public final class ProcessorException extends OpenAS2Exception
 {
   private final IProcessor m_aProcessor;
-  private List <Throwable> m_aCauses;
+  private final List <Throwable> m_aCauses;
 
-  public ProcessorException (final IProcessor aProcessor)
+  public ProcessorException (@Nonnull final IProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
   {
+    if (aProcessor == null)
+      throw new NullPointerException ("processor");
+    if (ContainerHelper.isEmpty (aCauses))
+      throw new IllegalArgumentException ("causes may be empty");
     m_aProcessor = aProcessor;
+    m_aCauses = ContainerHelper.newList (aCauses);
   }
 
+  @Nonnull
   public IProcessor getProcessor ()
   {
     return m_aProcessor;
   }
 
   @Nonnull
+  @Nonempty
   public List <Throwable> getCauses ()
   {
-    if (m_aCauses == null)
-      m_aCauses = new ArrayList <Throwable> ();
-    return m_aCauses;
-  }
-
-  public void setCauses (@Nullable final List <Throwable> aCauses)
-  {
-    m_aCauses = aCauses;
+    return ContainerHelper.newList (m_aCauses);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class ProcessorException extends OpenAS2Exception
     final NonBlockingStringWriter aStrWriter = new NonBlockingStringWriter ();
     final PrintWriter aWriter = new PrintWriter (aStrWriter);
     aWriter.print (super.getMessage ());
-    for (final Throwable e : getCauses ())
+    for (final Throwable e : m_aCauses)
     {
       aWriter.println ();
       e.printStackTrace (aWriter);

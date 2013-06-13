@@ -32,6 +32,8 @@
  */
 package com.helger.as2lib.params;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.util.DateUtil;
 
 public class DateParameters extends AbstractParameterParser
@@ -43,11 +45,11 @@ public class DateParameters extends AbstractParameterParser
   }
 
   @Override
-  public String getParameter (final String sKey) throws InvalidParameterException
+  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     if (sKey == null)
       throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
-    return DateUtil.formatDate (sKey);
+    return DateUtil.getFormattedDateNow (sKey);
   }
 }

@@ -46,18 +46,17 @@ public class CompositeParameters extends AbstractParameterParser
 
   public CompositeParameters (final boolean bIgnoreMissingParsers)
   {
-    super ();
     m_bIgnoreMissingParsers = bIgnoreMissingParsers;
   }
 
   public CompositeParameters (final boolean bIgnoreMissingParsers,
                               final Map <String, AbstractParameterParser> aParameterParsers)
   {
-    super ();
-    m_bIgnoreMissingParsers = bIgnoreMissingParsers;
+    this (bIgnoreMissingParsers);
     getParameterParsers ().putAll (aParameterParsers);
   }
 
+  @Nonnull
   public CompositeParameters add (final String sKey, final AbstractParameterParser aParam)
   {
     getParameterParsers ().put (sKey, aParam);
@@ -87,17 +86,12 @@ public class CompositeParameters extends AbstractParameterParser
 
       final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
       while (aKeyParts.hasMoreTokens ())
-      {
-        aKeyBuf.append (".");
-        aKeyBuf.append (aKeyParts.nextToken ());
-      }
+        aKeyBuf.append ('.').append (aKeyParts.nextToken ());
       aParser.setParameter (aKeyBuf.toString (), sValue);
     }
     else
       if (!getIgnoreMissingParsers ())
-      {
         throw new InvalidParameterException ("Invalid area in key", this, sKey, sValue);
-      }
   }
 
   @Override
@@ -114,10 +108,7 @@ public class CompositeParameters extends AbstractParameterParser
 
       final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
       while (aKeyParts.hasMoreTokens ())
-      {
-        aKeyBuf.append (".");
-        aKeyBuf.append (aKeyParts.nextToken ());
-      }
+        aKeyBuf.append ('.').append (aKeyParts.nextToken ());
       return aParser.getParameter (aKeyBuf.toString ());
     }
     if (!getIgnoreMissingParsers ())

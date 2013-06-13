@@ -47,13 +47,13 @@ public final class DateUtil
   private DateUtil ()
   {}
 
-  public static String formatDate (final String sFormat)
+  public static String getFormattedDateNow (@Nonnull final String sFormat)
   {
     return formatDate (sFormat, new Date ());
   }
 
   @Nonnull
-  private static SimpleDateFormat _getDateFormat (final String sFormat)
+  private static SimpleDateFormat _getDateFormat (@Nonnull final String sFormat)
   {
     SimpleDateFormat aDF = s_aFormatters.get (sFormat);
     if (aDF == null)
@@ -64,12 +64,12 @@ public final class DateUtil
     return aDF;
   }
 
-  public static synchronized String formatDate (final String sFormat, final Date aValue)
+  public static synchronized String formatDate (@Nonnull final String sFormat, @Nonnull final Date aValue)
   {
     return _getDateFormat (sFormat).format (aValue);
   }
 
-  public static synchronized Date parseDate (final String sFormat, final String sValue) throws ParseException
+  public static synchronized Date parseDate (@Nonnull final String sFormat, @Nonnull final String sValue) throws ParseException
   {
     return _getDateFormat (sFormat).parse (sValue);
   }

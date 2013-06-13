@@ -53,7 +53,6 @@ public class ExceptionParameters extends AbstractParameterParser
 
   public ExceptionParameters (final OpenAS2Exception aTarget, final boolean bTerminated)
   {
-    super ();
     m_aTarget = aTarget;
     m_bTerminated = bTerminated;
   }
@@ -78,7 +77,6 @@ public class ExceptionParameters extends AbstractParameterParser
 
     final OpenAS2Exception aTarget = getTarget ();
     Throwable aUnwrappedTarget;
-
     if (aTarget instanceof WrappedException)
     {
       aUnwrappedTarget = ((WrappedException) aTarget).getCause ();

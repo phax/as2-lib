@@ -88,7 +88,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty ("Connection", "close, TE");
     aConn.setRequestProperty ("User-Agent", "OpenAS2 AsynchMDNSender");
 
-    aConn.setRequestProperty ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aConn.setRequestProperty ("Date", DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
     aConn.setRequestProperty ("Message-ID", aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
     aConn.setRequestProperty ("Mime-Version", "1.0");

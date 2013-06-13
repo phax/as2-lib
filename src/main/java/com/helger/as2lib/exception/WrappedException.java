@@ -51,9 +51,4 @@ public class WrappedException extends OpenAS2Exception
   {
     super (aCause);
   }
-
-  public void rethrow () throws Exception
-  {
-    throw (Exception) getCause ();
-  }
 }

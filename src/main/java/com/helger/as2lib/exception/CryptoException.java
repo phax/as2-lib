@@ -32,13 +32,10 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class CryptoException extends OpenAS2Exception
 {
   public CryptoException ()
-  {
-    super ();
-  }
+  {}
 
   public CryptoException (final String sMsg)
   {

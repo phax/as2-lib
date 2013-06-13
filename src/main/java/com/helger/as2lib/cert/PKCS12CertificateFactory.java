@@ -72,7 +72,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   private KeyStore m_aKeyStore;
 
   @Nonnull
-  public String getAlias (final Partnership aPartnership, final String sPartnershipType) throws OpenAS2Exception
+  public String getAlias (@Nonnull final Partnership aPartnership, @Nonnull final String sPartnershipType) throws OpenAS2Exception
   {
     String sAlias = null;
     if (Partnership.PTYPE_RECEIVER.equals (sPartnershipType))
@@ -87,14 +87,14 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   }
 
   @Nonnull
-  public X509Certificate getCertificate (final String sAlias) throws OpenAS2Exception
+  private X509Certificate _getCertificate (final String sPartnershipType, final String sAlias) throws OpenAS2Exception
   {
     try
     {
       final KeyStore aKeyStore = getKeyStore ();
       final X509Certificate aCert = (X509Certificate) aKeyStore.getCertificate (sAlias);
       if (aCert == null)
-        throw new CertificateNotFoundException (null, sAlias);
+        throw new CertificateNotFoundException (sPartnershipType, sAlias);
       return aCert;
     }
     catch (final KeyStoreException ex)
@@ -103,16 +103,21 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
   }
 
+  @Nonnull
+  public X509Certificate getCertificate (final String sAlias) throws OpenAS2Exception
+  {
+    return _getCertificate (null, sAlias);
+  }
+
   public X509Certificate getCertificate (@Nonnull final IMessage aMsg, final String sPartnershipType) throws OpenAS2Exception
   {
     try
     {
       final String sAlias = getAlias (aMsg.getPartnership (), sPartnershipType);
-      return getCertificate (sAlias);
+      return _getCertificate (sPartnershipType, sAlias);
     }
     catch (final CertificateNotFoundException ex)
     {
-      ex.setPartnershipType (sPartnershipType);
       throw ex;
     }
   }
@@ -122,12 +127,11 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     try
     {
       final String sAlias = getAlias (aMDN.getPartnership (), sPartnershipType);
-      return getCertificate (sAlias);
+      return _getCertificate (sPartnershipType, sAlias);
     }
-    catch (final CertificateNotFoundException cnfe)
+    catch (final CertificateNotFoundException ex)
     {
-      cnfe.setPartnershipType (sPartnershipType);
-      throw cnfe;
+      throw ex;
     }
   }
 

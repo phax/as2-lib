@@ -36,25 +36,21 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class CertificateException extends OpenAS2Exception
 {
-
   public CertificateException ()
+  {}
+
+  public CertificateException (final String sMsg)
   {
-    super ();
+    super (sMsg);
   }
 
-  public CertificateException (final String msg)
+  public CertificateException (final String sMsg, final Throwable aCause)
   {
-    super (msg);
+    super (sMsg, aCause);
   }
 
-  public CertificateException (final String msg, final Throwable cause)
+  public CertificateException (final Throwable aCause)
   {
-    super (msg, cause);
+    super (aCause);
   }
-
-  public CertificateException (final Throwable cause)
-  {
-    super (cause);
-  }
-
 }

@@ -44,14 +44,12 @@ public class DispositionException extends OpenAS2Exception
 
   public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
   {
-    super (aDisposition.toString ());
-    m_aDisposition = aDisposition;
-    m_sText = sText;
+    this (aDisposition, sText, null);
   }
 
   public DispositionException (@Nonnull final DispositionType aDisposition,
                                @Nullable final String sText,
-                               final Throwable aCause)
+                               @Nullable final Throwable aCause)
   {
     super (aDisposition.toString (), aCause);
     m_aDisposition = aDisposition;

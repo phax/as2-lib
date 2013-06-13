@@ -84,7 +84,7 @@ public final class AS2Util
     final AS2MessageMDN aMdn = new AS2MessageMDN (aMsg);
     aMdn.setHeader (CAS2Header.AS2_VERSION, "1.1");
     // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
-    aMdn.setHeader ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aMdn.setHeader ("Date", DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
     aMdn.setHeader ("Server", CInfo.NAME_VERSION);
     aMdn.setHeader ("Mime-Version", "1.0");
     aMdn.setHeader (CAS2Header.AS2_TO, aMsg.getPartnership ().getSenderID (CAS2Partnership.PID_AS2));

@@ -36,9 +36,9 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class InvalidParameterException extends OpenAS2Exception
 {
-  private Object m_aTarget;
-  private String m_sKey;
-  private String m_sValue;
+  private final Object m_aTarget;
+  private final String m_sKey;
+  private final String m_sValue;
 
   public InvalidParameterException (final String sMsg, final Object aTarget, final String sKey, final String sValue)
   {
@@ -48,17 +48,12 @@ public class InvalidParameterException extends OpenAS2Exception
     m_sValue = sValue;
   }
 
-  public InvalidParameterException (final Object aTarget, final String sKey, final String sValue)
-  {
-    super (toString (sKey, sValue));
-    m_aTarget = aTarget;
-    m_sKey = sKey;
-    m_sValue = sValue;
-  }
-
   public InvalidParameterException (final String sMsg)
   {
     super (sMsg);
+    m_aTarget = null;
+    m_sKey = null;
+    m_sValue = null;
   }
 
   public String getKey ()
@@ -79,7 +74,7 @@ public class InvalidParameterException extends OpenAS2Exception
   public static void checkValue (final Object aTarget, final String sValueName, final Object aValue) throws InvalidParameterException
   {
     if (aValue == null)
-      throw new InvalidParameterException (aTarget, sValueName, null);
+      throw new InvalidParameterException ("Value is missing", aTarget, sValueName, null);
   }
 
   public static String toString (final String sKey, final String sValue)

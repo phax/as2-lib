@@ -35,6 +35,9 @@ package com.helger.as2lib.params;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.phloc.commons.string.StringHelper;
 
@@ -52,7 +55,7 @@ public abstract class AbstractParameterParser
    *        string to parse
    * @throws InvalidParameterException
    */
-  public void setParameters (final String sEncodedParams) throws InvalidParameterException
+  public void setParameters (@Nonnull final String sEncodedParams) throws InvalidParameterException
   {
     final StringTokenizer aParams = new StringTokenizer (sEncodedParams, "=,", false);
     while (aParams.hasMoreTokens ())
@@ -78,7 +81,9 @@ public abstract class AbstractParameterParser
    *        string to parse, like <code>"NORINCO-WALMART.application/X12"</code>
    * @throws OpenAS2Exception
    */
-  public void setParameters (final String sFormat, final String sDelimiters, final String sValue) throws OpenAS2Exception
+  public void setParameters (@Nullable final String sFormat,
+                             @Nullable final String sDelimiters,
+                             @Nonnull final String sValue) throws OpenAS2Exception
   {
     final List <String> aKeys = StringHelper.getExploded (',', sFormat);
 
@@ -103,7 +108,7 @@ public abstract class AbstractParameterParser
    * @return the filled in format
    * @throws InvalidParameterException
    */
-  public static String parse (final String sFormat, final AbstractParameterParser aParser) throws InvalidParameterException
+  public static String parse (@Nonnull final String sFormat, @Nonnull final AbstractParameterParser aParser) throws InvalidParameterException
   {
     return aParser.format (sFormat);
   }
@@ -116,7 +121,8 @@ public abstract class AbstractParameterParser
    * @return the filled in format string.
    * @throws InvalidParameterException
    */
-  public String format (final String sFormat) throws InvalidParameterException
+  @Nonnull
+  public String format (@Nonnull final String sFormat) throws InvalidParameterException
   {
     final StringBuilder aResult = new StringBuilder ();
     for (int nNext = 0; nNext < sFormat.length (); ++nNext)

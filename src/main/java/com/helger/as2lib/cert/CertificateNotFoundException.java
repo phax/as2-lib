@@ -40,8 +40,8 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class CertificateNotFoundException extends OpenAS2Exception
 {
-  private String m_aAlias;
   private String m_sPartnershipType;
+  private final String m_aAlias;
 
   public CertificateNotFoundException (final String sPartnershipType, final String sAlias)
   {
@@ -53,20 +53,16 @@ public class CertificateNotFoundException extends OpenAS2Exception
   public CertificateNotFoundException (@Nonnull final X509Certificate aCert)
   {
     super ("Certificate not in store: " + aCert.toString ());
-  }
-
-  public String getAlias ()
-  {
-    return m_aAlias;
-  }
-
-  public void setPartnershipType (final String sPartnershipFactory)
-  {
-    m_sPartnershipType = sPartnershipFactory;
+    m_aAlias = null;
   }
 
   public String getPartnershipType ()
   {
     return m_sPartnershipType;
+  }
+
+  public String getAlias ()
+  {
+    return m_aAlias;
   }
 }
