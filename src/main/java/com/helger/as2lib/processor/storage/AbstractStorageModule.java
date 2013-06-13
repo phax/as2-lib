@@ -56,14 +56,17 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   public static final String PARAM_PROTOCOL = "protocol";
   public static final String PARAM_TEMPDIR = "tempdir";
 
-  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            final Map <String, Object> aOptions)
   {
     if (!sAction.equals (getModuleAction ()))
       return false;
 
     final String sModProtocol = getParameterNotRequired (PARAM_PROTOCOL);
-    final String sMsgProtocol = aMsg.getProtocol ();
-    return sModProtocol != null && sMsgProtocol != null && sMsgProtocol.equals (sModProtocol);
+    if (sModProtocol == null)
+      return false;
+    return sModProtocol.equals (aMsg.getProtocol ());
   }
 
   @Override

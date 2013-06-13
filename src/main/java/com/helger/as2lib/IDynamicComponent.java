@@ -82,9 +82,9 @@ public interface IDynamicComponent
    * required parameter checking and code to start timers and threads within
    * this method.
    * 
-   * @param session
+   * @param aSession
    *        the component uses this object to access other components
-   * @param parameters
+   * @param aParameters
    *        configuration values for the component
    * @throws OpenAS2Exception
    *         If an error occurs while initializing the component
@@ -92,5 +92,5 @@ public interface IDynamicComponent
    *         If a required parameter is null in the parameters Map
    * @see ISession
    */
-  void initDynamicComponent (ISession session, Map <String, String> parameters) throws OpenAS2Exception;
+  void initDynamicComponent (ISession aSession, Map <String, String> aParameters) throws OpenAS2Exception;
 }

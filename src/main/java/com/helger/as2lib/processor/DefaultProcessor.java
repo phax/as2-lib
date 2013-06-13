@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
@@ -50,7 +51,7 @@ public class DefaultProcessor extends AbstractProcessor
 {
   private List <IProcessorModule> m_aModules;
 
-  public void setModules (final List <IProcessorModule> aModules)
+  public void setModules (@Nullable final List <IProcessorModule> aModules)
   {
     m_aModules = aModules;
   }
@@ -106,7 +107,6 @@ public class DefaultProcessor extends AbstractProcessor
   public void startActiveModules ()
   {
     for (final IProcessorActiveModule aModule : getActiveModules ())
-    {
       try
       {
         aModule.start ();
@@ -115,13 +115,11 @@ public class DefaultProcessor extends AbstractProcessor
       {
         ex.terminate ();
       }
-    }
   }
 
   public void stopActiveModules ()
   {
     for (final IProcessorActiveModule aModule : getActiveModules ())
-    {
       try
       {
         aModule.stop ();
@@ -130,6 +128,5 @@ public class DefaultProcessor extends AbstractProcessor
       {
         ex.terminate ();
       }
-    }
   }
 }

@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
@@ -62,22 +63,23 @@ public class BaseComponent implements IDynamicComponent
     setParameter (sKey, Integer.toString (nValue));
   }
 
-  public String getParameterNotRequired (final String sKey)
+  @Nullable
+  public String getParameterNotRequired (@Nullable final String sKey)
   {
     return getParameters ().get (sKey);
   }
 
-  public String getParameter (final String sKey, final String sDefaultValue)
+  public String getParameter (@Nullable final String sKey, final String sDefaultValue)
   {
     final String value = getParameterNotRequired (sKey);
     return value == null ? sDefaultValue : value;
   }
 
-  public String getParameterRequired (final String sKey) throws InvalidParameterException
+  public String getParameterRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
     final String sValue = getParameterNotRequired (sKey);
     if (sValue == null)
-      throw new InvalidParameterException (this, sKey, null);
+      throw new InvalidParameterException ("Parameter not found", this, sKey, null);
     return sValue;
   }
 
