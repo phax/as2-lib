@@ -37,19 +37,17 @@ import com.helger.as2lib.util.DateUtil;
 public class DateParameters extends AbstractParameterParser
 {
   @Override
-  public void setParameter (final String key, final String value) throws InvalidParameterException
+  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
-    throw new InvalidParameterException ("Set not supported", this, key, value);
+    throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
 
   @Override
-  public String getParameter (final String key) throws InvalidParameterException
+  public String getParameter (final String sKey) throws InvalidParameterException
   {
-    if (key == null)
-    {
-      throw new InvalidParameterException ("Invalid key", this, key, null);
-    }
+    if (sKey == null)
+      throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
-    return DateUtil.formatDate (key);
+    return DateUtil.formatDate (sKey);
   }
 }

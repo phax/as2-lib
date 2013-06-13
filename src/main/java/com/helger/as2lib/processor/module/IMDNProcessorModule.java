@@ -40,7 +40,7 @@ import com.helger.as2lib.message.IMessageMDN;
 
 public interface IMDNProcessorModule extends IDynamicComponent
 {
-  boolean canHandle (String action, IMessageMDN msg, Map <String, Object> options);
+  boolean canHandle (String sAction, IMessageMDN aMsg, Map <String, Object> aOptions);
 
-  void handle (String action, IMessageMDN msg, Map <String, Object> options) throws OpenAS2Exception;
+  void handle (String sAction, IMessageMDN aMsg, Map <String, Object> aOptions) throws OpenAS2Exception;
 }

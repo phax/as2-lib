@@ -39,21 +39,16 @@ import com.helger.as2lib.message.IMessage;
 
 public class NoModuleException extends OpenAS2Exception
 {
-  private Map <String, Object> m_aOptions;
-  private IMessage m_aMsg;
-  private String m_sAction;
+  private final Map <String, Object> m_aOptions;
+  private final IMessage m_aMsg;
+  private final String m_sAction;
 
-  public NoModuleException (final String action, final IMessage msg, final Map <String, Object> options)
+  public NoModuleException (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    super (toString (action, msg, options));
-    m_sAction = action;
-    m_aMsg = msg;
-    m_aOptions = options;
-  }
-
-  public void setAction (final String string)
-  {
-    m_sAction = string;
+    super (toString (sAction, aMsg, aOptions));
+    m_sAction = sAction;
+    m_aMsg = aMsg;
+    m_aOptions = aOptions;
   }
 
   public String getAction ()
@@ -61,19 +56,9 @@ public class NoModuleException extends OpenAS2Exception
     return m_sAction;
   }
 
-  public void setMsg (final IMessage message)
-  {
-    m_aMsg = message;
-  }
-
   public IMessage getMsg ()
   {
     return m_aMsg;
-  }
-
-  public void setOptions (final Map <String, Object> map)
-  {
-    m_aOptions = map;
   }
 
   public Map <String, Object> getOptions ()
@@ -87,8 +72,8 @@ public class NoModuleException extends OpenAS2Exception
     return toString (getAction (), getMsg (), getOptions ());
   }
 
-  protected static String toString (final String action, final IMessage msg, final Map <String, Object> options)
+  protected static String toString (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    return "NoModuleException: Requested action: " + action + " Message: " + msg + " Options: " + options;
+    return "NoModuleException: Requested action: " + sAction + " Message: " + aMsg + " Options: " + aOptions;
   }
 }

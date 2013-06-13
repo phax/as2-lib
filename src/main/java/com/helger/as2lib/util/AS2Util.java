@@ -37,6 +37,7 @@ import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
@@ -56,13 +57,18 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CAS2Partnership;
 import com.helger.as2lib.partner.CASXPartnership;
 import com.helger.as2lib.partner.Partnership;
+import com.phloc.commons.mime.CMimeType;
 
-public class AS2Util
+@Immutable
+public final class AS2Util
 {
   private static final class SingletonHolder
   {
     static final BCCryptoHelper s_aInstance = new BCCryptoHelper ();
   }
+
+  private AS2Util ()
+  {}
 
   @Nonnull
   public static ICryptoHelper getCryptoHelper ()
@@ -70,190 +76,182 @@ public class AS2Util
     return SingletonHolder.s_aInstance;
   }
 
-  public static IMessageMDN createMDN (final ISession session,
-                                       final AS2Message msg,
-                                       final DispositionType disposition,
-                                       final String text) throws Exception
+  public static IMessageMDN createMDN (final ISession aSession,
+                                       @Nonnull final AS2Message aMsg,
+                                       final DispositionType aDisposition,
+                                       final String sText) throws Exception
   {
-    final AS2MessageMDN mdn = new AS2MessageMDN (msg);
-    mdn.setHeader (CAS2Header.AS2_VERSION, "1.1");
+    final AS2MessageMDN aMdn = new AS2MessageMDN (aMsg);
+    aMdn.setHeader (CAS2Header.AS2_VERSION, "1.1");
     // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
-    mdn.setHeader ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
-    mdn.setHeader ("Server", CInfo.NAME_VERSION);
-    mdn.setHeader ("Mime-Version", "1.0");
-    mdn.setHeader (CAS2Header.AS2_TO, msg.getPartnership ().getSenderID (CAS2Partnership.PID_AS2));
-    mdn.setHeader (CAS2Header.AS2_FROM, msg.getPartnership ().getReceiverID (CAS2Partnership.PID_AS2));
+    aMdn.setHeader ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aMdn.setHeader ("Server", CInfo.NAME_VERSION);
+    aMdn.setHeader ("Mime-Version", "1.0");
+    aMdn.setHeader (CAS2Header.AS2_TO, aMsg.getPartnership ().getSenderID (CAS2Partnership.PID_AS2));
+    aMdn.setHeader (CAS2Header.AS2_FROM, aMsg.getPartnership ().getReceiverID (CAS2Partnership.PID_AS2));
 
     // get the MDN partnership info
-    mdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_FROM));
-    mdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_TO));
-    session.getPartnershipFactory ().updatePartnership (mdn, true);
+    aMdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
+    aMdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+    aSession.getPartnershipFactory ().updatePartnership (aMdn, true);
 
-    mdn.setHeader ("From", msg.getPartnership ().getReceiverID (Partnership.PID_EMAIL));
-    final String subject = mdn.getPartnership ().getAttribute (CASXPartnership.PA_MDN_SUBJECT);
-
-    if (subject != null)
+    aMdn.setHeader ("From", aMsg.getPartnership ().getReceiverID (Partnership.PID_EMAIL));
+    final String sSubject = aMdn.getPartnership ().getAttribute (CASXPartnership.PA_MDN_SUBJECT);
+    if (sSubject != null)
     {
-      mdn.setHeader ("Subject", AbstractParameterParser.parse (subject, new MessageParameters (msg)));
+      aMdn.setHeader ("Subject", AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
     }
     else
     {
-      mdn.setHeader ("Subject", "Your Requested MDN Response");
+      aMdn.setHeader ("Subject", "Your Requested MDN Response");
     }
-    mdn.setText (AbstractParameterParser.parse (text, new MessageParameters (msg)));
-    mdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
-                      CInfo.NAME_VERSION +
-                          "@" +
-                          msg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
-                          ":" +
-                          msg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
-    mdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + msg.getHeader (CAS2Header.AS2_TO));
-    mdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                      "rfc822; " + msg.getPartnership ().getReceiverID (CAS2Partnership.PID_AS2));
-    mdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, msg.getHeader ("Message-ID"));
-    mdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, disposition.toString ());
+    aMdn.setText (AbstractParameterParser.parse (sText, new MessageParameters (aMsg)));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
+                       CInfo.NAME_VERSION +
+                           "@" +
+                           aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
+                           ":" +
+                           aMsg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.AS2_TO));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
+                       "rfc822; " + aMsg.getPartnership ().getReceiverID (CAS2Partnership.PID_AS2));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader ("Message-ID"));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.toString ());
 
-    final DispositionOptions dispOptions = new DispositionOptions (msg.getHeader ("Disposition-Notification-Options"));
-    String mic = null;
-
-    if (dispOptions.getMicalg () != null)
+    final DispositionOptions aDispOptions = new DispositionOptions (aMsg.getHeader ("Disposition-Notification-Options"));
+    String sMIC = null;
+    if (aDispOptions.getMICAlg () != null)
     {
-      mic = getCryptoHelper ().calculateMIC (msg.getData (),
-                                             dispOptions.getMicalg (),
-                                             msg.getHistory ().getItemCount () > 1);
+      sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
+                                              aDispOptions.getMICAlg (),
+                                              aMsg.getHistory ().getItemCount () > 1);
     }
 
-    mdn.setAttribute (AS2MessageMDN.MDNA_MIC, mic);
-    createMDNData (session, mdn, dispOptions.getMicalg (), dispOptions.getProtocol ());
+    aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
+    createMDNData (aSession, aMdn, aDispOptions.getMICAlg (), aDispOptions.getProtocol ());
 
-    mdn.updateMessageID ();
+    aMdn.updateMessageID ();
 
     // store MDN into msg in case AsynchMDN is sent fails, needs to be resent by
     // send module
-    msg.setMDN (mdn);
+    aMsg.setMDN (aMdn);
 
-    return mdn;
+    return aMdn;
   }
 
-  public static void createMDNData (final ISession session,
-                                    final IMessageMDN mdn,
-                                    final String micAlg,
-                                    final String signatureProtocol) throws Exception
+  public static void createMDNData (final ISession aSession,
+                                    final IMessageMDN aMdn,
+                                    final String sMicAlg,
+                                    final String sSignatureProtocol) throws Exception
   {
     // Create the report and sub-body parts
-    final MimeMultipart reportParts = new MimeMultipart ();
+    final MimeMultipart aReportParts = new MimeMultipart ();
 
     // Create the text part
-    final MimeBodyPart textPart = new MimeBodyPart ();
-    final String text = mdn.getText () + "\r\n";
-    textPart.setContent (text, "text/plain");
-    textPart.setHeader ("Content-Type", "text/plain");
-    reportParts.addBodyPart (textPart);
+    final MimeBodyPart aTextPart = new MimeBodyPart ();
+    final String sText = aMdn.getText () + "\r\n";
+    aTextPart.setContent (sText, CMimeType.TEXT_PLAIN.getAsString ());
+    aTextPart.setHeader ("Content-Type", CMimeType.TEXT_PLAIN.getAsString ());
+    aReportParts.addBodyPart (aTextPart);
 
     // Create the report part
-    final MimeBodyPart reportPart = new MimeBodyPart ();
-    final InternetHeaders reportValues = new InternetHeaders ();
-    reportValues.setHeader ("Reporting-UA", mdn.getAttribute (AS2MessageMDN.MDNA_REPORTING_UA));
-    reportValues.setHeader ("Original-Recipient", mdn.getAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
-    reportValues.setHeader ("Final-Recipient", mdn.getAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
-    reportValues.setHeader ("Original-Message-ID", mdn.getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
-    reportValues.setHeader ("Disposition", mdn.getAttribute (AS2MessageMDN.MDNA_DISPOSITION));
-    reportValues.setHeader ("Received-Content-MIC", mdn.getAttribute (AS2MessageMDN.MDNA_MIC));
+    final MimeBodyPart aReportPart = new MimeBodyPart ();
+    final InternetHeaders aReportValues = new InternetHeaders ();
+    aReportValues.setHeader ("Reporting-UA", aMdn.getAttribute (AS2MessageMDN.MDNA_REPORTING_UA));
+    aReportValues.setHeader ("Original-Recipient", aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
+    aReportValues.setHeader ("Final-Recipient", aMdn.getAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
+    aReportValues.setHeader ("Original-Message-ID", aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
+    aReportValues.setHeader ("Disposition", aMdn.getAttribute (AS2MessageMDN.MDNA_DISPOSITION));
+    aReportValues.setHeader ("Received-Content-MIC", aMdn.getAttribute (AS2MessageMDN.MDNA_MIC));
 
-    final Enumeration <?> reportEn = reportValues.getAllHeaderLines ();
-    final StringBuilder reportData = new StringBuilder ();
-
-    while (reportEn.hasMoreElements ())
+    final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
+    final StringBuilder aReportData = new StringBuilder ();
+    while (aReportEn.hasMoreElements ())
     {
-      reportData.append ((String) reportEn.nextElement ()).append ("\r\n");
+      aReportData.append ((String) aReportEn.nextElement ()).append ("\r\n");
     }
+    aReportData.append ("\r\n");
 
-    reportData.append ("\r\n");
-
-    final String reportText = reportData.toString ();
-    reportPart.setContent (reportText, "message/disposition-notification");
-    reportPart.setHeader ("Content-Type", "message/disposition-notification");
-    reportParts.addBodyPart (reportPart);
+    final String sReportText = aReportData.toString ();
+    aReportPart.setContent (sReportText, "message/disposition-notification");
+    aReportPart.setHeader ("Content-Type", "message/disposition-notification");
+    aReportParts.addBodyPart (aReportPart);
 
     // Convert report parts to MimeBodyPart
-    final MimeBodyPart report = new MimeBodyPart ();
-    reportParts.setSubType ("report; report-type=disposition-notification");
-    report.setContent (reportParts);
-    report.setHeader ("Content-Type", reportParts.getContentType ());
+    final MimeBodyPart aReport = new MimeBodyPart ();
+    aReportParts.setSubType ("report; report-type=disposition-notification");
+    aReport.setContent (aReportParts);
+    aReport.setHeader ("Content-Type", aReportParts.getContentType ());
 
     // Sign the data if needed
-    if (signatureProtocol != null)
+    if (sSignatureProtocol != null)
     {
-      final ICertificateFactory certFx = session.getCertificateFactory ();
-
+      final ICertificateFactory aCertFactory = aSession.getCertificateFactory ();
       try
       {
-        final X509Certificate senderCert = certFx.getCertificate (mdn, Partnership.PTYPE_SENDER);
-        final PrivateKey senderKey = certFx.getPrivateKey (mdn, senderCert);
-        final MimeBodyPart signedReport = getCryptoHelper ().sign (report, senderCert, senderKey, micAlg);
-        mdn.setData (signedReport);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PTYPE_SENDER);
+        final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMdn, aSenderCert);
+        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport, aSenderCert, aSenderKey, sMicAlg);
+        aMdn.setData (aSignedReport);
       }
-      catch (final CertificateNotFoundException cnfe)
+      catch (final CertificateNotFoundException ex)
       {
-        cnfe.terminate ();
-        mdn.setData (report);
+        ex.terminate ();
+        aMdn.setData (aReport);
       }
-      catch (final KeyNotFoundException knfe)
+      catch (final KeyNotFoundException ex)
       {
-        knfe.terminate ();
-        mdn.setData (report);
+        ex.terminate ();
+        aMdn.setData (aReport);
       }
     }
     else
     {
-      mdn.setData (report);
+      aMdn.setData (aReport);
     }
 
     // Update the MDN headers with content information
-    final MimeBodyPart data = mdn.getData ();
-    mdn.setHeader ("Content-Type", data.getContentType ());
+    final MimeBodyPart aData = aMdn.getData ();
+    aMdn.setHeader ("Content-Type", aData.getContentType ());
 
     // int size = getSize(data);
     // mdn.setHeader("Content-Length", Integer.toString(size));
   }
 
-  public static void parseMDN (final IMessage msg, final X509Certificate receiver) throws Exception
+  public static void parseMDN (final IMessage aMsg, final X509Certificate aReceiver) throws Exception
   {
-    final IMessageMDN mdn = msg.getMDN ();
-    MimeBodyPart mainPart = mdn.getData ();
-    final ICryptoHelper ch = getCryptoHelper ();
+    final IMessageMDN aMdn = aMsg.getMDN ();
+    MimeBodyPart aMainPart = aMdn.getData ();
+    final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
-    if (ch.isSigned (mainPart))
+    if (aCryptoHelper.isSigned (aMainPart))
     {
-      mainPart = ch.verify (mainPart, receiver);
+      aMainPart = aCryptoHelper.verify (aMainPart, aReceiver);
     }
 
-    final MimeMultipart reportParts = new MimeMultipart (mainPart.getDataHandler ().getDataSource ());
-    final ContentType reportType = new ContentType (reportParts.getContentType ());
+    final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
+    final ContentType aReportType = new ContentType (aReportParts.getContentType ());
 
-    if (reportType.getBaseType ().equalsIgnoreCase ("multipart/report"))
+    if (aReportType.getBaseType ().equalsIgnoreCase ("multipart/report"))
     {
-      final int reportCount = reportParts.getCount ();
-      MimeBodyPart reportPart;
-
-      for (int j = 0; j < reportCount; j++)
+      final int nReportCount = aReportParts.getCount ();
+      for (int j = 0; j < nReportCount; j++)
       {
-        reportPart = (MimeBodyPart) reportParts.getBodyPart (j);
-
-        if (reportPart.isMimeType ("text/plain"))
+        final MimeBodyPart aReportPart = (MimeBodyPart) aReportParts.getBodyPart (j);
+        if (aReportPart.isMimeType (CMimeType.TEXT_PLAIN.getAsString ()))
         {
-          mdn.setText (reportPart.getContent ().toString ());
+          aMdn.setText (aReportPart.getContent ().toString ());
         }
         else
-          if (reportPart.isMimeType ("message/disposition-notification"))
+          if (aReportPart.isMimeType ("message/disposition-notification"))
           {
-            final InternetHeaders disposition = new InternetHeaders (reportPart.getInputStream ());
-            mdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, disposition.getHeader ("Reporting-UA", ", "));
-            mdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, disposition.getHeader ("Original-Recipient", ", "));
-            mdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, disposition.getHeader ("Final-Recipient", ", "));
-            mdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, disposition.getHeader ("Original-Message-ID", ", "));
-            mdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, disposition.getHeader ("Disposition", ", "));
-            mdn.setAttribute (AS2MessageMDN.MDNA_MIC, disposition.getHeader ("Received-Content-MIC", ", "));
+            final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
+            aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader ("Reporting-UA", ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader ("Original-Recipient", ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader ("Final-Recipient", ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader ("Original-Message-ID", ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader ("Disposition", ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader ("Received-Content-MIC", ", "));
           }
       }
     }

@@ -39,18 +39,15 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public class NetException extends OpenAS2Exception
 {
   public NetException ()
+  {}
+
+  public NetException (final String sMsg)
   {
-    super ();
+    super (sMsg);
   }
 
-  public NetException (final String msg)
+  public NetException (final InetAddress aAddress, final int nPort, final Throwable aCause)
   {
-    super (msg);
-  }
-
-  public NetException (final InetAddress address, final int port, final Throwable cause)
-  {
-    super ("Address = " + address + " port = " + Integer.toString (port));
-    initCause (cause);
+    super ("Address = " + aAddress + " port = " + Integer.toString (nPort), aCause);
   }
 }

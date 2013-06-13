@@ -32,6 +32,8 @@
  */
 package com.helger.as2lib.processor.receiver;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CAS2Partnership;
@@ -84,9 +86,9 @@ public class AS2ReceiverModule extends AbstractNetModule
                                             "There is no guarantee however that the EDI Interchange was syntactically correct, or was received by the EDI application/translator.";
 
   @Override
+  @Nonnull
   protected INetModuleHandler getHandler ()
   {
     return new AS2ReceiverHandler (this);
   }
-
 }

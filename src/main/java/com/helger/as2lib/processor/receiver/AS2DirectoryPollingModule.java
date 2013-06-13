@@ -32,12 +32,15 @@
  */
 package com.helger.as2lib.processor.receiver;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 
 public class AS2DirectoryPollingModule extends AbstractDirectoryPollingModule
 {
   @Override
+  @Nonnull
   protected IMessage createMessage ()
   {
     return new AS2Message ();

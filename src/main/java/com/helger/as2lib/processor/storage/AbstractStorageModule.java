@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
+
 import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
@@ -53,26 +56,20 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   public static final String PARAM_PROTOCOL = "protocol";
   public static final String PARAM_TEMPDIR = "tempdir";
 
-  public boolean canHandle (final String action, final IMessage msg, final Map <String, Object> options)
+  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    if (!action.equals (getModuleAction ()))
+    if (!sAction.equals (getModuleAction ()))
       return false;
 
-    final String modProtocol = getParameterNotRequired (PARAM_PROTOCOL);
-    final String msgProtocol = msg.getProtocol ();
-    if (modProtocol != null)
-    {
-      if (msgProtocol != null && msgProtocol.equals (modProtocol))
-        return true;
-      return false;
-    }
-    return true;
+    final String sModProtocol = getParameterNotRequired (PARAM_PROTOCOL);
+    final String sMsgProtocol = aMsg.getProtocol ();
+    return sModProtocol != null && sMsgProtocol != null && sMsgProtocol.equals (sModProtocol);
   }
 
   @Override
-  public void initDynamicComponent (final ISession session, final Map <String, String> options) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
   {
-    super.initDynamicComponent (session, options);
+    super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_FILENAME);
   }
 
@@ -80,51 +77,51 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   /**
    * @since 2007-06-01
-   * @param msg
-   * @param fileParam
-   * @param action
+   * @param aMsg
+   * @param sFileParam
+   * @param sAction
    * @return File
    * @throws IOException
    * @throws OpenAS2Exception
    */
-  protected File getFile (final IMessage msg, final String fileParam, final String action) throws IOException,
-                                                                                          OpenAS2Exception
+  protected File getFile (final IMessage aMsg, final String sFileParam, final String sAction) throws IOException,
+                                                                                             OpenAS2Exception
   {
-    final String filename = getFilename (msg, fileParam, action);
+    final String sFilename = getFilename (aMsg, sFileParam, sAction);
 
     // make sure the parent directories exist
-    final File file = new File (filename);
-    final File parentDir = file.getParentFile ();
-    parentDir.mkdirs ();
+    final File aFile = new File (sFilename);
+    final File aParentDir = aFile.getParentFile ();
+    aParentDir.mkdirs ();
     // don't overwrite existing files
-    return IOUtil.getUnique (parentDir, FilenameHelper.getAsSecureValidFilename (file.getName ()));
+    return IOUtil.getUniqueFile (aParentDir, FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
-  protected abstract String getFilename (IMessage msg, String fileParam, String action) throws InvalidParameterException;
+  protected abstract String getFilename (IMessage aMsg, String sFileParam, String sAction) throws InvalidParameterException;
 
-  protected void store (final File msgFile, final InputStream in) throws IOException
+  protected void store (final File aMsgFile, final InputStream aIS) throws IOException
   {
-    final String tempDirname = getParameterNotRequired (PARAM_TEMPDIR);
-    if (tempDirname != null)
+    final String sTempDirname = getParameterNotRequired (PARAM_TEMPDIR);
+    if (sTempDirname != null)
     {
       // write the data to a temporary directory first
-      final File tempDir = IOUtil.getDirectoryFile (tempDirname);
-      final String tempFilename = msgFile.getName ();
-      final File tempFile = IOUtil.getUnique (tempDir, tempFilename);
-      writeStream (in, tempFile);
+      final File aTempDir = IOUtil.getDirectoryFile (sTempDirname);
+      final String sTempFilename = aMsgFile.getName ();
+      final File aTempFile = IOUtil.getUniqueFile (aTempDir, sTempFilename);
+      writeStream (aIS, aTempFile);
 
       // copy the temp file over to the destination
-      tempFile.renameTo (msgFile);
+      aTempFile.renameTo (aMsgFile);
     }
     else
     {
-      writeStream (in, msgFile);
+      writeStream (aIS, aMsgFile);
     }
   }
 
-  protected void writeStream (final InputStream in, final File destination) throws IOException
+  protected void writeStream (@Nonnull @WillClose final InputStream aIS, final File aDestination) throws IOException
   {
-    final FileOutputStream out = new FileOutputStream (destination);
-    StreamUtils.copyInputStreamToOutputStreamAndCloseOS (in, out);
+    final FileOutputStream aOS = new FileOutputStream (aDestination);
+    StreamUtils.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS);
   }
 }

@@ -37,12 +37,10 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public class UnsupportedException extends OpenAS2Exception
 {
   public UnsupportedException ()
-  {
-    super ();
-  }
+  {}
 
-  public UnsupportedException (final String msg)
+  public UnsupportedException (final String sMsg)
   {
-    super (msg);
+    super (sMsg);
   }
 }

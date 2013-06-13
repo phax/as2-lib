@@ -32,12 +32,10 @@
  */
 package com.helger.as2lib.processor.storage;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -49,27 +47,25 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageMDNParameters;
+import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 
 public class MDNFileModule extends AbstractStorageModule
 {
-
-  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     // store mdn data
-    if (msg.getMDN () == null)
-    {
+    if (aMsg.getMDN () == null)
       throw new OpenAS2Exception ("Message has no MDN");
-    }
 
     try
     {
-      final File mdnFile = getFile (msg, getParameterRequired (PARAM_FILENAME), "");
-      final InputStream in = getMDNStream (msg.getMDN ());
-      store (mdnFile, in);
+      final File aMdnFile = getFile (aMsg, getParameterRequired (PARAM_FILENAME), "");
+      final InputStream aIS = getMDNStream (aMsg.getMDN ());
+      store (aMdnFile, aIS);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedException (ex);
     }
   }
 
@@ -80,49 +76,39 @@ public class MDNFileModule extends AbstractStorageModule
   }
 
   @Override
-  protected String getFilename (final IMessage msg, final String fileParam, final String action) throws InvalidParameterException
+  protected String getFilename (final IMessage aMsg, final String sFileParam, final String sAction) throws InvalidParameterException
   {
-    final IMessageMDN mdn = msg.getMDN ();
-    final CompositeParameters compParams = new CompositeParameters (false).add ("date", new DateParameters ())
-                                                                          .add ("mdn", new MessageMDNParameters (mdn));
-
-    return AbstractParameterParser.parse (fileParam, compParams);
+    final IMessageMDN aMdn = aMsg.getMDN ();
+    final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
+                                                                           .add ("mdn", new MessageMDNParameters (aMdn));
+    return AbstractParameterParser.parse (sFileParam, aCompParams);
   }
 
-  protected InputStream getMDNStream (final IMessageMDN mdn)
+  protected InputStream getMDNStream (final IMessageMDN aMdn)
   {
-    final StringBuilder mdnBuf = new StringBuilder ();
+    final StringBuilder aMdnBuf = new StringBuilder ();
 
     // write headers to the string buffer
-    mdnBuf.append ("Headers:\r\n");
+    aMdnBuf.append ("Headers:\r\n");
 
-    final Enumeration <?> headers = mdn.getHeaders ().getAllHeaderLines ();
-    String header;
-
-    while (headers.hasMoreElements ())
+    final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
+    while (aHeaders.hasMoreElements ())
     {
-      header = (String) headers.nextElement ();
-      mdnBuf.append (header).append ("\r\n");
+      final String sHeader = (String) aHeaders.nextElement ();
+      aMdnBuf.append (sHeader).append ("\r\n");
     }
 
-    mdnBuf.append ("\r\n");
+    aMdnBuf.append ("\r\n");
 
     // write attributes to the string buffer
-    mdnBuf.append ("Attributes:\r\n");
-
-    final Iterator <Map.Entry <String, String>> attrIt = mdn.getAttributes ().entrySet ().iterator ();
-    Map.Entry <String, String> attrEntry;
-
-    while (attrIt.hasNext ())
+    aMdnBuf.append ("Attributes:\r\n");
+    for (final Map.Entry <String, String> attrEntry : aMdn.getAttributes ().entrySet ())
     {
-      attrEntry = attrIt.next ();
-      mdnBuf.append (attrEntry.getKey ()).append (": ");
-      mdnBuf.append (attrEntry.getValue ()).append ("\r\n");
+      aMdnBuf.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
     }
-    // finaly, write the MDN text
-    mdnBuf.append ("Text:\r\n");
-    mdnBuf.append (mdn.getText ());
+    // finally, write the MDN text
+    aMdnBuf.append ("Text:\r\n").append (aMdn.getText ());
 
-    return new ByteArrayInputStream (mdnBuf.toString ().getBytes ());
+    return new NonBlockingByteArrayInputStream (aMdnBuf.toString ().getBytes ());
   }
 }

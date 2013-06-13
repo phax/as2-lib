@@ -36,5 +36,5 @@ import com.helger.as2lib.processor.module.AbstractActiveModule;
 
 public abstract class AbstractReceiverModule extends AbstractActiveModule implements IProcessorReceiverModule
 {
-
+  /* empty */
 }

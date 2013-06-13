@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib.partner;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class CCustomIDPartnership
 {
   // set this to override the date format used when generating message IDs

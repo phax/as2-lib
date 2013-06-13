@@ -36,34 +36,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class CompositeParameters extends AbstractParameterParser
 {
   private Map <String, AbstractParameterParser> m_aParameterParsers;
   private boolean m_bIgnoreMissingParsers;
 
-  public CompositeParameters (final boolean ignoreMissingParsers)
+  public CompositeParameters (final boolean bIgnoreMissingParsers)
   {
     super ();
-    m_bIgnoreMissingParsers = ignoreMissingParsers;
+    m_bIgnoreMissingParsers = bIgnoreMissingParsers;
   }
 
-  public CompositeParameters (final boolean ignoreMissingParsers,
-                              final Map <String, AbstractParameterParser> parameterParsers)
+  public CompositeParameters (final boolean bIgnoreMissingParsers,
+                              final Map <String, AbstractParameterParser> aParameterParsers)
   {
     super ();
-    m_bIgnoreMissingParsers = ignoreMissingParsers;
-    getParameterParsers ().putAll (parameterParsers);
+    m_bIgnoreMissingParsers = bIgnoreMissingParsers;
+    getParameterParsers ().putAll (aParameterParsers);
   }
 
-  public CompositeParameters add (final String key, final AbstractParameterParser param)
+  public CompositeParameters add (final String sKey, final AbstractParameterParser aParam)
   {
-    getParameterParsers ().put (key, param);
+    getParameterParsers ().put (sKey, aParam);
     return this;
   }
 
-  public void setIgnoreMissingParsers (final boolean ignoreMissingParsers)
+  public void setIgnoreMissingParsers (final boolean bIgnoreMissingParsers)
   {
-    m_bIgnoreMissingParsers = ignoreMissingParsers;
+    m_bIgnoreMissingParsers = bIgnoreMissingParsers;
   }
 
   public boolean getIgnoreMissingParsers ()
@@ -72,71 +75,63 @@ public class CompositeParameters extends AbstractParameterParser
   }
 
   @Override
-  public void setParameter (final String key, final String value) throws InvalidParameterException
+  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
-    final StringTokenizer keyParts = new StringTokenizer (key, ".", false);
+    final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
-    final AbstractParameterParser parser = getParameterParsers ().get (keyParts.nextToken ());
-    if (parser != null)
+    final AbstractParameterParser aParser = getParameterParsers ().get (aKeyParts.nextToken ());
+    if (aParser != null)
     {
-      if (!keyParts.hasMoreTokens ())
+      if (!aKeyParts.hasMoreTokens ())
+        throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+
+      final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
+      while (aKeyParts.hasMoreTokens ())
       {
-        throw new InvalidParameterException ("Invalid key format", this, key, null);
+        aKeyBuf.append (".");
+        aKeyBuf.append (aKeyParts.nextToken ());
       }
-
-      final StringBuilder keyBuf = new StringBuilder (keyParts.nextToken ());
-
-      while (keyParts.hasMoreTokens ())
-      {
-        keyBuf.append (".");
-        keyBuf.append (keyParts.nextToken ());
-      }
-
-      parser.setParameter (keyBuf.toString (), value);
+      aParser.setParameter (aKeyBuf.toString (), sValue);
     }
     else
       if (!getIgnoreMissingParsers ())
       {
-        throw new InvalidParameterException ("Invalid area in key", this, key, value);
+        throw new InvalidParameterException ("Invalid area in key", this, sKey, sValue);
       }
   }
 
   @Override
-  public String getParameter (final String key) throws InvalidParameterException
+  public String getParameter (final String sKey) throws InvalidParameterException
   {
-    final StringTokenizer keyParts = new StringTokenizer (key, ".", false);
+    final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
-    final String parserID = keyParts.nextToken ();
-    final AbstractParameterParser parser = getParameterParsers ().get (parserID);
-
-    if (parser != null)
+    final String aParserID = aKeyParts.nextToken ();
+    final AbstractParameterParser aParser = getParameterParsers ().get (aParserID);
+    if (aParser != null)
     {
-      if (!keyParts.hasMoreTokens ())
+      if (!aKeyParts.hasMoreTokens ())
+        throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+
+      final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
+      while (aKeyParts.hasMoreTokens ())
       {
-        throw new InvalidParameterException ("Invalid key format", this, key, null);
+        aKeyBuf.append (".");
+        aKeyBuf.append (aKeyParts.nextToken ());
       }
-
-      final StringBuilder keyBuf = new StringBuilder (keyParts.nextToken ());
-
-      while (keyParts.hasMoreTokens ())
-      {
-        keyBuf.append (".");
-        keyBuf.append (keyParts.nextToken ());
-      }
-
-      return parser.getParameter (keyBuf.toString ());
+      return aParser.getParameter (aKeyBuf.toString ());
     }
     if (!getIgnoreMissingParsers ())
-      throw new InvalidParameterException ("Invalid area in key", this, key, null);
+      throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
 
     return "";
   }
 
-  public void setParameterParsers (final Map <String, AbstractParameterParser> parameterParsers)
+  public void setParameterParsers (@Nullable final Map <String, AbstractParameterParser> aParameterParsers)
   {
-    m_aParameterParsers = parameterParsers;
+    m_aParameterParsers = aParameterParsers;
   }
 
+  @Nonnull
   protected Map <String, AbstractParameterParser> getParameterParsers ()
   {
     if (m_aParameterParsers == null)

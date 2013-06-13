@@ -36,45 +36,46 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class DispositionType
 {
   private String m_sAction;
-  private String m_sMDNAction;
+  private String m_sMdnAction;
   private String m_sStatus;
   private String m_sStatusDescription;
   private String m_sStatusModifier;
 
-  public DispositionType (final String action,
-                          final String mdnAction,
-                          final String status,
-                          final String statusModifier,
-                          final String statusDescription)
+  public DispositionType (final String sAction,
+                          final String sMdnAction,
+                          final String sStatus,
+                          final String sStatusModifier,
+                          final String sStatusDescription)
   {
-    m_sAction = action;
-    m_sMDNAction = mdnAction;
-    m_sStatus = status;
-    m_sStatusModifier = statusModifier;
-    m_sStatusDescription = statusDescription;
+    m_sAction = sAction;
+    m_sMdnAction = sMdnAction;
+    m_sStatus = sStatus;
+    m_sStatusModifier = sStatusModifier;
+    m_sStatusDescription = sStatusDescription;
   }
 
-  public DispositionType (final String action, final String mdnAction, final String status)
+  public DispositionType (final String sAction, final String sMdnAction, final String sStatus)
   {
-    this (action, mdnAction, status, null, null);
+    this (sAction, sMdnAction, sStatus, null, null);
   }
 
-  public DispositionType (final String disposition) throws OpenAS2Exception
+  public DispositionType (@Nullable final String sDisposition) throws OpenAS2Exception
   {
-    if (disposition != null)
-    {
-      parseDisposition (disposition);
-    }
+    if (sDisposition != null)
+      parseDisposition (sDisposition);
   }
 
-  public void setAction (final String action)
+  public void setAction (final String sAction)
   {
-    m_sAction = action;
+    m_sAction = sAction;
   }
 
   public String getAction ()
@@ -82,19 +83,19 @@ public class DispositionType
     return m_sAction;
   }
 
-  public void setMdnAction (final String mdnAction)
+  public void setMdnAction (final String sMdnAction)
   {
-    m_sMDNAction = mdnAction;
+    m_sMdnAction = sMdnAction;
   }
 
   public String getMdnAction ()
   {
-    return m_sMDNAction;
+    return m_sMdnAction;
   }
 
-  public void setStatus (final String status)
+  public void setStatus (final String sStatus)
   {
-    m_sStatus = status;
+    m_sStatus = sStatus;
   }
 
   public String getStatus ()
@@ -102,9 +103,9 @@ public class DispositionType
     return m_sStatus;
   }
 
-  public void setStatusDescription (final String statusDescription)
+  public void setStatusDescription (final String sStatusDescription)
   {
-    m_sStatusDescription = statusDescription;
+    m_sStatusDescription = sStatusDescription;
   }
 
   public String getStatusDescription ()
@@ -112,9 +113,9 @@ public class DispositionType
     return m_sStatusDescription;
   }
 
-  public void setStatusModifier (final String statusModifier)
+  public void setStatusModifier (final String sStatusModifier)
   {
-    m_sStatusModifier = statusModifier;
+    m_sStatusModifier = sStatusModifier;
   }
 
   public String getStatusModifier ()
@@ -124,9 +125,8 @@ public class DispositionType
 
   public boolean isWarning ()
   {
-    final String statusMod = getStatusModifier ();
-
-    return ((statusMod != null) && statusMod.equalsIgnoreCase ("warning"));
+    final String sStatusMod = getStatusModifier ();
+    return sStatusMod != null && sStatusMod.equalsIgnoreCase ("warning");
   }
 
   @Override
@@ -137,73 +137,55 @@ public class DispositionType
 
   public void validate () throws DispositionException
   {
-    final String status = getStatus ();
-
-    if (status == null)
-    {
+    final String sStatus = getStatus ();
+    if (sStatus == null)
       throw new DispositionException (this, null);
-    }
-    else
-      if (!status.equalsIgnoreCase ("processed"))
-      {
-        throw new DispositionException (this, null);
-      }
+    if (!sStatus.equalsIgnoreCase ("processed"))
+      throw new DispositionException (this, null);
 
-    final String statusMod = getStatusModifier ();
-
-    if (statusMod != null)
-    {
-      if (statusMod.equalsIgnoreCase ("error") || statusMod.equalsIgnoreCase ("warning"))
-      {
+    final String sStatusMod = getStatusModifier ();
+    if (sStatusMod != null)
+      if (sStatusMod.equalsIgnoreCase ("error") || sStatusMod.equalsIgnoreCase ("warning"))
         throw new DispositionException (this, null);
-      }
-    }
   }
 
+  @Nonnull
   protected String makeDisposition ()
   {
-    final StringBuilder dispBuf = new StringBuilder ();
-    dispBuf.append (getAction ()).append ("/").append (getMdnAction ());
-    dispBuf.append ("; ").append (getStatus ());
+    final StringBuilder aDispBuf = new StringBuilder ();
+    aDispBuf.append (getAction ()).append ("/").append (getMdnAction ()).append ("; ").append (getStatus ());
 
     if (getStatusModifier () != null)
     {
-      dispBuf.append ("/").append (getStatusModifier ()).append (":");
-
+      aDispBuf.append ("/").append (getStatusModifier ()).append (":");
       if (getStatusDescription () != null)
-      {
-        dispBuf.append (getStatusDescription ());
-      }
+        aDispBuf.append (getStatusDescription ());
     }
 
-    return dispBuf.toString ();
+    return aDispBuf.toString ();
   }
 
-  protected void parseDisposition (final String disposition) throws OpenAS2Exception
+  protected void parseDisposition (final String sDisposition) throws OpenAS2Exception
   {
-    final StringTokenizer dispTokens = new StringTokenizer (disposition, "/;:", false);
-
+    final StringTokenizer aDispTokens = new StringTokenizer (sDisposition, "/;:", false);
     try
     {
-      setAction (dispTokens.nextToken ().toLowerCase (Locale.US));
-      setMdnAction (dispTokens.nextToken ().toLowerCase (Locale.US));
-      setStatus (dispTokens.nextToken ().trim ().toLowerCase (Locale.US));
+      setAction (aDispTokens.nextToken ().toLowerCase (Locale.US));
+      setMdnAction (aDispTokens.nextToken ().toLowerCase (Locale.US));
+      setStatus (aDispTokens.nextToken ().trim ().toLowerCase (Locale.US));
       setStatusModifier (null);
       setStatusDescription (null);
 
-      if (dispTokens.hasMoreTokens ())
+      if (aDispTokens.hasMoreTokens ())
       {
-        setStatusModifier (dispTokens.nextToken ().toLowerCase (Locale.US));
-
-        if (dispTokens.hasMoreTokens ())
-        {
-          setStatusDescription (dispTokens.nextToken ().trim ().toLowerCase (Locale.US));
-        }
+        setStatusModifier (aDispTokens.nextToken ().toLowerCase (Locale.US));
+        if (aDispTokens.hasMoreTokens ())
+          setStatusDescription (aDispTokens.nextToken ().trim ().toLowerCase (Locale.US));
       }
     }
-    catch (final NoSuchElementException nsee)
+    catch (final NoSuchElementException ex)
     {
-      throw new OpenAS2Exception ("Invalid disposition type format: " + disposition);
+      throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition);
     }
   }
 }

@@ -63,135 +63,135 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AsynchMDNSenderModule.class);
 
-  public boolean canHandle (final String action, final IMessage msg, final Map <String, Object> options)
+  public boolean canHandle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    if (!action.equals (IProcessorSenderModule.DO_SENDMDN))
+    if (!sAction.equals (IProcessorSenderModule.DO_SENDMDN))
       return false;
-    return msg instanceof AS2Message;
+    return aMsg instanceof AS2Message;
   }
 
-  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     try
     {
-      _sendAsyncMDN ((AS2Message) msg, options);
+      _sendAsyncMDN ((AS2Message) aMsg, aOptions);
     }
     finally
     {
-      s_aLogger.debug ("asynch mdn message sent");
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("asynch mdn message sent");
     }
   }
 
-  protected void updateHttpHeaders (final HttpURLConnection conn, final IMessage msg)
+  protected void updateHttpHeaders (final HttpURLConnection aConn, final IMessage aMsg)
   {
-    conn.setRequestProperty ("Connection", "close, TE");
-    conn.setRequestProperty ("User-Agent", "OpenAS2 AsynchMDNSender");
+    aConn.setRequestProperty ("Connection", "close, TE");
+    aConn.setRequestProperty ("User-Agent", "OpenAS2 AsynchMDNSender");
 
-    conn.setRequestProperty ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
-    conn.setRequestProperty ("Message-ID", msg.getMessageID ());
+    aConn.setRequestProperty ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aConn.setRequestProperty ("Message-ID", aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    conn.setRequestProperty ("Mime-Version", "1.0");
-    conn.setRequestProperty ("Content-type", msg.getHeader ("Content-type"));
-    conn.setRequestProperty (CAS2Header.AS2_VERSION, "1.1");
-    conn.setRequestProperty ("Recipient-Address", msg.getHeader ("Recipient-Address"));
-    conn.setRequestProperty (CAS2Header.AS2_TO, msg.getHeader (CAS2Header.AS2_TO));
-    conn.setRequestProperty (CAS2Header.AS2_FROM, msg.getHeader (CAS2Header.AS2_FROM));
-    conn.setRequestProperty ("Subject", msg.getHeader ("Subject"));
-    conn.setRequestProperty ("From", msg.getHeader ("From"));
+    aConn.setRequestProperty ("Mime-Version", "1.0");
+    aConn.setRequestProperty ("Content-type", aMsg.getHeader ("Content-type"));
+    aConn.setRequestProperty (CAS2Header.AS2_VERSION, "1.1");
+    aConn.setRequestProperty ("Recipient-Address", aMsg.getHeader ("Recipient-Address"));
+    aConn.setRequestProperty (CAS2Header.AS2_TO, aMsg.getHeader (CAS2Header.AS2_TO));
+    aConn.setRequestProperty (CAS2Header.AS2_FROM, aMsg.getHeader (CAS2Header.AS2_FROM));
+    aConn.setRequestProperty ("Subject", aMsg.getHeader ("Subject"));
+    aConn.setRequestProperty ("From", aMsg.getHeader ("From"));
   }
 
-  private void _sendAsyncMDN (final AS2Message msg, final Map <String, Object> options) throws OpenAS2Exception
+  private void _sendAsyncMDN (final AS2Message aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    s_aLogger.info ("Async MDN submitted" + msg.getLoggingText ());
-    final DispositionType disposition = new DispositionType ("automatic-action", "MDN-sent-automatically", "processed");
+    s_aLogger.info ("Async MDN submitted" + aMsg.getLoggingText ());
+    final DispositionType aDisposition = new DispositionType ("automatic-action", "MDN-sent-automatically", "processed");
 
     try
     {
-      final IMessageMDN mdn = msg.getMDN ();
+      final IMessageMDN aMdn = aMsg.getMDN ();
 
       // Create a HTTP connection
-      final String url = msg.getAsyncMDNurl ();
-      final HttpURLConnection conn = getConnection (url, true, true, false, "POST");
+      final String sUrl = aMsg.getAsyncMDNurl ();
+      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
 
       try
       {
-        s_aLogger.info ("connected to " + url + msg.getLoggingText ());
+        s_aLogger.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-        conn.setRequestProperty ("Connection", "close, TE");
-        conn.setRequestProperty ("User-Agent", "OpenAS2 AS2Sender");
+        aConn.setRequestProperty ("Connection", "close, TE");
+        aConn.setRequestProperty ("User-Agent", "OpenAS2 AS2Sender");
         // Copy all the header from mdn to the RequestProperties of conn
-        final Enumeration <?> headers = mdn.getHeaders ().getAllHeaders ();
-        while (headers.hasMoreElements ())
+        final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaders ();
+        while (aHeaders.hasMoreElements ())
         {
-          final Header header = (Header) headers.nextElement ();
-          String sHeaderValue = header.getValue ();
+          final Header aHeader = (Header) aHeaders.nextElement ();
+          String sHeaderValue = aHeader.getValue ();
           sHeaderValue = sHeaderValue.replace ('\t', ' ');
           sHeaderValue = sHeaderValue.replace ('\n', ' ');
           sHeaderValue = sHeaderValue.replace ('\r', ' ');
-          conn.setRequestProperty (header.getName (), sHeaderValue);
+          aConn.setRequestProperty (aHeader.getName (), sHeaderValue);
         }
 
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
-        final OutputStream messageOut = conn.getOutputStream ();
+        final OutputStream aMessageOS = aConn.getOutputStream ();
 
         // Transfer the data
-        final InputStream messageIn = mdn.getData ().getInputStream ();
+        final InputStream aMessageIS = aMdn.getData ().getInputStream ();
         final StopWatch aSW = new StopWatch (true);
-        final long bytes = IOUtil.copy (messageIn, messageOut);
+        final long nBytes = IOUtil.copy (aMessageIS, aMessageOS);
         aSW.stop ();
-        s_aLogger.info ("transferred " + IOUtil.getTransferRate (bytes, aSW) + msg.getLoggingText ());
+        s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
         // Check the HTTP Response code
-        final int nResponseCode = conn.getResponseCode ();
+        final int nResponseCode = aConn.getResponseCode ();
         if (nResponseCode != HttpURLConnection.HTTP_OK &&
             nResponseCode != HttpURLConnection.HTTP_CREATED &&
             nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
             nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
-          s_aLogger.error ("sent AsyncMDN [" + disposition.toString () + "] Fail " + msg.getLoggingText ());
-          throw new HttpResponseException (url.toString (), nResponseCode, conn.getResponseMessage ());
+          s_aLogger.error ("sent AsyncMDN [" + aDisposition.toString () + "] Fail " + aMsg.getLoggingText ());
+          throw new HttpResponseException (sUrl.toString (), nResponseCode, aConn.getResponseMessage ());
         }
 
-        s_aLogger.info ("sent AsyncMDN [" + disposition.toString () + "] OK " + msg.getLoggingText ());
+        s_aLogger.info ("sent AsyncMDN [" + aDisposition.toString () + "] OK " + aMsg.getLoggingText ());
 
         // log & store mdn into backup folder.
-        ((ISession) options.get ("session")).getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, msg, null);
+        ((ISession) aOptions.get ("session")).getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
       finally
       {
-        conn.disconnect ();
+        aConn.disconnect ();
       }
     }
-    catch (final HttpResponseException hre)
+    catch (final HttpResponseException ex)
     {
       // Resend if the HTTP Response has an error code
-      hre.terminate ();
-      resend (msg, hre);
+      ex.terminate ();
+      resend (aMsg, ex);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
-      final WrappedException wioe = new WrappedException (ioe);
-      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
+      final WrappedException wioe = new WrappedException (ex);
+      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
-      resend (msg, wioe);
+      resend (aMsg, wioe);
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a resend
-      throw new WrappedException (e);
+      throw new WrappedException (ex);
     }
   }
 
-  protected void resend (final IMessage msg, final OpenAS2Exception cause) throws OpenAS2Exception
+  protected void resend (final IMessage aMsg, final OpenAS2Exception aCause) throws OpenAS2Exception
   {
-    final Map <String, Object> options = new HashMap <String, Object> ();
-    options.put (IProcessorResenderModule.OPTION_CAUSE, cause);
-    options.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    getSession ().getProcessor ().handle (IProcessorResenderModule.DO_RESEND, msg, options);
+    final Map <String, Object> aOptions = new HashMap <String, Object> ();
+    aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
+    aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
+    getSession ().getProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
   }
-
 }

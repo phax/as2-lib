@@ -52,40 +52,33 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 
   public abstract void doStop () throws OpenAS2Exception;
 
-  public boolean canHandle (final String action, final IMessage msg, final Map <String, Object> options)
+  public boolean canHandle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
     return false;
   }
 
-  public void forceStop (final Exception cause)
+  public void forceStop (final Exception aCause)
   {
-    try
-    {
-      throw new ForcedStopException (cause);
-    }
-    catch (final ForcedStopException fse)
-    {
-      fse.terminate ();
-    }
+    new ForcedStopException (aCause).terminate ();
 
     try
     {
       stop ();
     }
-    catch (final OpenAS2Exception oae)
+    catch (final OpenAS2Exception ex)
     {
-      oae.terminate ();
+      ex.terminate ();
     }
   }
 
-  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAaction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     throw new UnsupportedException ("Active modules don't handle anything by default");
   }
 
-  private void _setRunning (final boolean running)
+  private void _setRunning (final boolean bRunning)
   {
-    m_bRunning = running;
+    m_bRunning = bRunning;
   }
 
   public void start () throws OpenAS2Exception

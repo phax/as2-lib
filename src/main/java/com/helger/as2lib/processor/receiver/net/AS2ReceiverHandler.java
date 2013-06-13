@@ -169,7 +169,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           aMsg.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMsg.getHeader (CAS2Header.AS2_TO));
           getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
         }
-        catch (final OpenAS2Exception oae)
+        catch (final OpenAS2Exception ex)
         {
           throw new DispositionException (new DispositionType ("automatic-action",
                                                                "MDN-sent-automatically",
@@ -177,7 +177,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                                "Error",
                                                                "authentication-failed"),
                                           AS2ReceiverModule.DISP_PARTNERSHIP_NOT_FOUND,
-                                          oae);
+                                          ex);
         }
 
         // Decrypt and verify signature of the data, and attach data to the
@@ -189,7 +189,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         {
           getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
         }
-        catch (final OpenAS2Exception oae)
+        catch (final OpenAS2Exception ex)
         {
           throw new DispositionException (new DispositionType ("automatic-action",
                                                                "MDN-sent-automatically",
@@ -197,7 +197,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                                "Error",
                                                                "unexpected-processing-error"),
                                           AS2ReceiverModule.DISP_STORAGE_FAILED,
-                                          oae);
+                                          ex);
         }
 
         // Transmit a success MDN if requested
@@ -212,31 +212,31 @@ public class AS2ReceiverHandler implements INetModuleHandler
           }
           else
           {
-            final OutputStream out = StreamUtils.getBuffered (aSocket.getOutputStream ());
+            final OutputStream aOS = StreamUtils.getBuffered (aSocket.getOutputStream ());
             try
             {
-              HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_OK, false);
+              HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
             }
             finally
             {
-              StreamUtils.close (out);
+              StreamUtils.close (aOS);
             }
             s_aLogger.info ("sent HTTP OK" + getClientInfo (aSocket) + aMsg.getLoggingText ());
           }
         }
-        catch (final Exception e)
+        catch (final Exception ex)
         {
-          throw new WrappedException ("Error creating and returning MDN, message was stilled processed", e);
+          throw new WrappedException ("Error creating and returning MDN, message was stilled processed", ex);
         }
       }
-      catch (final DispositionException de)
+      catch (final DispositionException ex)
       {
-        sendMDN (aSocket, aMsg, de.getDisposition (), de.getText ());
-        getModule ().handleError (aMsg, de);
+        sendMDN (aSocket, aMsg, ex.getDisposition (), ex.getText ());
+        getModule ().handleError (aMsg, ex);
       }
-      catch (final OpenAS2Exception oae)
+      catch (final OpenAS2Exception ex)
       {
-        getModule ().handleError (aMsg, oae);
+        getModule ().handleError (aMsg, ex);
       }
     }
   }
@@ -253,121 +253,127 @@ public class AS2ReceiverHandler implements INetModuleHandler
     return aMsg;
   }
 
-  protected final void decryptAndVerify (final IMessage msg) throws OpenAS2Exception
+  protected final void decryptAndVerify (final IMessage aMsg) throws OpenAS2Exception
   {
     final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
-    final ICryptoHelper ch = AS2Util.getCryptoHelper ();
+    final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
 
     try
     {
-      if (ch.isEncrypted (msg.getData ()))
+      if (aCryptoHelper.isEncrypted (aMsg.getData ()))
       {
         // Decrypt
-        s_aLogger.debug ("decrypting" + msg.getLoggingText ());
+        s_aLogger.debug ("decrypting" + aMsg.getLoggingText ());
 
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (msg, Partnership.PTYPE_RECEIVER);
-        final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (msg, aReceiverCert);
-        final MimeBodyPart aDecryptedData = ch.decrypt (msg.getData (), aReceiverCert, aReceiverKey);
-        msg.setData (aDecryptedData);
+        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_RECEIVER);
+        final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
+        final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (), aReceiverCert, aReceiverKey);
+        aMsg.setData (aDecryptedData);
         // Ensure a valid content type
-        new ContentType (msg.getData ().getContentType ());
+        new ContentType (aMsg.getData ().getContentType ());
       }
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      s_aLogger.error ("Error decrypting " + msg.getLoggingText () + ": " + e.getMessage ());
+      s_aLogger.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (new DispositionType ("automatic-action",
                                                            "MDN-sent-automatically",
                                                            "processed",
                                                            "Error",
                                                            "decryption-failed"),
                                       AS2ReceiverModule.DISP_DECRYPTION_ERROR,
-                                      e);
+                                      ex);
     }
 
     try
     {
-      if (ch.isSigned (msg.getData ()))
+      if (aCryptoHelper.isSigned (aMsg.getData ()))
       {
-        s_aLogger.debug ("verifying signature" + msg.getLoggingText ());
+        s_aLogger.debug ("verifying signature" + aMsg.getLoggingText ());
 
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (msg, Partnership.PTYPE_SENDER);
-        msg.setData (ch.verify (msg.getData (), aSenderCert));
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_SENDER);
+        aMsg.setData (aCryptoHelper.verify (aMsg.getData (), aSenderCert));
       }
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      s_aLogger.error ("Error verifying signature " + msg.getLoggingText () + ": " + e.getMessage ());
+      s_aLogger.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (new DispositionType ("automatic-action",
                                                            "MDN-sent-automatically",
                                                            "processed",
                                                            "Error",
                                                            "integrity-check-failed"),
                                       AS2ReceiverModule.DISP_VERIFY_SIGNATURE_FAILED,
-                                      e);
+                                      ex);
     }
   }
 
-  protected void sendMDN (final Socket s, final AS2Message msg, final DispositionType disposition, final String text)
+  protected void sendMDN (final Socket aSocket,
+                          @Nonnull final AS2Message aMsg,
+                          final DispositionType aDisposition,
+                          final String sText)
   {
-    final boolean mdnBlocked = msg.getPartnership ().getAttribute (CASXPartnership.PA_BLOCK_ERROR_MDN) != null;
-    if (!mdnBlocked)
+    final boolean bMdnBlocked = aMsg.getPartnership ().getAttribute (CASXPartnership.PA_BLOCK_ERROR_MDN) != null;
+    if (!bMdnBlocked)
     {
       try
       {
-        final IMessageMDN mdn = AS2Util.createMDN (getModule ().getSession (), msg, disposition, text);
+        final IMessageMDN aMdn = AS2Util.createMDN (getModule ().getSession (), aMsg, aDisposition, sText);
 
-        final OutputStream out = StreamUtils.getBuffered (s.getOutputStream ());
+        final OutputStream aOS = StreamUtils.getBuffered (aSocket.getOutputStream ());
         // if asyncMDN requested, close connection and initiate separate MDN
         // send
-        if (msg.isRequestingAsynchMDN ())
+        if (aMsg.isRequestingAsynchMDN ())
         {
-          HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_OK, false);
-          out.write ("Content-Length: 0\r\n\r\n".getBytes ());
-          out.flush ();
-          out.close ();
+          HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
+          aOS.write ("Content-Length: 0\r\n\r\n".getBytes ());
+          aOS.flush ();
+          aOS.close ();
           s_aLogger.info ("setup to send asynch MDN [" +
-                          disposition.toString () +
+                          aDisposition.toString () +
                           "]" +
-                          getClientInfo (s) +
-                          msg.getLoggingText ());
-          getModule ().getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, msg, null);
+                          getClientInfo (aSocket) +
+                          aMsg.getLoggingText ());
+          getModule ().getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
           return;
         }
 
         // otherwise, send sync MDN back on same connection
-        HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_OK, true);
+        HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, true);
 
         // make sure to set the content-length header
         final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
-        final MimeBodyPart part = mdn.getData ();
-        StreamUtils.copyInputStreamToOutputStream (part.getInputStream (), aData);
-        mdn.setHeader ("Content-Length", Integer.toString (aData.size ()));
+        final MimeBodyPart aPart = aMdn.getData ();
+        StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
+        aMdn.setHeader ("Content-Length", Integer.toString (aData.size ()));
 
-        final Enumeration <?> headers = mdn.getHeaders ().getAllHeaderLines ();
-        while (headers.hasMoreElements ())
+        final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
+        while (aHeaders.hasMoreElements ())
         {
-          final String header = (String) headers.nextElement () + "\r\n";
-          out.write (header.getBytes ());
+          final String sHeader = (String) aHeaders.nextElement () + "\r\n";
+          aOS.write (sHeader.getBytes ());
         }
 
-        out.write ("\r\n".getBytes ());
+        aOS.write ("\r\n".getBytes ());
 
-        aData.writeTo (out);
-        out.flush ();
-        out.close ();
+        aData.writeTo (aOS);
+        aOS.flush ();
+        aOS.close ();
 
         // Save sent MDN for later examination
-        getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, msg, null);
-        s_aLogger.info ("sent MDN [" + disposition.toString () + "]" + getClientInfo (s) + msg.getLoggingText ());
+        getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        s_aLogger.info ("sent MDN [" +
+                        aDisposition.toString () +
+                        "]" +
+                        getClientInfo (aSocket) +
+                        aMsg.getLoggingText ());
       }
-      catch (final Exception e)
+      catch (final Exception ex)
       {
-        final WrappedException we = new WrappedException ("Error sending MDN", e);
-        we.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
+        final WrappedException we = new WrappedException ("Error sending MDN", ex);
+        we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
         we.terminate ();
       }
     }
   }
-
 }

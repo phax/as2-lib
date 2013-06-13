@@ -32,12 +32,13 @@
  */
 package com.helger.as2lib.processor.storage;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.util.DispositionException;
 import com.helger.as2lib.util.DispositionType;
+import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 
 public class MessageFileModule extends AbstractStorageModule
 {
@@ -60,17 +62,17 @@ public class MessageFileModule extends AbstractStorageModule
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MessageFileModule.class);
 
-  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     // store message content
     try
     {
-      final File msgFile = getFile (msg, getParameterRequired (PARAM_FILENAME), action);
-      final InputStream in = msg.getData ().getInputStream ();
-      store (msgFile, in);
-      s_aLogger.info ("stored message to " + msgFile.getAbsolutePath () + msg.getLoggingText ());
+      final File aMsgFile = getFile (aMsg, getParameterRequired (PARAM_FILENAME), sAction);
+      final InputStream aIS = aMsg.getData ().getInputStream ();
+      store (aMsgFile, aIS);
+      s_aLogger.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
       throw new DispositionException (new DispositionType ("automatic-action",
                                                            "MDN-sent-automatically",
@@ -78,22 +80,22 @@ public class MessageFileModule extends AbstractStorageModule
                                                            "Error",
                                                            "Error storing transaction"),
                                       AS2ReceiverModule.DISP_STORAGE_FAILED,
-                                      e);
+                                      ex);
     }
 
-    final String headerFilename = getParameterNotRequired (PARAM_HEADER);
-    if (headerFilename != null)
+    final String sHeaderFilename = getParameterNotRequired (PARAM_HEADER);
+    if (sHeaderFilename != null)
     {
       try
       {
-        final File headerFile = getFile (msg, headerFilename, action);
-        final InputStream in = getHeaderStream (msg);
-        store (headerFile, in);
-        s_aLogger.info ("stored headers to " + headerFile.getAbsolutePath () + msg.getLoggingText ());
+        final File aHeaderFile = getFile (aMsg, sHeaderFilename, sAction);
+        final InputStream aIS = getHeaderStream (aMsg);
+        store (aHeaderFile, aIS);
+        s_aLogger.info ("stored headers to " + aHeaderFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
-      catch (final IOException ioe)
+      catch (final IOException ex)
       {
-        throw new WrappedException (ioe);
+        throw new WrappedException (ex);
       }
     }
   }
@@ -105,38 +107,36 @@ public class MessageFileModule extends AbstractStorageModule
   }
 
   @Override
-  protected String getFilename (final IMessage msg, final String fileParam, final String action) throws InvalidParameterException
+  protected String getFilename (final IMessage aMsg, final String sFileParam, final String sAction) throws InvalidParameterException
   {
-    final CompositeParameters compParams = new CompositeParameters (false).add ("date", new DateParameters ())
-                                                                          .add ("msg", new MessageParameters (msg));
-
-    return AbstractParameterParser.parse (fileParam, compParams);
+    final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
+                                                                           .add ("msg", new MessageParameters (aMsg));
+    return AbstractParameterParser.parse (sFileParam, aCompParams);
   }
 
-  protected InputStream getHeaderStream (final IMessage msg)
+  protected InputStream getHeaderStream (@Nonnull final IMessage aMsg)
   {
-    final StringBuilder headerBuf = new StringBuilder ();
+    final StringBuilder aHeaderBuf = new StringBuilder ();
 
     // write headers to the string buffer
-    headerBuf.append ("Headers:\r\n");
+    aHeaderBuf.append ("Headers:\r\n");
 
-    final Enumeration <?> headers = msg.getHeaders ().getAllHeaderLines ();
-    while (headers.hasMoreElements ())
+    final Enumeration <?> aHeaders = aMsg.getHeaders ().getAllHeaderLines ();
+    while (aHeaders.hasMoreElements ())
     {
-      final String header = (String) headers.nextElement ();
-      headerBuf.append (header).append ("\r\n");
+      final String sHeader = (String) aHeaders.nextElement ();
+      aHeaderBuf.append (sHeader).append ("\r\n");
     }
 
-    headerBuf.append ("\r\n");
+    aHeaderBuf.append ("\r\n");
 
     // write attributes to the string buffer
-    headerBuf.append ("Attributes:\r\n");
-
-    for (final Map.Entry <String, String> attrEntry : msg.getAttributes ().entrySet ())
+    aHeaderBuf.append ("Attributes:\r\n");
+    for (final Map.Entry <String, String> attrEntry : aMsg.getAttributes ().entrySet ())
     {
-      headerBuf.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
+      aHeaderBuf.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
     }
 
-    return new ByteArrayInputStream (headerBuf.toString ().getBytes ());
+    return new NonBlockingByteArrayInputStream (aHeaderBuf.toString ().getBytes ());
   }
 }

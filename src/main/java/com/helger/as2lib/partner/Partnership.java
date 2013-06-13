@@ -36,6 +36,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.phloc.commons.equals.EqualsUtils;
 
 public class Partnership implements Serializable
@@ -58,9 +61,9 @@ public class Partnership implements Serializable
   private Map <String, String> m_aSenderIDs;
   private String m_sName;
 
-  public void setName (final String name)
+  public void setName (final String sName)
   {
-    m_sName = name;
+    m_sName = sName;
   }
 
   public String getName ()
@@ -68,104 +71,91 @@ public class Partnership implements Serializable
     return m_sName;
   }
 
-  public void setAttribute (final String id, final String value)
+  public void setAttribute (final String sName, final String sValue)
   {
-    getAttributes ().put (id, value);
+    getAttributes ().put (sName, sValue);
   }
 
-  public String getAttribute (final String id)
+  @Nullable
+  public String getAttribute (final String sName)
   {
-    return getAttributes ().get (id);
+    return getAttributes ().get (sName);
   }
 
-  public void setAttributes (final Map <String, String> attributes)
+  public void setAttributes (@Nullable final Map <String, String> aAttributes)
   {
-    m_aAttributes = attributes;
+    m_aAttributes = aAttributes;
   }
 
+  @Nonnull
   public Map <String, String> getAttributes ()
   {
     if (m_aAttributes == null)
-    {
       m_aAttributes = new HashMap <String, String> ();
-    }
-
     return m_aAttributes;
   }
 
-  public void setReceiverID (final String id, final String value)
+  public void setReceiverID (final String sName, final String sValue)
   {
-    getReceiverIDs ().put (id, value);
+    getReceiverIDs ().put (sName, sValue);
   }
 
-  public String getReceiverID (final String id)
+  @Nullable
+  public String getReceiverID (final String sName)
   {
-    return getReceiverIDs ().get (id);
+    return getReceiverIDs ().get (sName);
   }
 
-  public void setReceiverIDs (final Map <String, String> receiverIDs)
+  public void setReceiverIDs (@Nullable final Map <String, String> aReceiverIDs)
   {
-    m_aReceiverIDs = receiverIDs;
+    m_aReceiverIDs = aReceiverIDs;
   }
 
+  @Nonnull
   public Map <String, String> getReceiverIDs ()
   {
     if (m_aReceiverIDs == null)
-    {
       m_aReceiverIDs = new HashMap <String, String> ();
-    }
-
     return m_aReceiverIDs;
   }
 
-  public void setSenderID (final String id, final String value)
+  public void setSenderID (final String sName, final String sValue)
   {
-    getSenderIDs ().put (id, value);
+    getSenderIDs ().put (sName, sValue);
   }
 
-  public String getSenderID (final String id)
+  @Nullable
+  public String getSenderID (final String sName)
   {
-    return getSenderIDs ().get (id);
+    return getSenderIDs ().get (sName);
   }
 
-  public void setSenderIDs (final Map <String, String> senderIDs)
+  public void setSenderIDs (@Nullable final Map <String, String> aSenderIDs)
   {
-    m_aSenderIDs = senderIDs;
+    m_aSenderIDs = aSenderIDs;
   }
 
+  @Nonnull
   public Map <String, String> getSenderIDs ()
   {
     if (m_aSenderIDs == null)
-    {
       m_aSenderIDs = new HashMap <String, String> ();
-    }
-
     return m_aSenderIDs;
   }
 
-  public boolean matches (final Partnership partnership)
+  public boolean matches (@Nonnull final Partnership aPartnership)
   {
-    final Map <String, String> senderIDs = partnership.getSenderIDs ();
-    final Map <String, String> receiverIDs = partnership.getReceiverIDs ();
+    final Map <String, String> aSenderIDs = aPartnership.getSenderIDs ();
+    final Map <String, String> aReceiverIDs = aPartnership.getReceiverIDs ();
 
-    if (compareIDs (senderIDs, getSenderIDs ()))
-    {
-      return true;
-    }
-    else
-      if (compareIDs (receiverIDs, getReceiverIDs ()))
-      {
-        return true;
-      }
-
-    return false;
+    return compareIDs (aSenderIDs, getSenderIDs ()) && compareIDs (aReceiverIDs, getReceiverIDs ());
   }
 
   @Override
   public String toString ()
   {
     final StringBuilder buf = new StringBuilder ();
-    buf.append ("Partnership " + getName ());
+    buf.append ("Partnership ").append (getName ());
     buf.append (" Sender IDs = ").append (getSenderIDs ());
     buf.append (" Receiver IDs = ").append (getReceiverIDs ());
     buf.append (" Attributes = ").append (getAttributes ());
@@ -173,33 +163,28 @@ public class Partnership implements Serializable
     return buf.toString ();
   }
 
-  protected boolean compareIDs (final Map <String, String> ids, final Map <String, String> compareTo)
+  protected boolean compareIDs (@Nonnull final Map <String, String> aIDs, final Map <String, String> aCompareTo)
   {
-    if (ids.isEmpty ())
-    {
+    if (aIDs.isEmpty ())
       return false;
-    }
 
-    for (final Map.Entry <String, String> currentId : ids.entrySet ())
+    for (final Map.Entry <String, String> aEntry : aIDs.entrySet ())
     {
-      final String currentValue = currentId.getValue ();
-      final String compareValue = compareTo.get (currentId.getKey ());
-
-      if (!EqualsUtils.equals (currentValue, compareValue))
+      final String sCurrentValue = aEntry.getValue ();
+      final String sCompareValue = aCompareTo.get (aEntry.getKey ());
+      if (!EqualsUtils.equals (sCurrentValue, sCompareValue))
         return false;
     }
 
     return true;
   }
 
-  public void copy (final Partnership partnership)
+  public void copyFrom (@Nonnull final Partnership aPartnership)
   {
-    if (partnership.getName () != null)
-    {
-      setName (partnership.getName ());
-    }
-    getSenderIDs ().putAll (partnership.getSenderIDs ());
-    getReceiverIDs ().putAll (partnership.getReceiverIDs ());
-    getAttributes ().putAll (partnership.getAttributes ());
+    if (aPartnership.getName () != null)
+      setName (aPartnership.getName ());
+    getSenderIDs ().putAll (aPartnership.getSenderIDs ());
+    getReceiverIDs ().putAll (aPartnership.getReceiverIDs ());
+    getAttributes ().putAll (aPartnership.getAttributes ());
   }
 }

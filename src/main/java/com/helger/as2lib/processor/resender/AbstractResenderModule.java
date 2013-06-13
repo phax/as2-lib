@@ -37,37 +37,42 @@ import java.util.TimerTask;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
+import com.phloc.commons.CGlobal;
 
 public abstract class AbstractResenderModule extends AbstractActiveModule implements IProcessorResenderModule
 {
-  public static final int TICK_INTERVAL = 30 * 1000;
-  private Timer timer;
-
-  public abstract void resend ();
-
-  @Override
-  public void doStart () throws OpenAS2Exception
-  {
-    timer = new Timer (true);
-    timer.scheduleAtFixedRate (new PollTask (), 0, TICK_INTERVAL);
-  }
-
-  @Override
-  public void doStop () throws OpenAS2Exception
-  {
-    if (timer != null)
-    {
-      timer.cancel ();
-      timer = null;
-    }
-  }
-
   private class PollTask extends TimerTask
   {
     @Override
     public void run ()
     {
       resend ();
+    }
+  }
+
+  public static final long TICK_INTERVAL = 30 * CGlobal.MILLISECONDS_PER_SECOND;
+
+  private Timer m_aTimer;
+
+  public abstract void resend ();
+
+  @Override
+  public void doStart () throws OpenAS2Exception
+  {
+    if (m_aTimer != null)
+      throw new IllegalStateException ("Timer is already running!");
+
+    m_aTimer = new Timer (true);
+    m_aTimer.scheduleAtFixedRate (new PollTask (), 0, TICK_INTERVAL);
+  }
+
+  @Override
+  public void doStop () throws OpenAS2Exception
+  {
+    if (m_aTimer != null)
+    {
+      m_aTimer.cancel ();
+      m_aTimer = null;
     }
   }
 }

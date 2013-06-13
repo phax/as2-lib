@@ -36,22 +36,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.exception.NoModuleException;
 import com.helger.as2lib.processor.exception.ProcessorException;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 public class DefaultProcessor extends AbstractProcessor
 {
   private List <IProcessorModule> m_aModules;
 
-  public void setModules (final List <IProcessorModule> modules)
+  public void setModules (final List <IProcessorModule> aModules)
   {
-    m_aModules = modules;
+    m_aModules = aModules;
   }
 
+  @Nonnull
   public List <IProcessorModule> getModules ()
   {
     if (m_aModules == null)
@@ -59,34 +63,36 @@ public class DefaultProcessor extends AbstractProcessor
     return m_aModules;
   }
 
+  @Nonnull
+  @ReturnsMutableCopy
   public List <IProcessorActiveModule> getActiveModules ()
   {
-    final List <IProcessorActiveModule> activeMods = new ArrayList <IProcessorActiveModule> ();
+    final List <IProcessorActiveModule> ret = new ArrayList <IProcessorActiveModule> ();
     for (final IProcessorModule aModule : getModules ())
       if (aModule instanceof IProcessorActiveModule)
-        activeMods.add ((IProcessorActiveModule) aModule);
-    return activeMods;
+        ret.add ((IProcessorActiveModule) aModule);
+    return ret;
   }
 
-  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     ProcessorException pex = null;
     boolean bModuleFound = false;
 
-    for (final IProcessorModule module : getModules ())
+    for (final IProcessorModule aModule : getModules ())
     {
-      if (module.canHandle (action, msg, options))
+      if (aModule.canHandle (sAction, aMsg, aOptions))
       {
         try
         {
           bModuleFound = true;
-          module.handle (action, msg, options);
+          aModule.handle (sAction, aMsg, aOptions);
         }
-        catch (final OpenAS2Exception oae)
+        catch (final OpenAS2Exception ex)
         {
           if (pex == null)
             pex = new ProcessorException (this);
-          pex.getCauses ().add (oae);
+          pex.getCauses ().add (ex);
         }
       }
     }
@@ -94,7 +100,7 @@ public class DefaultProcessor extends AbstractProcessor
     if (pex != null)
       throw pex;
     if (!bModuleFound)
-      throw new NoModuleException (action, msg, options);
+      throw new NoModuleException (sAction, aMsg, aOptions);
   }
 
   public void startActiveModules ()
@@ -105,9 +111,9 @@ public class DefaultProcessor extends AbstractProcessor
       {
         aModule.start ();
       }
-      catch (final OpenAS2Exception e)
+      catch (final OpenAS2Exception ex)
       {
-        e.terminate ();
+        ex.terminate ();
       }
     }
   }
@@ -120,9 +126,9 @@ public class DefaultProcessor extends AbstractProcessor
       {
         aModule.stop ();
       }
-      catch (final OpenAS2Exception e)
+      catch (final OpenAS2Exception ex)
       {
-        e.terminate ();
+        ex.terminate ();
       }
     }
   }

@@ -50,22 +50,23 @@ public class OpenAS2Exception extends Exception
     log (false);
   }
 
-  public OpenAS2Exception (final String msg)
+  public OpenAS2Exception (final String sMsg)
   {
-    super (msg);
+    super (sMsg);
   }
 
-  public OpenAS2Exception (final String msg, final Throwable cause)
+  public OpenAS2Exception (final String sMsg, final Throwable aCause)
   {
-    super (msg, cause);
+    super (sMsg, aCause);
   }
 
-  public OpenAS2Exception (final Throwable cause)
+  public OpenAS2Exception (final Throwable aCause)
   {
-    super (cause);
+    super (aCause);
   }
 
-  public Map <String, Object> getSources ()
+  @Nonnull
+  public final Map <String, Object> getSources ()
   {
     if (m_aSources == null)
       m_aSources = new LinkedHashMap <String, Object> ();
@@ -73,14 +74,14 @@ public class OpenAS2Exception extends Exception
   }
 
   @Nullable
-  public Object getSource (@Nullable final String id)
+  public final Object getSource (@Nullable final String sID)
   {
-    return getSources ().get (id);
+    return getSources ().get (sID);
   }
 
-  public void addSource (@Nonnull final String id, @Nullable final Object source)
+  public final void addSource (@Nonnull final String sID, @Nullable final Object aSource)
   {
-    getSources ().put (id, source);
+    getSources ().put (sID, aSource);
   }
 
   public final void terminate ()
@@ -89,9 +90,9 @@ public class OpenAS2Exception extends Exception
   }
 
   /**
-   * @param terminated
+   * @param bTerminated
    *        <code>true</code> if the exception was terminated
    */
-  protected void log (final boolean terminated)
+  protected void log (final boolean bTerminated)
   {}
 }

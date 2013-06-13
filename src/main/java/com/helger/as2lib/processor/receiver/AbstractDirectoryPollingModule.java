@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.activation.DataHandler;
+import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
@@ -59,9 +60,12 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
+import com.phloc.commons.annotations.ReturnsMutableObject;
+import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.file.FileIOError;
 import com.phloc.commons.io.file.FileOperations;
 import com.phloc.commons.io.file.SimpleFileIO;
+import com.phloc.commons.mime.CMimeType;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
 {
@@ -72,14 +76,15 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   public static final String PARAM_DELIMITERS = "delimiters";
   public static final String PARAM_DEFAULTS = "defaults";
   public static final String PARAM_MIMETYPE = "mimetype";
+
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractDirectoryPollingModule.class);
+
   private Map <String, Long> m_aTrackedFiles;
 
-  private final Logger s_aLogger = LoggerFactory.getLogger (AbstractDirectoryPollingModule.class);
-
   @Override
-  public void initDynamicComponent (final ISession session, final Map <String, String> options) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
   {
-    super.initDynamicComponent (session, options);
+    super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_OUTBOX_DIRECTORY);
     getParameterRequired (PARAM_ERROR_DIRECTORY);
   }
@@ -95,55 +100,51 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       // update tracking info. if a file is ready, process it
       updateTracking ();
     }
-    catch (final OpenAS2Exception oae)
+    catch (final OpenAS2Exception ex)
     {
-      oae.terminate ();
-      forceStop (oae);
+      ex.terminate ();
+      forceStop (ex);
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      new WrappedException (e).terminate ();
-      forceStop (e);
+      new WrappedException (ex).terminate ();
+      forceStop (ex);
     }
   }
 
-  protected void scanDirectory (final String directory) throws InvalidParameterException
+  protected void scanDirectory (final String sDirectory) throws InvalidParameterException
   {
-    final File dir = IOUtil.getDirectoryFile (directory);
+    final File aDir = IOUtil.getDirectoryFile (sDirectory);
 
     // get a list of entries in the directory
-    final File [] files = dir.listFiles ();
-    if (files == null)
+    final File [] aFiles = aDir.listFiles ();
+    if (aFiles == null)
     {
       throw new InvalidParameterException ("Error getting list of files in directory",
                                            this,
                                            PARAM_OUTBOX_DIRECTORY,
-                                           dir.getAbsolutePath ());
+                                           aDir.getAbsolutePath ());
     }
 
     // iterator through each entry, and start tracking new files
-    if (files.length > 0)
-    {
-      for (final File currentFile : files)
-      {
-        if (checkFile (currentFile))
+    if (aFiles.length > 0)
+      for (final File aCurrentFile : aFiles)
+        if (checkFile (aCurrentFile))
         {
           // start watching the file's size if it's not already being watched
-          trackFile (currentFile);
+          trackFile (aCurrentFile);
         }
-      }
-    }
   }
 
-  protected boolean checkFile (final File file)
+  protected boolean checkFile (@Nonnull final File aFile)
   {
-    if (file.exists () && file.isFile ())
+    if (aFile.exists () && aFile.isFile ())
     {
       try
       {
         // check for a write-lock on file, will skip file if it's write locked
-        final FileOutputStream fOut = new FileOutputStream (file, true);
-        fOut.close ();
+        final FileOutputStream aFOS = new FileOutputStream (aFile, true);
+        aFOS.close ();
         return true;
       }
       catch (final IOException ioe)
@@ -154,14 +155,12 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     return false;
   }
 
-  protected void trackFile (final File file)
+  protected void trackFile (@Nonnull final File aFile)
   {
-    final Map <String, Long> trackedFiles = getTrackedFiles ();
-    final String filePath = file.getAbsolutePath ();
-    if (trackedFiles.get (filePath) == null)
-    {
-      trackedFiles.put (filePath, new Long (file.length ()));
-    }
+    final Map <String, Long> aTrackedFiles = getTrackedFiles ();
+    final String sFilePath = aFile.getAbsolutePath ();
+    if (!aTrackedFiles.containsKey (sFilePath))
+      aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
   }
 
   protected void updateTracking () throws OpenAS2Exception
@@ -169,28 +168,27 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     // clone the trackedFiles map, iterator through the clone and modify the
     // original to avoid iterator exceptions
     // is there a better way to do this?
-    final Map <String, Long> trackedFiles = getTrackedFiles ();
-    final Map <String, Long> trackedFilesClone = new HashMap <String, Long> (trackedFiles);
+    final Map <String, Long> aTrackedFiles = getTrackedFiles ();
 
-    for (final Entry <String, Long> entry : trackedFilesClone.entrySet ())
+    // We need to operate on a copy
+    for (final Entry <String, Long> aFileEntry : ContainerHelper.newMap (aTrackedFiles).entrySet ())
     {
       // get the file and it's stored length
-      final Map.Entry <String, Long> fileEntry = entry;
-      final File file = new File (fileEntry.getKey ());
-      final long fileLength = fileEntry.getValue ().longValue ();
+      final File aFile = new File (aFileEntry.getKey ());
+      final long nFileLength = aFileEntry.getValue ().longValue ();
 
       // if the file no longer exists, remove it from the tracker
-      if (!checkFile (file))
+      if (!checkFile (aFile))
       {
-        trackedFiles.remove (fileEntry.getKey ());
+        aTrackedFiles.remove (aFileEntry.getKey ());
       }
       else
       {
         // if the file length has changed, update the tracker
-        final long newLength = file.length ();
-        if (newLength != fileLength)
+        final long nNewLength = aFile.length ();
+        if (nNewLength != nFileLength)
         {
-          trackedFiles.put (fileEntry.getKey (), new Long (newLength));
+          aTrackedFiles.put (aFileEntry.getKey (), Long.valueOf (nNewLength));
         }
         else
         {
@@ -198,67 +196,64 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
           // tracking it
           try
           {
-            processFile (file);
+            processFile (aFile);
           }
           finally
           {
-            trackedFiles.remove (fileEntry.getKey ());
+            aTrackedFiles.remove (aFileEntry.getKey ());
           }
         }
       }
     }
   }
 
-  protected void processFile (final File file) throws OpenAS2Exception
+  protected void processFile (@Nonnull final File aFile) throws OpenAS2Exception
   {
+    s_aLogger.info ("processing " + aFile.getAbsolutePath ());
 
-    s_aLogger.info ("processing " + file.getAbsolutePath ());
-
-    final IMessage msg = createMessage ();
-    msg.setAttribute (CFileAttribute.MA_FILEPATH, file.getAbsolutePath ());
-    msg.setAttribute (CFileAttribute.MA_FILENAME, file.getName ());
+    final IMessage aMsg = createMessage ();
+    aMsg.setAttribute (CFileAttribute.MA_FILEPATH, aFile.getAbsolutePath ());
+    aMsg.setAttribute (CFileAttribute.MA_FILENAME, aFile.getName ());
 
     /*
      * asynch mdn logic 2007-03-12 save the file name into message object, it
      * will be stored into pending information file
      */
-    msg.setAttribute (CFileAttribute.MA_PENDINGFILE, file.getName ());
+    aMsg.setAttribute (CFileAttribute.MA_PENDINGFILE, aFile.getName ());
 
     try
     {
-      updateMessage (msg, file);
-      s_aLogger.info ("file assigned to message " + file.getAbsolutePath () + msg.getLoggingText ());
+      updateMessage (aMsg, aFile);
+      s_aLogger.info ("file assigned to message " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
 
-      if (msg.getData () == null)
-      {
+      if (aMsg.getData () == null)
         throw new InvalidMessageException ("No Data");
-      }
 
       // Transmit the message
-      getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SEND, msg, null);
+      getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
 
       /*
        * asynch mdn logic 2007-03-12 If the return status is pending in msg's
        * attribute "status" then copy the transmitted file to pending folder and
        * wait for the receiver to make another HTTP call to post AsyncMDN
        */
-      if (msg.getAttribute (CFileAttribute.MA_STATUS) != null &&
-          msg.getAttribute (CFileAttribute.MA_STATUS).equals (CFileAttribute.MA_PENDING))
+      if (aMsg.getAttribute (CFileAttribute.MA_STATUS) != null &&
+          aMsg.getAttribute (CFileAttribute.MA_STATUS).equals (CFileAttribute.MA_PENDING))
       {
-        final File pendingFile = new File (msg.getPartnership ().getAttribute (CFileAttribute.MA_PENDING),
-                                           msg.getAttribute (CFileAttribute.MA_PENDINGFILE));
-        final FileIOError aIOErr = FileOperations.copyFile (file, pendingFile);
+        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_PENDING),
+                                            aMsg.getAttribute (CFileAttribute.MA_PENDINGFILE));
+        final FileIOError aIOErr = FileOperations.copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
-                                      pendingFile +
+                                      aPendingFile +
                                       " - " +
                                       aIOErr.toString ());
 
         s_aLogger.info ("copied " +
-                        file.getAbsolutePath () +
+                        aFile.getAbsolutePath () +
                         " to pending folder : " +
-                        pendingFile.getAbsolutePath () +
-                        msg.getLoggingText ());
+                        aPendingFile.getAbsolutePath () +
+                        aMsg.getLoggingText ());
       }
 
       // If the Sent Directory option is set, move the transmitted file to
@@ -266,129 +261,129 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
       if (getParameterNotRequired (PARAM_SENT_DIRECTORY) != null)
       {
-        File sentFile = null;
-
+        File aSentFile = null;
         try
         {
-          sentFile = new File (IOUtil.getDirectoryFile (getParameterRequired (PARAM_SENT_DIRECTORY)), file.getName ());
-          sentFile = IOUtil.moveFile (file, sentFile, false, true);
+          aSentFile = new File (IOUtil.getDirectoryFile (getParameterRequired (PARAM_SENT_DIRECTORY)), aFile.getName ());
+          aSentFile = IOUtil.moveFile (aFile, aSentFile, false, true);
 
           s_aLogger.info ("moved " +
-                          file.getAbsolutePath () +
+                          aFile.getAbsolutePath () +
                           " to " +
-                          sentFile.getAbsolutePath () +
-                          msg.getLoggingText ());
+                          aSentFile.getAbsolutePath () +
+                          aMsg.getLoggingText ());
 
         }
-        catch (final IOException iose)
+        catch (final IOException ex)
         {
           final OpenAS2Exception se = new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " +
-                                                            sentFile);
-          se.initCause (iose);
+                                                            aSentFile);
+          se.initCause (ex);
         }
       }
       else
-        if (!file.delete ())
-        { // Delete the file if a sent directory isn't set
-          throw new OpenAS2Exception ("File was successfully sent but not deleted: " + file);
+        if (!aFile.delete ())
+        {
+          // Delete the file if a sent directory isn't set
+          throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile);
         }
 
-      s_aLogger.info ("deleted " + file.getAbsolutePath () + msg.getLoggingText ());
+      s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
 
     }
-    catch (final OpenAS2Exception oae)
+    catch (final OpenAS2Exception ex)
     {
-      s_aLogger.info (oae.getLocalizedMessage () + msg.getLoggingText ());
-      oae.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-      oae.addSource (OpenAS2Exception.SOURCE_FILE, file);
-      oae.terminate ();
-      IOUtil.handleError (file, getParameterRequired (PARAM_ERROR_DIRECTORY));
+      s_aLogger.info (ex.getLocalizedMessage () + aMsg.getLoggingText ());
+      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
+      ex.terminate ();
+      IOUtil.handleError (aFile, getParameterRequired (PARAM_ERROR_DIRECTORY));
     }
-
   }
 
   protected abstract IMessage createMessage ();
 
-  public void updateMessage (final IMessage msg, final File file) throws OpenAS2Exception
+  public void updateMessage (final IMessage aMsg, final File aFile) throws OpenAS2Exception
   {
-    final MessageParameters params = new MessageParameters (msg);
+    final MessageParameters aParams = new MessageParameters (aMsg);
 
-    final String defaults = getParameterNotRequired (PARAM_DEFAULTS);
-    if (defaults != null)
-      params.setParameters (defaults);
+    final String sDefaults = getParameterNotRequired (PARAM_DEFAULTS);
+    if (sDefaults != null)
+      aParams.setParameters (sDefaults);
 
-    final String filename = file.getName ();
-    final String format = getParameterNotRequired (PARAM_FORMAT);
-    if (format != null)
+    final String sFilename = aFile.getName ();
+    final String sFormat = getParameterNotRequired (PARAM_FORMAT);
+    if (sFormat != null)
     {
-      final String delimiters = getParameter (PARAM_DELIMITERS, ".-");
-      params.setParameters (format, delimiters, filename);
+      final String sDelimiters = getParameter (PARAM_DELIMITERS, ".-");
+      aParams.setParameters (sFormat, sDelimiters, sFilename);
     }
 
     try
     {
-      final byte [] data = SimpleFileIO.readFileBytes (file);
-      String contentType = getParameterNotRequired (PARAM_MIMETYPE);
-      if (contentType == null)
+      final byte [] aData = SimpleFileIO.readFileBytes (aFile);
+      String sContentType = getParameterNotRequired (PARAM_MIMETYPE);
+      if (sContentType == null)
       {
-        contentType = "application/octet-stream";
+        sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
       }
       else
       {
         try
         {
-          contentType = AbstractParameterParser.parse (contentType, params);
+          sContentType = AbstractParameterParser.parse (sContentType, aParams);
         }
-        catch (final InvalidParameterException e)
+        catch (final InvalidParameterException ex)
         {
-          s_aLogger.error ("Bad content-type" + contentType + msg.getLoggingText ());
-          contentType = "application/octet-stream";
+          s_aLogger.error ("Bad content-type" + sContentType + aMsg.getLoggingText ());
+          sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
         }
       }
-      final ByteArrayDataSource byteSource = new ByteArrayDataSource (data, contentType, null);
-      final MimeBodyPart body = new MimeBodyPart ();
-      body.setDataHandler (new DataHandler (byteSource));
-      final String encodeType = msg.getPartnership ().getAttribute (Partnership.PA_CONTENT_TRANSFER_ENCODING);
-      if (encodeType != null)
-        body.setHeader ("Content-Transfer-Encoding", encodeType);
+      final ByteArrayDataSource aByteSource = new ByteArrayDataSource (aData, sContentType, null);
+      final MimeBodyPart aBody = new MimeBodyPart ();
+      aBody.setDataHandler (new DataHandler (aByteSource));
+      final String sEncodeType = aMsg.getPartnership ().getAttribute (Partnership.PA_CONTENT_TRANSFER_ENCODING);
+      if (sEncodeType != null)
+        aBody.setHeader ("Content-Transfer-Encoding", sEncodeType);
       else
-        body.setHeader ("Content-Transfer-Encoding", "8bit"); // default is 8bit
+      {
+        // default is 8bit
+        aBody.setHeader ("Content-Transfer-Encoding", "8bit");
+      }
 
       // below statement is not filename related, just want to make it
       // consist with the parameter "mimetype="application/EDI-X12""
       // defined in config.xml 2007-06-01
-
-      body.setHeader ("Content-Type", contentType);
+      aBody.setHeader ("Content-Type", sContentType);
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
-      final String sendFileName = getParameterNotRequired ("sendfilename");
-      if (sendFileName != null && sendFileName.equals ("true"))
+      final String sSendFilename = getParameterNotRequired ("sendfilename");
+      if (sSendFilename != null && sSendFilename.equals ("true"))
       {
-        body.setHeader ("Content-Disposition", "Attachment; filename=\"" +
-                                               msg.getAttribute (CFileAttribute.MA_FILENAME) +
-                                               "\"");
-        msg.setContentDisposition ("Attachment; filename=\"" + msg.getAttribute (CFileAttribute.MA_FILENAME) + "\"");
+        final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);
+        aBody.setHeader ("Content-Disposition", "Attachment; filename=\"" + sMAFilename + "\"");
+        aMsg.setContentDisposition ("Attachment; filename=\"" + sMAFilename + "\"");
       }
 
-      msg.setData (body);
+      aMsg.setData (aBody);
     }
-    catch (final MessagingException me)
+    catch (final MessagingException ex)
     {
-      throw new WrappedException (me);
+      throw new WrappedException (ex);
     }
 
     // update the message's partnership with any stored information
-    getSession ().getPartnershipFactory ().updatePartnership (msg, true);
-    msg.updateMessageID ();
+    getSession ().getPartnershipFactory ().updatePartnership (aMsg, true);
+    aMsg.updateMessageID ();
   }
 
+  @Nonnull
+  @ReturnsMutableObject (reason = "speed")
   public Map <String, Long> getTrackedFiles ()
   {
     if (m_aTrackedFiles == null)
-    {
       m_aTrackedFiles = new HashMap <String, Long> ();
-    }
     return m_aTrackedFiles;
   }
 }

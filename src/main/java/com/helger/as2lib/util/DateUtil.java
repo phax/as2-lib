@@ -38,33 +38,39 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DateUtil
+import javax.annotation.Nonnull;
+
+public final class DateUtil
 {
   private static final Map <String, SimpleDateFormat> s_aFormatters = new HashMap <String, SimpleDateFormat> ();
 
-  public static String formatDate (final String format)
+  private DateUtil ()
+  {}
+
+  public static String formatDate (final String sFormat)
   {
-    return formatDate (format, new Date ());
+    return formatDate (sFormat, new Date ());
   }
 
-  private static SimpleDateFormat _getDateFormat (final String format)
+  @Nonnull
+  private static SimpleDateFormat _getDateFormat (final String sFormat)
   {
-    SimpleDateFormat df = s_aFormatters.get (format);
-    if (df == null)
+    SimpleDateFormat aDF = s_aFormatters.get (sFormat);
+    if (aDF == null)
     {
-      df = new SimpleDateFormat (format);
-      s_aFormatters.put (format, df);
+      aDF = new SimpleDateFormat (sFormat);
+      s_aFormatters.put (sFormat, aDF);
     }
-    return df;
+    return aDF;
   }
 
-  public static synchronized String formatDate (final String format, final Date value)
+  public static synchronized String formatDate (final String sFormat, final Date aValue)
   {
-    return _getDateFormat (format).format (value);
+    return _getDateFormat (sFormat).format (aValue);
   }
 
-  public static synchronized Date parseDate (final String format, final String value) throws ParseException
+  public static synchronized Date parseDate (final String sFormat, final String sValue) throws ParseException
   {
-    return _getDateFormat (format).parse (value);
+    return _getDateFormat (sFormat).parse (sValue);
   }
 }

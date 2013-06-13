@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.BaseComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -52,22 +52,24 @@ public abstract class AbstractPartnershipFactory extends BaseComponent implement
   private List <Partnership> m_aPartnerships;
 
   @Nonnull
-  public Partnership getPartnership (@Nonnull final Partnership p) throws OpenAS2Exception
+  public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
-    Partnership ps = p.getName () == null ? null : getPartnership (getPartnerships (), p.getName ());
-    if (ps == null)
-      ps = getPartnership (p.getSenderIDs (), p.getReceiverIDs ());
+    Partnership aRealPartnership = aPartnership.getName () == null ? null : getPartnership (getPartnerships (),
+                                                                                            aPartnership.getName ());
+    if (aRealPartnership == null)
+      aRealPartnership = getPartnership (aPartnership.getSenderIDs (), aPartnership.getReceiverIDs ());
 
-    if (ps == null)
-      throw new PartnershipNotFoundException (p);
-    return ps;
+    if (aRealPartnership == null)
+      throw new PartnershipNotFoundException (aPartnership);
+    return aRealPartnership;
   }
 
-  public void setPartnerships (final List <Partnership> list)
+  public void setPartnerships (@Nullable final List <Partnership> aPartnerships)
   {
-    m_aPartnerships = list;
+    m_aPartnerships = aPartnerships;
   }
 
+  @Nonnull
   public List <Partnership> getPartnerships ()
   {
     if (m_aPartnerships == null)
@@ -75,66 +77,71 @@ public abstract class AbstractPartnershipFactory extends BaseComponent implement
     return m_aPartnerships;
   }
 
-  public void updatePartnership (final IMessage msg, final boolean overwrite) throws OpenAS2Exception
+  public void updatePartnership (final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
   {
     // Fill in any available partnership information
-    final Partnership partnership = getPartnership (msg.getPartnership ());
-    msg.getPartnership ().copy (partnership);
+    final Partnership aPartnership = getPartnership (aMsg.getPartnership ());
+    aMsg.getPartnership ().copyFrom (aPartnership);
 
     // Set attributes
-    if (overwrite)
+    if (bOverwrite)
     {
-      final String subject = partnership.getAttribute (Partnership.PA_SUBJECT);
-      if (subject != null)
+      final String sSubject = aPartnership.getAttribute (Partnership.PA_SUBJECT);
+      if (sSubject != null)
       {
-        msg.setSubject (AbstractParameterParser.parse (subject, new MessageParameters (msg)));
+        aMsg.setSubject (AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
       }
     }
   }
 
-  public void updatePartnership (final IMessageMDN mdn, final boolean overwrite) throws OpenAS2Exception
+  public void updatePartnership (@Nonnull final IMessageMDN aMdn, final boolean bOverwrite) throws OpenAS2Exception
   {
     // Fill in any available partnership information
-    final Partnership partnership = getPartnership (mdn.getPartnership ());
-    mdn.getPartnership ().copy (partnership);
+    final Partnership aPartnership = getPartnership (aMdn.getPartnership ());
+    aMdn.getPartnership ().copyFrom (aPartnership);
   }
 
-  protected Partnership getPartnership (final Map <String, String> senderIDs, final Map <String, String> receiverIDs)
+  @Nullable
+  protected Partnership getPartnership (@Nonnull final Map <String, String> aSenderIDs,
+                                        @Nonnull final Map <String, String> aReceiverIDs)
   {
-    for (final Partnership currentPs : getPartnerships ())
+    for (final Partnership aPartnerships : getPartnerships ())
     {
-      final Map <String, String> currentSids = currentPs.getSenderIDs ();
-      final Map <String, String> currentRids = currentPs.getReceiverIDs ();
-
-      if (compareMap (senderIDs, currentSids) && compareMap (receiverIDs, currentRids))
+      final Map <String, String> aCurrentSenderIDs = aPartnerships.getSenderIDs ();
+      if (compareMap (aSenderIDs, aCurrentSenderIDs))
       {
-        return currentPs;
+        final Map <String, String> aCurrentReceiverIDs = aPartnerships.getReceiverIDs ();
+        if (compareMap (aReceiverIDs, aCurrentReceiverIDs))
+          return aPartnerships;
       }
     }
 
     return null;
   }
 
-  protected static Partnership getPartnership (final List <Partnership> partnerships, final String name)
+  @Nullable
+  protected static Partnership getPartnership (@Nonnull final List <Partnership> aPartnerships,
+                                               @Nullable final String sName)
   {
-    for (final Partnership currentPs : partnerships)
-      if (EqualsUtils.equals (currentPs.getName (), name))
-        return currentPs;
+    for (final Partnership aCurrentPartnership : aPartnerships)
+      if (EqualsUtils.equals (aCurrentPartnership.getName (), sName))
+        return aCurrentPartnership;
     return null;
   }
 
   // returns true if all values in searchIds match values in partnerIds
-  protected static boolean compareMap (final Map <String, String> searchIds, final Map <String, String> partnerIds)
+  protected static boolean compareMap (@Nonnull final Map <String, String> aSearchIDs,
+                                       @Nonnull final Map <String, String> aPartnerIds)
   {
-    if (searchIds.isEmpty ())
+    if (aSearchIDs.isEmpty ())
       return false;
 
-    for (final Map.Entry <String, String> searchEntry : searchIds.entrySet ())
+    for (final Map.Entry <String, String> aSearchEntry : aSearchIDs.entrySet ())
     {
-      final String searchKey = searchEntry.getKey ();
-      final String searchValue = searchEntry.getValue ();
-      final String partnerValue = partnerIds.get (searchKey);
-      if (!EqualsUtils.equals (searchValue, partnerValue))
+      final String sSearchKey = aSearchEntry.getKey ();
+      final String sSearchValue = aSearchEntry.getValue ();
+      final String sPartnerValue = aPartnerIds.get (sSearchKey);
+      if (!EqualsUtils.equals (sSearchValue, sPartnerValue))
         return false;
     }
     return true;

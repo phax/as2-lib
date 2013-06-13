@@ -81,15 +81,15 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   private final AS2MDNReceiverModule m_aModule;
 
-  public AS2MDNReceiverHandler (final AS2MDNReceiverModule module)
+  public AS2MDNReceiverHandler (final AS2MDNReceiverModule aModule)
   {
     super ();
-    m_aModule = module;
+    m_aModule = aModule;
   }
 
-  public String getClientInfo (final Socket s)
+  public String getClientInfo (final Socket aSockt)
   {
-    return " " + s.getInetAddress ().getHostAddress () + " " + Integer.toString (s.getPort ());
+    return " " + aSockt.getInetAddress ().getHostAddress () + " " + Integer.toString (aSockt.getPort ());
   }
 
   public AS2MDNReceiverModule getModule ()
@@ -97,126 +97,125 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     return m_aModule;
   }
 
-  public void handle (final AbstractNetModule owner, final Socket s)
+  public void handle (final AbstractNetModule aOwner, final Socket aSocket)
   {
 
-    s_aLogger.info ("incoming connection" + " [" + getClientInfo (s) + "]");
+    s_aLogger.info ("incoming connection" + " [" + getClientInfo (aSocket) + "]");
 
-    final AS2Message msg = new AS2Message ();
+    final AS2Message aMsg = new AS2Message ();
 
-    byte [] data = null;
+    byte [] aData = null;
 
     // Read in the message request, headers, and data
     try
     {
-      data = HTTPUtil.readData (s, msg);
+      aData = HTTPUtil.readData (aSocket, aMsg);
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
       s_aLogger.info ("incoming connection for receiving AsyncMDN" +
                       " [" +
-                      getClientInfo (s) +
+                      getClientInfo (aSocket) +
                       "]" +
-                      msg.getLoggingText ());
-      ContentType receivedContentType;
+                      aMsg.getLoggingText ());
 
-      final MimeBodyPart receivedPart = new MimeBodyPart (msg.getHeaders (), data);
-      msg.setData (receivedPart);
-      receivedContentType = new ContentType (receivedPart.getContentType ());
+      final MimeBodyPart aReceivedPart = new MimeBodyPart (aMsg.getHeaders (), aData);
+      aMsg.setData (aReceivedPart);
+      ContentType aReceivedContentType = new ContentType (aReceivedPart.getContentType ());
 
-      receivedContentType = new ContentType (msg.getHeader ("Content-Type"));
+      aReceivedContentType = new ContentType (aMsg.getHeader ("Content-Type"));
 
       // MimeBodyPart receivedPart = new MimeBodyPart();
-      receivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (data,
-                                                                             receivedContentType.toString (),
-                                                                             null)));
-      receivedPart.setHeader ("Content-Type", receivedContentType.toString ());
+      aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData,
+                                                                              aReceivedContentType.toString (),
+                                                                              null)));
+      aReceivedPart.setHeader ("Content-Type", aReceivedContentType.toString ());
 
-      msg.setData (receivedPart);
+      aMsg.setData (aReceivedPart);
 
-      receiveMDN (msg, data, s.getOutputStream ());
+      receiveMDN (aMsg, aData, aSocket.getOutputStream ());
 
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      final NetException ne = new NetException (s.getInetAddress (), s.getPort (), e);
+      final NetException ne = new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
       ne.terminate ();
     }
-
   }
 
   // Asynch MDN 2007-03-12
   /**
    * method for receiving & processing Async MDN sent from receiver.
    */
-  protected final void receiveMDN (final AS2Message msg, final byte [] data, final OutputStream out) throws OpenAS2Exception,
-                                                                                                    IOException
+  protected final void receiveMDN (final AS2Message aMsg, final byte [] aData, final OutputStream aOS) throws OpenAS2Exception,
+                                                                                                      IOException
   {
     try
     {
       // Create a MessageMDN and copy HTTP headers
-      final IMessageMDN mdn = new AS2MessageMDN (msg);
+      final IMessageMDN aMdn = new AS2MessageMDN (aMsg);
       // copy headers from msg to MDN from msg
-      mdn.setHeaders (msg.getHeaders ());
-      final MimeBodyPart part = new MimeBodyPart (mdn.getHeaders (), data);
-      msg.getMDN ().setData (part);
+      aMdn.setHeaders (aMsg.getHeaders ());
+      final MimeBodyPart part = new MimeBodyPart (aMdn.getHeaders (), aData);
+      aMsg.getMDN ().setData (part);
 
       // get the MDN partnership info
-      mdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_FROM));
-      mdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_TO));
-      getModule ().getSession ().getPartnershipFactory ().updatePartnership (mdn, false);
+      aMdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
+      aMdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+      getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
-      final ICertificateFactory cFx = getModule ().getSession ().getCertificateFactory ();
-      final X509Certificate senderCert = cFx.getCertificate (mdn, Partnership.PTYPE_SENDER);
+      final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PTYPE_SENDER);
 
-      AS2Util.parseMDN (msg, senderCert);
+      AS2Util.parseMDN (aMsg, aSenderCert);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
       // the 3 msg attributes have to be reset before calling MDNFileModule
-      msg.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_FROM));
-      msg.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_TO));
-      getModule ().getSession ().getPartnershipFactory ().updatePartnership (msg, false);
-      msg.setMessageID (msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
-      getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, msg, null);
+      aMsg.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
+      aMsg.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+      getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
+      aMsg.setMessageID (aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
+      getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
 
       // check if the mic (message integrity check) is correct
 
-      if (checkAsyncMDN (msg) == true)
-        HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_OK, false);
+      if (checkAsyncMDN (aMsg))
+        HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
       else
-        HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_NOT_FOUND, false);
+        HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_NOT_FOUND, false);
 
-      final String disposition = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+      final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
       try
       {
-        new DispositionType (disposition).validate ();
+        new DispositionType (sDisposition).validate ();
       }
-      catch (final DispositionException de)
+      catch (final DispositionException ex)
       {
-        de.setText (msg.getMDN ().getText ());
+        ex.setText (aMsg.getMDN ().getText ());
 
-        if ((de.getDisposition () != null) && de.getDisposition ().isWarning ())
+        if ((ex.getDisposition () != null) && ex.getDisposition ().isWarning ())
         {
-          de.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-          de.terminate ();
+          ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+          ex.terminate ();
         }
         else
         {
-          throw de;
+          throw ex;
         }
       }
     }
     catch (final IOException ex)
     {
-      HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_BAD_REQUEST, false);
+      HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST, false);
       throw ex;
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      HTTPUtil.sendHTTPResponse (out, HttpURLConnection.HTTP_BAD_REQUEST, false);
-      final WrappedException we = new WrappedException (e);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
+      HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST, false);
+
+      final WrappedException we = new WrappedException (ex);
+      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }
   }

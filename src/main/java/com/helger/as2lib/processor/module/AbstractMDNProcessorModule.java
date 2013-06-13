@@ -36,5 +36,5 @@ import com.helger.as2lib.BaseComponent;
 
 public abstract class AbstractMDNProcessorModule extends BaseComponent implements IMDNProcessorModule
 {
-
+  /* empty */
 }

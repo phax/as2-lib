@@ -85,241 +85,236 @@ public class BCCryptoHelper implements ICryptoHelper
   {
     Security.addProvider (new BouncyCastleProvider ());
 
-    final MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    mc.addMailcap ("application/pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_signature");
-    mc.addMailcap ("application/pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_mime");
-    mc.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_signature");
-    mc.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_mime");
-    mc.addMailcap ("multipart/signed;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.multipart_signed");
-    CommandMap.setDefaultCommandMap (mc);
+    final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
+    aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_signature");
+    aCommandMap.addMailcap ("application/pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_mime");
+    aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_signature");
+    aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_mime");
+    aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.multipart_signed");
+    CommandMap.setDefaultCommandMap (aCommandMap);
   }
 
-  public boolean isEncrypted (final MimeBodyPart part) throws MessagingException
+  public boolean isEncrypted (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
     // Content-Type is sthg like:
     // application/pkcs7-mime; name=smime.p7m; smime-type=enveloped-data
-    final ContentType contentType = new ContentType (part.getContentType ());
-    final String baseType = contentType.getBaseType ().toLowerCase (Locale.US);
-    if (!baseType.equals ("application/pkcs7-mime"))
+    final ContentType aContentType = new ContentType (aPart.getContentType ());
+    final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
+    if (!sBaseType.equals ("application/pkcs7-mime"))
       return false;
 
-    final String smimeType = contentType.getParameter ("smime-type");
-    return smimeType != null && smimeType.equalsIgnoreCase ("enveloped-data");
+    final String sSmimeType = aContentType.getParameter ("smime-type");
+    return sSmimeType != null && sSmimeType.equalsIgnoreCase ("enveloped-data");
   }
 
-  public boolean isSigned (final MimeBodyPart part) throws MessagingException
+  public boolean isSigned (final MimeBodyPart aPart) throws MessagingException
   {
-    final ContentType contentType = new ContentType (part.getContentType ());
-    final String baseType = contentType.getBaseType ().toLowerCase (Locale.US);
-    return baseType.equals ("multipart/signed");
+    final ContentType aContentType = new ContentType (aPart.getContentType ());
+    final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
+    return sBaseType.equals ("multipart/signed");
   }
 
-  public String calculateMIC (final MimeBodyPart part, final String digest, final boolean includeHeaders) throws GeneralSecurityException,
-                                                                                                         MessagingException,
-                                                                                                         IOException
+  public String calculateMIC (final MimeBodyPart aPart, final String sDigest, final boolean bIncludeHeaders) throws GeneralSecurityException,
+                                                                                                            MessagingException,
+                                                                                                            IOException
   {
-    final String micAlg = convertAlgorithm (digest, true);
+    final String sMICAlg = convertAlgorithm (sDigest, true);
 
-    final MessageDigest md = MessageDigest.getInstance (micAlg, "BC");
+    final MessageDigest aMessageDigest = MessageDigest.getInstance (sMICAlg, "BC");
 
     // convert the Mime data to a byte array, then to an InputStream
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
 
-    if (includeHeaders)
+    if (bIncludeHeaders)
     {
-      part.writeTo (aBAOS);
+      aPart.writeTo (aBAOS);
     }
     else
     {
-      StreamUtils.copyInputStreamToOutputStream (part.getInputStream (), aBAOS);
+      StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aBAOS);
     }
 
-    final byte [] data = aBAOS.toByteArray ();
+    final byte [] aData = aBAOS.toByteArray ();
 
-    final InputStream bIn = trimCRLFPrefix (data);
+    final InputStream bIn = trimCRLFPrefix (aData);
 
     // calculate the hash of the data and mime header
-    final DigestInputStream digIn = new DigestInputStream (bIn, md);
-    final byte [] buf = new byte [4096];
-    while (digIn.read (buf) >= 0)
+    final DigestInputStream aDigIS = new DigestInputStream (bIn, aMessageDigest);
+    final byte [] aBuf = new byte [4096];
+    while (aDigIS.read (aBuf) >= 0)
     {}
 
     aBAOS.close ();
 
-    final byte [] mic = digIn.getMessageDigest ().digest ();
-    final String micString = new String (Base64.encode (mic));
-    final StringBuilder micResult = new StringBuilder (micString);
-    micResult.append (", ").append (digest);
+    final byte [] aMIC = aDigIS.getMessageDigest ().digest ();
+    final String sMICString = new String (Base64.encode (aMIC));
 
-    return micResult.toString ();
+    final StringBuilder aMICResult = new StringBuilder (sMICString);
+    aMICResult.append (", ").append (sDigest);
+    return aMICResult.toString ();
   }
 
-  public MimeBodyPart decrypt (final MimeBodyPart part, final Certificate cert, final Key key) throws GeneralSecurityException,
-                                                                                              MessagingException,
-                                                                                              CMSException,
-                                                                                              IOException,
-                                                                                              SMIMEException
+  public MimeBodyPart decrypt (final MimeBodyPart aPart, final Certificate aCert, final Key aKey) throws GeneralSecurityException,
+                                                                                                 MessagingException,
+                                                                                                 CMSException,
+                                                                                                 IOException,
+                                                                                                 SMIMEException
   {
     // Make sure the data is encrypted
-    if (!isEncrypted (part))
-    {
+    if (!isEncrypted (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted");
-    }
 
     // Cast parameters to what BC needs
-    final X509Certificate x509Cert = castCertificate (cert);
+    final X509Certificate x509Cert = castCertificate (aCert);
 
     // Parse the MIME body into an SMIME envelope object
-    final SMIMEEnveloped envelope = new SMIMEEnveloped (part);
+    final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
 
     // Get the recipient object for decryption
-    final RecipientId recId = new JceKeyTransRecipientId (x509Cert);
+    final RecipientId aRecipientID = new JceKeyTransRecipientId (x509Cert);
 
-    final RecipientInformation recipient = envelope.getRecipientInfos ().get (recId);
-
-    if (recipient == null)
+    final RecipientInformation aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
+    if (aRecipient == null)
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] decryptedData = recipient.getContent (new JceKeyTransEnvelopedRecipient ((PrivateKey) key).setProvider ("BC"));
-
-    return SMIMEUtil.toMimeBodyPart (decryptedData);
+    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient ((PrivateKey) aKey).setProvider ("BC"));
+    return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
   @SuppressWarnings ("deprecation")
-  public MimeBodyPart encrypt (final MimeBodyPart part, final Certificate cert, final String algorithm) throws GeneralSecurityException,
-                                                                                                       SMIMEException
+  public MimeBodyPart encrypt (final MimeBodyPart aPart, final Certificate aCert, final String sAlgorithm) throws GeneralSecurityException,
+                                                                                                          SMIMEException
   {
-    final X509Certificate x509Cert = castCertificate (cert);
-    final String encAlg = convertAlgorithm (algorithm, true);
+    final X509Certificate aX509Cert = castCertificate (aCert);
+    final String sEncAlg = convertAlgorithm (sAlgorithm, true);
 
-    final SMIMEEnvelopedGenerator gen = new SMIMEEnvelopedGenerator ();
-    gen.addKeyTransRecipient (x509Cert);
-    final MimeBodyPart encData = gen.generate (part, encAlg, "BC");
-    return encData;
+    final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
+    aGen.addKeyTransRecipient (aX509Cert);
+    final MimeBodyPart aEncData = aGen.generate (aPart, sEncAlg, "BC");
+    return aEncData;
   }
 
   @SuppressWarnings ("deprecation")
-  public MimeBodyPart sign (final MimeBodyPart part, final Certificate cert, final Key key, final String sAlgorithm) throws GeneralSecurityException,
-                                                                                                                    SMIMEException,
-                                                                                                                    MessagingException
+  public MimeBodyPart sign (final MimeBodyPart aPart, final Certificate aCert, final Key aKey, final String sAlgorithm) throws GeneralSecurityException,
+                                                                                                                       SMIMEException,
+                                                                                                                       MessagingException
   {
-    final String signDigest = convertAlgorithm (sAlgorithm, true);
-    final X509Certificate x509Cert = castCertificate (cert);
-    final PrivateKey privKey = castKey (key);
+    final String sSignDigest = convertAlgorithm (sAlgorithm, true);
+    final X509Certificate aX509Cert = castCertificate (aCert);
+    final PrivateKey aPrivKey = castKey (aKey);
 
-    final SMIMESignedGenerator sGen = new SMIMESignedGenerator ();
-    sGen.addSigner (privKey, x509Cert, signDigest);
+    final SMIMESignedGenerator aSGen = new SMIMESignedGenerator ();
+    aSGen.addSigner (aPrivKey, aX509Cert, sSignDigest);
 
-    final MimeMultipart signedData = sGen.generate (part, "BC");
+    final MimeMultipart aSignedData = aSGen.generate (aPart, "BC");
 
-    final MimeBodyPart tmpBody = new MimeBodyPart ();
-    tmpBody.setContent (signedData);
-    tmpBody.setHeader ("Content-Type", signedData.getContentType ());
+    final MimeBodyPart aTmpBody = new MimeBodyPart ();
+    aTmpBody.setContent (aSignedData);
+    aTmpBody.setHeader ("Content-Type", aSignedData.getContentType ());
 
-    return tmpBody;
+    return aTmpBody;
   }
 
   @SuppressWarnings ({ "unchecked", "deprecation" })
-  public MimeBodyPart verify (final MimeBodyPart part, final Certificate cert) throws GeneralSecurityException,
-                                                                              IOException,
-                                                                              MessagingException,
-                                                                              CMSException
+  public MimeBodyPart verify (final MimeBodyPart aPart, final Certificate aCert) throws GeneralSecurityException,
+                                                                                IOException,
+                                                                                MessagingException,
+                                                                                CMSException
   {
     // Make sure the data is signed
-    if (!isSigned (part))
+    if (!isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed");
 
-    final X509Certificate x509Cert = castCertificate (cert);
-    final MimeMultipart mainParts = (MimeMultipart) part.getContent ();
-    final SMIMESigned signedPart = new SMIMESigned (mainParts);
+    final X509Certificate aX509Cert = castCertificate (aCert);
+    final MimeMultipart aMainParts = (MimeMultipart) aPart.getContent ();
+    final SMIMESigned aSignedPart = new SMIMESigned (aMainParts);
 
-    for (final SignerInformation signer : (Collection <SignerInformation>) signedPart.getSignerInfos ().getSigners ())
-      if (!signer.verify (x509Cert, "BC"))
+    for (final SignerInformation aSignerInfo : (Collection <SignerInformation>) aSignedPart.getSignerInfos ()
+                                                                                           .getSigners ())
+      if (!aSignerInfo.verify (aX509Cert, "BC"))
         throw new SignatureException ("Verification failed");
 
-    return signedPart.getContent ();
+    return aSignedPart.getContent ();
   }
 
   @Nonnull
-  protected static X509Certificate castCertificate (@Nonnull final Certificate cert) throws GeneralSecurityException
+  protected static X509Certificate castCertificate (@Nonnull final Certificate aCert) throws GeneralSecurityException
   {
-    if (cert == null)
+    if (aCert == null)
       throw new GeneralSecurityException ("Certificate is null");
-    if (!(cert instanceof X509Certificate))
+    if (!(aCert instanceof X509Certificate))
       throw new GeneralSecurityException ("Certificate must be an instance of X509Certificate");
-    return (X509Certificate) cert;
+    return (X509Certificate) aCert;
   }
 
   @Nonnull
-  protected static PrivateKey castKey (@Nonnull final Key key) throws GeneralSecurityException
+  protected static PrivateKey castKey (@Nonnull final Key aKey) throws GeneralSecurityException
   {
-    if (key == null)
+    if (aKey == null)
       throw new GeneralSecurityException ("Key is null");
-    if (!(key instanceof PrivateKey))
+    if (!(aKey instanceof PrivateKey))
       throw new GeneralSecurityException ("Key must implement PrivateKey interface");
-    return (PrivateKey) key;
+    return (PrivateKey) aKey;
   }
 
   @Nonnull
-  protected String convertAlgorithm (@Nonnull final String algorithm, final boolean toBC) throws NoSuchAlgorithmException
+  protected String convertAlgorithm (@Nonnull final String sAlgorithm, final boolean bToBC) throws NoSuchAlgorithmException
   {
-    if (algorithm == null)
+    if (sAlgorithm == null)
       throw new NoSuchAlgorithmException ("Algorithm is null");
 
-    if (toBC)
+    if (bToBC)
     {
-      if (algorithm.equalsIgnoreCase (DIGEST_MD5))
+      if (sAlgorithm.equalsIgnoreCase (DIGEST_MD5))
         return SMIMESignedGenerator.DIGEST_MD5;
-      if (algorithm.equalsIgnoreCase (DIGEST_SHA1))
+      if (sAlgorithm.equalsIgnoreCase (DIGEST_SHA1))
         return SMIMESignedGenerator.DIGEST_SHA1;
-      if (algorithm.equalsIgnoreCase (CRYPT_3DES))
+      if (sAlgorithm.equalsIgnoreCase (CRYPT_3DES))
         return SMIMEEnvelopedGenerator.DES_EDE3_CBC;
-      if (algorithm.equalsIgnoreCase (CRYPT_CAST5))
+      if (sAlgorithm.equalsIgnoreCase (CRYPT_CAST5))
         return SMIMEEnvelopedGenerator.CAST5_CBC;
-      if (algorithm.equalsIgnoreCase (CRYPT_IDEA))
+      if (sAlgorithm.equalsIgnoreCase (CRYPT_IDEA))
         return SMIMEEnvelopedGenerator.IDEA_CBC;
-      if (algorithm.equalsIgnoreCase (CRYPT_RC2))
+      if (sAlgorithm.equalsIgnoreCase (CRYPT_RC2))
         return SMIMEEnvelopedGenerator.RC2_CBC;
-      throw new NoSuchAlgorithmException ("Unknown algorithm: " + algorithm);
+      throw new NoSuchAlgorithmException ("Unknown algorithm: " + sAlgorithm);
     }
-    if (algorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_MD5))
+
+    if (sAlgorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_MD5))
       return DIGEST_MD5;
-    if (algorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_SHA1))
+    if (sAlgorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_SHA1))
       return DIGEST_SHA1;
-    if (algorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.CAST5_CBC))
+    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.CAST5_CBC))
       return CRYPT_CAST5;
-    if (algorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.DES_EDE3_CBC))
+    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.DES_EDE3_CBC))
       return CRYPT_3DES;
-    if (algorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.IDEA_CBC))
+    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.IDEA_CBC))
       return CRYPT_IDEA;
-    if (algorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.RC2_CBC))
+    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.RC2_CBC))
       return CRYPT_RC2;
-    throw new NoSuchAlgorithmException ("Unknown algorithm: " + algorithm);
+    throw new NoSuchAlgorithmException ("Unknown algorithm: " + sAlgorithm);
   }
 
-  protected static InputStream trimCRLFPrefix (@Nonnull final byte [] data)
+  @Nonnull
+  protected static InputStream trimCRLFPrefix (@Nonnull final byte [] aData)
   {
-    final NonBlockingByteArrayInputStream bIn = new NonBlockingByteArrayInputStream (data);
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (aData);
 
-    int scanPos = 0;
-    final int len = data.length;
-
-    while (scanPos < (len - 1))
+    int nScanPos = 0;
+    final int nLen = aData.length;
+    while (nScanPos < (nLen - 1))
     {
-      if (new String (data, scanPos, 2).equals ("\r\n"))
-      {
-        bIn.read ();
-        bIn.read ();
-        scanPos += 2;
-      }
-      else
-      {
-        return bIn;
-      }
+      if (!new String (aData, nScanPos, 2).equals ("\r\n"))
+        break;
+
+      // skip \r\n
+      aIS.read ();
+      aIS.read ();
+      nScanPos += 2;
     }
 
-    return bIn;
+    return aIS;
   }
 
   @Nonnull
@@ -329,25 +324,25 @@ public class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public KeyStore loadKeyStore (@Nullable final InputStream in, @Nonnull final char [] password) throws Exception
+  public KeyStore loadKeyStore (@Nullable final InputStream aIS, @Nonnull final char [] aPassword) throws Exception
   {
-    final KeyStore ks = getKeyStore ();
-    if (in != null)
-      ks.load (in, password);
-    return ks;
+    final KeyStore aKeyStore = getKeyStore ();
+    if (aIS != null)
+      aKeyStore.load (aIS, aPassword);
+    return aKeyStore;
   }
 
   @Nonnull
-  public KeyStore loadKeyStore (@Nonnull final String filename, @Nonnull final char [] password) throws Exception
+  public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
   {
-    final FileInputStream fIn = new FileInputStream (filename);
+    final FileInputStream aFIS = new FileInputStream (sFilename);
     try
     {
-      return loadKeyStore (fIn, password);
+      return loadKeyStore (aFIS, aPassword);
     }
     finally
     {
-      StreamUtils.close (fIn);
+      StreamUtils.close (aFIS);
     }
   }
 }

@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class DispositionException extends OpenAS2Exception
@@ -39,33 +42,36 @@ public class DispositionException extends OpenAS2Exception
   private final DispositionType m_aDisposition;
   private String m_sText;
 
-  public DispositionException (final DispositionType disposition, final String text, final Throwable cause)
+  public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
   {
-    super (disposition.toString ());
-    initCause (cause);
-    m_aDisposition = disposition;
-    m_sText = text;
+    super (aDisposition.toString ());
+    m_aDisposition = aDisposition;
+    m_sText = sText;
   }
 
-  public DispositionException (final DispositionType disposition, final String text)
+  public DispositionException (@Nonnull final DispositionType aDisposition,
+                               @Nullable final String sText,
+                               final Throwable aCause)
   {
-    super (disposition.toString ());
-    m_aDisposition = disposition;
-    m_sText = text;
+    super (aDisposition.toString (), aCause);
+    m_aDisposition = aDisposition;
+    m_sText = sText;
   }
 
+  @Nonnull
   public DispositionType getDisposition ()
   {
     return m_aDisposition;
   }
 
+  @Nullable
   public String getText ()
   {
     return m_sText;
   }
 
-  public void setText (final String string)
+  public void setText (@Nullable final String sText)
   {
-    m_sText = string;
+    m_sText = sText;
   }
 }

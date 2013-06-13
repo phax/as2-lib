@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib.partner;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class CASXPartnership
 {
   // Subject sent in MDN messages

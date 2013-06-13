@@ -50,15 +50,15 @@ public interface IPartnershipFactory extends IDynamicComponent
   String COMPID_PARTNERSHIP_FACTORY = "partnershipfactory";
 
   // throws an exception if the partnership doesn't exist
-  Partnership getPartnership (Partnership p) throws OpenAS2Exception;
+  Partnership getPartnership (Partnership aPartnership) throws OpenAS2Exception;
 
   // looks up and fills in any header info for a specific msg's partnership
-  void updatePartnership (IMessage msg, boolean overwrite) throws OpenAS2Exception;
+  void updatePartnership (IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
 
   // looks up and fills in any header info for a specific msg's partnership
-  void updatePartnership (IMessageMDN mdn, boolean overwrite) throws OpenAS2Exception;
+  void updatePartnership (IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
 
-  void setPartnerships (List <Partnership> list);
+  void setPartnerships (List <Partnership> aPartnerships);
 
   List <Partnership> getPartnerships ();
 

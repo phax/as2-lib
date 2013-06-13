@@ -45,29 +45,33 @@ import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
   // How many times should this message be sent?
-  protected final int retries (@Nullable final Map <String, Object> options)
+  protected final int retries (@Nullable final Map <String, Object> aOptions)
   {
-    String left = options == null ? null : (String) options.get (IProcessorSenderModule.SOPT_RETRIES);
-    if (left == null)
+    String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.SOPT_RETRIES);
+    if (sLeft == null)
     {
-      left = getParameterNotRequired (IProcessorSenderModule.SOPT_RETRIES);
-      if (left == null)
+      sLeft = getParameterNotRequired (IProcessorSenderModule.SOPT_RETRIES);
+      if (sLeft == null)
         return IProcessorSenderModule.DEFAULT_RETRIES;
     }
 
-    return Integer.parseInt (left);
+    return Integer.parseInt (sLeft);
   }
 
-  protected final boolean doResend (final String how, final IMessage msg, final OpenAS2Exception cause, final int tries) throws OpenAS2Exception
+  protected final boolean doResend (final String sHow,
+                                    final IMessage aMsg,
+                                    final OpenAS2Exception aCause,
+                                    final int nTries) throws OpenAS2Exception
   {
-    if (tries <= 0)
+    if (nTries <= 0)
       return false;
-    final Map <String, Object> options = new HashMap <String, Object> ();
-    options.put (IProcessorResenderModule.OPTION_CAUSE, cause);
-    options.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    options.put (IProcessorResenderModule.OPTION_RESEND_METHOD, how);
-    options.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (tries));
-    getSession ().getProcessor ().handle (IProcessorResenderModule.DO_RESEND, msg, options);
+
+    final Map <String, Object> aOptions = new HashMap <String, Object> ();
+    aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
+    aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
+    aOptions.put (IProcessorResenderModule.OPTION_RESEND_METHOD, sHow);
+    aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
+    getSession ().getProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
     return true;
   }
 }

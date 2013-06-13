@@ -36,5 +36,5 @@ import com.helger.as2lib.processor.module.IProcessorActiveModule;
 
 public interface IProcessorReceiverModule extends IProcessorActiveModule
 {
-
+  /* empty */
 }

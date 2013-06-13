@@ -36,8 +36,8 @@ import com.helger.as2lib.exception.WrappedException;
 
 public class ForcedStopException extends WrappedException
 {
-  public ForcedStopException (final Exception source)
+  public ForcedStopException (final Throwable aSource)
   {
-    super (source);
+    super (aSource);
   }
 }

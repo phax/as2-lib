@@ -36,5 +36,5 @@ import com.helger.as2lib.BaseComponent;
 
 public abstract class AbstractProcessorModule extends BaseComponent implements IProcessorModule
 {
-
+  /* empty */
 }

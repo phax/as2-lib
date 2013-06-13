@@ -36,16 +36,21 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class HttpResponseException extends OpenAS2Exception
 {
-  private final String m_sMessage;
   private final String m_sURL;
   private final int m_nCode;
+  private final String m_sMessage;
 
-  public HttpResponseException (final String url, final int code, final String message)
+  public HttpResponseException (final String sUrl, final int nCode, final String sMessage)
   {
-    super ("Http Response from " + url + ": " + Integer.toString (code) + " - " + message);
-    m_nCode = code;
-    m_sMessage = message;
-    m_sURL = url;
+    super ("Http Response from " + sUrl + ": " + Integer.toString (nCode) + " - " + sMessage);
+    m_sURL = sUrl;
+    m_nCode = nCode;
+    m_sMessage = sMessage;
+  }
+
+  public String getUrl ()
+  {
+    return m_sURL;
   }
 
   public int getCode ()
@@ -57,10 +62,5 @@ public class HttpResponseException extends OpenAS2Exception
   public String getMessage ()
   {
     return m_sMessage;
-  }
-
-  public String getUrl ()
-  {
-    return m_sURL;
   }
 }

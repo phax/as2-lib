@@ -32,135 +32,122 @@
  */
 package com.helger.as2lib.params;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.phloc.commons.string.StringHelper;
 
 public abstract class AbstractParameterParser
 {
-  public abstract void setParameter (String key, String value) throws InvalidParameterException;
+  public abstract void setParameter (String sKey, String sValue) throws InvalidParameterException;
 
-  public abstract String getParameter (String key) throws InvalidParameterException;
+  public abstract String getParameter (String sKey) throws InvalidParameterException;
 
   /**
    * Set parameters from a string, like
    * "msg.sender.as2_id=ME,msg.headers.content-type=application/X12"
    * 
-   * @param encodedParams
+   * @param sEncodedParams
    *        string to parse
    * @throws InvalidParameterException
    */
-  public void setParameters (final String encodedParams) throws InvalidParameterException
+  public void setParameters (final String sEncodedParams) throws InvalidParameterException
   {
-    final StringTokenizer params = new StringTokenizer (encodedParams, "=,", false);
-    while (params.hasMoreTokens ())
+    final StringTokenizer aParams = new StringTokenizer (sEncodedParams, "=,", false);
+    while (aParams.hasMoreTokens ())
     {
-      final String key = params.nextToken ().trim ();
+      final String sKey = aParams.nextToken ().trim ();
+      if (!aParams.hasMoreTokens ())
+        throw new InvalidParameterException ("Invalid value", this, sKey, null);
 
-      if (!params.hasMoreTokens ())
-      {
-        throw new InvalidParameterException ("Invalid value", this, key, null);
-      }
-
-      final String value = params.nextToken ();
-      setParameter (key, value);
+      final String sValue = aParams.nextToken ();
+      setParameter (sKey, sValue);
     }
   }
 
   /**
-   * Set parameters from a string seperated by delimiters.
+   * Set parameters from a string separated by delimiters.
    * 
-   * @param format
-   *        Comma seperated list of parameters to set, like
+   * @param sFormat
+   *        Comma separated list of parameters to set, like
    *        <code>msg.sender.as2_id,msg.receiver.as2_id,msg.header.content-type</code>
-   * @param delimiters
+   * @param sDelimiters
    *        delimiters in string to parse, like "-."
-   * @param value
+   * @param sValue
    *        string to parse, like <code>"NORINCO-WALMART.application/X12"</code>
    * @throws OpenAS2Exception
    */
-  public void setParameters (final String format, final String delimiters, final String value) throws OpenAS2Exception
+  public void setParameters (final String sFormat, final String sDelimiters, final String sValue) throws OpenAS2Exception
   {
-    final List <String> keys = StringHelper.getExploded (',', format);
+    final List <String> aKeys = StringHelper.getExploded (',', sFormat);
 
-    final StringTokenizer valueTokens = new StringTokenizer (value, delimiters, false);
-    final Iterator <String> keyIt = keys.iterator ();
-    while (keyIt.hasNext ())
+    final StringTokenizer aValueTokens = new StringTokenizer (sValue, sDelimiters, false);
+    for (final String sKey : aKeys)
     {
-      if (!valueTokens.hasMoreTokens ())
-        throw new OpenAS2Exception ("Invalid value: Format=" + format + ", value=" + value);
+      if (!aValueTokens.hasMoreTokens ())
+        throw new OpenAS2Exception ("Invalid value: Format=" + sFormat + ", value=" + sValue);
 
-      final String key = keyIt.next ().trim ();
-      if (key.length () > 0)
-      {
-        setParameter (key, valueTokens.nextToken ());
-      }
+      if (sKey.length () > 0)
+        setParameter (sKey, aValueTokens.nextToken ());
     }
   }
 
   /**
    * Static way (why?) of getting at format method.
    * 
-   * @param format
+   * @param sFormat
    *        the format to fill in
-   * @param parser
+   * @param aParser
    *        the place to get the parsed info
    * @return the filled in format
    * @throws InvalidParameterException
    */
-  public static String parse (final String format, final AbstractParameterParser parser) throws InvalidParameterException
+  public static String parse (final String sFormat, final AbstractParameterParser aParser) throws InvalidParameterException
   {
-    return parser.format (format);
+    return aParser.format (sFormat);
   }
 
   /**
    * Fill in a format string with information from a ParameterParser
    * 
-   * @param format
+   * @param sFormat
    *        the format string to fill in
    * @return the filled in format string.
    * @throws InvalidParameterException
    */
-  public String format (final String format) throws InvalidParameterException
+  public String format (final String sFormat) throws InvalidParameterException
   {
-    final StringBuilder result = new StringBuilder ();
-    for (int next = 0; next < format.length (); ++next)
+    final StringBuilder aResult = new StringBuilder ();
+    for (int nNext = 0; nNext < sFormat.length (); ++nNext)
     {
-      int prev = next;
+      int nPrev = nNext;
 
       // Find start of $xxx$ sequence.
-      next = format.indexOf ('$', prev);
-      if (next == -1)
+      nNext = sFormat.indexOf ('$', nPrev);
+      if (nNext == -1)
       {
-        result.append (format.substring (prev, format.length ()));
+        aResult.append (sFormat.substring (nPrev, sFormat.length ()));
         break;
       }
 
       // Save text before $xxx$ sequence, if there is any
-      if (next > prev)
-        result.append (format.substring (prev, next));
+      if (nNext > nPrev)
+        aResult.append (sFormat.substring (nPrev, nNext));
 
       // Find end of $xxx$ sequence
-      prev = next + 1;
-      next = format.indexOf ('$', prev);
-      if (next == -1)
+      nPrev = nNext + 1;
+      nNext = sFormat.indexOf ('$', nPrev);
+      if (nNext == -1)
         throw new InvalidParameterException ("Invalid key (missing closing $)");
 
       // If we have just $$ then output $, else we have $xxx$, lookup xxx
-      if (next == prev)
-      {
-        result.append ("$");
-      }
+      if (nNext == nPrev)
+        aResult.append ("$");
       else
-      {
-        result.append (getParameter (format.substring (prev, next)));
-      }
+        aResult.append (getParameter (sFormat.substring (nPrev, nNext)));
     }
 
-    return result.toString ();
+    return aResult.toString ();
   }
 }

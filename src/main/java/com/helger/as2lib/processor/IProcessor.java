@@ -45,11 +45,11 @@ public interface IProcessor extends IDynamicComponent
 {
   String COMPID_PROCESSOR = "processor";
 
-  void handle (String action, IMessage msg, Map <String, Object> options) throws OpenAS2Exception;
+  void handle (String sAction, IMessage aMsg, Map <String, Object> aOptions) throws OpenAS2Exception;
 
   List <IProcessorModule> getModules ();
 
-  void setModules (List <IProcessorModule> modules);
+  void setModules (List <IProcessorModule> aModules);
 
   void startActiveModules ();
 

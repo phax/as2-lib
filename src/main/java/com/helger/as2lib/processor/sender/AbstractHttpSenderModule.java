@@ -35,11 +35,10 @@ package com.helger.as2lib.processor.sender;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import javax.annotation.Nonnull;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -51,60 +50,45 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public static final String PARAM_READ_TIMEOUT = "readtimeout";
   public static final String PARAM_CONNECT_TIMEOUT = "connecttimeout";
 
-  public HttpURLConnection getConnection (final String url,
-                                          final boolean output,
-                                          final boolean input,
-                                          final boolean useCaches,
-                                          final String requestMethod) throws OpenAS2Exception
+  @Nonnull
+  public HttpURLConnection getConnection (final String sUrl,
+                                          final boolean bOutput,
+                                          final boolean bInput,
+                                          final boolean bUseCaches,
+                                          final String sRequestMethod) throws OpenAS2Exception
   {
     try
     {
-      final URL urlObj = new URL (url);
-      HttpURLConnection conn;
-      conn = (HttpURLConnection) urlObj.openConnection ();
-      conn.setDoOutput (output);
-      conn.setDoInput (input);
-      conn.setUseCaches (useCaches);
-      conn.setRequestMethod (requestMethod);
-      conn.setConnectTimeout (getParameterInt (PARAM_CONNECT_TIMEOUT, 60000));
-      conn.setReadTimeout (getParameterInt (PARAM_READ_TIMEOUT, 60000));
-      return conn;
+      final URL aUrlObj = new URL (sUrl);
+      final HttpURLConnection aConn = (HttpURLConnection) aUrlObj.openConnection ();
+      aConn.setDoOutput (bOutput);
+      aConn.setDoInput (bInput);
+      aConn.setUseCaches (bUseCaches);
+      aConn.setRequestMethod (sRequestMethod);
+      aConn.setConnectTimeout (getParameterInt (PARAM_CONNECT_TIMEOUT, 60000));
+      aConn.setReadTimeout (getParameterInt (PARAM_READ_TIMEOUT, 60000));
+      return aConn;
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedException (ex);
     }
   }
 
   // Copy headers from an Http connection to an InternetHeaders object
-  protected void copyHttpHeaders (final HttpURLConnection conn, final InternetHeaders headers)
+  protected void copyHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final InternetHeaders aHeaders)
   {
-    final Iterator <Entry <String, List <String>>> connHeadersIt = conn.getHeaderFields ().entrySet ().iterator ();
-    Iterator <String> connValuesIt;
-    Map.Entry <String, List <String>> connHeader;
-    String headerName;
-
-    while (connHeadersIt.hasNext ())
+    for (final Map.Entry <String, List <String>> aConnHeader : aConn.getHeaderFields ().entrySet ())
     {
-      connHeader = connHeadersIt.next ();
-      headerName = connHeader.getKey ();
-
-      if (headerName != null)
+      final String sHeaderName = aConnHeader.getKey ();
+      if (sHeaderName != null)
       {
-        connValuesIt = connHeader.getValue ().iterator ();
-
-        while (connValuesIt.hasNext ())
+        for (final String sValue : aConnHeader.getValue ())
         {
-          final String value = connValuesIt.next ();
-
-          if (headers.getHeader (headerName) == null)
-          {
-            headers.setHeader (headerName, value);
-          }
+          if (aHeaders.getHeader (sHeaderName) == null)
+            aHeaders.setHeader (sHeaderName, sValue);
           else
-          {
-            headers.addHeader (headerName, value);
-          }
+            aHeaders.addHeader (sHeaderName, sValue);
         }
       }
     }

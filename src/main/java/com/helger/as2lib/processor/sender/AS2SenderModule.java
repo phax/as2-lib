@@ -78,47 +78,46 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
 
-  public boolean canHandle (final String action, final IMessage msg, final Map <String, Object> options)
+  public boolean canHandle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    if (!action.equals (IProcessorSenderModule.DO_SEND))
+    if (!sAction.equals (IProcessorSenderModule.DO_SEND))
       return false;
-    return msg instanceof AS2Message;
+    return aMsg instanceof AS2Message;
   }
 
-  public void handle (final String action, @Nonnull final IMessage aMsg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAction, @Nonnull final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     s_aLogger.info ("message submitted" + aMsg.getLoggingText ());
-
     if (!(aMsg instanceof AS2Message))
       throw new OpenAS2Exception ("Can't send non-AS2 message");
 
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    final int nRetries = retries (options);
+    final int nRetries = retries (aOptions);
 
     try
     {
       // encrypt and/or sign the message if needed
-      final MimeBodyPart securedData = secure (aMsg);
-      aMsg.setContentType (securedData.getContentType ());
+      final MimeBodyPart aSecuredData = secure (aMsg);
+      aMsg.setContentType (aSecuredData.getContentType ());
 
       // Create the HTTP connection and set up headers
-      final String url = aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_URL);
-      final HttpURLConnection conn = getConnection (url, true, true, false, "POST");
+      final String sUrl = aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_URL);
+      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
       try
       {
-        updateHttpHeaders (conn, aMsg);
-        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, conn.getURL ().getHost ());
-        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (conn.getURL ().getPort ()));
-        final DispositionOptions dispOptions = new DispositionOptions (conn.getRequestProperty ("Disposition-Notification-Options"));
+        updateHttpHeaders (aConn, aMsg);
+        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
+        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
+        final DispositionOptions aDispOptions = new DispositionOptions (aConn.getRequestProperty ("Disposition-Notification-Options"));
 
         // Calculate and get the original mic
         final boolean bIncludeHeaders = aMsg.getHistory ().getItemCount () > 1;
 
-        final String mic = AS2Util.getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                                                    dispOptions.getMicalg (),
-                                                                    bIncludeHeaders);
+        final String sMIC = AS2Util.getCryptoHelper ().calculateMIC (aMsg.getData (),
+                                                                     aDispOptions.getMICAlg (),
+                                                                     bIncludeHeaders);
 
         if (aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) != null)
         {
@@ -126,25 +125,25 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           // then keep the original mic & message id.
           // then wait for the another HTTP call by receivers
 
-          storePendingInfo ((AS2Message) aMsg, mic);
+          storePendingInfo ((AS2Message) aMsg, sMIC);
         }
 
-        s_aLogger.info ("connecting to " + url + aMsg.getLoggingText ());
+        s_aLogger.info ("connecting to " + sUrl + aMsg.getLoggingText ());
 
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
-        final OutputStream messageOut = conn.getOutputStream ();
+        final OutputStream aMsgOS = aConn.getOutputStream ();
 
         // Transfer the data
-        final InputStream messageIn = securedData.getInputStream ();
+        final InputStream aMsgIS = aSecuredData.getInputStream ();
 
         final StopWatch aSW = new StopWatch (true);
-        final long bytes = IOUtil.copy (messageIn, messageOut);
+        final long nBytes = IOUtil.copy (aMsgIS, aMsgOS);
         aSW.stop ();
-        s_aLogger.info ("transferred " + IOUtil.getTransferRate (bytes, aSW) + aMsg.getLoggingText ());
+        s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
         // Check the HTTP Response code
-        final int nResponseCode = conn.getResponseCode ();
+        final int nResponseCode = aConn.getResponseCode ();
         if (nResponseCode != HttpURLConnection.HTTP_OK &&
             nResponseCode != HttpURLConnection.HTTP_CREATED &&
             nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
@@ -152,12 +151,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
           s_aLogger.error ("error url " +
-                           url.toString () +
+                           sUrl.toString () +
                            " rc " +
                            nResponseCode +
                            " rm " +
-                           conn.getResponseMessage ());
-          throw new HttpResponseException (url.toString (), nResponseCode, conn.getResponseMessage ());
+                           aConn.getResponseMessage ());
+          throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
         }
 
         // Asynch MDN 2007-03-12
@@ -167,61 +166,58 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           // Receive an MDN
           if (aMsg.isRequestingMDN ())
           {
-
             // Check if the AsyncMDN is required
             if (aMsg.getPartnership ().getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION) == null)
             {
               // go ahead to receive sync MDN
-              receiveMDN ((AS2Message) aMsg, conn, mic);
+              receiveMDN ((AS2Message) aMsg, aConn, sMIC);
               s_aLogger.info ("message sent" + aMsg.getLoggingText ());
             }
           }
 
         }
-        catch (final DispositionException de)
+        catch (final DispositionException ex)
         {
           // If a disposition error hasn't been handled, the message transfer
           // was not successful
-          throw de;
+          throw ex;
         }
-        catch (final OpenAS2Exception oae)
+        catch (final OpenAS2Exception ex)
         {
           // Don't resend or fail, just log an error if one occurs while
           // receiving the MDN
-          s_aLogger.error (OpenAS2Exception.SOURCE_MESSAGE, oae);
+          s_aLogger.error (OpenAS2Exception.SOURCE_MESSAGE, ex);
           final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN");
-          oae2.initCause (oae);
+          oae2.initCause (ex);
           oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           oae2.terminate ();
         }
-
       }
       finally
       {
-        conn.disconnect ();
+        aConn.disconnect ();
       }
-
     }
-    catch (final HttpResponseException hre)
+    catch (final HttpResponseException ex)
     {
       // Resend if the HTTP Response has an error code
-      s_aLogger.error ("error hre " + hre.getMessage ());
-      hre.terminate ();
-      _resend (aMsg, hre, nRetries);
+      s_aLogger.error ("error hre " + ex.getMessage ());
+      ex.terminate ();
+      _resend (aMsg, ex, nRetries);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
-      final WrappedException wioe = new WrappedException (ioe);
+      final WrappedException wioe = new WrappedException (ex);
       wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
       _resend (aMsg, wioe, nRetries);
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a resend
-      throw new WrappedException (e);
+      throw new WrappedException (ex);
     }
   }
 
@@ -229,89 +225,89 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   // added originalmic
 
   /**
-   * @param msg
+   * @param aMsg
    *        AS2Message
-   * @param conn
+   * @param aConn
    *        URLConnection
-   * @param originalmic
+   * @param sOriginalMIC
    *        mic value from original msg
    */
-  protected void receiveMDN (final AS2Message msg, final HttpURLConnection conn, final String originalmic) throws OpenAS2Exception,
-                                                                                                          IOException
+  protected void receiveMDN (final AS2Message aMsg, final HttpURLConnection aConn, final String sOriginalMIC) throws OpenAS2Exception,
+                                                                                                             IOException
   {
     try
     {
       // Create a MessageMDN and copy HTTP headers
-      final IMessageMDN mdn = new AS2MessageMDN (msg);
-      copyHttpHeaders (conn, mdn.getHeaders ());
+      final IMessageMDN aMdn = new AS2MessageMDN (aMsg);
+      copyHttpHeaders (aConn, aMdn.getHeaders ());
 
       // Receive the MDN data
-      final InputStream connIn = conn.getInputStream ();
+      final InputStream aConnIn = aConn.getInputStream ();
       final NonBlockingByteArrayOutputStream mdnStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
-      final long nContentLength = StringParser.parseLong (mdn.getHeader ("Content-Length"), -1);
+      final long nContentLength = StringParser.parseLong (aMdn.getHeader ("Content-Length"), -1);
       if (nContentLength >= 0)
-        IOUtil.copy (connIn, mdnStream, nContentLength);
+        IOUtil.copy (aConnIn, mdnStream, nContentLength);
       else
-        StreamUtils.copyInputStreamToOutputStream (connIn, mdnStream);
+        StreamUtils.copyInputStreamToOutputStream (aConnIn, mdnStream);
 
-      final MimeBodyPart part = new MimeBodyPart (mdn.getHeaders (), mdnStream.toByteArray ());
-      msg.getMDN ().setData (part);
+      final MimeBodyPart aPart = new MimeBodyPart (aMdn.getHeaders (), mdnStream.toByteArray ());
+      aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      mdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_FROM));
-      mdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, mdn.getHeader (CAS2Header.AS2_TO));
-      getSession ().getPartnershipFactory ().updatePartnership (mdn, false);
+      aMdn.getPartnership ().setSenderID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
+      aMdn.getPartnership ().setReceiverID (CAS2Partnership.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+      getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
-      final ICertificateFactory cFx = getSession ().getCertificateFactory ();
-      final X509Certificate senderCert = cFx.getCertificate (mdn, Partnership.PTYPE_SENDER);
+      final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PTYPE_SENDER);
 
-      AS2Util.parseMDN (msg, senderCert);
+      AS2Util.parseMDN (aMsg, aSenderCert);
 
-      getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, msg, null);
+      getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
 
-      final String disposition = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+      final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
 
-      s_aLogger.info ("received MDN [" + disposition + "]" + msg.getLoggingText ());
+      s_aLogger.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN
-      final String returnmic = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_MIC);
+      final String sReturnMIC = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_MIC);
 
-      if (!returnmic.replaceAll (" ", "").equals (originalmic.replaceAll (" ", "")))
+      if (!sReturnMIC.replaceAll (" ", "").equals (sOriginalMIC.replaceAll (" ", "")))
       {
         // file was sent completely but the returned mic was not matched,
         // don't know it needs or needs not to be resent ? it's depended on
         // what!
         // anyway, just log the warning message here.
         s_aLogger.info ("mic is not matched, original mic: " +
-                        originalmic +
+                        sOriginalMIC +
                         " return mic: " +
-                        returnmic +
-                        msg.getLoggingText ());
+                        sReturnMIC +
+                        aMsg.getLoggingText ());
       }
       else
       {
-        s_aLogger.info ("mic is matched, mic: " + returnmic + msg.getLoggingText ());
+        s_aLogger.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
       }
 
       try
       {
-        new DispositionType (disposition).validate ();
+        new DispositionType (sDisposition).validate ();
       }
-      catch (final DispositionException de)
+      catch (final DispositionException ex)
       {
-        de.setText (msg.getMDN ().getText ());
+        ex.setText (aMsg.getMDN ().getText ());
 
-        if (de.getDisposition () != null && de.getDisposition ().isWarning ())
+        if (ex.getDisposition () != null && ex.getDisposition ().isWarning ())
         {
-          de.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-          de.terminate ();
+          ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+          ex.terminate ();
         }
         else
         {
-          throw de;
+          throw ex;
         }
       }
     }
@@ -319,190 +315,190 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       throw ex;
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      final WrappedException we = new WrappedException (e);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
+      final WrappedException we = new WrappedException (ex);
+      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }
   }
 
-  protected void checkRequired (final IMessage msg) throws InvalidParameterException
+  protected void checkRequired (@Nonnull final IMessage aMsg) throws InvalidParameterException
   {
-    final Partnership partnership = msg.getPartnership ();
+    final Partnership aPartnership = aMsg.getPartnership ();
 
     try
     {
-      InvalidParameterException.checkValue (msg, "ContentType", msg.getContentType ());
-      InvalidParameterException.checkValue (msg,
+      InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
+      InvalidParameterException.checkValue (aMsg,
                                             "Attribute: " + CAS2Partnership.PA_AS2_URL,
-                                            partnership.getAttribute (CAS2Partnership.PA_AS2_URL));
-      InvalidParameterException.checkValue (msg,
+                                            aPartnership.getAttribute (CAS2Partnership.PA_AS2_URL));
+      InvalidParameterException.checkValue (aMsg,
                                             "Receiver: " + CAS2Partnership.PID_AS2,
-                                            partnership.getReceiverID (CAS2Partnership.PID_AS2));
-      InvalidParameterException.checkValue (msg,
+                                            aPartnership.getReceiverID (CAS2Partnership.PID_AS2));
+      InvalidParameterException.checkValue (aMsg,
                                             "Sender: " + CAS2Partnership.PID_AS2,
-                                            partnership.getSenderID (CAS2Partnership.PID_AS2));
-      InvalidParameterException.checkValue (msg, "Subject", msg.getSubject ());
-      InvalidParameterException.checkValue (msg,
+                                            aPartnership.getSenderID (CAS2Partnership.PID_AS2));
+      InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
+      InvalidParameterException.checkValue (aMsg,
                                             "Sender: " + Partnership.PID_EMAIL,
-                                            partnership.getSenderID (Partnership.PID_EMAIL));
-      InvalidParameterException.checkValue (msg, "Message Data", msg.getData ());
+                                            aPartnership.getSenderID (Partnership.PID_EMAIL));
+      InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
-    catch (final InvalidParameterException rpe)
+    catch (final InvalidParameterException ex)
     {
-      rpe.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-      throw rpe;
+      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      throw ex;
     }
   }
 
-  private void _resend (final IMessage msg, final OpenAS2Exception cause, final int tries) throws OpenAS2Exception
+  private void _resend (@Nonnull final IMessage aMsg, final OpenAS2Exception aCause, final int nTries) throws OpenAS2Exception
   {
-    if (!doResend (IProcessorSenderModule.DO_SEND, msg, cause, tries))
+    if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, aCause, nTries))
     {
-      // Oh dear, we've run out of reetries, do something interesting.
+      // Oh dear, we've run out of retries, do something interesting.
       // TODO create a fake failure MDN
-      s_aLogger.info ("Message abandoned" + msg.getLoggingText ());
+      s_aLogger.info ("Message abandoned" + aMsg.getLoggingText ());
     }
   }
 
   // Returns a MimeBodyPart or MimeMultipart object
-  protected MimeBodyPart secure (final IMessage msg) throws Exception
+  protected MimeBodyPart secure (final IMessage aMsg) throws Exception
   {
     // Set up encrypt/sign variables
-    MimeBodyPart aDataBP = msg.getData ();
+    MimeBodyPart aDataBP = aMsg.getData ();
 
-    final Partnership partnership = msg.getPartnership ();
-    final boolean encrypt = partnership.getAttribute (CSecurePartnership.PA_ENCRYPT) != null;
-    final boolean sign = partnership.getAttribute (CSecurePartnership.PA_SIGN) != null;
+    final Partnership aPartnership = aMsg.getPartnership ();
+    final boolean bEncrypt = aPartnership.getAttribute (CSecurePartnership.PA_ENCRYPT) != null;
+    final boolean bSign = aPartnership.getAttribute (CSecurePartnership.PA_SIGN) != null;
 
     // Encrypt and/or sign the data if requested
-    if (encrypt || sign)
+    if (bEncrypt || bSign)
     {
-      final ICertificateFactory certFx = getSession ().getCertificateFactory ();
+      final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
 
       // Sign the data if requested
-      if (sign)
+      if (bSign)
       {
-        final X509Certificate senderCert = certFx.getCertificate (msg, Partnership.PTYPE_SENDER);
-        final PrivateKey senderKey = certFx.getPrivateKey (msg, senderCert);
-        final String sAlgorithm = partnership.getAttribute (CSecurePartnership.PA_SIGN);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_SENDER);
+        final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
+        final String sAlgorithm = aPartnership.getAttribute (CSecurePartnership.PA_SIGN);
 
-        aDataBP = AS2Util.getCryptoHelper ().sign (aDataBP, senderCert, senderKey, sAlgorithm);
+        aDataBP = AS2Util.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, sAlgorithm);
 
         // Asynch MDN 2007-03-12
-        final DataHistoryItem historyItem = new DataHistoryItem (aDataBP.getContentType ());
+        final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
         // *** add one more item to msg history
-        msg.getHistory ().addItem (historyItem);
+        aMsg.getHistory ().addItem (aHistoryItem);
 
-        s_aLogger.debug ("signed data" + msg.getLoggingText ());
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("signed data" + aMsg.getLoggingText ());
       }
 
       // Encrypt the data if requested
-      if (encrypt)
+      if (bEncrypt)
       {
-        final String sAlgorithm = partnership.getAttribute (CSecurePartnership.PA_ENCRYPT);
+        final String sAlgorithm = aPartnership.getAttribute (CSecurePartnership.PA_ENCRYPT);
 
-        final X509Certificate receiverCert = certFx.getCertificate (msg, Partnership.PTYPE_RECEIVER);
-        aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, receiverCert, sAlgorithm);
+        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PTYPE_RECEIVER);
+        aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, sAlgorithm);
 
         // Asynch MDN 2007-03-12
-        final DataHistoryItem historyItem = new DataHistoryItem (aDataBP.getContentType ());
+        final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
         // *** add one more item to msg history
-        msg.getHistory ().addItem (historyItem);
+        aMsg.getHistory ().addItem (aHistoryItem);
 
-        s_aLogger.debug ("encrypted data" + msg.getLoggingText ());
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("encrypted data" + aMsg.getLoggingText ());
       }
     }
 
     return aDataBP;
   }
 
-  protected void updateHttpHeaders (@Nonnull final HttpURLConnection conn, @Nonnull final IMessage msg)
+  protected void updateHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final IMessage aMsg)
   {
-    final Partnership partnership = msg.getPartnership ();
+    final Partnership aPartnership = aMsg.getPartnership ();
 
-    conn.setRequestProperty ("Connection", "close, TE");
-    conn.setRequestProperty ("User-Agent", "OpenAS2 AS2Sender");
+    aConn.setRequestProperty ("Connection", "close, TE");
+    aConn.setRequestProperty ("User-Agent", "OpenAS2 AS2Sender");
 
-    conn.setRequestProperty ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
-    conn.setRequestProperty ("Message-ID", msg.getMessageID ());
+    aConn.setRequestProperty ("Date", DateUtil.formatDate ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aConn.setRequestProperty ("Message-ID", aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    conn.setRequestProperty ("Mime-Version", "1.0");
-    conn.setRequestProperty ("Content-type", msg.getContentType ());
-    conn.setRequestProperty (CAS2Header.AS2_VERSION, "1.1");
-    conn.setRequestProperty ("Recipient-Address", partnership.getAttribute (CAS2Partnership.PA_AS2_URL));
-    conn.setRequestProperty (CAS2Header.AS2_TO, partnership.getReceiverID (CAS2Partnership.PID_AS2));
-    conn.setRequestProperty (CAS2Header.AS2_FROM, partnership.getSenderID (CAS2Partnership.PID_AS2));
-    conn.setRequestProperty ("Subject", msg.getSubject ());
-    conn.setRequestProperty ("From", partnership.getSenderID (Partnership.PID_EMAIL));
+    aConn.setRequestProperty ("Mime-Version", "1.0");
+    aConn.setRequestProperty ("Content-type", aMsg.getContentType ());
+    aConn.setRequestProperty (CAS2Header.AS2_VERSION, "1.1");
+    aConn.setRequestProperty ("Recipient-Address", aPartnership.getAttribute (CAS2Partnership.PA_AS2_URL));
+    aConn.setRequestProperty (CAS2Header.AS2_TO, aPartnership.getReceiverID (CAS2Partnership.PID_AS2));
+    aConn.setRequestProperty (CAS2Header.AS2_FROM, aPartnership.getSenderID (CAS2Partnership.PID_AS2));
+    aConn.setRequestProperty ("Subject", aMsg.getSubject ());
+    aConn.setRequestProperty ("From", aPartnership.getSenderID (Partnership.PID_EMAIL));
 
-    final String dispTo = partnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO);
-    if (dispTo != null)
-      conn.setRequestProperty ("Disposition-Notification-To", dispTo);
+    final String sDispTo = aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_TO);
+    if (sDispTo != null)
+      aConn.setRequestProperty ("Disposition-Notification-To", sDispTo);
 
-    final String dispOptions = partnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS);
-    if (dispOptions != null)
-      conn.setRequestProperty ("Disposition-Notification-Options", dispOptions);
+    final String sDispOptions = aPartnership.getAttribute (CAS2Partnership.PA_AS2_MDN_OPTIONS);
+    if (sDispOptions != null)
+      aConn.setRequestProperty ("Disposition-Notification-Options", sDispOptions);
 
     // Asynch MDN 2007-03-12
-    final String receiptOption = partnership.getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION);
-    if (receiptOption != null)
-      conn.setRequestProperty ("Receipt-delivery-option", receiptOption);
+    final String sReceiptOption = aPartnership.getAttribute (CAS2Partnership.PA_AS2_RECEIPT_OPTION);
+    if (sReceiptOption != null)
+      aConn.setRequestProperty ("Receipt-delivery-option", sReceiptOption);
 
     // As of 2007-06-01
-    final String contentDisp = msg.getContentDisposition ();
-    if (contentDisp != null)
-      conn.setRequestProperty ("Content-Disposition", contentDisp);
+    final String sContentDisp = aMsg.getContentDisposition ();
+    if (sContentDisp != null)
+      aConn.setRequestProperty ("Content-Disposition", sContentDisp);
   }
 
   // Asynch MDN 2007-03-12
   /**
    * for storing original mic & outgoing file into pending information file
    * 
-   * @param msg
+   * @param aMsg
    *        AS2Message
-   * @param mic
+   * @param sMIC
    * @throws WrappedException
    */
-  protected void storePendingInfo (final AS2Message msg, final String mic) throws WrappedException
+  protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws WrappedException
   {
     try
     {
-
       final String pendingFolder = getSession ().getComponent ("processor").getParameters ().get ("pendingmdninfo");
 
-      final FileOutputStream fos = new FileOutputStream (pendingFolder +
-                                                         "/" +
-                                                         msg.getMessageID ()
-                                                            .substring (1, msg.getMessageID ().length () - 1));
-      fos.write ((mic + "\n").getBytes ());
-      s_aLogger.debug ("Original MIC is : " + mic + msg.getLoggingText ());
+      final FileOutputStream aFOS = new FileOutputStream (pendingFolder +
+                                                          "/" +
+                                                          aMsg.getMessageID ().substring (1,
+                                                                                          aMsg.getMessageID ()
+                                                                                              .length () - 1));
+      aFOS.write ((sMIC + "\n").getBytes ());
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Original MIC is : " + sMIC + aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name
       // in order to avoid file overwritting.
-      final String pendingFile = getSession ().getComponent ("processor").getParameters ().get ("pendingmdn") +
-                                 "/" +
-                                 msg.getMessageID ().substring (1, msg.getMessageID ().length () - 1);
+      final String sPendingFile = getSession ().getComponent ("processor").getParameters ().get ("pendingmdn") +
+                                  "/" +
+                                  aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1);
 
       s_aLogger.info ("Save Original mic & message id. information into folder : " +
-                      pendingFile +
-                      msg.getLoggingText ());
-      fos.write (pendingFile.getBytes ());
-      fos.close ();
-      msg.setAttribute (CFileAttribute.MA_PENDINGFILE, pendingFile);
-      msg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_PENDING);
-
+                      sPendingFile +
+                      aMsg.getLoggingText ());
+      aFOS.write (sPendingFile.getBytes ());
+      aFOS.close ();
+      aMsg.setAttribute (CFileAttribute.MA_PENDINGFILE, sPendingFile);
+      aMsg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_PENDING);
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-
-      final WrappedException we = new WrappedException (e);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
+      final WrappedException we = new WrappedException (ex);
+      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
-
     }
   }
-
 }

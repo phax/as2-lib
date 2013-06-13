@@ -90,9 +90,9 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   }
 
   @Override
-  public void initDynamicComponent (final ISession session, final Map <String, String> options) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
   {
-    super.initDynamicComponent (session, options);
+    super.initDynamicComponent (aSession, aOptions);
 
     // Ensure port parameter is present
     getParameterRequired (PARAM_PORT);
@@ -100,61 +100,56 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
   protected abstract INetModuleHandler getHandler ();
 
-  public void handleError (final IMessage msg, final OpenAS2Exception oae)
+  public void handleError (final IMessage aMsg, final OpenAS2Exception aSrcEx)
   {
-    oae.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-    oae.terminate ();
+    aSrcEx.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+    aSrcEx.terminate ();
 
     try
     {
-      final CompositeParameters params = new CompositeParameters (false).add ("date", new DateParameters ())
-                                                                        .add ("msg", new MessageParameters (msg));
+      final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
+                                                                         .add ("msg", new MessageParameters (aMsg));
 
-      final String name = params.format (getParameter (PARAM_ERRORS, DEFAULT_ERRORS));
-      final String directory = getParameterRequired (PARAM_ERROR_DIRECTORY);
+      final String sName = aParams.format (getParameter (PARAM_ERRORS, DEFAULT_ERRORS));
+      final String sDirectory = getParameterRequired (PARAM_ERROR_DIRECTORY);
 
-      final File msgFile = IOUtil.getUnique (IOUtil.getDirectoryFile (directory),
-                                             FilenameHelper.getAsSecureValidFilename (name));
-      final String msgText = msg.toString ();
-      final FileOutputStream fOut = new FileOutputStream (msgFile);
+      final File aMsgFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sDirectory),
+                                                  FilenameHelper.getAsSecureValidFilename (sName));
+      final String sMsgText = aMsg.toString ();
+      final FileOutputStream aFOS = new FileOutputStream (aMsgFile);
 
-      fOut.write (msgText.getBytes ());
-      fOut.close ();
+      aFOS.write (sMsgText.getBytes ());
+      aFOS.close ();
 
       // make sure an error of this event is logged
       final InvalidMessageException im = new InvalidMessageException ("Stored invalid message to " +
-                                                                      msgFile.getAbsolutePath ());
+                                                                      aMsgFile.getAbsolutePath ());
       im.terminate ();
     }
-    catch (final OpenAS2Exception oae2)
+    catch (final OpenAS2Exception ex)
     {
-      oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-      oae2.terminate ();
+      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      ex.terminate ();
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      final WrappedException we = new WrappedException (ioe);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
+      final WrappedException we = new WrappedException (ex);
+      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       we.terminate ();
     }
   }
 
   protected static final class ConnectionThread extends Thread
   {
-    private AbstractNetModule m_aOwner;
+    private final AbstractNetModule m_aOwner;
     private final Socket m_aSocket;
 
-    public ConnectionThread (final AbstractNetModule owner, final Socket socket)
+    public ConnectionThread (final AbstractNetModule aOwner, final Socket aSocket)
     {
       super ();
-      m_aOwner = owner;
-      m_aSocket = socket;
+      m_aOwner = aOwner;
+      m_aSocket = aSocket;
       start ();
-    }
-
-    public void setOwner (final AbstractNetModule owner)
-    {
-      m_aOwner = owner;
     }
 
     public AbstractNetModule getOwner ()
@@ -178,9 +173,9 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       {
         s.close ();
       }
-      catch (final IOException sce)
+      catch (final IOException ex)
       {
-        new WrappedException (sce).terminate ();
+        new WrappedException (ex).terminate ();
       }
     }
   }
@@ -189,30 +184,19 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (MainThread.class);
 
-    private AbstractNetModule m_aOwner;
+    private final AbstractNetModule m_aOwner;
     private final ServerSocket m_aSocket;
     private boolean m_bTerminated;
 
-    public MainThread (final AbstractNetModule owner, final String address, final int port) throws IOException
+    public MainThread (final AbstractNetModule aOwner, final String sAddress, final int nPort) throws IOException
     {
       super ();
-      m_aOwner = owner;
-
+      m_aOwner = aOwner;
       m_aSocket = new ServerSocket ();
-
-      if (address != null)
-      {
-        m_aSocket.bind (new InetSocketAddress (address, port));
-      }
+      if (sAddress != null)
+        m_aSocket.bind (new InetSocketAddress (sAddress, nPort));
       else
-      {
-        m_aSocket.bind (new InetSocketAddress (port));
-      }
-    }
-
-    public void setOwner (final AbstractNetModule owner)
-    {
-      m_aOwner = owner;
+        m_aSocket.bind (new InetSocketAddress (nPort));
     }
 
     public AbstractNetModule getOwner ()
@@ -225,19 +209,18 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       return m_aSocket;
     }
 
-    public void setTerminated (final boolean terminated)
+    public void setTerminated (final boolean bTerminated)
     {
-      m_bTerminated = terminated;
-
+      m_bTerminated = bTerminated;
       if (m_aSocket != null)
       {
         try
         {
           m_aSocket.close ();
         }
-        catch (final IOException e)
+        catch (final IOException ex)
         {
-          m_aOwner.forceStop (e);
+          m_aOwner.forceStop (ex);
         }
       }
     }
@@ -254,16 +237,14 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       {
         try
         {
-          final Socket conn = m_aSocket.accept ();
-          conn.setSoLinger (true, 60);
-          new ConnectionThread (getOwner (), conn);
+          final Socket aConn = m_aSocket.accept ();
+          aConn.setSoLinger (true, 60);
+          new ConnectionThread (getOwner (), aConn);
         }
-        catch (final IOException e)
+        catch (final IOException ex)
         {
           if (!isTerminated ())
-          {
-            m_aOwner.forceStop (e);
-          }
+            m_aOwner.forceStop (ex);
         }
       }
 

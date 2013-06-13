@@ -33,10 +33,13 @@
 package com.helger.as2lib.params;
 
 import java.io.PrintWriter;
-import java.io.StringWriter;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
+import com.phloc.commons.io.streams.NonBlockingStringWriter;
 
 public class ExceptionParameters extends AbstractParameterParser
 {
@@ -48,86 +51,66 @@ public class ExceptionParameters extends AbstractParameterParser
   private OpenAS2Exception m_aTarget;
   private final boolean m_bTerminated;
 
-  public ExceptionParameters (final OpenAS2Exception target, final boolean terminated)
+  public ExceptionParameters (final OpenAS2Exception aTarget, final boolean bTerminated)
   {
     super ();
-    m_aTarget = target;
-    m_bTerminated = terminated;
+    m_aTarget = aTarget;
+    m_bTerminated = bTerminated;
   }
 
   @Override
-  public void setParameter (final String key, final String value) throws InvalidParameterException
+  public void setParameter (@Nonnull final String sKey, final String sValue) throws InvalidParameterException
   {
-    if (key == null)
-    {
-      throw new InvalidParameterException ("Invalid key", this, key, value);
-    }
+    if (sKey == null)
+      throw new InvalidParameterException ("Invalid key", this, sKey, sValue);
 
-    if (key.equals (KEY_NAME) || key.equals (KEY_MESSAGE) || key.equals (KEY_TRACE) || key.equals (KEY_TERMINATED))
-    {
-      throw new InvalidParameterException ("Parameter is read-only", this, key, value);
-    }
-    throw new InvalidParameterException ("Invalid key", this, key, value);
+    if (sKey.equals (KEY_NAME) || sKey.equals (KEY_MESSAGE) || sKey.equals (KEY_TRACE) || sKey.equals (KEY_TERMINATED))
+      throw new InvalidParameterException ("Parameter is read-only", this, sKey, sValue);
+
+    throw new InvalidParameterException ("Invalid key", this, sKey, sValue);
   }
 
   @Override
-  public String getParameter (final String key) throws InvalidParameterException
+  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
-    if (key == null)
-    {
-      throw new InvalidParameterException ("Invalid key", this, key, null);
-    }
+    if (sKey == null)
+      throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
-    final OpenAS2Exception target = getTarget ();
-    Throwable unwrappedTarget;
+    final OpenAS2Exception aTarget = getTarget ();
+    Throwable aUnwrappedTarget;
 
-    if (target instanceof WrappedException)
+    if (aTarget instanceof WrappedException)
     {
-      unwrappedTarget = ((WrappedException) target).getCause ();
-      if (unwrappedTarget == null)
-        unwrappedTarget = target;
+      aUnwrappedTarget = ((WrappedException) aTarget).getCause ();
+      if (aUnwrappedTarget == null)
+        aUnwrappedTarget = aTarget;
     }
     else
     {
-      unwrappedTarget = target;
+      aUnwrappedTarget = aTarget;
     }
 
-    if (key.equals (KEY_NAME))
+    if (sKey.equals (KEY_NAME))
+      return aUnwrappedTarget.getClass ().getName ();
+    if (sKey.equals (KEY_MESSAGE))
+      return aUnwrappedTarget.getMessage ();
+    if (sKey.equals (KEY_TRACE))
     {
-      return unwrappedTarget.getClass ().getName ();
+      final NonBlockingStringWriter aSW = new NonBlockingStringWriter ();
+      final PrintWriter aPW = new PrintWriter (aSW);
+      aTarget.printStackTrace (aPW);
+      return aSW.getAsString ();
     }
-    else
-      if (key.equals (KEY_MESSAGE))
-      {
-        return unwrappedTarget.getMessage ();
-      }
-      else
-        if (key.equals (KEY_TRACE))
-        {
-          final StringWriter sw = new StringWriter ();
-          final PrintWriter pw = new PrintWriter (sw);
-          target.printStackTrace (pw);
 
-          return sw.toString ();
-        }
-        else
-          if (key.equals (KEY_TERMINATED))
-          {
-            if (isTerminated ())
-            {
-              return "terminated";
-            }
-            return "";
-          }
-          else
-          {
-            throw new InvalidParameterException ("Invalid key", this, key, null);
-          }
+    if (sKey.equals (KEY_TERMINATED))
+      return isTerminated () ? "terminated" : "";
+
+    throw new InvalidParameterException ("Invalid key", this, sKey, null);
   }
 
-  public void setTarget (final OpenAS2Exception target)
+  public void setTarget (@Nullable final OpenAS2Exception aTarget)
   {
-    m_aTarget = target;
+    m_aTarget = aTarget;
   }
 
   public OpenAS2Exception getTarget ()

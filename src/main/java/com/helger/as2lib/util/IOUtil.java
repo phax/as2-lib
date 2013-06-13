@@ -41,65 +41,69 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
-
+import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.InvalidMessageException;
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.io.file.FileIOError;
-import com.phloc.commons.io.file.FileOperations;
-import com.phloc.commons.io.file.FileUtils;
+import com.phloc.commons.io.file.FileOperationManager;
 import com.phloc.commons.io.file.FilenameHelper;
+import com.phloc.commons.io.file.LoggingFileOperationCallback;
 import com.phloc.commons.io.streams.StreamUtils;
 import com.phloc.commons.mutable.MutableLong;
 import com.phloc.commons.timing.StopWatch;
 
-public class IOUtil
+@Immutable
+public final class IOUtil
 {
-  public static final String MSG_WAIT_FOR_KEYPRESS = "Waiting for keypress...";
-  public static final String MSG_PROMPT = "> ";
+  private static final FileOperationManager s_aFOM = new FileOperationManager (new LoggingFileOperationCallback ());
 
-  public static long copy (@WillClose final InputStream in, @WillNotClose final OutputStream out)
+  private IOUtil ()
+  {}
+
+  public static long copy (@WillClose final InputStream aIS, @WillNotClose final OutputStream aOS)
   {
     final MutableLong aML = new MutableLong ();
-    StreamUtils.copyInputStreamToOutputStream (in, out, aML);
+    StreamUtils.copyInputStreamToOutputStream (aIS, aOS, aML);
     return aML.longValue ();
   }
 
-  public static void copy (@WillClose final InputStream in,
-                           @WillNotClose final OutputStream out,
-                           @Nonnegative final long contentSize)
+  public static void copy (@WillClose final InputStream aIS,
+                           @WillNotClose final OutputStream aOS,
+                           @Nonnegative final long nContentSize)
   {
-    StreamUtils.copyInputStreamToOutputStream (in,
-                                               out,
+    StreamUtils.copyInputStreamToOutputStream (aIS,
+                                               aOS,
                                                new byte [16 * CGlobal.BYTES_PER_KILOBYTE],
                                                null,
-                                               Long.valueOf (contentSize));
+                                               Long.valueOf (nContentSize));
   }
 
-  public static File getDirectoryFile (final String directory)
+  @Nonnull
+  public static File getDirectoryFile (final String sDirectory)
   {
-    final File aDir = new File (directory);
-    FileUtils.ensureParentDirectoryIsPresent (new File (aDir, "dummy"));
+    final File aDir = new File (sDirectory);
+    s_aFOM.createDirRecursiveIfNotExisting (aDir);
     return aDir;
   }
 
-  public static String getTransferRate (final long bytes, final StopWatch stub)
+  public static String getTransferRate (final long nBytes, final StopWatch aSW)
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append (bytes).append (" bytes in ").append (stub.getMillis () / 1000.0).append ("seconds at ");
+    aSB.append (nBytes).append (" bytes in ").append (aSW.getMillis () / 1000.0).append ("seconds at ");
 
-    final long time = stub.getMillis ();
-    if (time != 0)
+    final long nMillis = aSW.getMillis ();
+    if (nMillis != 0)
     {
-      final double stime = time / 1000.0;
-      final long rate = Math.round (bytes / stime);
-      aSB.append (_getTransferRate (rate));
+      final double dSeconds = nMillis / 1000.0;
+      final long nBytesPerSecond = Math.round (nBytes / dSeconds);
+      aSB.append (_getTransferRate (nBytesPerSecond));
     }
     else
     {
-      aSB.append (_getTransferRate (bytes));
+      aSB.append (_getTransferRate (nBytes));
     }
 
     return aSB.toString ();
@@ -107,89 +111,91 @@ public class IOUtil
 
   @Nonnull
   @Nonempty
-  private static String _getTransferRate (final long bytesPerSecond)
+  private static String _getTransferRate (final long nBytesPerSecond)
   {
     final StringBuilder aSB = new StringBuilder ();
-    if (bytesPerSecond < 1024)
-      aSB.append (bytesPerSecond).append (" Bps");
+    if (nBytesPerSecond < 1024)
+      aSB.append (nBytesPerSecond).append (" Bps");
     else
     {
-      final long kbytesPerSecond = bytesPerSecond / 1024;
-      if (kbytesPerSecond < 1024)
-        aSB.append (kbytesPerSecond).append (".").append (bytesPerSecond % 1024).append (" KBps");
+      final long nKBytesPerSecond = nBytesPerSecond / 1024;
+      if (nKBytesPerSecond < 1024)
+        aSB.append (nKBytesPerSecond).append (".").append (nBytesPerSecond % 1024).append (" KBps");
       else
-        aSB.append (kbytesPerSecond / 1024).append (".").append (kbytesPerSecond % 1024).append (" MBps");
+        aSB.append (nKBytesPerSecond / 1024).append (".").append (nKBytesPerSecond % 1024).append (" MBps");
     }
     return aSB.toString ();
   }
 
-  public static File getUnique (final File dir, final String filename)
+  @Nonnull
+  public static File getUniqueFile (final File aDir, final String sFilename)
   {
-    int counter = -1;
-    final String sBaseFilename = FilenameHelper.getAsSecureValidFilename (filename);
-
+    int nCounter = -1;
+    final String sBaseFilename = FilenameHelper.getAsSecureValidFilename (sFilename);
     while (true)
     {
-      final File test = new File (dir, counter == -1 ? sBaseFilename : sBaseFilename + "." + Integer.toString (counter));
-      if (!test.exists ())
-        return test;
+      final File aTest = new File (aDir, nCounter == -1 ? sBaseFilename : sBaseFilename +
+                                                                          "." +
+                                                                          Integer.toString (nCounter));
+      if (!aTest.exists ())
+        return aTest;
 
-      counter++;
+      nCounter++;
     }
   }
 
   // move the file to an error directory
-  public static void handleError (final File file, final String errorDirectory) throws OpenAS2Exception
+  public static void handleError (final File aFile, final String sErrorDirectory) throws OpenAS2Exception
   {
-    File destFile = null;
+    File aDestFile = null;
 
     try
     {
-      final File errorDir = getDirectoryFile (errorDirectory);
-      destFile = new File (errorDir, file.getName ());
+      final File aErrorDir = getDirectoryFile (sErrorDirectory);
+      aDestFile = new File (aErrorDir, aFile.getName ());
 
       // move the file
-      destFile = moveFile (file, destFile, false, true);
+      aDestFile = moveFile (aFile, aDestFile, false, true);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
       final InvalidMessageException im = new InvalidMessageException ("Failed to move " +
-                                                                      file.getAbsolutePath () +
+                                                                      aFile.getAbsolutePath () +
                                                                       " to error directory " +
-                                                                      destFile.getAbsolutePath ());
-      im.initCause (ioe);
+                                                                      aDestFile.getAbsolutePath ());
+      im.initCause (ex);
       throw im;
     }
 
     // make sure an error of this event is logged
-    final InvalidMessageException imMoved = new InvalidMessageException ("Moved " +
-                                                                         file.getAbsolutePath () +
-                                                                         " to " +
-                                                                         destFile.getAbsolutePath ());
-    imMoved.terminate ();
+    final InvalidMessageException ex = new InvalidMessageException ("Moved " +
+                                                                    aFile.getAbsolutePath () +
+                                                                    " to " +
+                                                                    aDestFile.getAbsolutePath ());
+    ex.terminate ();
   }
 
-  public static File moveFile (final File src, final File pdest, final boolean overwrite, final boolean rename) throws IOException
+  public static File moveFile (final File aSrc, final File aDestFile, final boolean bOverwrite, final boolean bRename) throws IOException
   {
-    File dest = pdest;
-    if (!overwrite && dest.exists ())
+    File aRealDestFile = aDestFile;
+    if (!bOverwrite && aRealDestFile.exists ())
     {
-      if (!rename)
-        throw new IOException ("File already exists: " + dest);
-      dest = getUnique (dest.getAbsoluteFile ().getParentFile (), dest.getName ());
+      if (!bRename)
+        throw new IOException ("File already exists: " + aRealDestFile);
+      aRealDestFile = getUniqueFile (aRealDestFile.getAbsoluteFile ().getParentFile (), aRealDestFile.getName ());
     }
 
-    final FileIOError aIOErr = FileOperations.copyFile (src, dest);
+    final FileIOError aIOErr = s_aFOM.copyFile (aSrc, aRealDestFile);
     if (aIOErr.isFailure ())
       throw new IOException ("Copy failed: " + aIOErr.toString ());
 
     // if (!new File(file.getAbsolutePath()).delete()) { // do this if file
     // deletion always fails, may help
-    if (!src.delete ())
+    if (!aSrc.delete ())
     {
-      dest.delete ();
-      throw new IOException ("Move failed, unable to delete " + src);
+      aRealDestFile.delete ();
+      throw new IOException ("Move failed, unable to delete " + aSrc);
     }
-    return dest;
+    return aRealDestFile;
   }
 }

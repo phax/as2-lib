@@ -37,11 +37,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.microdom.IMicroElement;
 
+@Immutable
 public final class XMLUtil
 {
   private XMLUtil ()
@@ -60,32 +62,35 @@ public final class XMLUtil
   @Nonnull
   @ReturnsMutableCopy
   public static Map <String, String> getAttrsWithLowercaseNameWithRequired (@Nonnull final IMicroElement aElement,
-                                                                            final String... aRequiredAttributes) throws OpenAS2Exception
+                                                                            @Nonnull final String... aRequiredAttributes) throws OpenAS2Exception
   {
-    final Map <String, String> attributes = getAttrsWithLowercaseName (aElement);
+    final Map <String, String> aAttributes = getAttrsWithLowercaseName (aElement);
     for (final String sRequiredAttribute : aRequiredAttributes)
-      if (!attributes.containsKey (sRequiredAttribute))
+      if (!aAttributes.containsKey (sRequiredAttribute))
         throw new OpenAS2Exception (aElement.getTagName () + " is missing required attribute: " + sRequiredAttribute);
-
-    return attributes;
+    return aAttributes;
   }
 
-  public static Map <String, String> mapAttributeNodes (final IMicroElement node,
-                                                        final String nodeName,
-                                                        final String nodeKeyName,
-                                                        final String nodeValueName) throws OpenAS2Exception
+  @Nonnull
+  @ReturnsMutableCopy
+  public static Map <String, String> mapAttributeNodes (@Nonnull final IMicroElement aNode,
+                                                        final String sNodeName,
+                                                        final String sNodeKeyName,
+                                                        final String sNodeValueName) throws OpenAS2Exception
   {
-    final Map <String, String> attributes = new HashMap <String, String> ();
-    for (final IMicroElement eChild : node.getAllChildElements (nodeName))
+    final Map <String, String> ret = new HashMap <String, String> ();
+    for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {
-      final String sName = eChild.getAttribute (nodeKeyName);
+      final String sName = eChild.getAttribute (sNodeKeyName);
       if (sName == null)
-        throw new OpenAS2Exception (eChild.toString () + " does not have key attribute: " + nodeKeyName);
-      final String sValue = eChild.getAttribute (nodeValueName);
+        throw new OpenAS2Exception (eChild.toString () + " does not have key attribute: " + sNodeKeyName);
+
+      final String sValue = eChild.getAttribute (sNodeValueName);
       if (sValue == null)
-        throw new OpenAS2Exception (eChild.toString () + " does not have value attribute: " + nodeValueName);
-      attributes.put (sName, sValue);
+        throw new OpenAS2Exception (eChild.toString () + " does not have value attribute: " + sNodeValueName);
+
+      ret.put (sName, sValue);
     }
-    return attributes;
+    return ret;
   }
 }

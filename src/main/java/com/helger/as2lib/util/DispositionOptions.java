@@ -35,45 +35,47 @@ package com.helger.as2lib.util;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
-public class DispositionOptions
+public final class DispositionOptions
 {
-  private String m_sMicalg;
-  private String m_sMicalgImportance;
+  private String m_sMICAlg;
+  private String m_sMICAlgImportance;
   private String m_sProtocol;
   private String m_sProtocolImportance;
 
-  public DispositionOptions (final String options) throws OpenAS2Exception
+  public DispositionOptions (final String sOptions) throws OpenAS2Exception
   {
-    parseOptions (options);
+    parseOptions (sOptions);
   }
 
-  public void setMicalg (final String micalg)
+  public void setMICAlg (final String sMICAlg)
   {
-    m_sMicalg = micalg;
+    m_sMICAlg = sMICAlg;
   }
 
   // signed-receipt-protocol=optional, pkcs7-signature;
   // signed-receipt-micalg=optional, sha1
-  public String getMicalg ()
+  public String getMICAlg ()
   {
-    return m_sMicalg;
+    return m_sMICAlg;
   }
 
-  public void setMicalgImportance (final String micalgImportance)
+  public void setMICAlgImportance (final String sMICAlgImportance)
   {
-    m_sMicalgImportance = micalgImportance;
+    m_sMICAlgImportance = sMICAlgImportance;
   }
 
-  public String getMicalgImportance ()
+  public String getMICAlgImportance ()
   {
-    return m_sMicalgImportance;
+    return m_sMICAlgImportance;
   }
 
-  public void setProtocol (final String protocol)
+  public void setProtocol (final String sProtocol)
   {
-    m_sProtocol = protocol;
+    m_sProtocol = sProtocol;
   }
 
   public String getProtocol ()
@@ -81,9 +83,9 @@ public class DispositionOptions
     return m_sProtocol;
   }
 
-  public void setProtocolImportance (final String protocolImportance)
+  public void setProtocolImportance (final String sProtocolImportance)
   {
-    m_sProtocolImportance = protocolImportance;
+    m_sProtocolImportance = sProtocolImportance;
   }
 
   public String getProtocolImportance ()
@@ -91,53 +93,53 @@ public class DispositionOptions
     return m_sProtocolImportance;
   }
 
+  @Nonnull
   public String makeOptions ()
   {
-    final StringBuilder options = new StringBuilder ();
-
-    if ((getProtocolImportance () == null) &&
-        (getProtocol () == null) &&
-        (getMicalgImportance () == null) &&
-        (getMicalg () == null))
+    if (getProtocolImportance () == null &&
+        getProtocol () == null &&
+        getMICAlgImportance () == null &&
+        getMICAlg () == null)
     {
-      return new String ("");
+      return "";
     }
 
-    options.append ("signed-receipt-protocol=").append (getProtocolImportance ());
-    options.append (", ").append (getProtocol ());
-    options.append ("; signed-receipt-micalg=").append (getMicalgImportance ());
-    options.append (", ").append (getMicalg ());
-
-    return options.toString ();
+    final StringBuilder aOptions = new StringBuilder ();
+    aOptions.append ("signed-receipt-protocol=")
+            .append (getProtocolImportance ())
+            .append (", ")
+            .append (getProtocol ())
+            .append ("; signed-receipt-micalg=")
+            .append (getMICAlgImportance ())
+            .append (", ")
+            .append (getMICAlg ());
+    return aOptions.toString ();
   }
 
-  public void parseOptions (final String options) throws OpenAS2Exception
+  public void parseOptions (final String sOptions) throws OpenAS2Exception
   {
     setProtocolImportance (null);
     setProtocol (null);
-    setMicalgImportance (null);
-    setMicalg (null);
-    if (options != null)
+    setMICAlgImportance (null);
+    setMICAlg (null);
+    if (sOptions != null)
     {
-
       try
       {
-        final StringTokenizer optionTokens = new StringTokenizer (options, "=,;", false);
-        if (optionTokens.countTokens () > 5)
+        final StringTokenizer aOptionTokens = new StringTokenizer (sOptions, "=,;", false);
+        if (aOptionTokens.countTokens () > 5)
         {
-
-          optionTokens.nextToken ();
-          setProtocolImportance (optionTokens.nextToken ().trim ());
-          setProtocol (optionTokens.nextToken ().trim ());
-          optionTokens.nextToken ();
-          setMicalgImportance (optionTokens.nextToken ().trim ());
-          setMicalg (optionTokens.nextToken ().trim ());
-
+          aOptionTokens.nextToken ();
+          setProtocolImportance (aOptionTokens.nextToken ().trim ());
+          setProtocol (aOptionTokens.nextToken ().trim ());
+          aOptionTokens.nextToken ();
+          setMICAlgImportance (aOptionTokens.nextToken ().trim ());
+          setMICAlg (aOptionTokens.nextToken ().trim ());
         }
       }
-      catch (final NoSuchElementException nsee)
+      catch (final NoSuchElementException ex)
       {
-        throw new OpenAS2Exception ("Invalid disposition options format: " + options);
+        throw new OpenAS2Exception ("Invalid disposition options format: " + sOptions);
       }
     }
   }

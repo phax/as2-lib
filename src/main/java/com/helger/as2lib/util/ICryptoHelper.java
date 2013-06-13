@@ -48,23 +48,23 @@ public interface ICryptoHelper
   String CRYPT_IDEA = "idea";
   String CRYPT_RC2 = "rc2";
 
-  boolean isEncrypted (MimeBodyPart part) throws Exception;
+  boolean isEncrypted (MimeBodyPart aPart) throws Exception;
 
   KeyStore getKeyStore () throws Exception;
 
-  KeyStore loadKeyStore (InputStream in, char [] password) throws Exception;
+  KeyStore loadKeyStore (InputStream aIS, char [] aPassword) throws Exception;
 
-  KeyStore loadKeyStore (String filename, char [] password) throws Exception;
+  KeyStore loadKeyStore (String sFilename, char [] aPassword) throws Exception;
 
-  boolean isSigned (MimeBodyPart part) throws Exception;
+  boolean isSigned (MimeBodyPart aPart) throws Exception;
 
-  String calculateMIC (MimeBodyPart part, String digest, boolean includeHeaders) throws Exception;
+  String calculateMIC (MimeBodyPart aPart, String sDigest, boolean bIncludeHeaders) throws Exception;
 
-  MimeBodyPart decrypt (MimeBodyPart part, Certificate cert, Key key) throws Exception;
+  MimeBodyPart decrypt (MimeBodyPart aPart, Certificate aCert, Key aKey) throws Exception;
 
-  MimeBodyPart encrypt (MimeBodyPart part, Certificate cert, String algorithm) throws Exception;
+  MimeBodyPart encrypt (MimeBodyPart aPart, Certificate aCert, String sAlgorithm) throws Exception;
 
-  MimeBodyPart sign (MimeBodyPart part, Certificate cert, Key key, String sAlgorithm) throws Exception;
+  MimeBodyPart sign (MimeBodyPart aPart, Certificate aCert, Key key, String sAlgorithm) throws Exception;
 
-  MimeBodyPart verify (MimeBodyPart part, Certificate cert) throws Exception;
+  MimeBodyPart verify (MimeBodyPart aPart, Certificate aCert) throws Exception;
 }

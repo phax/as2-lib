@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib.util;
 
+import javax.annotation.concurrent.Immutable;
+
+@Immutable
 public final class CInfo
 {
   public static final String NAME = "ph-OpenAS2";

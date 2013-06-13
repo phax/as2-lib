@@ -41,10 +41,11 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
+import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +59,11 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.IOUtil;
 import com.phloc.commons.CGlobal;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 public class DirectoryResenderModule extends AbstractResenderModule
 {
+  private static final String DATE_FORMAT = "MM-dd-yy-HH-mm-ss";
   public static final String PARAM_RESEND_DIRECTORY = "resenddir";
   public static final String PARAM_ERROR_DIRECTORY = "errordir";
   // in seconds
@@ -71,34 +74,34 @@ public class DirectoryResenderModule extends AbstractResenderModule
   // 15 minutes
   public static final long DEFAULT_RESEND_DELAY = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
 
-  private static final Logger logger = LoggerFactory.getLogger (DirectoryResenderModule.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
   @Override
-  public boolean canHandle (final String action, final IMessage msg, final Map <String, Object> options)
+  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    return action.equals (IProcessorResenderModule.DO_RESEND);
+    return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
 
   @Override
-  public void handle (final String action, final IMessage msg, final Map <String, Object> options) throws OpenAS2Exception
+  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     try
     {
-      final File resendDir = IOUtil.getDirectoryFile (getParameterRequired (PARAM_RESEND_DIRECTORY));
-      final File resendFile = IOUtil.getUnique (resendDir, getFilename ());
-      final ObjectOutputStream oos = new ObjectOutputStream (new FileOutputStream (resendFile));
-      String method = (String) options.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
-      if (method == null)
-        method = IProcessorSenderModule.DO_SEND;
-      String retries = (String) options.get (IProcessorResenderModule.OPTION_RETRIES);
-      if (retries == null)
-        retries = "-1";
-      oos.writeObject (method);
-      oos.writeObject (retries);
-      oos.writeObject (msg);
-      oos.close ();
+      final File aResendDir = IOUtil.getDirectoryFile (getParameterRequired (PARAM_RESEND_DIRECTORY));
+      final File aResendFile = IOUtil.getUniqueFile (aResendDir, getFilename ());
+      final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
+      String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
+      if (sMethod == null)
+        sMethod = IProcessorSenderModule.DO_SEND;
+      String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+      if (sRetries == null)
+        sRetries = "-1";
+      aOOS.writeObject (sMethod);
+      aOOS.writeObject (sRetries);
+      aOOS.writeObject (aMsg);
+      aOOS.close ();
 
-      logger.info ("message put in resend queue" + msg.getLoggingText ());
+      s_aLogger.info ("message put in resend queue" + aMsg.getLoggingText ());
     }
     catch (final IOException ioe)
     {
@@ -107,9 +110,9 @@ public class DirectoryResenderModule extends AbstractResenderModule
   }
 
   @Override
-  public void initDynamicComponent (final ISession session, final Map <String, String> options) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
   {
-    super.initDynamicComponent (session, options);
+    super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_RESEND_DIRECTORY);
     getParameterRequired (PARAM_ERROR_DIRECTORY);
   }
@@ -120,139 +123,117 @@ public class DirectoryResenderModule extends AbstractResenderModule
     try
     {
       // get a list of files that need to be sent now
-      final List <File> sendFiles = scanDirectory ();
+      final List <File> aSendFiles = scanDirectory ();
 
       // iterator through and send each file
-      final Iterator <File> fileIt = sendFiles.iterator ();
-      File currentFile;
-
-      while (fileIt.hasNext ())
-      {
-        currentFile = fileIt.next ();
-        processFile (currentFile);
-      }
+      for (final File aCurrentFile : aSendFiles)
+        processFile (aCurrentFile);
     }
-    catch (final OpenAS2Exception oae)
+    catch (final OpenAS2Exception ex)
     {
-      oae.terminate ();
-      forceStop (oae);
+      ex.terminate ();
+      forceStop (ex);
     }
   }
 
+  @Nonnull
   protected String getFilename () throws InvalidParameterException
   {
-    long resendDelay;
+    long nResendDelay;
     if (getParameterNotRequired (PARAM_RESEND_DELAY) == null)
-    {
-      resendDelay = DEFAULT_RESEND_DELAY;
-    }
+      nResendDelay = DEFAULT_RESEND_DELAY;
     else
-    {
-      resendDelay = getParameterInt (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
-    }
-    final long resendTime = new Date ().getTime () + resendDelay;
+      nResendDelay = getParameterInt (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
 
-    return DateUtil.formatDate ("MM-dd-yy-HH-mm-ss", new Date (resendTime));
+    final long nResendTime = new Date ().getTime () + nResendDelay;
+    return DateUtil.formatDate (DATE_FORMAT, new Date (nResendTime));
   }
 
-  protected boolean isTimeToSend (final File currentFile)
+  protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
   {
     try
     {
-      final StringTokenizer fileTokens = new StringTokenizer (currentFile.getName (), ".", false);
-
-      final Date timestamp = DateUtil.parseDate ("MM-dd-yy-HH-mm-ss", fileTokens.nextToken ());
-
-      return timestamp.before (new Date ());
+      final StringTokenizer aFileTokens = new StringTokenizer (aCurrentFile.getName (), ".", false);
+      final Date aTimestamp = DateUtil.parseDate (DATE_FORMAT, aFileTokens.nextToken ());
+      return aTimestamp.before (new Date ());
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
       return true;
     }
   }
 
-  protected void processFile (final File file) throws OpenAS2Exception
+  protected void processFile (@Nonnull final File aFile) throws OpenAS2Exception
   {
-    logger.debug ("processing " + file.getAbsolutePath ());
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("processing " + aFile.getAbsolutePath ());
 
-    IMessage msg = null;
+    IMessage aMsg = null;
 
     try
     {
       try
       {
-        final ObjectInputStream ois = new ObjectInputStream (new FileInputStream (file));
-        final String method = (String) ois.readObject ();
-        final String retries = (String) ois.readObject ();
-        msg = (IMessage) ois.readObject ();
-        ois.close ();
+        final ObjectInputStream aOIS = new ObjectInputStream (new FileInputStream (aFile));
+        final String sMethod = (String) aOIS.readObject ();
+        final String sRetries = (String) aOIS.readObject ();
+        aMsg = (IMessage) aOIS.readObject ();
+        aOIS.close ();
 
         // Transmit the message
-        logger.info ("loaded message for resend." + msg.getLoggingText ());
+        s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 
-        final Map <String, Object> options = new HashMap <String, Object> ();
-        options.put (IProcessorSenderModule.SOPT_RETRIES, retries);
-        getSession ().getProcessor ().handle (method, msg, options);
+        final Map <String, Object> aOptions = new HashMap <String, Object> ();
+        aOptions.put (IProcessorSenderModule.SOPT_RETRIES, sRetries);
+        getSession ().getProcessor ().handle (sMethod, aMsg, aOptions);
 
-        if (!file.delete ())
-        { // Delete the file, sender will re-queue if the transmission fails
+        if (!aFile.delete ())
+        {
+          // Delete the file, sender will re-queue if the transmission fails
           // again
-          throw new OpenAS2Exception ("File was successfully sent but not deleted: " + file.getAbsolutePath ());
+          throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile.getAbsolutePath ());
         }
 
-        logger.info ("deleted " + file.getAbsolutePath () + msg.getLoggingText ());
+        s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
-      catch (final IOException ioe)
+      catch (final IOException ex)
       {
-        throw new WrappedException (ioe);
+        throw new WrappedException (ex);
       }
-      catch (final ClassNotFoundException cnfe)
+      catch (final ClassNotFoundException ex)
       {
-        throw new WrappedException (cnfe);
+        throw new WrappedException (ex);
       }
     }
-    catch (final OpenAS2Exception oae)
+    catch (final OpenAS2Exception ex)
     {
-      oae.addSource (OpenAS2Exception.SOURCE_MESSAGE, msg);
-      oae.addSource (OpenAS2Exception.SOURCE_FILE, file);
-      oae.terminate ();
-      IOUtil.handleError (file, getParameterRequired (PARAM_ERROR_DIRECTORY));
+      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
+      ex.terminate ();
+      IOUtil.handleError (aFile, getParameterRequired (PARAM_ERROR_DIRECTORY));
     }
   }
 
+  @Nonnull
+  @ReturnsMutableCopy
   protected List <File> scanDirectory () throws OpenAS2Exception
   {
-    final File resendDir = IOUtil.getDirectoryFile (getParameterRequired (PARAM_RESEND_DIRECTORY));
-    final List <File> sendFiles = new ArrayList <File> ();
+    final File aResendDir = IOUtil.getDirectoryFile (getParameterRequired (PARAM_RESEND_DIRECTORY));
 
-    final File [] files = resendDir.listFiles ();
-
-    if (files == null)
+    final File [] aFiles = aResendDir.listFiles ();
+    if (aFiles == null)
     {
       throw new InvalidParameterException ("Error getting list of files in directory",
                                            this,
                                            PARAM_RESEND_DIRECTORY,
-                                           resendDir.getAbsolutePath ());
+                                           aResendDir.getAbsolutePath ());
     }
 
-    if (files.length > 0)
-    {
-      File currentFile;
-
-      for (final File file : files)
-      {
-        currentFile = file;
-
-        if (currentFile.exists () && currentFile.isFile () && currentFile.canWrite ())
-        {
-          if (isTimeToSend (currentFile))
-          {
-            sendFiles.add (currentFile);
-          }
-        }
-      }
-    }
-
-    return sendFiles;
+    final List <File> ret = new ArrayList <File> ();
+    if (aFiles.length > 0)
+      for (final File aCurrentFile : aFiles)
+        if (aCurrentFile.exists () && aCurrentFile.isFile () && aCurrentFile.canWrite () && isTimeToSend (aCurrentFile))
+          ret.add (aCurrentFile);
+    return ret;
   }
 }

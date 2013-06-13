@@ -36,14 +36,13 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class PartnershipNotFoundException extends OpenAS2Exception
 {
-
-  public PartnershipNotFoundException (final String msg)
+  public PartnershipNotFoundException (final String sMsg)
   {
-    super (msg);
+    super (sMsg);
   }
 
-  public PartnershipNotFoundException (final Partnership p)
+  public PartnershipNotFoundException (final Partnership aPartnership)
   {
-    super ("Partnership not found: " + p);
+    super ("Partnership not found: " + aPartnership);
   }
 }

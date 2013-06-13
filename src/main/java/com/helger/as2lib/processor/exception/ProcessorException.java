@@ -33,31 +33,24 @@
 package com.helger.as2lib.processor.exception;
 
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.IProcessor;
+import com.phloc.commons.io.streams.NonBlockingStringWriter;
 
 public class ProcessorException extends OpenAS2Exception
 {
-  private IProcessor m_aProcessor;
+  private final IProcessor m_aProcessor;
   private List <Throwable> m_aCauses;
 
-  public ProcessorException (final IProcessor processor)
+  public ProcessorException (final IProcessor aProcessor)
   {
-    m_aProcessor = processor;
-  }
-
-  public List <Throwable> getCauses ()
-  {
-    if (m_aCauses == null)
-    {
-      m_aCauses = new ArrayList <Throwable> ();
-    }
-    return m_aCauses;
+    m_aProcessor = aProcessor;
   }
 
   public IProcessor getProcessor ()
@@ -65,33 +58,31 @@ public class ProcessorException extends OpenAS2Exception
     return m_aProcessor;
   }
 
-  public void setCauses (final List <Throwable> list)
+  @Nonnull
+  public List <Throwable> getCauses ()
   {
-    m_aCauses = list;
+    if (m_aCauses == null)
+      m_aCauses = new ArrayList <Throwable> ();
+    return m_aCauses;
   }
 
-  public void setProcessor (final IProcessor processor)
+  public void setCauses (@Nullable final List <Throwable> aCauses)
   {
-    m_aProcessor = processor;
+    m_aCauses = aCauses;
   }
 
   @Override
   public String getMessage ()
   {
-    final StringWriter strWriter = new StringWriter ();
-    final PrintWriter writer = new PrintWriter (strWriter);
-    writer.print (super.getMessage ());
-
-    final Iterator <Throwable> causesIt = getCauses ().iterator ();
-    while (causesIt.hasNext ())
+    final NonBlockingStringWriter aStrWriter = new NonBlockingStringWriter ();
+    final PrintWriter aWriter = new PrintWriter (aStrWriter);
+    aWriter.print (super.getMessage ());
+    for (final Throwable e : getCauses ())
     {
-      final Throwable e = causesIt.next ();
-      writer.println ();
-      e.printStackTrace (writer);
-
+      aWriter.println ();
+      e.printStackTrace (aWriter);
     }
-    writer.flush ();
-    return strWriter.toString ();
+    aWriter.flush ();
+    return aStrWriter.getAsString ();
   }
-
 }

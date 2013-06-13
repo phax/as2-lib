@@ -52,15 +52,15 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
   private boolean m_bBusy;
 
   @Override
-  public void initDynamicComponent (final ISession session, final Map <String, String> options) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
   {
-    super.initDynamicComponent (session, options);
+    super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_POLLING_INTERVAL);
   }
 
-  public void setInterval (final int seconds)
+  public void setInterval (final int nSeconds)
   {
-    setParameter (PARAM_POLLING_INTERVAL, seconds);
+    setParameter (PARAM_POLLING_INTERVAL, nSeconds);
   }
 
   public int getInterval () throws InvalidParameterException
@@ -110,8 +110,8 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
     return m_bBusy;
   }
 
-  public void setBusy (final boolean b)
+  public void setBusy (final boolean bBusy)
   {
-    m_bBusy = b;
+    m_bBusy = bBusy;
   }
 }
