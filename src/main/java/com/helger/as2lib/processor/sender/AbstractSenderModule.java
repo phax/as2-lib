@@ -47,10 +47,10 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
   // How many times should this message be sent?
   protected final int retries (@Nullable final Map <String, Object> aOptions)
   {
-    String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.SOPT_RETRIES);
+    String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.SENDER_OPTION_RETRIES);
     if (sLeft == null)
     {
-      sLeft = getParameterNotRequired (IProcessorSenderModule.SOPT_RETRIES);
+      sLeft = getParameterNotRequired (IProcessorSenderModule.SENDER_OPTION_RETRIES);
       if (sLeft == null)
         return IProcessorSenderModule.DEFAULT_RETRIES;
     }

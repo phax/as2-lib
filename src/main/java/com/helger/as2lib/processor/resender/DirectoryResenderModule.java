@@ -184,10 +184,10 @@ public class DirectoryResenderModule extends AbstractResenderModule
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 
         final Map <String, Object> aOptions = new HashMap <String, Object> ();
-        aOptions.put (IProcessorSenderModule.SOPT_RETRIES, sRetries);
+        aOptions.put (IProcessorSenderModule.SENDER_OPTION_RETRIES, sRetries);
         getSession ().getProcessor ().handle (sMethod, aMsg, aOptions);
 
-        if (!aFile.delete ())
+        if (IOUtil.getFileOperationManager ().deleteFile (aFile).isFailure ())
         {
           // Delete the file, sender will re-queue if the transmission fails
           // again

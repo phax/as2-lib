@@ -358,7 +358,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // Oh dear, we've run out of retries, do something interesting.
       // TODO create a fake failure MDN
-      s_aLogger.info ("Message abandoned" + aMsg.getLoggingText ());
+      s_aLogger.error ("Message abandoned" + aMsg.getLoggingText ());
     }
   }
 
