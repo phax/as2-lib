@@ -78,7 +78,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
 
-  public boolean canHandle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
     if (!sAction.equals (IProcessorSenderModule.DO_SEND))
       return false;
@@ -363,7 +363,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   // Returns a MimeBodyPart or MimeMultipart object
-  protected MimeBodyPart secure (final IMessage aMsg) throws Exception
+  protected MimeBodyPart secure (@Nonnull final IMessage aMsg) throws Exception
   {
     // Set up encrypt/sign variables
     MimeBodyPart aDataBP = aMsg.getData ();

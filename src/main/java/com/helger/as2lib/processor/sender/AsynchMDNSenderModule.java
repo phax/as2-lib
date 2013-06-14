@@ -40,6 +40,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.mail.Header;
 
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AsynchMDNSenderModule.class);
 
-  public boolean canHandle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
     if (!sAction.equals (IProcessorSenderModule.DO_SENDMDN))
       return false;
