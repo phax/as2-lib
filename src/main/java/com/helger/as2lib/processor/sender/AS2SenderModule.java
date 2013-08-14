@@ -150,12 +150,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
             nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
-          s_aLogger.error ("Error url " +
-                           sUrl.toString () +
-                           " rc " +
-                           nResponseCode +
-                           " rm " +
-                           aConn.getResponseMessage ());
+          s_aLogger.error ("Error url " + sUrl + " rc " + nResponseCode + " rm " + aConn.getResponseMessage ());
           throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
         }
 
@@ -243,16 +238,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Receive the MDN data
       final InputStream aConnIn = aConn.getInputStream ();
-      final NonBlockingByteArrayOutputStream mdnStream = new NonBlockingByteArrayOutputStream ();
+      final NonBlockingByteArrayOutputStream aMdnStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
       final long nContentLength = StringParser.parseLong (aMdn.getHeader ("Content-Length"), -1);
       if (nContentLength >= 0)
-        StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIn, mdnStream, nContentLength);
+        StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIn, aMdnStream, nContentLength);
       else
-        StreamUtils.copyInputStreamToOutputStream (aConnIn, mdnStream);
+        StreamUtils.copyInputStreamToOutputStream (aConnIn, aMdnStream);
 
-      final MimeBodyPart aPart = new MimeBodyPart (aMdn.getHeaders (), mdnStream.toByteArray ());
+      final MimeBodyPart aPart = new MimeBodyPart (aMdn.getHeaders (), aMdnStream.toByteArray ());
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
