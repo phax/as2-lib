@@ -54,8 +54,10 @@ public final class XMLUtil
   public static Map <String, String> getAttrsWithLowercaseName (@Nonnull final IMicroElement aElement)
   {
     final Map <String, String> ret = new HashMap <String, String> ();
-    for (final Map.Entry <String, String> aEntry : aElement.getAllAttributes ().entrySet ())
-      ret.put (aEntry.getKey ().toLowerCase (Locale.US), aEntry.getValue ());
+    final Map <String, String> aAttrs = aElement.getAllAttributes ();
+    if (aAttrs != null)
+      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
+        ret.put (aEntry.getKey ().toLowerCase (Locale.US), aEntry.getValue ());
     return ret;
   }
 
