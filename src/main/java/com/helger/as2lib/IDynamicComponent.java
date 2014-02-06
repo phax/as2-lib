@@ -34,6 +34,8 @@ package com.helger.as2lib;
 
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 
@@ -46,7 +48,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
  * no parameters, as these parameters should be passed to the init method.
  * 
  * @author Aaron Silinskas
- * @see BaseComponent
+ * @see AbstractBaseComponent
  * @see ISession
  */
 public interface IDynamicComponent
@@ -67,6 +69,16 @@ public interface IDynamicComponent
    * @return map of parameter name to parameter value
    */
   Map <String, String> getParameters ();
+
+  /**
+   * Returns the parametersused to initialize this Component.
+   * 
+   * @param sKey
+   *        Name of the parameter to retrieve.
+   * @return parameter value or null
+   */
+  @Nullable
+  String getParameterNotRequired (@Nullable String sKey);
 
   /**
    * Returns the Session used to initialize this Component. The returned session

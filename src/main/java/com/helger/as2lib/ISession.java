@@ -34,6 +34,8 @@ package com.helger.as2lib;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
@@ -84,6 +86,7 @@ public interface ISession
    * @throws ComponentNotFoundException
    *         If a component is not registered with the ID
    */
+  @Nonnull
   IDynamicComponent getComponent (String sComponentID) throws ComponentNotFoundException;
 
   /**

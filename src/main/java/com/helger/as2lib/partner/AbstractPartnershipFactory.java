@@ -39,7 +39,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.BaseComponent;
+import com.helger.as2lib.AbstractBaseComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.PartnershipNotFoundException;
 import com.helger.as2lib.message.IMessage;
@@ -48,7 +48,7 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.phloc.commons.equals.EqualsUtils;
 
-public abstract class AbstractPartnershipFactory extends BaseComponent implements IPartnershipFactory
+public abstract class AbstractPartnershipFactory extends AbstractBaseComponent implements IPartnershipFactory
 {
   private List <Partnership> m_aPartnerships;
 

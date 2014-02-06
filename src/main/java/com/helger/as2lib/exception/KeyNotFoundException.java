@@ -34,7 +34,6 @@ package com.helger.as2lib.exception;
 
 import java.security.cert.X509Certificate;
 
-
 public class KeyNotFoundException extends OpenAS2Exception
 {
   public KeyNotFoundException (final X509Certificate aCert, final String sAlias)

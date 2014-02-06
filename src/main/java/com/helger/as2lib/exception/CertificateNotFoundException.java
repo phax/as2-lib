@@ -36,7 +36,6 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 
-
 public class CertificateNotFoundException extends OpenAS2Exception
 {
   private String m_sPartnershipType;

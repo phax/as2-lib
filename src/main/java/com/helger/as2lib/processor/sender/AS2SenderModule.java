@@ -462,7 +462,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     try
     {
-      final String pendingFolder = getSession ().getComponent ("processor").getParameters ().get ("pendingmdninfo");
+      final String pendingFolder = getSession ().getComponent ("processor").getParameterNotRequired ("pendingmdninfo");
 
       final FileOutputStream aFOS = new FileOutputStream (pendingFolder +
                                                           "/" +
@@ -477,7 +477,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // input pending folder & original outgoing file name to get and
       // unique file name
       // in order to avoid file overwritting.
-      final String sPendingFile = getSession ().getComponent ("processor").getParameters ().get ("pendingmdn") +
+      final String sPendingFile = getSession ().getComponent ("processor").getParameterNotRequired ("pendingmdn") +
                                   "/" +
                                   aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1);
 

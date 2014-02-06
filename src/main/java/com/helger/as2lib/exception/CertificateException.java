@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class CertificateException extends OpenAS2Exception
 {
   public CertificateException ()

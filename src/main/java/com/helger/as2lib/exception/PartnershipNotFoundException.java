@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class PartnershipNotFoundException extends OpenAS2Exception
 {
   public PartnershipNotFoundException (final String sMsg)

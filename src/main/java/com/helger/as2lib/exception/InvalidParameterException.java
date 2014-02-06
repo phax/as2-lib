@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class InvalidParameterException extends OpenAS2Exception
 {
   private final Object m_aTarget;

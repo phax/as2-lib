@@ -40,13 +40,17 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.phloc.commons.annotations.ReturnsMutableObject;
 import com.phloc.commons.lang.CGStringHelper;
 import com.phloc.commons.string.StringParser;
 
-public class BaseComponent implements IDynamicComponent
+public abstract class AbstractBaseComponent implements IDynamicComponent
 {
   private Map <String, String> m_aParameters;
   private ISession m_aSession;
+
+  public AbstractBaseComponent ()
+  {}
 
   public String getName ()
   {
@@ -98,6 +102,7 @@ public class BaseComponent implements IDynamicComponent
   }
 
   @Nonnull
+  @ReturnsMutableObject (reason = "design")
   public Map <String, String> getParameters ()
   {
     if (m_aParameters == null)

@@ -238,8 +238,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final String ORIG_MESSAGEID = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
       final String pendinginfofile = getModule ().getSession ()
                                                  .getComponent ("processor")
-                                                 .getParameters ()
-                                                 .get ("pendingmdninfo") +
+                                                 .getParameterNotRequired ("pendingmdninfo") +
                                      "/" +
                                      ORIG_MESSAGEID.substring (1, ORIG_MESSAGEID.length () - 1);
       final BufferedReader pendinginfo = new BufferedReader (new FileReader (pendinginfofile));
@@ -280,7 +279,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       s_aLogger.info ("delete pendinginfo file : " +
                       fpendinginfofile.getName () +
                       " from pending folder : " +
-                      getModule ().getSession ().getComponent ("processor").getParameters ().get ("pendingmdn") +
+                      getModule ().getSession ().getComponent ("processor").getParameterNotRequired ("pendingmdn") +
                       msg.getLoggingText ());
 
       fpendinginfofile.delete ();

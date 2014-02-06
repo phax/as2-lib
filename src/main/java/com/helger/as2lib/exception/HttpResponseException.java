@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class HttpResponseException extends OpenAS2Exception
 {
   private final String m_sURL;

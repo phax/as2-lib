@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.exception;
 
-
 public class ForcedStopException extends WrappedException
 {
   public ForcedStopException (final Throwable aSource)

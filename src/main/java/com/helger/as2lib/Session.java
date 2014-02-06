@@ -61,10 +61,11 @@ public class Session implements ISession
      */
     final MailcapCommandMap aCommandCap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
     aCommandCap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
-                   DispositionDataContentHandler.class.getName ());
+                            DispositionDataContentHandler.class.getName ());
     CommandMap.setDefaultCommandMap (aCommandCap);
   }
 
+  @Nonnull
   public ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
   {
     return (ICertificateFactory) getComponent (ICertificateFactory.COMPID_CERTIFICATE_FACTORY);
