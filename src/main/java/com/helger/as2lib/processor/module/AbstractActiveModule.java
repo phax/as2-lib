@@ -38,6 +38,7 @@ import com.helger.as2lib.exception.ForcedStopException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.UnsupportedException;
 import com.helger.as2lib.message.IMessage;
+import com.phloc.commons.string.ToStringGenerator;
 
 public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
 {
@@ -96,6 +97,6 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   @Override
   public String toString ()
   {
-    return getClass ().getName () + ": " + getParameters ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("running", m_bRunning).toString ();
   }
 }

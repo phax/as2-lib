@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor.receiver;
 
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -40,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.ISession;
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.util.IStringMap;
 
 public abstract class AbstractPollingModule extends AbstractReceiverModule
 {
@@ -52,7 +51,7 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
   private boolean m_bBusy;
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_POLLING_INTERVAL);
@@ -60,12 +59,12 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
 
   public void setInterval (final int nSeconds)
   {
-    setParameter (PARAM_POLLING_INTERVAL, nSeconds);
+    setAttribute (PARAM_POLLING_INTERVAL, nSeconds);
   }
 
-  public int getInterval () throws InvalidParameterException
+  public int getInterval ()
   {
-    return getParameterInt (PARAM_POLLING_INTERVAL);
+    return getAttributeAsInt (PARAM_POLLING_INTERVAL, 0);
   }
 
   public abstract void poll ();

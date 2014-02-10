@@ -50,7 +50,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.SENDER_OPTION_RETRIES);
     if (sLeft == null)
     {
-      sLeft = getParameterNotRequired (IProcessorSenderModule.SENDER_OPTION_RETRIES);
+      sLeft = getAttributeAsString (IProcessorSenderModule.SENDER_OPTION_RETRIES);
       if (sLeft == null)
         return IProcessorSenderModule.DEFAULT_RETRIES;
     }

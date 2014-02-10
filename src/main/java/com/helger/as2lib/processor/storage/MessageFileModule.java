@@ -83,7 +83,7 @@ public class MessageFileModule extends AbstractStorageModule
                                       ex);
     }
 
-    final String sHeaderFilename = getParameterNotRequired (PARAM_HEADER);
+    final String sHeaderFilename = getAttributeAsString (PARAM_HEADER);
     if (sHeaderFilename != null)
     {
       try

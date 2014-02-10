@@ -39,6 +39,7 @@ import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.util.StringMap;
 
 /**
  * original author unknown added getPartners method
@@ -62,5 +63,5 @@ public interface IPartnershipFactory extends IDynamicComponent
 
   List <Partnership> getPartnerships ();
 
-  Map <String, Map <String, String>> getPartners ();
+  Map <String, StringMap> getPartners ();
 }

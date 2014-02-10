@@ -47,6 +47,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IStringMap;
 import com.phloc.commons.io.file.FilenameHelper;
 import com.phloc.commons.io.streams.StreamUtils;
 
@@ -63,14 +64,14 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     if (!sAction.equals (getModuleAction ()))
       return false;
 
-    final String sModProtocol = getParameterNotRequired (PARAM_PROTOCOL);
+    final String sModProtocol = getAttributeAsString (PARAM_PROTOCOL);
     if (sModProtocol == null)
       return false;
     return sModProtocol.equals (aMsg.getProtocol ());
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_FILENAME);
@@ -104,7 +105,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected void store (final File aMsgFile, final InputStream aIS) throws IOException
   {
-    final String sTempDirname = getParameterNotRequired (PARAM_TEMPDIR);
+    final String sTempDirname = getAttributeAsString (PARAM_TEMPDIR);
     if (sTempDirname != null)
     {
       // write the data to a temporary directory first

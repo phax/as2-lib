@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.util;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -51,36 +50,36 @@ public final class XMLUtil
 
   @Nonnull
   @ReturnsMutableCopy
-  public static Map <String, String> getAttrsWithLowercaseName (@Nonnull final IMicroElement aElement)
+  public static StringMap getAttrsWithLowercaseName (@Nonnull final IMicroElement aElement)
   {
-    final Map <String, String> ret = new HashMap <String, String> ();
+    final StringMap ret = new StringMap ();
     final Map <String, String> aAttrs = aElement.getAllAttributes ();
     if (aAttrs != null)
       for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
-        ret.put (aEntry.getKey ().toLowerCase (Locale.US), aEntry.getValue ());
+        ret.setAttribute (aEntry.getKey ().toLowerCase (Locale.US), aEntry.getValue ());
     return ret;
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public static Map <String, String> getAttrsWithLowercaseNameWithRequired (@Nonnull final IMicroElement aElement,
-                                                                            @Nonnull final String... aRequiredAttributes) throws OpenAS2Exception
+  public static StringMap getAttrsWithLowercaseNameWithRequired (@Nonnull final IMicroElement aElement,
+                                                                 @Nonnull final String... aRequiredAttributes) throws OpenAS2Exception
   {
-    final Map <String, String> aAttributes = getAttrsWithLowercaseName (aElement);
+    final StringMap aAttributes = getAttrsWithLowercaseName (aElement);
     for (final String sRequiredAttribute : aRequiredAttributes)
-      if (!aAttributes.containsKey (sRequiredAttribute))
+      if (!aAttributes.containsAttribute (sRequiredAttribute))
         throw new OpenAS2Exception (aElement.getTagName () + " is missing required attribute: " + sRequiredAttribute);
     return aAttributes;
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public static Map <String, String> mapAttributeNodes (@Nonnull final IMicroElement aNode,
-                                                        final String sNodeName,
-                                                        final String sNodeKeyName,
-                                                        final String sNodeValueName) throws OpenAS2Exception
+  public static IStringMap mapAttributeNodes (@Nonnull final IMicroElement aNode,
+                                             final String sNodeName,
+                                             final String sNodeKeyName,
+                                             final String sNodeValueName) throws OpenAS2Exception
   {
-    final Map <String, String> ret = new HashMap <String, String> ();
+    final StringMap ret = new StringMap ();
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {
       final String sName = eChild.getAttribute (sNodeKeyName);
@@ -91,7 +90,7 @@ public final class XMLUtil
       if (sValue == null)
         throw new OpenAS2Exception (eChild.toString () + " does not have value attribute: " + sNodeValueName);
 
-      ret.put (sName, sValue);
+      ret.setAttribute (sName, sValue);
     }
     return ret;
   }

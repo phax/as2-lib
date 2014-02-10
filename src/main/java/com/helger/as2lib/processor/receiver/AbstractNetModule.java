@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +52,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IStringMap;
 import com.phloc.commons.io.file.FilenameHelper;
 
 public abstract class AbstractNetModule extends AbstractReceiverModule
@@ -70,7 +70,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   {
     try
     {
-      m_aMainThread = new MainThread (this, getParameterNotRequired (PARAM_ADDRESS), getParameterInt (PARAM_PORT));
+      m_aMainThread = new MainThread (this, getAttributeAsString (PARAM_ADDRESS), getAttributeAsInt (PARAM_PORT, 0));
       m_aMainThread.start ();
     }
     catch (final IOException ioe)
@@ -90,7 +90,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 
@@ -110,7 +110,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sName = aParams.format (getParameter (PARAM_ERRORS, DEFAULT_ERRORS));
+      final String sName = aParams.format (getAttributeAsString (PARAM_ERRORS, DEFAULT_ERRORS));
       final String sDirectory = getParameterRequired (PARAM_ERROR_DIRECTORY);
 
       final File aMsgFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sDirectory),

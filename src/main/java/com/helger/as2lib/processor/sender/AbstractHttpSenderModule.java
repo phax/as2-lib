@@ -65,8 +65,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
       aConn.setRequestMethod (sRequestMethod);
-      aConn.setConnectTimeout (getParameterInt (PARAM_CONNECT_TIMEOUT, 60000));
-      aConn.setReadTimeout (getParameterInt (PARAM_READ_TIMEOUT, 60000));
+      aConn.setConnectTimeout (getAttributeAsInt (PARAM_CONNECT_TIMEOUT, 60000));
+      aConn.setReadTimeout (getAttributeAsInt (PARAM_READ_TIMEOUT, 60000));
       return aConn;
     }
     catch (final IOException ex)

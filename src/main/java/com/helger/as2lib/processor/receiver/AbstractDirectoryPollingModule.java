@@ -59,6 +59,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.phloc.commons.annotations.ReturnsMutableObject;
 import com.phloc.commons.collections.ContainerHelper;
@@ -81,7 +82,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   private Map <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_OUTBOX_DIRECTORY);
@@ -258,7 +259,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       // If the Sent Directory option is set, move the transmitted file to
       // the sent directory
 
-      if (getParameterNotRequired (PARAM_SENT_DIRECTORY) != null)
+      if (getAttributeAsString (PARAM_SENT_DIRECTORY) != null)
       {
         File aSentFile = null;
         try
@@ -306,22 +307,22 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   {
     final MessageParameters aParams = new MessageParameters (aMsg);
 
-    final String sDefaults = getParameterNotRequired (PARAM_DEFAULTS);
+    final String sDefaults = getAttributeAsString (PARAM_DEFAULTS);
     if (sDefaults != null)
       aParams.setParameters (sDefaults);
 
     final String sFilename = aFile.getName ();
-    final String sFormat = getParameterNotRequired (PARAM_FORMAT);
+    final String sFormat = getAttributeAsString (PARAM_FORMAT);
     if (sFormat != null)
     {
-      final String sDelimiters = getParameter (PARAM_DELIMITERS, ".-");
+      final String sDelimiters = getAttributeAsString (PARAM_DELIMITERS, ".-");
       aParams.setParameters (sFormat, sDelimiters, sFilename);
     }
 
     try
     {
       final byte [] aData = SimpleFileIO.readFileBytes (aFile);
-      String sContentType = getParameterNotRequired (PARAM_MIMETYPE);
+      String sContentType = getAttributeAsString (PARAM_MIMETYPE);
       if (sContentType == null)
       {
         sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
@@ -357,7 +358,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
-      final String sSendFilename = getParameterNotRequired ("sendfilename");
+      final String sSendFilename = getAttributeAsString ("sendfilename");
       if (sSendFilename != null && sSendFilename.equals ("true"))
       {
         final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);

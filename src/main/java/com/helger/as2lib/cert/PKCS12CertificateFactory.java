@@ -63,6 +63,7 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.AS2Util;
+import com.helger.as2lib.util.IStringMap;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.io.streams.StreamUtils;
 
@@ -163,7 +164,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setFilename (final String sFilename)
   {
-    getParameters ().put (PARAM_FILENAME, sFilename);
+    setAttribute (PARAM_FILENAME, sFilename);
   }
 
   public String getFilename () throws InvalidParameterException
@@ -183,7 +184,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setPassword (final char [] aPassword)
   {
-    getParameters ().put (PARAM_PASSWORD, new String (aPassword));
+    setAttribute (PARAM_PASSWORD, new String (aPassword));
   }
 
   @Nonnull
@@ -278,7 +279,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 

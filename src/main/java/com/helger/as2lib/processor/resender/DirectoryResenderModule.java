@@ -58,6 +58,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IStringMap;
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 
@@ -110,7 +111,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_RESEND_DIRECTORY);
@@ -140,7 +141,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   protected String getFilename () throws InvalidParameterException
   {
     long nResendDelay;
-    if (getParameterNotRequired (PARAM_RESEND_DELAY) == null)
+    if (getAttributeAsString (PARAM_RESEND_DELAY) == null)
       nResendDelay = DEFAULT_RESEND_DELAY;
     else
       nResendDelay = getParameterInt (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;

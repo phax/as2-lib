@@ -32,82 +32,38 @@
  */
 package com.helger.as2lib;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.phloc.commons.annotations.ReturnsMutableObject;
+import com.helger.as2lib.util.IStringMap;
+import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.lang.CGStringHelper;
-import com.phloc.commons.string.StringParser;
+import com.phloc.commons.string.ToStringGenerator;
 
-public abstract class AbstractBaseComponent implements IDynamicComponent
+public abstract class AbstractBaseComponent extends StringMap implements IDynamicComponent
 {
-  private Map <String, String> m_aParameters;
   private ISession m_aSession;
-
-  public AbstractBaseComponent ()
-  {}
 
   public String getName ()
   {
     return CGStringHelper.getClassLocalName (this);
   }
 
-  public void setParameter (final String sKey, final String sValue)
+  public final String getParameterRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
-    getParameters ().put (sKey, sValue);
-  }
-
-  public void setParameter (final String sKey, final int nValue)
-  {
-    setParameter (sKey, Integer.toString (nValue));
-  }
-
-  @Nullable
-  public String getParameterNotRequired (@Nullable final String sKey)
-  {
-    return getParameters ().get (sKey);
-  }
-
-  public String getParameter (@Nullable final String sKey, final String sDefaultValue)
-  {
-    final String value = getParameterNotRequired (sKey);
-    return value == null ? sDefaultValue : value;
-  }
-
-  public String getParameterRequired (@Nonnull final String sKey) throws InvalidParameterException
-  {
-    final String sValue = getParameterNotRequired (sKey);
+    final String sValue = getAttributeAsString (sKey);
     if (sValue == null)
       throw new InvalidParameterException ("Parameter not found", this, sKey, null);
     return sValue;
   }
 
-  public int getParameterInt (final String sKey) throws InvalidParameterException
+  public final int getParameterInt (@Nonnull final String sKey) throws InvalidParameterException
   {
-    final String sValue = getParameterRequired (sKey);
-    if (sValue != null)
-      return Integer.parseInt (sValue);
-    return 0;
-  }
-
-  public int getParameterInt (final String sKey, final int nDefault)
-  {
-    final String sValue = getParameterNotRequired (sKey);
-    return StringParser.parseInt (sValue, nDefault);
-  }
-
-  @Nonnull
-  @ReturnsMutableObject (reason = "design")
-  public Map <String, String> getParameters ()
-  {
-    if (m_aParameters == null)
-      m_aParameters = new HashMap <String, String> ();
-    return m_aParameters;
+    final int nValue = getAttributeAsInt (sKey, Integer.MIN_VALUE);
+    if (nValue == Integer.MIN_VALUE)
+      throw new InvalidParameterException ("Parameter not found", this, sKey, null);
+    return nValue;
   }
 
   public ISession getSession ()
@@ -115,9 +71,15 @@ public abstract class AbstractBaseComponent implements IDynamicComponent
     return m_aSession;
   }
 
-  public void initDynamicComponent (final ISession aSession, final Map <String, String> aParameters) throws OpenAS2Exception
+  public void initDynamicComponent (final ISession aSession, final IStringMap aParameters) throws OpenAS2Exception
   {
     m_aSession = aSession;
-    m_aParameters = aParameters;
+    setAttributes (aParameters != null ? aParameters.getAllAttributes () : null);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return ToStringGenerator.getDerived (super.toString ()).append ("session", m_aSession).toString ();
   }
 }

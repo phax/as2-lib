@@ -46,16 +46,17 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
+import com.helger.as2lib.util.IStringMap;
 import com.phloc.commons.equals.EqualsUtils;
 
 public abstract class AbstractPartnershipFactory extends AbstractBaseComponent implements IPartnershipFactory
 {
-  private List <Partnership> m_aPartnerships;
+  private List <Partnership> m_aPartnerships = new ArrayList <Partnership> ();
 
   @Nonnull
   public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
-    Partnership aRealPartnership = aPartnership.getName () == null ? null : getPartnership (getPartnerships (),
+    Partnership aRealPartnership = aPartnership.getName () == null ? null : getPartnership (m_aPartnerships,
                                                                                             aPartnership.getName ());
     if (aRealPartnership == null)
       aRealPartnership = getPartnership (aPartnership.getSenderIDs (), aPartnership.getReceiverIDs ());
@@ -73,8 +74,6 @@ public abstract class AbstractPartnershipFactory extends AbstractBaseComponent i
   @Nonnull
   public List <Partnership> getPartnerships ()
   {
-    if (m_aPartnerships == null)
-      m_aPartnerships = new ArrayList <Partnership> ();
     return m_aPartnerships;
   }
 
@@ -103,15 +102,14 @@ public abstract class AbstractPartnershipFactory extends AbstractBaseComponent i
   }
 
   @Nullable
-  protected Partnership getPartnership (@Nonnull final Map <String, String> aSenderIDs,
-                                        @Nonnull final Map <String, String> aReceiverIDs)
+  protected Partnership getPartnership (@Nonnull final IStringMap aSenderIDs, @Nonnull final IStringMap aReceiverIDs)
   {
     for (final Partnership aPartnerships : getPartnerships ())
     {
-      final Map <String, String> aCurrentSenderIDs = aPartnerships.getSenderIDs ();
+      final IStringMap aCurrentSenderIDs = aPartnerships.getSenderIDs ();
       if (compareMap (aSenderIDs, aCurrentSenderIDs))
       {
-        final Map <String, String> aCurrentReceiverIDs = aPartnerships.getReceiverIDs ();
+        final IStringMap aCurrentReceiverIDs = aPartnerships.getReceiverIDs ();
         if (compareMap (aReceiverIDs, aCurrentReceiverIDs))
           return aPartnerships;
       }
@@ -131,17 +129,15 @@ public abstract class AbstractPartnershipFactory extends AbstractBaseComponent i
   }
 
   // returns true if all values in searchIds match values in partnerIds
-  protected static boolean compareMap (@Nonnull final Map <String, String> aSearchIDs,
-                                       @Nonnull final Map <String, String> aPartnerIds)
+  protected static boolean compareMap (@Nonnull final IStringMap aSearchIDs, @Nonnull final IStringMap aPartnerIds)
   {
-    if (aSearchIDs.isEmpty ())
+    if (aSearchIDs.containsNoAttribute ())
       return false;
 
-    for (final Map.Entry <String, String> aSearchEntry : aSearchIDs.entrySet ())
+    for (final Map.Entry <String, String> aSearchEntry : aSearchIDs)
     {
-      final String sSearchKey = aSearchEntry.getKey ();
       final String sSearchValue = aSearchEntry.getValue ();
-      final String sPartnerValue = aPartnerIds.get (sSearchKey);
+      final String sPartnerValue = aPartnerIds.getAttributeObject (aSearchEntry.getKey ());
       if (!EqualsUtils.equals (sSearchValue, sPartnerValue))
         return false;
     }

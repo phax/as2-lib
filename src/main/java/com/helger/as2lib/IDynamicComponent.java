@@ -32,12 +32,9 @@
  */
 package com.helger.as2lib;
 
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.util.IStringMap;
 
 /**
  * The Component interface provides a standard way to dynamically create and
@@ -51,7 +48,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
  * @see AbstractBaseComponent
  * @see ISession
  */
-public interface IDynamicComponent
+public interface IDynamicComponent extends IStringMap
 {
   /**
    * Returns a name for the component. These names are not guaranteed to be
@@ -61,24 +58,6 @@ public interface IDynamicComponent
    * @return name of the component
    */
   String getName ();
-
-  /**
-   * Returns the parameters used to initialize this Component, and can also be
-   * used to modify parameters.
-   * 
-   * @return map of parameter name to parameter value
-   */
-  Map <String, String> getParameters ();
-
-  /**
-   * Returns the parametersused to initialize this Component.
-   * 
-   * @param sKey
-   *        Name of the parameter to retrieve.
-   * @return parameter value or null
-   */
-  @Nullable
-  String getParameterNotRequired (@Nullable String sKey);
 
   /**
    * Returns the Session used to initialize this Component. The returned session
@@ -104,5 +83,5 @@ public interface IDynamicComponent
    *         If a required parameter is null in the parameters Map
    * @see ISession
    */
-  void initDynamicComponent (ISession aSession, Map <String, String> aParameters) throws OpenAS2Exception;
+  void initDynamicComponent (ISession aSession, IStringMap aParameters) throws OpenAS2Exception;
 }

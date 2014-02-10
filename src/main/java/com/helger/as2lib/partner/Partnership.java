@@ -33,13 +33,15 @@
 package com.helger.as2lib.partner;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.helger.as2lib.util.IStringMap;
+import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.equals.EqualsUtils;
+import com.phloc.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
 {
@@ -56,10 +58,10 @@ public class Partnership implements Serializable
   // optional content transfer encoding value
   public static final String PA_CONTENT_TRANSFER_ENCODING = "content_transfer_encoding";
 
-  private Map <String, String> m_aAttributes;
-  private Map <String, String> m_aReceiverIDs;
-  private Map <String, String> m_aSenderIDs;
   private String m_sName;
+  private final StringMap m_aAttributes = new StringMap ();
+  private final StringMap m_aReceiverIDs = new StringMap ();
+  private final StringMap m_aSenderIDs = new StringMap ();
 
   public void setName (final String sKey)
   {
@@ -73,93 +75,106 @@ public class Partnership implements Serializable
 
   public void setAttribute (final String sKey, final String sValue)
   {
-    getAttributes ().put (sKey, sValue);
+    m_aAttributes.setAttribute (sKey, sValue);
   }
 
   @Nullable
   public String getAttribute (final String sKey)
   {
-    return getAttributes ().get (sKey);
-  }
-
-  public void setAttributes (@Nullable final Map <String, String> aAttributes)
-  {
-    m_aAttributes = aAttributes;
+    return m_aAttributes.getAttributeAsString (sKey);
   }
 
   @Nonnull
-  public Map <String, String> getAttributes ()
+  public IStringMap getAttributes ()
   {
-    if (m_aAttributes == null)
-      m_aAttributes = new HashMap <String, String> ();
-    return m_aAttributes;
+    return new StringMap (m_aAttributes);
+  }
+
+  public void addAttributes (@Nullable final IStringMap aAttributes)
+  {
+    if (aAttributes != null)
+      m_aAttributes.setAttributes (aAttributes.getAllAttributes ());
+  }
+
+  public void setAttributes (@Nullable final IStringMap aAttributes)
+  {
+    m_aAttributes.clear ();
+    addAttributes (aAttributes);
   }
 
   public void setReceiverID (@Nullable final String sKey, final String sValue)
   {
-    getReceiverIDs ().put (sKey, sValue);
+    m_aReceiverIDs.setAttribute (sKey, sValue);
   }
 
   @Nullable
   public String getReceiverID (@Nullable final String sKey)
   {
-    return getReceiverIDs ().get (sKey);
+    return m_aReceiverIDs.getAttributeAsString (sKey);
   }
 
-  public void setReceiverIDs (@Nullable final Map <String, String> aReceiverIDs)
+  public boolean containsReceiverID (@Nullable final String sKey)
   {
-    m_aReceiverIDs = aReceiverIDs;
+    return m_aReceiverIDs.containsAttribute (sKey);
   }
 
   @Nonnull
-  public Map <String, String> getReceiverIDs ()
+  public StringMap getReceiverIDs ()
   {
-    if (m_aReceiverIDs == null)
-      m_aReceiverIDs = new HashMap <String, String> ();
-    return m_aReceiverIDs;
+    return new StringMap (m_aReceiverIDs);
+  }
+
+  public void setReceiverIDs (@Nullable final IStringMap aReceiverIDs)
+  {
+    m_aReceiverIDs.clear ();
+    if (aReceiverIDs != null)
+      m_aReceiverIDs.setAttributes (aReceiverIDs.getAllAttributes ());
   }
 
   public void setSenderID (final String sKey, final String sValue)
   {
-    getSenderIDs ().put (sKey, sValue);
+    m_aSenderIDs.setAttribute (sKey, sValue);
   }
 
   @Nullable
   public String getSenderID (@Nullable final String sKey)
   {
-    return getSenderIDs ().get (sKey);
+    return m_aSenderIDs.getAttributeAsString (sKey);
   }
 
-  public void setSenderIDs (@Nullable final Map <String, String> aSenderIDs)
+  public boolean containsSenderID (@Nullable final String sKey)
   {
-    m_aSenderIDs = aSenderIDs;
+    return m_aSenderIDs.containsAttribute (sKey);
   }
 
   @Nonnull
-  public Map <String, String> getSenderIDs ()
+  public StringMap getSenderIDs ()
   {
-    if (m_aSenderIDs == null)
-      m_aSenderIDs = new HashMap <String, String> ();
-    return m_aSenderIDs;
+    return new StringMap (m_aSenderIDs);
+  }
+
+  public void setSenderIDs (@Nullable final IStringMap aSenderIDs)
+  {
+    m_aSenderIDs.clear ();
+    if (aSenderIDs != null)
+      m_aSenderIDs.setAttributes (aSenderIDs.getAllAttributes ());
   }
 
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
-    final Map <String, String> aSenderIDs = aPartnership.getSenderIDs ();
-    final Map <String, String> aReceiverIDs = aPartnership.getReceiverIDs ();
-
-    return compareIDs (aSenderIDs, getSenderIDs ()) && compareIDs (aReceiverIDs, getReceiverIDs ());
+    return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
+           compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
   }
 
-  protected boolean compareIDs (@Nonnull final Map <String, String> aIDs, @Nonnull final Map <String, String> aCompareTo)
+  protected boolean compareIDs (@Nonnull final IStringMap aIDs, @Nonnull final IStringMap aCompareTo)
   {
-    if (aIDs.isEmpty ())
+    if (aIDs.containsNoAttribute ())
       return false;
 
-    for (final Map.Entry <String, String> aEntry : aIDs.entrySet ())
+    for (final Map.Entry <String, String> aEntry : aIDs)
     {
       final String sCurrentValue = aEntry.getValue ();
-      final String sCompareValue = aCompareTo.get (aEntry.getKey ());
+      final String sCompareValue = aCompareTo.getAttributeObject (aEntry.getKey ());
       if (!EqualsUtils.equals (sCurrentValue, sCompareValue))
         return false;
     }
@@ -171,19 +186,18 @@ public class Partnership implements Serializable
   {
     if (aPartnership.getName () != null)
       setName (aPartnership.getName ());
-    getSenderIDs ().putAll (aPartnership.getSenderIDs ());
-    getReceiverIDs ().putAll (aPartnership.getReceiverIDs ());
-    getAttributes ().putAll (aPartnership.getAttributes ());
+    setSenderIDs (aPartnership.m_aSenderIDs);
+    setReceiverIDs (aPartnership.m_aReceiverIDs);
+    setAttributes (aPartnership.m_aAttributes);
   }
 
   @Override
   public String toString ()
   {
-    final StringBuilder buf = new StringBuilder ();
-    buf.append ("Partnership ").append (getName ());
-    buf.append (" Sender IDs = ").append (getSenderIDs ());
-    buf.append (" Receiver IDs = ").append (getReceiverIDs ());
-    buf.append (" Attributes = ").append (getAttributes ());
-    return buf.toString ();
+    return new ToStringGenerator (this).append ("name", m_sName)
+                                       .append ("senderIDs", m_aSenderIDs)
+                                       .append ("receiverIDs", m_aReceiverIDs)
+                                       .append ("attributes", m_aAttributes)
+                                       .toString ();
   }
 }
