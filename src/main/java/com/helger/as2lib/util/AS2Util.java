@@ -61,6 +61,13 @@ import com.phloc.commons.mime.CMimeType;
 @Immutable
 public final class AS2Util
 {
+  private static final String HEADER_RECEIVED_CONTENT_MIC = "Received-Content-MIC";
+  private static final String HEADER_DISPOSITION = "Disposition";
+  private static final String HEADER_ORIGINAL_MESSAGE_ID = "Original-Message-ID";
+  private static final String HEADER_FINAL_RECIPIENT = "Final-Recipient";
+  private static final String HEADER_ORIGINAL_RECIPIENT = "Original-Recipient";
+  private static final String HEADER_REPORTING_UA = "Reporting-UA";
+
   private static final class SingletonHolder
   {
     static final BCCryptoHelper s_aInstance = new BCCryptoHelper ();
@@ -81,28 +88,28 @@ public final class AS2Util
                                        final String sText) throws Exception
   {
     final AS2MessageMDN aMdn = new AS2MessageMDN (aMsg);
-    aMdn.setHeader (CAS2Header.AS2_VERSION, "1.1");
+    aMdn.setHeader (CAS2Header.HEADER_AS2_VERSION, "1.1");
     // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
-    aMdn.setHeader ("Date", DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
-    aMdn.setHeader ("Server", CInfo.NAME_VERSION);
-    aMdn.setHeader ("Mime-Version", "1.0");
-    aMdn.setHeader (CAS2Header.AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
-    aMdn.setHeader (CAS2Header.AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
+    aMdn.setHeader (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aMdn.setHeader (CAS2Header.HEADER_SERVER, CInfo.NAME_VERSION);
+    aMdn.setHeader (CAS2Header.HEADER_MIME_VERSION, "1.0");
+    aMdn.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
+    aMdn.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
 
     // get the MDN partnership info
-    aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
-    aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+    aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
+    aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
     aSession.getPartnershipFactory ().updatePartnership (aMdn, true);
 
-    aMdn.setHeader ("From", aMsg.getPartnership ().getReceiverID (Partnership.PID_EMAIL));
+    aMdn.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverID (Partnership.PID_EMAIL));
     final String sSubject = aMdn.getPartnership ().getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
     if (sSubject != null)
     {
-      aMdn.setHeader ("Subject", AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
+      aMdn.setHeader (CAS2Header.HEADER_SUBJECT, AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
     }
     else
     {
-      aMdn.setHeader ("Subject", "Your Requested MDN Response");
+      aMdn.setHeader (CAS2Header.HEADER_SUBJECT, "Your Requested MDN Response");
     }
     aMdn.setText (AbstractParameterParser.parse (sText, new MessageParameters (aMsg)));
     aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
@@ -111,7 +118,7 @@ public final class AS2Util
                            aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
                            ":" +
                            aMsg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
-    aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.AS2_TO));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
     aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
                        "rfc822; " + aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
     aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader ("Message-ID"));
@@ -150,18 +157,18 @@ public final class AS2Util
     final MimeBodyPart aTextPart = new MimeBodyPart ();
     final String sText = aMdn.getText () + "\r\n";
     aTextPart.setContent (sText, CMimeType.TEXT_PLAIN.getAsString ());
-    aTextPart.setHeader ("Content-Type", CMimeType.TEXT_PLAIN.getAsString ());
+    aTextPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, CMimeType.TEXT_PLAIN.getAsString ());
     aReportParts.addBodyPart (aTextPart);
 
     // Create the report part
     final MimeBodyPart aReportPart = new MimeBodyPart ();
     final InternetHeaders aReportValues = new InternetHeaders ();
-    aReportValues.setHeader ("Reporting-UA", aMdn.getAttribute (AS2MessageMDN.MDNA_REPORTING_UA));
-    aReportValues.setHeader ("Original-Recipient", aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
-    aReportValues.setHeader ("Final-Recipient", aMdn.getAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
-    aReportValues.setHeader ("Original-Message-ID", aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
-    aReportValues.setHeader ("Disposition", aMdn.getAttribute (AS2MessageMDN.MDNA_DISPOSITION));
-    aReportValues.setHeader ("Received-Content-MIC", aMdn.getAttribute (AS2MessageMDN.MDNA_MIC));
+    aReportValues.setHeader (HEADER_REPORTING_UA, aMdn.getAttribute (AS2MessageMDN.MDNA_REPORTING_UA));
+    aReportValues.setHeader (HEADER_ORIGINAL_RECIPIENT, aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
+    aReportValues.setHeader (HEADER_FINAL_RECIPIENT, aMdn.getAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
+    aReportValues.setHeader (HEADER_ORIGINAL_MESSAGE_ID, aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
+    aReportValues.setHeader (HEADER_DISPOSITION, aMdn.getAttribute (AS2MessageMDN.MDNA_DISPOSITION));
+    aReportValues.setHeader (HEADER_RECEIVED_CONTENT_MIC, aMdn.getAttribute (AS2MessageMDN.MDNA_MIC));
 
     final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
     final StringBuilder aReportData = new StringBuilder ();
@@ -173,14 +180,14 @@ public final class AS2Util
 
     final String sReportText = aReportData.toString ();
     aReportPart.setContent (sReportText, "message/disposition-notification");
-    aReportPart.setHeader ("Content-Type", "message/disposition-notification");
+    aReportPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, "message/disposition-notification");
     aReportParts.addBodyPart (aReportPart);
 
     // Convert report parts to MimeBodyPart
     final MimeBodyPart aReport = new MimeBodyPart ();
     aReportParts.setSubType ("report; report-type=disposition-notification");
     aReport.setContent (aReportParts);
-    aReport.setHeader ("Content-Type", aReportParts.getContentType ());
+    aReport.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aReportParts.getContentType ());
 
     // Sign the data if needed
     if (sSignatureProtocol != null)
@@ -211,10 +218,11 @@ public final class AS2Util
 
     // Update the MDN headers with content information
     final MimeBodyPart aData = aMdn.getData ();
-    aMdn.setHeader ("Content-Type", aData.getContentType ());
+    aMdn.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aData.getContentType ());
 
-    // int size = getSize(data);
-    // mdn.setHeader("Content-Length", Integer.toString(size));
+    // final int size = getSize (aData);
+    // aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString
+    // (size));
   }
 
   public static void parseMDN (final IMessage aMsg, final X509Certificate aReceiver) throws Exception
@@ -245,12 +253,12 @@ public final class AS2Util
           if (aReportPart.isMimeType ("message/disposition-notification"))
           {
             final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
-            aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader ("Reporting-UA", ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader ("Original-Recipient", ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader ("Final-Recipient", ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader ("Original-Message-ID", ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader ("Disposition", ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader ("Received-Content-MIC", ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }
       }
     }

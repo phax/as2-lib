@@ -37,9 +37,21 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class CAS2Header
 {
-  public static final String AS2_FROM = "AS2-From";
-  public static final String AS2_TO = "AS2-To";
-  public static final String AS2_VERSION = "AS2-Version";
+  public static final String HEADER_AS2_FROM = "AS2-From";
+  public static final String HEADER_AS2_TO = "AS2-To";
+  public static final String HEADER_AS2_VERSION = "AS2-Version";
+  public static final String HEADER_MESSAGE_ID = "Message-ID";
+  public static final String HEADER_CONTENT_TYPE = "Content-Type";
+  public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+  public static final String HEADER_SUBJECT = "Subject";
+  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
+  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = "Disposition-Notification-Options";
+  public static final String HEADER_RECEIPT_DELIVERY_OPTION = "Receipt-Delivery-Option";
+  public static final String HEADER_CONTENT_LENGTH = "Content-Length";
+  public static final String HEADER_FROM = "From";
+  public static final String HEADER_MIME_VERSION = "Mime-Version";
+  public static final String HEADER_SERVER = "Server";
+  public static final String HEADER_DATE = "Date";
 
   private CAS2Header ()
   {}

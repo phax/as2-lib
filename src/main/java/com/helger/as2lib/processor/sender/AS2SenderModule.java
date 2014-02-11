@@ -251,8 +251,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_FROM));
-      aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.AS2_TO));
+      aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
       getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
@@ -423,10 +423,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // make sure this is the encoding used in the msg, run TBF1
     aConn.setRequestProperty ("Mime-Version", "1.0");
     aConn.setRequestProperty ("Content-type", aMsg.getContentType ());
-    aConn.setRequestProperty (CAS2Header.AS2_VERSION, "1.1");
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, "1.1");
     aConn.setRequestProperty ("Recipient-Address", aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
-    aConn.setRequestProperty (CAS2Header.AS2_TO, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
-    aConn.setRequestProperty (CAS2Header.AS2_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
     aConn.setRequestProperty ("Subject", aMsg.getSubject ());
     aConn.setRequestProperty ("From", aPartnership.getSenderID (Partnership.PID_EMAIL));
 

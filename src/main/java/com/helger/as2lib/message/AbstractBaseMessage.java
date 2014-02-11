@@ -37,13 +37,12 @@ import javax.annotation.Nullable;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 public abstract class AbstractBaseMessage implements IBaseMessage
 {
-  public static final String HEADER_MESSAGE_ID = "Message-ID";
-
   protected StringMap m_aAttributes = new StringMap ();
   protected InternetHeaders m_aHeaders = new InternetHeaders ();
   protected DataHistory m_aHistory = new DataHistory ();
@@ -111,12 +110,12 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void setMessageID (final String sMessageID)
   {
-    setHeader (HEADER_MESSAGE_ID, sMessageID);
+    setHeader (CAS2Header.HEADER_MESSAGE_ID, sMessageID);
   }
 
   public final String getMessageID ()
   {
-    return getHeader (HEADER_MESSAGE_ID);
+    return getHeader (CAS2Header.HEADER_MESSAGE_ID);
   }
 
   public final void updateMessageID ()

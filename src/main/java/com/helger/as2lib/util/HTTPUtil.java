@@ -195,7 +195,7 @@ public class HTTPUtil
     aMsg.setHeaders (new InternetHeaders (aIS));
     final DataInputStream aDataIS = new DataInputStream (aIS);
     // Retrieve the message content
-    if (aMsg.getHeader ("Content-Length") == null)
+    if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
     {
       final String sTransferEncoding = aMsg.getHeader ("Transfer-Encoding");
       if (sTransferEncoding != null)
@@ -239,7 +239,7 @@ public class HTTPUtil
             while (aDataIS.readByte () != '\n')
             {}
           }
-          aMsg.setHeader ("Content-Length", Integer.toString (nLength));
+          aMsg.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (nLength));
         }
         else
         {
@@ -248,7 +248,7 @@ public class HTTPUtil
         }
       }
       else
-        if (aMsg.getHeader ("Content-Length") == null)
+        if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
         {
           HTTPUtil.sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
           throw new IOException ("Content-Length missing");
@@ -257,7 +257,7 @@ public class HTTPUtil
     else
     {
       // Receive the transmission's data
-      final int nContentSize = Integer.parseInt (aMsg.getHeader ("Content-Length"));
+      final int nContentSize = Integer.parseInt (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH));
       aData = new byte [nContentSize];
       aDataIS.readFully (aData);
     }

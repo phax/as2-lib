@@ -33,13 +33,13 @@
 package com.helger.as2lib.params;
 
 import java.io.File;
-import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 import javax.mail.internet.ContentDisposition;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.IMessage;
+import com.phloc.commons.string.StringHelper;
 
 public class MessageParameters extends AbstractParameterParser
 {
@@ -65,12 +65,12 @@ public class MessageParameters extends AbstractParameterParser
   @Override
   public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
-    final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
-    if (aKeyParts.countTokens () != 2)
+    final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey, 2);
+    if (aKeyParts.length != 2)
       throw new InvalidParameterException ("Invalid key format", this, sKey, null);
 
-    final String sArea = aKeyParts.nextToken ();
-    final String sAreaID = aKeyParts.nextToken ();
+    final String sArea = aKeyParts[0];
+    final String sAreaID = aKeyParts[1];
 
     if (sArea.equals (KEY_SENDER))
       getTarget ().getPartnership ().setSenderID (sAreaID, sValue);
@@ -90,12 +90,12 @@ public class MessageParameters extends AbstractParameterParser
   @Override
   public String getParameter (final String sKey) throws InvalidParameterException
   {
-    final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
-    if (aKeyParts.countTokens () != 2)
+    final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey);
+    if (aKeyParts.length != 2)
       throw new InvalidParameterException ("Invalid key format", this, sKey, null);
 
-    final String sArea = aKeyParts.nextToken ();
-    final String sAreaID = aKeyParts.nextToken ();
+    final String sArea = aKeyParts[0];
+    final String sAreaID = aKeyParts[1];
     if (sArea.equals (KEY_SENDER))
       return getTarget ().getPartnership ().getSenderID (sAreaID);
     if (sArea.equals (KEY_RECEIVER))

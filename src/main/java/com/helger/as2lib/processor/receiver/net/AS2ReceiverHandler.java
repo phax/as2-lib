@@ -164,8 +164,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // update the message
         try
         {
-          aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.AS2_FROM));
-          aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.AS2_TO));
+          aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.HEADER_AS2_FROM));
+          aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
           getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
         }
         catch (final OpenAS2Exception ex)
@@ -344,7 +344,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
         final MimeBodyPart aPart = aMdn.getData ();
         StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-        aMdn.setHeader ("Content-Length", Integer.toString (aData.size ()));
+        aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.size ()));
 
         final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
         while (aHeaders.hasMoreElements ())

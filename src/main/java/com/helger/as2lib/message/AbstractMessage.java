@@ -47,15 +47,12 @@ import javax.mail.internet.MimeBodyPart;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public abstract class AbstractMessage extends AbstractBaseMessage implements IMessage
 {
-  public static final String HEADER_CONTENT_TYPE = "Content-Type";
-  public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
-  public static final String HEADER_SUBJECT = "Subject";
-
   private IMessageMDN m_aMDN;
   private MimeBodyPart m_aData;
 
@@ -64,12 +61,12 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   public void setContentType (final String sContentType)
   {
-    setHeader (HEADER_CONTENT_TYPE, sContentType);
+    setHeader (CAS2Header.HEADER_CONTENT_TYPE, sContentType);
   }
 
   public String getContentType ()
   {
-    return getHeader (HEADER_CONTENT_TYPE);
+    return getHeader (CAS2Header.HEADER_CONTENT_TYPE);
   }
 
   /**
@@ -78,7 +75,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
    */
   public void setContentDisposition (final String sContentDisposition)
   {
-    setHeader (HEADER_CONTENT_DISPOSITION, sContentDisposition);
+    setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisposition);
   }
 
   /**
@@ -86,7 +83,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
    */
   public String getContentDisposition ()
   {
-    return getHeader (HEADER_CONTENT_DISPOSITION);
+    return getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION);
   }
 
   public void setData (@Nullable final MimeBodyPart aData, @Nullable final DataHistoryItem aHistoryItem)
@@ -104,7 +101,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       }
       try
       {
-        setContentDisposition (aData.getHeader (HEADER_CONTENT_DISPOSITION, null));
+        setContentDisposition (aData.getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, null));
       }
       catch (final MessagingException ex)
       {
@@ -151,12 +148,12 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   public void setSubject (final String sSubject)
   {
-    setHeader (HEADER_SUBJECT, sSubject);
+    setHeader (CAS2Header.HEADER_SUBJECT, sSubject);
   }
 
   public String getSubject ()
   {
-    return getHeader (HEADER_SUBJECT);
+    return getHeader (CAS2Header.HEADER_SUBJECT);
   }
 
   @Override
