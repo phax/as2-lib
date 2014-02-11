@@ -32,47 +32,47 @@
  */
 package com.helger.as2lib.message;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 public abstract class AbstractBaseMessage implements IBaseMessage
 {
-  protected Map <String, String> m_aAttributes;
-  protected InternetHeaders m_aHeaders;
-  protected DataHistory m_aHistory;
-  protected Partnership m_aPartnership;
+  public static final String HEADER_MESSAGE_ID = "Message-ID";
+
+  protected StringMap m_aAttributes = new StringMap ();
+  protected InternetHeaders m_aHeaders = new InternetHeaders ();
+  protected DataHistory m_aHistory = new DataHistory ();
+  protected Partnership m_aPartnership = new Partnership ();
 
   public AbstractBaseMessage ()
   {}
 
   public final void setAttribute (final String sKey, final String sValue)
   {
-    getAttributes ().put (sKey, sValue);
+    m_aAttributes.setAttribute (sKey, sValue);
   }
 
   @Nullable
   public final String getAttribute (final String sKey)
   {
-    return getAttributes ().get (sKey);
+    return m_aAttributes.getAttributeAsString (sKey);
   }
 
-  public final void setAttributes (@Nullable final Map <String, String> aAttributes)
+  public final void setAttributes (@Nullable final StringMap aAttributes)
   {
-    m_aAttributes = aAttributes;
+    m_aAttributes.setAttributes (aAttributes != null ? aAttributes.getAllAttributes () : null);
   }
 
   @Nonnull
-  public final Map <String, String> getAttributes ()
+  @ReturnsMutableCopy
+  public final StringMap getAllAttributes ()
   {
-    if (m_aAttributes == null)
-      m_aAttributes = new HashMap <String, String> ();
-    return m_aAttributes;
+    return m_aAttributes.getClone ();
   }
 
   public final void setHeader (final String sKey, final String sValue)
@@ -92,60 +92,55 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void setHeaders (@Nullable final InternetHeaders aHeaders)
   {
-    m_aHeaders = aHeaders;
+    if (aHeaders == null)
+      m_aHeaders = new InternetHeaders ();
+    else
+      m_aHeaders = aHeaders;
   }
 
   @Nonnull
   public final InternetHeaders getHeaders ()
   {
-    if (m_aHeaders == null)
-      m_aHeaders = new InternetHeaders ();
     return m_aHeaders;
-  }
-
-  public final void setMessageID (final String sMessageID)
-  {
-    setHeader ("Message-ID", sMessageID);
-  }
-
-  public final String getMessageID ()
-  {
-    return getHeader ("Message-ID");
-  }
-
-  public final void setPartnership (@Nullable final Partnership aPartnership)
-  {
-    m_aPartnership = aPartnership;
-  }
-
-  @Nonnull
-  public final Partnership getPartnership ()
-  {
-    if (m_aPartnership == null)
-      m_aPartnership = new Partnership ();
-    return m_aPartnership;
   }
 
   public final void addHeader (final String sKey, final String sValue)
   {
-    getHeaders ().addHeader (sKey, sValue);
+    m_aHeaders.addHeader (sKey, sValue);
   }
 
-  public final void setHistory (@Nullable final DataHistory aHistory)
+  public final void setMessageID (final String sMessageID)
   {
-    m_aHistory = aHistory;
+    setHeader (HEADER_MESSAGE_ID, sMessageID);
   }
 
-  @Nonnull
-  public final DataHistory getHistory ()
+  public final String getMessageID ()
   {
-    if (m_aHistory == null)
-      m_aHistory = new DataHistory ();
-    return m_aHistory;
+    return getHeader (HEADER_MESSAGE_ID);
   }
 
   public final void updateMessageID ()
   {
     setMessageID (generateMessageID ());
+  }
+
+  @Nonnull
+  public final DataHistory getHistory ()
+  {
+    return m_aHistory;
+  }
+
+  public final void setPartnership (@Nullable final Partnership aPartnership)
+  {
+    if (aPartnership != null)
+      m_aPartnership = aPartnership;
+    else
+      m_aPartnership = new Partnership ();
+  }
+
+  @Nonnull
+  public final Partnership getPartnership ()
+  {
+    return m_aPartnership;
   }
 }

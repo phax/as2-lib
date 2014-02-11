@@ -150,14 +150,12 @@ public class Partnership implements Serializable
   @Nonnull
   public StringMap getSenderIDs ()
   {
-    return new StringMap (m_aSenderIDs);
+    return m_aSenderIDs.getClone ();
   }
 
   public void setSenderIDs (@Nullable final IStringMap aSenderIDs)
   {
-    m_aSenderIDs.clear ();
-    if (aSenderIDs != null)
-      m_aSenderIDs.setAttributes (aSenderIDs.getAllAttributes ());
+    m_aSenderIDs.setAttributes (aSenderIDs);
   }
 
   public boolean matches (@Nonnull final Partnership aPartnership)
@@ -178,7 +176,6 @@ public class Partnership implements Serializable
       if (!EqualsUtils.equals (sCurrentValue, sCompareValue))
         return false;
     }
-
     return true;
   }
 

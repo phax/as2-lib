@@ -33,13 +33,13 @@
 package com.helger.as2lib.message;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.StringMap;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -52,11 +52,11 @@ public interface IBaseMessage extends Serializable
   String getAttribute (String sKey);
 
   @Nonnull
-  Map <String, String> getAttributes ();
+  StringMap getAllAttributes ();
 
   void setAttribute (String sKey, String sValue);
 
-  void setAttributes (@Nullable Map <String, String> aAttributes);
+  void setAttributes (@Nullable StringMap aAttributes);
 
   @Nullable
   String getHeader (String sKey);
@@ -75,18 +75,16 @@ public interface IBaseMessage extends Serializable
   @Nonnull
   DataHistory getHistory ();
 
-  void setHistory (@Nullable DataHistory aHistory);
-
   String getMessageID ();
 
   void setMessageID (String sMessageID);
+
+  String generateMessageID ();
+
+  void updateMessageID ();
 
   @Nonnull
   Partnership getPartnership ();
 
   void setPartnership (@Nullable Partnership aPartnership);
-
-  String generateMessageID ();
-
-  void updateMessageID ();
 }

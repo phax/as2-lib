@@ -17,6 +17,7 @@
  */
 package com.helger.as2lib.util;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ import com.phloc.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class StringMap implements IStringMap
+public class StringMap implements IStringMap, Serializable
 {
   /**
    * attribute storage.
@@ -214,7 +215,7 @@ public class StringMap implements IStringMap
   @Nonnull
   public final EChange setAttributes (@Nullable final Map <String, String> aValues)
   {
-    EChange ret = EChange.UNCHANGED;
+    EChange ret = clear ();
     if (aValues != null)
       for (final Map.Entry <String, String> aEntry : aValues.entrySet ())
         ret = ret.or (setAttribute (aEntry.getKey (), aEntry.getValue ()));
@@ -224,9 +225,7 @@ public class StringMap implements IStringMap
   @Nonnull
   public final EChange setAttributes (@Nullable final IStringMap aValues)
   {
-    if (aValues == null)
-      return EChange.UNCHANGED;
-    return setAttributes (aValues.getAllAttributes ());
+    return setAttributes (aValues != null ? aValues.getAllAttributes () : null);
   }
 
   /**

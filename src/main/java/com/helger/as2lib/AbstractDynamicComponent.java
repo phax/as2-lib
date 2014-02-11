@@ -41,7 +41,7 @@ import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.lang.CGStringHelper;
 import com.phloc.commons.string.ToStringGenerator;
 
-public abstract class AbstractBaseComponent extends StringMap implements IDynamicComponent
+public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
 {
   private ISession m_aSession;
 
@@ -58,7 +58,7 @@ public abstract class AbstractBaseComponent extends StringMap implements IDynami
     return sValue;
   }
 
-  public final int getParameterInt (@Nonnull final String sKey) throws InvalidParameterException
+  public final int getParameterIntRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
     final int nValue = getAttributeAsInt (sKey, Integer.MIN_VALUE);
     if (nValue == Integer.MIN_VALUE)

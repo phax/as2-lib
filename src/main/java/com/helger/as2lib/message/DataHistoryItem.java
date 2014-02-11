@@ -36,18 +36,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
+import com.helger.as2lib.util.StringMap;
+
 public class DataHistoryItem implements Serializable
 {
   private ContentType m_aContentType;
-  private Map <String, String> m_aAttributes;
+  private StringMap m_aAttributes;
 
   public DataHistoryItem (@Nullable final String sContentType) throws ParseException
   {
@@ -62,14 +62,6 @@ public class DataHistoryItem implements Serializable
   }
 
   @Nonnull
-  public Map <String, String> getAttributes ()
-  {
-    if (m_aAttributes == null)
-      m_aAttributes = new HashMap <String, String> ();
-    return m_aAttributes;
-  }
-
-  @Nonnull
   public ContentType getContentType ()
   {
     return m_aContentType;
@@ -80,13 +72,13 @@ public class DataHistoryItem implements Serializable
                                                                  IOException,
                                                                  ClassNotFoundException
   {
-    m_aContentType = new ContentType ((String) aOIS.readObject ());
-    m_aAttributes = (Map <String, String>) aOIS.readObject ();
+    m_aContentType = new ContentType (aOIS.readUTF ());
+    m_aAttributes = (StringMap) aOIS.readObject ();
   }
 
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
-    aOOS.writeObject (m_aContentType.toString ());
+    aOOS.writeUTF (m_aContentType.toString ());
     aOOS.writeObject (m_aAttributes);
   }
 }

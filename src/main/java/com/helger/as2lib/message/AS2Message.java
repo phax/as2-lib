@@ -43,6 +43,10 @@ import com.helger.as2lib.partner.Partnership;
 
 public class AS2Message extends AbstractMessage
 {
+  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
+  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = "Disposition-Notification-Options";
+  public static final String HEADER_RECEIPT_DELIVERY_OPTION = "Receipt-Delivery-Option";
+
   public static final String PROTOCOL_AS2 = "as2";
 
   public String getProtocol ()
@@ -84,8 +88,8 @@ public class AS2Message extends AbstractMessage
     if (bRequesting)
       return true;
 
-    final boolean bRequested = getHeader ("Disposition-Notification-To") != null ||
-                               getHeader ("Disposition-Notification-Options") != null;
+    final boolean bRequested = getHeader (HEADER_DISPOSITION_NOTIFICATION_TO) != null ||
+                               getHeader (HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null;
     return bRequested;
   }
 
@@ -97,13 +101,13 @@ public class AS2Message extends AbstractMessage
     if (bRequesting)
       return true;
 
-    final boolean bRequested = (getHeader ("Disposition-Notification-To") != null || (getHeader ("Disposition-Notification-Options") != null)) &&
-                               (getHeader ("Receipt-Delivery-Option") != null);
+    final boolean bRequested = (getHeader (HEADER_DISPOSITION_NOTIFICATION_TO) != null || getHeader (HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
+                               getHeader (HEADER_RECEIPT_DELIVERY_OPTION) != null;
     return bRequested;
   }
 
   public String getAsyncMDNurl ()
   {
-    return getHeader ("Receipt-Delivery-Option");
+    return getHeader (HEADER_RECEIPT_DELIVERY_OPTION);
   }
 }

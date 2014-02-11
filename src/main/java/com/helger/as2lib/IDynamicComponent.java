@@ -45,7 +45,7 @@ import com.helger.as2lib.util.IStringMap;
  * no parameters, as these parameters should be passed to the init method.
  * 
  * @author Aaron Silinskas
- * @see AbstractBaseComponent
+ * @see AbstractDynamicComponent
  * @see ISession
  */
 public interface IDynamicComponent extends IStringMap

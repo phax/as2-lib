@@ -144,7 +144,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
     if (getAttributeAsString (PARAM_RESEND_DELAY) == null)
       nResendDelay = DEFAULT_RESEND_DELAY;
     else
-      nResendDelay = getParameterInt (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
+      nResendDelay = getParameterIntRequired (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
 
     final long nResendTime = new Date ().getTime () + nResendDelay;
     return DateUtil.formatDate (DATE_FORMAT, new Date (nResendTime));

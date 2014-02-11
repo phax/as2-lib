@@ -102,7 +102,7 @@ public class MDNFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aMdnBuf.append ("Attributes:\r\n");
-    for (final Map.Entry <String, String> aEntry : aMdn.getAttributes ().entrySet ())
+    for (final Map.Entry <String, String> aEntry : aMdn.getAllAttributes ())
     {
       aMdnBuf.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append ("\r\n");
     }

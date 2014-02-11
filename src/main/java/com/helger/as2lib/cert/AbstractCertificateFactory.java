@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.cert;
 
-import com.helger.as2lib.AbstractBaseComponent;
+import com.helger.as2lib.AbstractDynamicComponent;
 
-public abstract class AbstractCertificateFactory extends AbstractBaseComponent implements ICertificateFactory
+public abstract class AbstractCertificateFactory extends AbstractDynamicComponent implements ICertificateFactory
 {
   /* empty */
 }

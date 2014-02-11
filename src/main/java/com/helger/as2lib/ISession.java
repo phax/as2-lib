@@ -40,6 +40,7 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IProcessor;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 /**
  * The <code>Session</code> interface provides configuration and resource
@@ -94,7 +95,9 @@ public interface ISession
    * 
    * @return all registered components, mapped by ID
    */
-  Map <String, IDynamicComponent> getComponents ();
+  @Nonnull
+  @ReturnsMutableCopy
+  Map <String, IDynamicComponent> getAllComponents ();
 
   /**
    * Short-cut method to retrieve a partner factory.

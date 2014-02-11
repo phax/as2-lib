@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,6 +45,7 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public abstract class AbstractMessageMDN extends AbstractBaseMessage implements IMessageMDN
@@ -71,7 +71,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     return m_aData;
   }
 
-  public void setMessage (@Nullable final IMessage aMessage)
+  public void setMessage (@Nonnull final IMessage aMessage)
   {
     m_aMessage = aMessage;
   }
@@ -113,7 +113,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
     aSB.append ("}")
        .append ("\r\nAttributes:")
-       .append (getAttributes ())
+       .append (getAllAttributes ())
        .append ("\r\nText: \r\n")
        .append (getText ())
        .append ("\r\n");
@@ -127,7 +127,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     m_aPartnership = (Partnership) aOIS.readObject ();
 
     // read in attributes
-    m_aAttributes = (Map <String, String>) aOIS.readObject ();
+    m_aAttributes = (StringMap) aOIS.readObject ();
 
     // read in text
     m_sText = (String) aOIS.readObject ();
@@ -164,14 +164,13 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     final Enumeration <?> aHeaders = m_aHeaders.getAllHeaderLines ();
     while (aHeaders.hasMoreElements ())
     {
-      aOOS.writeBytes (aHeaders.nextElement ().toString () + "\r\n");
+      aOOS.writeBytes ((String) aHeaders.nextElement () + "\r\n");
     }
 
     aOOS.writeBytes ("\r\n");
 
     // write the mime body
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-
     try
     {
       if (m_aData != null)
@@ -188,8 +187,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     {
       throw new IOException ("Messaging exception: " + ex.getMessage ());
     }
-
-    aOOS.write (aBAOS.toByteArray ());
+    aBAOS.writeTo (aOOS);
     aBAOS.close ();
   }
 }

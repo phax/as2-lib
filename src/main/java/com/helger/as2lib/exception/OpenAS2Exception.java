@@ -104,7 +104,7 @@ public class OpenAS2Exception extends Exception
   protected void log (final boolean bTerminated)
   {
     s_aLogger.info ("OpenASException " +
-                    (bTerminated ? "terminated" : " caught") +
+                    (bTerminated ? "terminated" : "caught") +
                     ": " +
                     getMessage () +
                     (m_aSources == null ? "" : "; sources: " + m_aSources));

@@ -44,10 +44,12 @@ import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IProcessor;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.collections.ContainerHelper;
 
 public class Session implements ISession
 {
-  private Map <String, IDynamicComponent> m_aComponents;
+  private final Map <String, IDynamicComponent> m_aComponents = new HashMap <String, IDynamicComponent> ();
 
   /**
    * Constructor
@@ -73,24 +75,23 @@ public class Session implements ISession
 
   public void setComponent (final String sComponentID, final IDynamicComponent aComponent)
   {
-    getComponents ().put (sComponentID, aComponent);
+    m_aComponents.put (sComponentID, aComponent);
   }
 
   @Nonnull
   public IDynamicComponent getComponent (final String sComponentID) throws ComponentNotFoundException
   {
-    final IDynamicComponent aComponent = getComponents ().get (sComponentID);
+    final IDynamicComponent aComponent = m_aComponents.get (sComponentID);
     if (aComponent == null)
       throw new ComponentNotFoundException (sComponentID);
     return aComponent;
   }
 
   @Nonnull
-  public Map <String, IDynamicComponent> getComponents ()
+  @ReturnsMutableCopy
+  public Map <String, IDynamicComponent> getAllComponents ()
   {
-    if (m_aComponents == null)
-      m_aComponents = new HashMap <String, IDynamicComponent> ();
-    return m_aComponents;
+    return ContainerHelper.newMap (m_aComponents);
   }
 
   @Nonnull

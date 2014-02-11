@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.module;
 
-import com.helger.as2lib.AbstractBaseComponent;
+import com.helger.as2lib.AbstractDynamicComponent;
 
-public abstract class AbstractMDNProcessorModule extends AbstractBaseComponent implements IMDNProcessorModule
+public abstract class AbstractMDNProcessorModule extends AbstractDynamicComponent implements IMDNProcessorModule
 {
   /* empty */
 }

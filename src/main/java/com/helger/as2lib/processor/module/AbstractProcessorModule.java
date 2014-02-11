@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.module;
 
-import com.helger.as2lib.AbstractBaseComponent;
+import com.helger.as2lib.AbstractDynamicComponent;
 
-public abstract class AbstractProcessorModule extends AbstractBaseComponent implements IProcessorModule
+public abstract class AbstractProcessorModule extends AbstractDynamicComponent implements IProcessorModule
 {
   /* empty */
 }

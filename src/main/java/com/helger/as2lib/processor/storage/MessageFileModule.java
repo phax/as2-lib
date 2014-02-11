@@ -132,7 +132,7 @@ public class MessageFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aHeaderBuf.append ("Attributes:\r\n");
-    for (final Map.Entry <String, String> attrEntry : aMsg.getAttributes ().entrySet ())
+    for (final Map.Entry <String, String> attrEntry : aMsg.getAllAttributes ())
     {
       aHeaderBuf.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
     }

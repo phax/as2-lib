@@ -38,7 +38,6 @@ import java.util.List;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.mail.internet.ContentType;
 
 public class DataHistory implements Serializable
 {
@@ -56,13 +55,5 @@ public class DataHistory implements Serializable
       throw new NullPointerException ("Item");
 
     m_aItems.add (aItem);
-  }
-
-  boolean contains (@Nonnull final ContentType aContentType)
-  {
-    for (final DataHistoryItem aItem : m_aItems)
-      if (aItem.getContentType () != null && aItem.getContentType ().match (aContentType))
-        return true;
-    return false;
   }
 }
