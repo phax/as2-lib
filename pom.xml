@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.phloc</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>22.7</version>
+    <version>23.1</version>
     <relativePath>../phloc-parent-pom/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -12,6 +12,7 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>as2-lib</name>
+  <description>Open AS2 fork - library part</description>
   
   <licenses>
     <license>
@@ -26,38 +27,12 @@
     <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
   </scm>
-  
-  <repositories>
-    <repository>
-      <id>phloc.com</id>
-      <url>http://repo.phloc.com/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>phloc.com</id>
-      <url>http://repo.phloc.com/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>  
 
   <dependencies>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.3.1</version>
+      <version>4.3.3</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
@@ -67,7 +42,7 @@
     <dependency>
       <groupId>com.sun.mail</groupId>
       <artifactId>javax.mail</artifactId>
-      <version>1.5.1</version>
+      <version>1.5.2</version>
       <exclusions>
         <exclusion>
           <groupId>javax.activation</groupId>
