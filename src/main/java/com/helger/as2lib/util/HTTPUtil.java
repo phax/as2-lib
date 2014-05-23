@@ -184,7 +184,8 @@ public class HTTPUtil
     return sMsg;
   }
 
-  public static byte [] readData (final Socket aSocket, final IMessage aMsg) throws IOException, MessagingException
+  public static byte [] readData (@Nonnull final Socket aSocket, @Nonnull final IMessage aMsg) throws IOException,
+                                                                                              MessagingException
   {
     byte [] aData = null;
     // Get the stream and read in the HTTP request and headers
@@ -197,7 +198,7 @@ public class HTTPUtil
     // Retrieve the message content
     if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
     {
-      final String sTransferEncoding = aMsg.getHeader ("Transfer-Encoding");
+      final String sTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_TRANSFER_ENCODING);
       if (sTransferEncoding != null)
       {
         if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))

@@ -52,6 +52,7 @@ public final class CAS2Header
   public static final String HEADER_MIME_VERSION = "Mime-Version";
   public static final String HEADER_SERVER = "Server";
   public static final String HEADER_DATE = "Date";
+  public static final String HEADER_TRANSFER_ENCODING = "Transfer-Encoding";
 
   private CAS2Header ()
   {}

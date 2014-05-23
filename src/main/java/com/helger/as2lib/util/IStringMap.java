@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import com.phloc.commons.ICloneable;
 
-public interface IStringMap extends ICloneable <StringMap>, Iterable <Map.Entry <String, String>>
+public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry <String, String>>
 {
   boolean containsAttribute (@Nullable String sName);
 
@@ -55,5 +55,4 @@ public interface IStringMap extends ICloneable <StringMap>, Iterable <Map.Entry 
   boolean getAndSetAttributeFlag (String sName);
 
   Iterator <Entry <String, String>> iterator ();
-
 }
