@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.microdom.IMicroElement;
 
@@ -75,10 +76,15 @@ public final class XMLUtil
   @Nonnull
   @ReturnsMutableCopy
   public static IStringMap mapAttributeNodes (@Nonnull final IMicroElement aNode,
-                                             final String sNodeName,
-                                             final String sNodeKeyName,
-                                             final String sNodeValueName) throws OpenAS2Exception
+                                              @Nonnull final String sNodeName,
+                                              @Nonnull final String sNodeKeyName,
+                                              @Nonnull final String sNodeValueName) throws OpenAS2Exception
   {
+    ValueEnforcer.notNull (aNode, "Node");
+    ValueEnforcer.notNull (sNodeName, "NodeName");
+    ValueEnforcer.notNull (sNodeKeyName, "NodeKeyName");
+    ValueEnforcer.notNull (sNodeValueName, "NodeValueName");
+
     final StringMap ret = new StringMap ();
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {

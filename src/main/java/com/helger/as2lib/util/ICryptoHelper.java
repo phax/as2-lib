@@ -37,6 +37,7 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 
+import javax.annotation.Nonnull;
 import javax.mail.internet.MimeBodyPart;
 
 public interface ICryptoHelper
@@ -48,23 +49,34 @@ public interface ICryptoHelper
   String CRYPT_IDEA = "idea";
   String CRYPT_RC2 = "rc2";
 
-  boolean isEncrypted (MimeBodyPart aPart) throws Exception;
+  boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
 
+  @Nonnull
   KeyStore getKeyStore () throws Exception;
 
-  KeyStore loadKeyStore (InputStream aIS, char [] aPassword) throws Exception;
+  @Nonnull
+  KeyStore loadKeyStore (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws Exception;
 
-  KeyStore loadKeyStore (String sFilename, char [] aPassword) throws Exception;
+  @Nonnull
+  KeyStore loadKeyStore (@Nonnull String sFilename, @Nonnull char [] aPassword) throws Exception;
 
-  boolean isSigned (MimeBodyPart aPart) throws Exception;
+  boolean isSigned (@Nonnull MimeBodyPart aPart) throws Exception;
 
-  String calculateMIC (MimeBodyPart aPart, String sDigest, boolean bIncludeHeaders) throws Exception;
+  @Nonnull
+  String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull String sDigest, boolean bIncludeHeaders) throws Exception;
 
-  MimeBodyPart decrypt (MimeBodyPart aPart, Certificate aCert, Key aKey) throws Exception;
+  @Nonnull
+  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull Certificate aCert, @Nonnull Key aKey) throws Exception;
 
-  MimeBodyPart encrypt (MimeBodyPart aPart, Certificate aCert, String sAlgorithm) throws Exception;
+  @Nonnull
+  MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart, @Nonnull Certificate aCert, @Nonnull String sAlgorithm) throws Exception;
 
-  MimeBodyPart sign (MimeBodyPart aPart, Certificate aCert, Key key, String sAlgorithm) throws Exception;
+  @Nonnull
+  MimeBodyPart sign (@Nonnull MimeBodyPart aPart,
+                     @Nonnull Certificate aCert,
+                     @Nonnull Key key,
+                     @Nonnull String sAlgorithm) throws Exception;
 
-  MimeBodyPart verify (MimeBodyPart aPart, Certificate aCert) throws Exception;
+  @Nonnull
+  MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nonnull Certificate aCert) throws Exception;
 }

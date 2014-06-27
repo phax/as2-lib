@@ -45,11 +45,13 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
 {
   private ISession m_aSession;
 
+  @Nonnull
   public String getName ()
   {
     return CGStringHelper.getClassLocalName (this);
   }
 
+  @Nonnull
   public final String getParameterRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
     final String sValue = getAttributeAsString (sKey);

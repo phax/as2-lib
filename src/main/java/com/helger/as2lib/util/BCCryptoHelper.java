@@ -75,6 +75,7 @@ import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.util.encoders.Base64;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.phloc.commons.io.streams.StreamUtils;
@@ -107,16 +108,19 @@ public class BCCryptoHelper implements ICryptoHelper
     return sSmimeType != null && sSmimeType.equalsIgnoreCase ("enveloped-data");
   }
 
-  public boolean isSigned (final MimeBodyPart aPart) throws MessagingException
+  public boolean isSigned (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
     final ContentType aContentType = new ContentType (aPart.getContentType ());
     final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
     return sBaseType.equals ("multipart/signed");
   }
 
-  public String calculateMIC (final MimeBodyPart aPart, final String sDigest, final boolean bIncludeHeaders) throws GeneralSecurityException,
-                                                                                                            MessagingException,
-                                                                                                            IOException
+  @Nonnull
+  public String calculateMIC (@Nonnull final MimeBodyPart aPart,
+                              @Nonnull final String sDigest,
+                              final boolean bIncludeHeaders) throws GeneralSecurityException,
+                                                            MessagingException,
+                                                            IOException
   {
     final String sMICAlg = convertAlgorithm (sDigest, true);
 
@@ -124,13 +128,13 @@ public class BCCryptoHelper implements ICryptoHelper
 
     // convert the Mime data to a byte array, then to an InputStream
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-
     if (bIncludeHeaders)
     {
       aPart.writeTo (aBAOS);
     }
     else
     {
+      // Only the "content" of the part
       StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aBAOS);
     }
 
@@ -154,11 +158,14 @@ public class BCCryptoHelper implements ICryptoHelper
     return aMICResult.toString ();
   }
 
-  public MimeBodyPart decrypt (final MimeBodyPart aPart, final Certificate aCert, final Key aKey) throws GeneralSecurityException,
-                                                                                                 MessagingException,
-                                                                                                 CMSException,
-                                                                                                 IOException,
-                                                                                                 SMIMEException
+  @Nonnull
+  public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
+                               @Nonnull final Certificate aCert,
+                               @Nonnull final Key aKey) throws GeneralSecurityException,
+                                                       MessagingException,
+                                                       CMSException,
+                                                       IOException,
+                                                       SMIMEException
   {
     // Make sure the data is encrypted
     if (!isEncrypted (aPart))
@@ -178,13 +185,15 @@ public class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient ((PrivateKey) aKey).setProvider ("BC"));
+    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (castKey (aKey)).setProvider ("BC"));
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
   @SuppressWarnings ("deprecation")
-  public MimeBodyPart encrypt (final MimeBodyPart aPart, final Certificate aCert, final String sAlgorithm) throws GeneralSecurityException,
-                                                                                                          SMIMEException
+  @Nonnull
+  public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
+                               @Nonnull final Certificate aCert,
+                               @Nonnull final String sAlgorithm) throws GeneralSecurityException, SMIMEException
   {
     final X509Certificate aX509Cert = castCertificate (aCert);
     final String sEncAlg = convertAlgorithm (sAlgorithm, true);
@@ -196,9 +205,13 @@ public class BCCryptoHelper implements ICryptoHelper
   }
 
   @SuppressWarnings ("deprecation")
-  public MimeBodyPart sign (final MimeBodyPart aPart, final Certificate aCert, final Key aKey, final String sAlgorithm) throws GeneralSecurityException,
-                                                                                                                       SMIMEException,
-                                                                                                                       MessagingException
+  @Nonnull
+  public MimeBodyPart sign (@Nonnull final MimeBodyPart aPart,
+                            @Nonnull final Certificate aCert,
+                            @Nonnull final Key aKey,
+                            @Nonnull final String sAlgorithm) throws GeneralSecurityException,
+                                                             SMIMEException,
+                                                             MessagingException
   {
     final String sSignDigest = convertAlgorithm (sAlgorithm, true);
     final X509Certificate aX509Cert = castCertificate (aCert);
@@ -212,15 +225,14 @@ public class BCCryptoHelper implements ICryptoHelper
     final MimeBodyPart aTmpBody = new MimeBodyPart ();
     aTmpBody.setContent (aSignedData);
     aTmpBody.setHeader ("Content-Type", aSignedData.getContentType ());
-
     return aTmpBody;
   }
 
   @SuppressWarnings ({ "unchecked", "deprecation" })
-  public MimeBodyPart verify (final MimeBodyPart aPart, final Certificate aCert) throws GeneralSecurityException,
-                                                                                IOException,
-                                                                                MessagingException,
-                                                                                CMSException
+  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, final Certificate aCert) throws GeneralSecurityException,
+                                                                                         IOException,
+                                                                                         MessagingException,
+                                                                                         CMSException
   {
     // Make sure the data is signed
     if (!isSigned (aPart))
@@ -261,8 +273,7 @@ public class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   protected String convertAlgorithm (@Nonnull final String sAlgorithm, final boolean bToBC) throws NoSuchAlgorithmException
   {
-    if (sAlgorithm == null)
-      throw new NoSuchAlgorithmException ("Algorithm is null");
+    ValueEnforcer.notNull (sAlgorithm, "Algorithm");
 
     if (bToBC)
     {
@@ -278,7 +289,7 @@ public class BCCryptoHelper implements ICryptoHelper
         return SMIMEEnvelopedGenerator.IDEA_CBC;
       if (sAlgorithm.equalsIgnoreCase (CRYPT_RC2))
         return SMIMEEnvelopedGenerator.RC2_CBC;
-      throw new NoSuchAlgorithmException ("Unknown algorithm: " + sAlgorithm);
+      throw new NoSuchAlgorithmException ("Unknown algorithm to BC: " + sAlgorithm);
     }
 
     if (sAlgorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_MD5))
@@ -293,7 +304,7 @@ public class BCCryptoHelper implements ICryptoHelper
       return CRYPT_IDEA;
     if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.RC2_CBC))
       return CRYPT_RC2;
-    throw new NoSuchAlgorithmException ("Unknown algorithm: " + sAlgorithm);
+    throw new NoSuchAlgorithmException ("Unknown algorithm from BC: " + sAlgorithm);
   }
 
   @Nonnull

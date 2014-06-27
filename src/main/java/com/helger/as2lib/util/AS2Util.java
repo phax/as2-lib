@@ -82,10 +82,11 @@ public final class AS2Util
     return SingletonHolder.s_aInstance;
   }
 
-  public static IMessageMDN createMDN (final ISession aSession,
+  @Nonnull
+  public static IMessageMDN createMDN (@Nonnull final ISession aSession,
                                        @Nonnull final AS2Message aMsg,
-                                       final DispositionType aDisposition,
-                                       final String sText) throws Exception
+                                       @Nonnull final DispositionType aDisposition,
+                                       @Nonnull final String sText) throws Exception
   {
     final AS2MessageMDN aMdn = new AS2MessageMDN (aMsg);
     aMdn.setHeader (CAS2Header.HEADER_AS2_VERSION, "1.1");
@@ -145,8 +146,8 @@ public final class AS2Util
     return aMdn;
   }
 
-  public static void createMDNData (final ISession aSession,
-                                    final IMessageMDN aMdn,
+  public static void createMDNData (@Nonnull final ISession aSession,
+                                    @Nonnull final IMessageMDN aMdn,
                                     final String sMicAlg,
                                     final String sSignatureProtocol) throws Exception
   {
@@ -254,9 +255,12 @@ public final class AS2Util
           {
             final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
             aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
+                               aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
+                               aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
+                               aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
             aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
             aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }

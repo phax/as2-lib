@@ -34,31 +34,34 @@ package com.helger.as2lib.exception;
 
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class CertificateNotFoundException extends OpenAS2Exception
 {
-  private String m_sPartnershipType;
+  private final String m_sPartnershipType;
   private final String m_aAlias;
 
-  public CertificateNotFoundException (final String sPartnershipType, final String sAlias)
+  public CertificateNotFoundException (@Nullable final String sPartnershipType, @Nullable final String sAlias)
   {
     super ("Type: " + sPartnershipType + ", Alias: " + sAlias);
     m_sPartnershipType = sPartnershipType;
     m_aAlias = sAlias;
   }
 
-  public CertificateNotFoundException (@Nonnull final X509Certificate aCert)
+  public CertificateNotFoundException (@Nullable final X509Certificate aCert)
   {
-    super ("Certificate not in store: " + aCert.toString ());
+    super ("Certificate not in store: " + aCert);
+    m_sPartnershipType = null;
     m_aAlias = null;
   }
 
+  @Nullable
   public String getPartnershipType ()
   {
     return m_sPartnershipType;
   }
 
+  @Nullable
   public String getAlias ()
   {
     return m_aAlias;
