@@ -60,12 +60,18 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
@@ -73,6 +79,7 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMEUtil;
+import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.phloc.commons.ValueEnforcer;
@@ -80,7 +87,7 @@ import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.phloc.commons.io.streams.StreamUtils;
 
-public class BCCryptoHelper implements ICryptoHelper
+public final class BCCryptoHelper implements ICryptoHelper
 {
   public BCCryptoHelper ()
   {
@@ -122,9 +129,9 @@ public class BCCryptoHelper implements ICryptoHelper
                                                             MessagingException,
                                                             IOException
   {
-    final String sMICAlg = convertAlgorithm (sDigest, true);
+    final ASN1ObjectIdentifier aMICAlg = _convertAlgorithmToBC (sDigest);
 
-    final MessageDigest aMessageDigest = MessageDigest.getInstance (sMICAlg, "BC");
+    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), "BC");
 
     // convert the Mime data to a byte array, then to an InputStream
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
@@ -140,7 +147,7 @@ public class BCCryptoHelper implements ICryptoHelper
 
     final byte [] aData = aBAOS.toByteArray ();
 
-    final InputStream bIn = trimCRLFPrefix (aData);
+    final InputStream bIn = _trimCRLFPrefix (aData);
 
     // calculate the hash of the data and mime header
     final DigestInputStream aDigIS = new DigestInputStream (bIn, aMessageDigest);
@@ -153,9 +160,7 @@ public class BCCryptoHelper implements ICryptoHelper
     final byte [] aMIC = aDigIS.getMessageDigest ().digest ();
     final String sMICString = new String (Base64.encode (aMIC));
 
-    final StringBuilder aMICResult = new StringBuilder (sMICString);
-    aMICResult.append (", ").append (sDigest);
-    return aMICResult.toString ();
+    return sMICString + ", " + sDigest;
   }
 
   @Nonnull
@@ -172,7 +177,7 @@ public class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted");
 
     // Cast parameters to what BC needs
-    final X509Certificate x509Cert = castCertificate (aCert);
+    final X509Certificate x509Cert = _castCertificate (aCert);
 
     // Parse the MIME body into an SMIME envelope object
     final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
@@ -185,7 +190,7 @@ public class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (castKey (aKey)).setProvider ("BC"));
+    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (_castKey (aKey)).setProvider ("BC"));
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
@@ -193,14 +198,18 @@ public class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final Certificate aCert,
-                               @Nonnull final String sAlgorithm) throws GeneralSecurityException, SMIMEException
+                               @Nonnull final String sAlgorithm) throws GeneralSecurityException,
+                                                                SMIMEException,
+                                                                CMSException
   {
-    final X509Certificate aX509Cert = castCertificate (aCert);
-    final String sEncAlg = convertAlgorithm (sAlgorithm, true);
+    final X509Certificate aX509Cert = _castCertificate (aCert);
+    final ASN1ObjectIdentifier aEncAlg = _convertAlgorithmToBC (sAlgorithm);
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
-    aGen.addKeyTransRecipient (aX509Cert);
-    final MimeBodyPart aEncData = aGen.generate (aPart, sEncAlg, "BC");
+    aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider ("BC"));
+
+    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider ("BC").build ();
+    final MimeBodyPart aEncData = aGen.generate (aPart, aEncryptor);
     return aEncData;
   }
 
@@ -213,12 +222,13 @@ public class BCCryptoHelper implements ICryptoHelper
                                                              SMIMEException,
                                                              MessagingException
   {
-    final String sSignDigest = convertAlgorithm (sAlgorithm, true);
-    final X509Certificate aX509Cert = castCertificate (aCert);
-    final PrivateKey aPrivKey = castKey (aKey);
+    final ASN1ObjectIdentifier aSignDigest = _convertAlgorithmToBC (sAlgorithm);
+    final X509Certificate aX509Cert = _castCertificate (aCert);
+    final PrivateKey aPrivKey = _castKey (aKey);
 
+    // create the generator for creating an smime/signed message
     final SMIMESignedGenerator aSGen = new SMIMESignedGenerator ();
-    aSGen.addSigner (aPrivKey, aX509Cert, sSignDigest);
+    aSGen.addSigner (aPrivKey, aX509Cert, aSignDigest.getId ());
 
     final MimeMultipart aSignedData = aSGen.generate (aPart, "BC");
 
@@ -238,7 +248,7 @@ public class BCCryptoHelper implements ICryptoHelper
     if (!isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed");
 
-    final X509Certificate aX509Cert = castCertificate (aCert);
+    final X509Certificate aX509Cert = _castCertificate (aCert);
     final MimeMultipart aMainParts = (MimeMultipart) aPart.getContent ();
     final SMIMESigned aSignedPart = new SMIMESigned (aMainParts);
 
@@ -251,7 +261,7 @@ public class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  protected static X509Certificate castCertificate (@Nonnull final Certificate aCert) throws GeneralSecurityException
+  private static X509Certificate _castCertificate (@Nonnull final Certificate aCert) throws GeneralSecurityException
   {
     if (aCert == null)
       throw new GeneralSecurityException ("Certificate is null");
@@ -261,7 +271,7 @@ public class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  protected static PrivateKey castKey (@Nonnull final Key aKey) throws GeneralSecurityException
+  private static PrivateKey _castKey (@Nonnull final Key aKey) throws GeneralSecurityException
   {
     if (aKey == null)
       throw new GeneralSecurityException ("Key is null");
@@ -271,44 +281,27 @@ public class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  protected String convertAlgorithm (@Nonnull final String sAlgorithm, final boolean bToBC) throws NoSuchAlgorithmException
+  private static ASN1ObjectIdentifier _convertAlgorithmToBC (@Nonnull final String sAlgorithm) throws NoSuchAlgorithmException
   {
     ValueEnforcer.notNull (sAlgorithm, "Algorithm");
 
-    if (bToBC)
-    {
-      if (sAlgorithm.equalsIgnoreCase (DIGEST_MD5))
-        return SMIMESignedGenerator.DIGEST_MD5;
-      if (sAlgorithm.equalsIgnoreCase (DIGEST_SHA1))
-        return SMIMESignedGenerator.DIGEST_SHA1;
-      if (sAlgorithm.equalsIgnoreCase (CRYPT_3DES))
-        return SMIMEEnvelopedGenerator.DES_EDE3_CBC;
-      if (sAlgorithm.equalsIgnoreCase (CRYPT_CAST5))
-        return SMIMEEnvelopedGenerator.CAST5_CBC;
-      if (sAlgorithm.equalsIgnoreCase (CRYPT_IDEA))
-        return SMIMEEnvelopedGenerator.IDEA_CBC;
-      if (sAlgorithm.equalsIgnoreCase (CRYPT_RC2))
-        return SMIMEEnvelopedGenerator.RC2_CBC;
-      throw new NoSuchAlgorithmException ("Unknown algorithm to BC: " + sAlgorithm);
-    }
-
-    if (sAlgorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_MD5))
-      return DIGEST_MD5;
-    if (sAlgorithm.equalsIgnoreCase (SMIMESignedGenerator.DIGEST_SHA1))
-      return DIGEST_SHA1;
-    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.CAST5_CBC))
-      return CRYPT_CAST5;
-    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.DES_EDE3_CBC))
-      return CRYPT_3DES;
-    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.IDEA_CBC))
-      return CRYPT_IDEA;
-    if (sAlgorithm.equalsIgnoreCase (SMIMEEnvelopedGenerator.RC2_CBC))
-      return CRYPT_RC2;
-    throw new NoSuchAlgorithmException ("Unknown algorithm from BC: " + sAlgorithm);
+    if (sAlgorithm.equalsIgnoreCase (DIGEST_MD5))
+      return PKCSObjectIdentifiers.md5;
+    if (sAlgorithm.equalsIgnoreCase (DIGEST_SHA1))
+      return OIWObjectIdentifiers.idSHA1;
+    if (sAlgorithm.equalsIgnoreCase (CRYPT_3DES))
+      return PKCSObjectIdentifiers.des_EDE3_CBC;
+    if (sAlgorithm.equalsIgnoreCase (CRYPT_CAST5))
+      return CMSAlgorithm.CAST5_CBC;
+    if (sAlgorithm.equalsIgnoreCase (CRYPT_IDEA))
+      return CMSAlgorithm.IDEA_CBC;
+    if (sAlgorithm.equalsIgnoreCase (CRYPT_RC2))
+      return PKCSObjectIdentifiers.RC2_CBC;
+    throw new NoSuchAlgorithmException ("Unknown algorithm to BC: " + sAlgorithm);
   }
 
   @Nonnull
-  protected static InputStream trimCRLFPrefix (@Nonnull final byte [] aData)
+  private static InputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
   {
     final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (aData);
 

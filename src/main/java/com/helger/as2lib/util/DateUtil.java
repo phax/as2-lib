@@ -35,42 +35,29 @@ package com.helger.as2lib.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 public final class DateUtil
 {
-  private static final Map <String, SimpleDateFormat> s_aFormatters = new HashMap <String, SimpleDateFormat> ();
-
   private DateUtil ()
   {}
 
+  @Nonnull
   public static String getFormattedDateNow (@Nonnull final String sFormat)
   {
     return formatDate (sFormat, new Date ());
   }
 
   @Nonnull
-  private static SimpleDateFormat _getDateFormat (@Nonnull final String sFormat)
+  public static String formatDate (@Nonnull final String sFormat, @Nonnull final Date aValue)
   {
-    SimpleDateFormat aDF = s_aFormatters.get (sFormat);
-    if (aDF == null)
-    {
-      aDF = new SimpleDateFormat (sFormat);
-      s_aFormatters.put (sFormat, aDF);
-    }
-    return aDF;
+    return new SimpleDateFormat (sFormat).format (aValue);
   }
 
-  public static synchronized String formatDate (@Nonnull final String sFormat, @Nonnull final Date aValue)
+  @Nonnull
+  public static Date parseDate (@Nonnull final String sFormat, @Nonnull final String sValue) throws ParseException
   {
-    return _getDateFormat (sFormat).format (aValue);
-  }
-
-  public static synchronized Date parseDate (@Nonnull final String sFormat, @Nonnull final String sValue) throws ParseException
-  {
-    return _getDateFormat (sFormat).parse (sValue);
+    return new SimpleDateFormat (sFormat).parse (sValue);
   }
 }
