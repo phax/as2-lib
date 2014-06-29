@@ -44,9 +44,10 @@ import com.phloc.commons.string.StringHelper;
 
 public abstract class AbstractParameterParser
 {
-  public abstract void setParameter (String sKey, String sValue) throws InvalidParameterException;
+  public abstract void setParameter (@Nonnull String sKey, @Nonnull String sValue) throws InvalidParameterException;
 
-  public abstract String getParameter (String sKey) throws InvalidParameterException;
+  @Nullable
+  public abstract String getParameter (@Nonnull String sKey) throws InvalidParameterException;
 
   /**
    * Set parameters from a string, like

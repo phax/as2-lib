@@ -32,39 +32,53 @@
  */
 package com.helger.as2lib.message;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.phloc.commons.annotations.Nonempty;
 
 public interface IMessage extends IBaseMessage
 {
+  @Nullable
   String getContentType ();
 
-  void setContentType (String sContentType);
+  void setContentType (@Nullable String sContentType);
 
+  @Nullable
   String getContentDisposition ();
 
-  void setContentDisposition (String sContentDisposition);
+  void setContentDisposition (@Nullable String sContentDisposition);
 
+  @Nullable
+  String getSubject ();
+
+  void setSubject (@Nullable String sSubject);
+
+  @Nullable
   MimeBodyPart getData ();
 
-  void setData (MimeBodyPart aData, DataHistoryItem aHistoryItem) throws OpenAS2Exception;
+  void setData (@Nullable MimeBodyPart aData, @Nullable DataHistoryItem aHistoryItem) throws OpenAS2Exception;
 
-  DataHistoryItem setData (MimeBodyPart aData) throws OpenAS2Exception;
+  @Nonnull
+  DataHistoryItem setData (@Nonnull MimeBodyPart aData) throws OpenAS2Exception;
 
+  @Nullable
   IMessageMDN getMDN ();
 
-  void setMDN (IMessageMDN aMDN);
+  void setMDN (@Nullable IMessageMDN aMDN);
+
+  @Nonnull
+  @Nonempty
+  String getLoggingText ();
+
+  @Nonnull
+  DataHistory getHistory ();
 
   String getProtocol ();
 
   boolean isRequestingMDN ();
 
   boolean isRequestingAsynchMDN ();
-
-  String getSubject ();
-
-  void setSubject (String sSubject);
-
-  String getLoggingText ();
 }

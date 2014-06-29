@@ -38,6 +38,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.IMessageMDN;
+import com.phloc.commons.ValueEnforcer;
 
 public class MessageMDNParameters extends AbstractParameterParser
 {
@@ -52,19 +53,12 @@ public class MessageMDNParameters extends AbstractParameterParser
 
   public MessageMDNParameters (@Nonnull final IMessageMDN aTarget)
   {
-    m_aTarget = aTarget;
-  }
-
-  @Nonnull
-  public IMessageMDN getTarget ()
-  {
-    return m_aTarget;
+    m_aTarget = ValueEnforcer.notNull (aTarget, "Target");
   }
 
   @Override
   public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
-    final IMessageMDN aTarget = getTarget ();
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
     if (aKeyParts.countTokens () < 2)
@@ -76,23 +70,21 @@ public class MessageMDNParameters extends AbstractParameterParser
       if (aKeyParts.countTokens () < 3)
         throw new InvalidParameterException ("Invalid key format", this, "key", sKey);
 
+      // Set parameter of message
       final String sMessageKey = aKeyParts.nextToken () + "." + aKeyParts.nextToken ();
-      if (aTarget.getMessage () == null)
-        throw new InvalidParameterException ("MDN has no message", this, "key", sKey);
-
-      new MessageParameters (aTarget.getMessage ()).setParameter (sMessageKey, sValue);
+      new MessageParameters (m_aTarget.getMessage ()).setParameter (sMessageKey, sValue);
     }
     else
     {
-      final String sAreaID = aKeyParts.nextToken ();
+      final String sAreaValue = aKeyParts.nextToken ();
       if (sArea.equals (KEY_TEXT))
-        aTarget.setText (sValue);
+        m_aTarget.setText (sValue);
       else
         if (sArea.equals (KEY_ATTRIBUTES))
-          aTarget.setAttribute (sAreaID, sValue);
+          m_aTarget.setAttribute (sAreaValue, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
-            aTarget.setHeader (sAreaID, sValue);
+            m_aTarget.setHeader (sAreaValue, sValue);
           else
             throw new InvalidParameterException ("Invalid area in key", this, "key", sKey);
     }
@@ -101,31 +93,31 @@ public class MessageMDNParameters extends AbstractParameterParser
   @Override
   public String getParameter (final String sKey) throws InvalidParameterException
   {
-    final IMessageMDN aTarget = getTarget ();
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
     if (aKeyParts.countTokens () > 2)
     {
+      // Read from message
       aKeyParts.nextToken ();
       final String sMsgKey = aKeyParts.nextToken () + "." + aKeyParts.nextToken ();
-      return new MessageParameters (aTarget.getMessage ()).getParameter (sMsgKey);
+      return new MessageParameters (m_aTarget.getMessage ()).getParameter (sMsgKey);
     }
 
     if (aKeyParts.countTokens () < 2)
       throw new InvalidParameterException ("Invalid key format", this, "key", sKey);
 
     final String sArea = aKeyParts.nextToken ();
-    final String sAreaID = aKeyParts.nextToken ();
+    final String sAreaValue = aKeyParts.nextToken ();
 
     if (sArea.equals (KEY_SENDER))
-      return getTarget ().getPartnership ().getSenderID (sAreaID);
+      return m_aTarget.getPartnership ().getSenderID (sAreaValue);
     if (sArea.equals (KEY_RECEIVER))
-      return getTarget ().getPartnership ().getReceiverID (sAreaID);
+      return m_aTarget.getPartnership ().getReceiverID (sAreaValue);
     if (sArea.equals (KEY_TEXT))
-      return aTarget.getText ();
+      return m_aTarget.getText ();
     if (sArea.equals (KEY_ATTRIBUTES))
-      return aTarget.getAttribute (sAreaID);
+      return m_aTarget.getAttribute (sAreaValue);
     if (sArea.equals (KEY_HEADERS))
-      return aTarget.getHeader (sAreaID);
+      return m_aTarget.getHeader (sAreaValue);
     throw new InvalidParameterException ("Invalid area in key", this, "key", sKey);
   }
 }

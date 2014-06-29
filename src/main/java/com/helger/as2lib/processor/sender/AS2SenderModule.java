@@ -169,7 +169,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
               s_aLogger.info ("message sent" + aMsg.getLoggingText ());
             }
           }
-
         }
         catch (final DispositionException ex)
         {

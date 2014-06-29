@@ -41,12 +41,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.Header;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.phloc.commons.io.streams.StreamUtils;
 
 public abstract class AbstractMessageMDN extends AbstractBaseMessage implements IMessageMDN
 {
@@ -56,13 +55,8 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
   public AbstractMessageMDN (@Nonnull final IMessage aMsg)
   {
-    m_aMessage = aMsg;
+    setMessage (aMsg);
     aMsg.setMDN (this);
-  }
-
-  public void setData (@Nullable final MimeBodyPart aData)
-  {
-    m_aData = aData;
   }
 
   @Nullable
@@ -71,28 +65,33 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     return m_aData;
   }
 
-  public void setMessage (@Nonnull final IMessage aMessage)
+  public void setData (@Nullable final MimeBodyPart aData)
   {
-    m_aMessage = aMessage;
+    m_aData = aData;
   }
 
-  @Nullable
+  @Nonnull
   public IMessage getMessage ()
   {
     return m_aMessage;
   }
 
-  public void setText (final String sText)
+  public void setMessage (@Nonnull final IMessage aMessage)
   {
-    m_sText = sText;
+    ValueEnforcer.notNull (aMessage, "Message");
+    m_aMessage = aMessage;
   }
 
+  @Nullable
   public String getText ()
   {
     return m_sText;
   }
 
-  public abstract String generateMessageID ();
+  public void setText (@Nullable final String sText)
+  {
+    m_sText = sText;
+  }
 
   @Override
   public String toString ()
@@ -123,20 +122,13 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   @SuppressWarnings ("unchecked")
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
-    // read in partnership
-    m_aPartnership = (Partnership) aOIS.readObject ();
-
-    // read in attributes
-    m_aAttributes = (StringMap) aOIS.readObject ();
+    baseReadObject (aOIS);
 
     // read in text
     m_sText = (String) aOIS.readObject ();
 
     try
     {
-      // read in message headers
-      m_aHeaders = new InternetHeaders (aOIS);
-
       // read in mime body
       if (aOIS.read () == 1)
         m_aData = new MimeBodyPart (aOIS);
@@ -151,23 +143,10 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
-    // write partnership info
-    aOOS.writeObject (m_aPartnership);
-
-    // write attributes
-    aOOS.writeObject (m_aAttributes);
+    baseWriteObject (aOOS);
 
     // write text
     aOOS.writeObject (m_sText);
-
-    // write message headers
-    final Enumeration <?> aHeaders = m_aHeaders.getAllHeaderLines ();
-    while (aHeaders.hasMoreElements ())
-    {
-      aOOS.writeBytes ((String) aHeaders.nextElement () + "\r\n");
-    }
-
-    aOOS.writeBytes ("\r\n");
 
     // write the mime body
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
@@ -182,12 +161,15 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
       {
         aBAOS.write (0);
       }
+      aBAOS.writeTo (aOOS);
     }
     catch (final MessagingException ex)
     {
-      throw new IOException ("Messaging exception: " + ex.getMessage ());
+      throw new IOException ("Messaging exception", ex);
     }
-    aBAOS.writeTo (aOOS);
-    aBAOS.close ();
+    finally
+    {
+      StreamUtils.close (aBAOS);
+    }
   }
 }

@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib.params;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.phloc.commons.random.VerySecureRandom;
 import com.phloc.commons.string.StringHelper;
@@ -39,13 +42,14 @@ import com.phloc.commons.string.StringHelper;
 public class RandomParameters extends AbstractParameterParser
 {
   @Override
-  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
+  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
   {
     throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
 
   @Override
-  public String getParameter (final String sKey) throws InvalidParameterException
+  @Nullable
+  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     if (sKey == null)
       throw new InvalidParameterException ("Invalid key", this, sKey, null);

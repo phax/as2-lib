@@ -32,19 +32,24 @@
  */
 package com.helger.as2lib.message;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
 public interface IMessageMDN extends IBaseMessage
 {
+  @Nullable
   MimeBodyPart getData ();
 
-  void setData (MimeBodyPart aData);
+  void setData (@Nullable MimeBodyPart aData);
 
+  @Nonnull
   IMessage getMessage ();
 
-  void setMessage (IMessage aMessage);
+  void setMessage (@Nonnull IMessage aMessage);
 
+  @Nullable
   String getText ();
 
-  void setText (String sText);
+  void setText (@Nullable String sText);
 }

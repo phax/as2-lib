@@ -32,13 +32,13 @@
  */
 package com.helger.as2lib.params;
 
-import java.io.File;
-
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.internet.ContentDisposition;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.IMessage;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.string.StringHelper;
 
 public class MessageParameters extends AbstractParameterParser
@@ -53,17 +53,11 @@ public class MessageParameters extends AbstractParameterParser
 
   public MessageParameters (@Nonnull final IMessage aTarget)
   {
-    m_aTarget = aTarget;
-  }
-
-  @Nonnull
-  public IMessage getTarget ()
-  {
-    return m_aTarget;
+    m_aTarget = ValueEnforcer.notNull (aTarget, "Target");
   }
 
   @Override
-  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
+  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
   {
     final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey, 2);
     if (aKeyParts.length != 2)
@@ -73,55 +67,53 @@ public class MessageParameters extends AbstractParameterParser
     final String sAreaID = aKeyParts[1];
 
     if (sArea.equals (KEY_SENDER))
-      getTarget ().getPartnership ().setSenderID (sAreaID, sValue);
+      m_aTarget.getPartnership ().setSenderID (sAreaID, sValue);
     else
       if (sArea.equals (KEY_RECEIVER))
-        getTarget ().getPartnership ().setReceiverID (sAreaID, sValue);
+        m_aTarget.getPartnership ().setReceiverID (sAreaID, sValue);
       else
         if (sArea.equals (KEY_ATTRIBUTES))
-          getTarget ().setAttribute (sAreaID, sValue);
+          m_aTarget.setAttribute (sAreaID, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
-            getTarget ().setHeader (sAreaID, sValue);
+            m_aTarget.setHeader (sAreaID, sValue);
           else
             throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
   }
 
   @Override
-  public String getParameter (final String sKey) throws InvalidParameterException
+  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey);
     if (aKeyParts.length != 2)
       throw new InvalidParameterException ("Invalid key format", this, sKey, null);
 
     final String sArea = aKeyParts[0];
-    final String sAreaID = aKeyParts[1];
+    final String sAreaValue = aKeyParts[1];
+
     if (sArea.equals (KEY_SENDER))
-      return getTarget ().getPartnership ().getSenderID (sAreaID);
+      return m_aTarget.getPartnership ().getSenderID (sAreaValue);
     if (sArea.equals (KEY_RECEIVER))
-      return getTarget ().getPartnership ().getReceiverID (sAreaID);
+      return m_aTarget.getPartnership ().getReceiverID (sAreaValue);
     if (sArea.equals (KEY_ATTRIBUTES))
-      return getTarget ().getAttribute (sAreaID);
+      return m_aTarget.getAttribute (sAreaValue);
     if (sArea.equals (KEY_HEADERS))
-      return getTarget ().getHeader (sAreaID);
-    if (sArea.equals (KEY_CONTENT_FILENAME) && sAreaID.equals ("filename"))
+      return m_aTarget.getHeader (sAreaValue);
+    if (sArea.equals (KEY_CONTENT_FILENAME) && sAreaValue.equals ("filename"))
     {
       String sReturnFilename = "noContentDispositionFilename";
       final String sFilename = m_aTarget.getContentDisposition ();
-      if (sFilename == null || sFilename.length () < 1)
-        return sReturnFilename;
-      try
+      if (StringHelper.hasText (sFilename))
       {
-        final int nPos = sFilename.lastIndexOf (File.separator);
-        if (nPos >= 0)
-          sReturnFilename = sFilename.substring (0, nPos + 1);
-
-        final ContentDisposition aContentDisposition = new ContentDisposition (sFilename);
-        sReturnFilename = aContentDisposition.getParameter ("filename");
-      }
-      catch (final Exception ex)
-      {
-        ex.printStackTrace ();
+        try
+        {
+          final ContentDisposition aContentDisposition = new ContentDisposition (sFilename);
+          sReturnFilename = aContentDisposition.getParameter ("filename");
+        }
+        catch (final Exception ex)
+        {
+          throw new IllegalStateException ("Error parsing parameter", ex);
+        }
       }
       return sReturnFilename;
     }

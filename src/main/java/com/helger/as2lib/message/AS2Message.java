@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib.message;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
@@ -41,17 +44,21 @@ import com.helger.as2lib.params.RandomParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
+import com.phloc.commons.annotations.Nonempty;
 
 public class AS2Message extends AbstractMessage
 {
   public static final String PROTOCOL_AS2 = "as2";
+  public static final String DEFAULT_ID_FORMAT = "OPENAS2-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
-  public String getProtocol ()
+  public final String getProtocol ()
   {
     return PROTOCOL_AS2;
   }
 
   @Override
+  @Nonnull
+  @Nonempty
   public String generateMessageID ()
   {
     final CompositeParameters params = new CompositeParameters (false).add ("date", new DateParameters ())
@@ -60,7 +67,7 @@ public class AS2Message extends AbstractMessage
 
     String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID);
     if (sIDFormat == null)
-      sIDFormat = "OPENAS2-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+      sIDFormat = DEFAULT_ID_FORMAT;
 
     final StringBuilder sMessageID = new StringBuilder ();
     sMessageID.append ('<');
@@ -103,6 +110,7 @@ public class AS2Message extends AbstractMessage
     return bRequested;
   }
 
+  @Nullable
   public String getAsyncMDNurl ()
   {
     return getHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION);

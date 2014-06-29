@@ -50,6 +50,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public static final String MDNA_ORIG_MESSAGEID = "ORIGINAL_MESSAGE_ID";
   public static final String MDNA_DISPOSITION = "DISPOSITION";
   public static final String MDNA_MIC = "MIC";
+  public static final String DEFAULT_DATE_FORMAT = "ddMMyyyyHHmmssZ";
 
   public AS2MessageMDN (@Nonnull final AS2Message aMsg)
   {
@@ -65,23 +66,18 @@ public class AS2MessageMDN extends AbstractMessageMDN
     final StringBuilder aSB = new StringBuilder ();
     String sDateFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_DATE_FORMAT);
     if (sDateFormat == null)
-      sDateFormat = "ddMMyyyyHHmmssZ";
+      sDateFormat = DEFAULT_DATE_FORMAT;
     aSB.append ("<OPENAS2-").append (DateUtil.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
-    aSB.append ("-").append (aRandomFormatter.format (VerySecureRandom.getInstance ().nextInt (10000)));
+    aSB.append ('-').append (aRandomFormatter.format (VerySecureRandom.getInstance ().nextInt (10000)));
 
-    if (getMessage () != null)
-    {
-      final Partnership aPartnership = getMessage ().getPartnership ();
-      final String sSenderID = aPartnership.getSenderID (CPartnershipIDs.PID_AS2);
-      final String sReceiverID = aPartnership.getReceiverID (CPartnershipIDs.PID_AS2);
+    // Message details
+    final Partnership aPartnership = getMessage ().getPartnership ();
+    final String sSenderID = aPartnership.getSenderID (CPartnershipIDs.PID_AS2);
+    final String sReceiverID = aPartnership.getReceiverID (CPartnershipIDs.PID_AS2);
+    aSB.append ('@').append (sReceiverID).append ('_').append (sSenderID);
 
-      aSB.append ("@").append (sReceiverID).append ("_").append (sSenderID);
-    }
-
-    aSB.append (">");
-
-    return aSB.toString ();
+    return aSB.append ('>').toString ();
   }
 }

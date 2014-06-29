@@ -77,7 +77,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     return m_aPartnerships;
   }
 
-  public void updatePartnership (final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
+  public void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
   {
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMsg.getPartnership ());

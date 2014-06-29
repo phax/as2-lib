@@ -41,29 +41,30 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.Header;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public abstract class AbstractMessage extends AbstractBaseMessage implements IMessage
 {
-  private IMessageMDN m_aMDN;
   private MimeBodyPart m_aData;
+  private IMessageMDN m_aMDN;
+  private DataHistory m_aHistory = new DataHistory ();
 
   public AbstractMessage ()
   {}
 
-  public void setContentType (final String sContentType)
+  public void setContentType (@Nullable final String sContentType)
   {
     setHeader (CAS2Header.HEADER_CONTENT_TYPE, sContentType);
   }
 
+  @Nullable
   public String getContentType ()
   {
     return getHeader (CAS2Header.HEADER_CONTENT_TYPE);
@@ -73,7 +74,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
    * @since 2007-06-01
    * @param sContentDisposition
    */
-  public void setContentDisposition (final String sContentDisposition)
+  public void setContentDisposition (@Nullable final String sContentDisposition)
   {
     setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisposition);
   }
@@ -81,9 +82,21 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   /**
    * @since 2007-06-01
    */
+  @Nullable
   public String getContentDisposition ()
   {
     return getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION);
+  }
+
+  public void setSubject (@Nullable final String sSubject)
+  {
+    setHeader (CAS2Header.HEADER_SUBJECT, sSubject);
+  }
+
+  @Nullable
+  public String getSubject ()
+  {
+    return getHeader (CAS2Header.HEADER_SUBJECT);
   }
 
   public void setData (@Nullable final MimeBodyPart aData, @Nullable final DataHistoryItem aHistoryItem)
@@ -99,6 +112,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       {
         setContentType (null);
       }
+
       try
       {
         setContentDisposition (aData.getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, null));
@@ -110,12 +124,14 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     }
 
     if (aHistoryItem != null)
-      getHistory ().addItem (aHistoryItem);
+      m_aHistory.addItem (aHistoryItem);
   }
 
   @Nonnull
   public DataHistoryItem setData (@Nonnull final MimeBodyPart aData) throws OpenAS2Exception
   {
+    ValueEnforcer.notNull (aData, "Data");
+
     try
     {
       final DataHistoryItem aHistoryItem = new DataHistoryItem (aData.getContentType ());
@@ -128,6 +144,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     }
   }
 
+  @Nullable
   public MimeBodyPart getData ()
   {
     return m_aData;
@@ -144,16 +161,17 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     return m_aMDN;
   }
 
-  public abstract String generateMessageID ();
-
-  public void setSubject (final String sSubject)
+  @Nonnull
+  @Nonempty
+  public String getLoggingText ()
   {
-    setHeader (CAS2Header.HEADER_SUBJECT, sSubject);
+    return " [" + getMessageID () + "]";
   }
 
-  public String getSubject ()
+  @Nonnull
+  public final DataHistory getHistory ()
   {
-    return getHeader (CAS2Header.HEADER_SUBJECT);
+    return m_aHistory;
   }
 
   @Override
@@ -184,54 +202,31 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   @SuppressWarnings ("unchecked")
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
-    // read in partnership
-    m_aPartnership = (Partnership) aOIS.readObject ();
-
-    // read in attributes
-    m_aAttributes = (StringMap) aOIS.readObject ();
-
-    // read in data history
-    m_aHistory = (DataHistory) aOIS.readObject ();
+    baseReadObject (aOIS);
 
     try
     {
-      // read in message headers
-      m_aHeaders = new InternetHeaders (aOIS);
-
       // read in mime body
       if (aOIS.read () == 1)
         m_aData = new MimeBodyPart (aOIS);
     }
     catch (final MessagingException ex)
     {
-      throw new IOException ("Messaging exception: " + ex.getMessage ());
+      throw new IOException ("Messaging exception", ex);
     }
 
     // read in MDN
     m_aMDN = (IMessageMDN) aOIS.readObject ();
     if (m_aMDN != null)
       m_aMDN.setMessage (this);
+
+    // read in data history
+    m_aHistory = (DataHistory) aOIS.readObject ();
   }
 
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
-    // write partnership info
-    aOOS.writeObject (m_aPartnership);
-
-    // write attributes
-    aOOS.writeObject (m_aAttributes);
-
-    // write data history
-    aOOS.writeObject (m_aHistory);
-
-    // write message headers
-    final Enumeration <?> en = m_aHeaders.getAllHeaderLines ();
-    while (en.hasMoreElements ())
-    {
-      aOOS.writeBytes (en.nextElement ().toString () + "\r\n");
-    }
-
-    aOOS.writeBytes ("\r\n");
+    baseWriteObject (aOOS);
 
     // write the mime body
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
@@ -257,10 +252,8 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
     // write the message's MDN
     aOOS.writeObject (m_aMDN);
-  }
 
-  public String getLoggingText ()
-  {
-    return " [" + getMessageID () + "]";
+    // write data history
+    aOOS.writeObject (m_aHistory);
   }
 }

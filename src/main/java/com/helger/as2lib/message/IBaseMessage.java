@@ -40,6 +40,7 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -49,38 +50,51 @@ import com.helger.as2lib.util.StringMap;
 public interface IBaseMessage extends Serializable
 {
   @Nullable
-  String getAttribute (String sKey);
+  String getAttribute (@Nullable String sKey);
 
   @Nonnull
+  @ReturnsMutableCopy
   StringMap getAllAttributes ();
 
-  void setAttribute (String sKey, String sValue);
+  void setAttribute (@Nonnull String sKey, @Nullable String sValue);
 
   void setAttributes (@Nullable StringMap aAttributes);
 
   @Nullable
-  String getHeader (String sKey);
+  String getHeader (@Nonnull String sKey);
 
-  String getHeader (String sKey, String sDelimiter);
+  @Nullable
+  String getHeader (@Nonnull String sKey, @Nullable String sDelimiter);
 
   @Nonnull
   InternetHeaders getHeaders ();
 
-  void setHeader (String sKey, String sValue);
+  void setHeader (@Nonnull String sKey, @Nullable String sValue);
 
-  void addHeader (String sKey, String sValue);
+  void addHeader (@Nonnull String sKey, @Nullable String sValue);
 
   void setHeaders (@Nullable InternetHeaders aHeaders);
 
-  @Nonnull
-  DataHistory getHistory ();
-
+  /**
+   * @return Special message ID header
+   */
+  @Nullable
   String getMessageID ();
 
-  void setMessageID (String sMessageID);
+  /**
+   * Set special message ID header
+   * 
+   * @param sMessageID
+   *        Message ID
+   */
+  void setMessageID (@Nullable String sMessageID);
 
+  @Nonnull
   String generateMessageID ();
 
+  /**
+   * Shortcut for <code>setMessageID (generateMessageID ())</code>
+   */
   void updateMessageID ();
 
   @Nonnull

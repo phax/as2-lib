@@ -125,7 +125,7 @@ public class CompositeParameters extends AbstractParameterParser
   }
 
   @Nonnull
-  protected Map <String, AbstractParameterParser> getParameterParsers ()
+  protected final Map <String, AbstractParameterParser> getParameterParsers ()
   {
     if (m_aParameterParsers == null)
       m_aParameterParsers = new HashMap <String, AbstractParameterParser> ();

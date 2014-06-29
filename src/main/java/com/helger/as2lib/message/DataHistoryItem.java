@@ -43,6 +43,7 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
 import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.ValueEnforcer;
 
 public class DataHistoryItem implements Serializable
 {
@@ -56,9 +57,7 @@ public class DataHistoryItem implements Serializable
 
   public DataHistoryItem (@Nonnull final ContentType aContentType)
   {
-    if (aContentType == null)
-      throw new NullPointerException ("ContentType");
-    m_aContentType = aContentType;
+    m_aContentType = ValueEnforcer.notNull (aContentType, "ContentType");
   }
 
   @Nonnull
@@ -67,7 +66,6 @@ public class DataHistoryItem implements Serializable
     return m_aContentType;
   }
 
-  @SuppressWarnings ("unchecked")
   private void readObject (@Nonnull final ObjectInputStream aOIS) throws ParseException,
                                                                  IOException,
                                                                  ClassNotFoundException

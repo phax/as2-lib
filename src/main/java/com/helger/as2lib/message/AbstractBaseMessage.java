@@ -32,32 +32,81 @@
  */
 package com.helger.as2lib.message;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Enumeration;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.string.ToStringGenerator;
 
+/**
+ * Base implementation of {@link IBaseMessage} as the base class for
+ * {@link AbstractMessage} and {@link AbstractMessageMDN}.
+ * 
+ * @author Philip Helger
+ */
 public abstract class AbstractBaseMessage implements IBaseMessage
 {
-  protected StringMap m_aAttributes = new StringMap ();
-  protected InternetHeaders m_aHeaders = new InternetHeaders ();
-  protected DataHistory m_aHistory = new DataHistory ();
-  protected Partnership m_aPartnership = new Partnership ();
+  private StringMap m_aAttributes = new StringMap ();
+  private InternetHeaders m_aHeaders = new InternetHeaders ();
+  private Partnership m_aPartnership = new Partnership ();
 
   public AbstractBaseMessage ()
   {}
 
-  public final void setAttribute (final String sKey, final String sValue)
+  protected final void baseReadObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
+  {
+    // read in attributes
+    m_aAttributes = (StringMap) aOIS.readObject ();
+
+    try
+    {
+      // read in message headers
+      m_aHeaders = new InternetHeaders (aOIS);
+    }
+    catch (final MessagingException ex)
+    {
+      throw new IOException ("Messaging exception", ex);
+    }
+
+    // read in partnership
+    m_aPartnership = (Partnership) aOIS.readObject ();
+  }
+
+  protected final void baseWriteObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
+  {
+    // write attributes
+    aOOS.writeObject (m_aAttributes);
+
+    // write message headers
+    final Enumeration <?> en = m_aHeaders.getAllHeaderLines ();
+    while (en.hasMoreElements ())
+    {
+      aOOS.writeBytes ((String) en.nextElement () + "\r\n");
+    }
+
+    aOOS.writeBytes ("\r\n");
+
+    // write partnership info
+    aOOS.writeObject (m_aPartnership);
+  }
+
+  public final void setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
   {
     m_aAttributes.setAttribute (sKey, sValue);
   }
 
   @Nullable
-  public final String getAttribute (final String sKey)
+  public final String getAttribute (@Nullable final String sKey)
   {
     return m_aAttributes.getAttributeAsString (sKey);
   }
@@ -74,19 +123,21 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     return m_aAttributes.getClone ();
   }
 
-  public final void setHeader (final String sKey, final String sValue)
+  public final void setHeader (@Nonnull final String sKey, @Nullable final String sValue)
   {
-    getHeaders ().setHeader (sKey, sValue);
+    m_aHeaders.setHeader (sKey, sValue);
   }
 
-  public final String getHeader (final String sKey)
+  @Nullable
+  public final String getHeader (@Nonnull final String sKey)
   {
     return getHeader (sKey, ", ");
   }
 
-  public final String getHeader (final String sKey, final String sDelimiter)
+  @Nullable
+  public final String getHeader (@Nonnull final String sKey, @Nullable final String sDelimiter)
   {
-    return getHeaders ().getHeader (sKey, sDelimiter);
+    return m_aHeaders.getHeader (sKey, sDelimiter);
   }
 
   public final void setHeaders (@Nullable final InternetHeaders aHeaders)
@@ -103,16 +154,17 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     return m_aHeaders;
   }
 
-  public final void addHeader (final String sKey, final String sValue)
+  public final void addHeader (@Nonnull final String sKey, @Nullable final String sValue)
   {
     m_aHeaders.addHeader (sKey, sValue);
   }
 
-  public final void setMessageID (final String sMessageID)
+  public final void setMessageID (@Nullable final String sMessageID)
   {
     setHeader (CAS2Header.HEADER_MESSAGE_ID, sMessageID);
   }
 
+  @Nullable
   public final String getMessageID ()
   {
     return getHeader (CAS2Header.HEADER_MESSAGE_ID);
@@ -121,12 +173,6 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public final void updateMessageID ()
   {
     setMessageID (generateMessageID ());
-  }
-
-  @Nonnull
-  public final DataHistory getHistory ()
-  {
-    return m_aHistory;
   }
 
   public final void setPartnership (@Nullable final Partnership aPartnership)
@@ -141,5 +187,14 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public final Partnership getPartnership ()
   {
     return m_aPartnership;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("attributes", m_aAttributes)
+                                       .append ("headers", m_aHeaders)
+                                       .append ("partnership", m_aPartnership)
+                                       .toString ();
   }
 }

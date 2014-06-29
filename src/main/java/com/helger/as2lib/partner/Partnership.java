@@ -63,6 +63,9 @@ public class Partnership implements Serializable
   private final StringMap m_aReceiverIDs = new StringMap ();
   private final StringMap m_aSenderIDs = new StringMap ();
 
+  public Partnership ()
+  {}
+
   public void setName (final String sKey)
   {
     m_sName = sKey;
