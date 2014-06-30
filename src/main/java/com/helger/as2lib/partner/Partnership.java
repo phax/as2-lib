@@ -40,6 +40,9 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.annotations.ReturnsMutableObject;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.string.ToStringGenerator;
 
@@ -66,9 +69,10 @@ public class Partnership implements Serializable
   public Partnership ()
   {}
 
-  public void setName (final String sKey)
+  public void setName (@Nonnull final String sName)
   {
-    m_sName = sKey;
+    ValueEnforcer.notNull (sName, "Name");
+    m_sName = sName;
   }
 
   public String getName ()
@@ -122,9 +126,17 @@ public class Partnership implements Serializable
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public StringMap getReceiverIDs ()
   {
-    return new StringMap (m_aReceiverIDs);
+    return m_aReceiverIDs.getClone ();
+  }
+
+  @Nonnull
+  @ReturnsMutableObject (reason = "design")
+  public StringMap getReceiverIDsDirect ()
+  {
+    return m_aReceiverIDs;
   }
 
   public void setReceiverIDs (@Nullable final IStringMap aReceiverIDs)
@@ -151,9 +163,17 @@ public class Partnership implements Serializable
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public StringMap getSenderIDs ()
   {
     return m_aSenderIDs.getClone ();
+  }
+
+  @Nonnull
+  @ReturnsMutableObject (reason = "design")
+  public StringMap getSenderIDsDirect ()
+  {
+    return m_aSenderIDs;
   }
 
   public void setSenderIDs (@Nullable final IStringMap aSenderIDs)

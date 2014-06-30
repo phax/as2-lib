@@ -107,6 +107,7 @@ public class OpenAS2Exception extends Exception
                     (bTerminated ? "terminated" : "caught") +
                     ": " +
                     getMessage () +
-                    (m_aSources == null ? "" : "; sources: " + m_aSources));
+                    (m_aSources == null ? "" : "; sources: " + m_aSources) +
+                    (getCause () != null ? "\n  Caused by: " + getCause () : ""));
   }
 }

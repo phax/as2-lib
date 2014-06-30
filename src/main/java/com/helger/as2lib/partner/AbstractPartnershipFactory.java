@@ -104,14 +104,14 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nullable
   protected Partnership getPartnership (@Nonnull final IStringMap aSenderIDs, @Nonnull final IStringMap aReceiverIDs)
   {
-    for (final Partnership aPartnerships : getPartnerships ())
+    for (final Partnership aPartnership : getPartnerships ())
     {
-      final IStringMap aCurrentSenderIDs = aPartnerships.getSenderIDs ();
+      final IStringMap aCurrentSenderIDs = aPartnership.getSenderIDs ();
       if (compareMap (aSenderIDs, aCurrentSenderIDs))
       {
-        final IStringMap aCurrentReceiverIDs = aPartnerships.getReceiverIDs ();
+        final IStringMap aCurrentReceiverIDs = aPartnership.getReceiverIDs ();
         if (compareMap (aReceiverIDs, aCurrentReceiverIDs))
-          return aPartnerships;
+          return aPartnership;
       }
     }
 
