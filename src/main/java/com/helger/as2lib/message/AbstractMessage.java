@@ -178,8 +178,8 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   public String toString ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("Message From:").append (getPartnership ().getSenderIDs ());
-    aSB.append ("\nTo:").append (getPartnership ().getReceiverIDs ());
+    aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ());
+    aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ());
 
     aSB.append ("\nHeaders:{");
     final Enumeration <?> aHeaders = getHeaders ().getAllHeaders ();

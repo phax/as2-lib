@@ -41,6 +41,7 @@ import java.net.Socket;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
@@ -244,14 +245,14 @@ public class HTTPUtil
         }
         else
         {
-          HTTPUtil.sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
+          sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
           throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
       }
       else
         if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
         {
-          HTTPUtil.sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
+          sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
           throw new IOException ("Content-Length missing");
         }
     }
@@ -265,11 +266,12 @@ public class HTTPUtil
     return aData;
   }
 
-  public static String [] readRequest (final InputStream aIS) throws IOException
+  @Nonnull
+  public static String [] readRequest (@Nonnull final InputStream aIS) throws IOException
   {
     int nByteBuf = aIS.read ();
     final StringBuilder aSB = new StringBuilder ();
-    while ((nByteBuf != -1) && (nByteBuf != '\r'))
+    while (nByteBuf != -1 && nByteBuf != '\r')
     {
       aSB.append ((char) nByteBuf);
       nByteBuf = aIS.read ();
@@ -301,7 +303,9 @@ public class HTTPUtil
     throw new IOException ("Invalid HTTP Request");
   }
 
-  public static void sendHTTPResponse (@Nonnull final OutputStream aOS, final int nResponseCode, final boolean bHasData) throws IOException
+  public static void sendHTTPResponse (@Nonnull @WillNotClose final OutputStream aOS,
+                                       final int nResponseCode,
+                                       final boolean bHasData) throws IOException
   {
     final String sMsg = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + "\r\n";
     aOS.write (("HTTP/1.1 " + sMsg).getBytes ());

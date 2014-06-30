@@ -37,7 +37,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public final class DateUtil
 {
   private DateUtil ()

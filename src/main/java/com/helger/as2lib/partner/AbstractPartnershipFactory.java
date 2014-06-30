@@ -59,7 +59,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     Partnership aRealPartnership = aPartnership.getName () == null ? null : getPartnership (m_aPartnerships,
                                                                                             aPartnership.getName ());
     if (aRealPartnership == null)
-      aRealPartnership = getPartnership (aPartnership.getSenderIDs (), aPartnership.getReceiverIDs ());
+      aRealPartnership = getPartnership (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
 
     if (aRealPartnership == null)
       throw new PartnershipNotFoundException ("Partnership not found: " + aPartnership);
@@ -106,10 +106,10 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   {
     for (final Partnership aPartnership : getPartnerships ())
     {
-      final IStringMap aCurrentSenderIDs = aPartnership.getSenderIDs ();
+      final IStringMap aCurrentSenderIDs = aPartnership.getAllSenderIDs ();
       if (compareMap (aSenderIDs, aCurrentSenderIDs))
       {
-        final IStringMap aCurrentReceiverIDs = aPartnership.getReceiverIDs ();
+        final IStringMap aCurrentReceiverIDs = aPartnership.getAllReceiverIDs ();
         if (compareMap (aReceiverIDs, aCurrentReceiverIDs))
           return aPartnership;
       }

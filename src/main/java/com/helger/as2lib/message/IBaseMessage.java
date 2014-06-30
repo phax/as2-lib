@@ -45,7 +45,7 @@ import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
- * 
+ *
  * @author Philip Helger
  */
 public interface IBaseMessage extends Serializable
@@ -84,7 +84,7 @@ public interface IBaseMessage extends Serializable
 
   /**
    * Set special message ID header
-   * 
+   *
    * @param sMessageID
    *        Message ID
    */
@@ -101,5 +101,5 @@ public interface IBaseMessage extends Serializable
   @Nonnull
   Partnership getPartnership ();
 
-  void setPartnership (@Nullable Partnership aPartnership);
+  void setPartnership (@Nonnull Partnership aPartnership);
 }

@@ -42,7 +42,6 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.annotations.ReturnsMutableObject;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.string.ToStringGenerator;
 
@@ -66,15 +65,13 @@ public class Partnership implements Serializable
   private final StringMap m_aReceiverIDs = new StringMap ();
   private final StringMap m_aSenderIDs = new StringMap ();
 
-  public Partnership ()
-  {}
-
-  public void setName (@Nonnull final String sName)
+  public Partnership (@Nonnull final String sName)
   {
     ValueEnforcer.notNull (sName, "Name");
     m_sName = sName;
   }
 
+  @Nonnull
   public String getName ()
   {
     return m_sName;
@@ -93,24 +90,24 @@ public class Partnership implements Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public IStringMap getAttributes ()
+  public IStringMap getAllAttributes ()
   {
     return m_aAttributes.getClone ();
   }
 
-  public void addAttributes (@Nullable final IStringMap aAttributes)
+  public void addAllAttributes (@Nullable final IStringMap aAttributes)
   {
     m_aAttributes.addAttributes (aAttributes);
-  }
-
-  public void setAttributes (@Nullable final IStringMap aAttributes)
-  {
-    m_aAttributes.setAttributes (aAttributes);
   }
 
   public void setReceiverID (@Nullable final String sKey, final String sValue)
   {
     m_aReceiverIDs.setAttribute (sKey, sValue);
+  }
+
+  public void addReceiverIDs (@Nullable final Map <String, String> aMap)
+  {
+    m_aReceiverIDs.addAttributes (aMap);
   }
 
   @Nullable
@@ -126,21 +123,19 @@ public class Partnership implements Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public StringMap getReceiverIDs ()
+  public StringMap getAllReceiverIDs ()
   {
     return m_aReceiverIDs.getClone ();
   }
 
-  @Nonnull
-  @ReturnsMutableObject (reason = "design")
-  public StringMap getReceiverIDsDirect ()
-  {
-    return m_aReceiverIDs;
-  }
-
-  public void setSenderID (final String sKey, final String sValue)
+  public void setSenderID (@Nonnull final String sKey, @Nullable final String sValue)
   {
     m_aSenderIDs.setAttribute (sKey, sValue);
+  }
+
+  public void addSenderIDs (@Nullable final Map <String, String> aMap)
+  {
+    m_aSenderIDs.addAttributes (aMap);
   }
 
   @Nullable
@@ -156,22 +151,15 @@ public class Partnership implements Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public StringMap getSenderIDs ()
+  public StringMap getAllSenderIDs ()
   {
     return m_aSenderIDs.getClone ();
-  }
-
-  @Nonnull
-  @ReturnsMutableObject (reason = "design")
-  public StringMap getSenderIDsDirect ()
-  {
-    return m_aSenderIDs;
   }
 
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
-           compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
+        compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
   }
 
   protected boolean compareIDs (@Nonnull final IStringMap aIDs, @Nonnull final IStringMap aCompareTo)
@@ -192,19 +180,19 @@ public class Partnership implements Serializable
   public void copyFrom (@Nonnull final Partnership aPartnership)
   {
     if (aPartnership.getName () != null)
-      setName (aPartnership.getName ());
+      m_sName = aPartnership.getName ();
     m_aSenderIDs.setAttributes (aPartnership.m_aSenderIDs);
     m_aReceiverIDs.setAttributes (aPartnership.m_aReceiverIDs);
-    setAttributes (aPartnership.m_aAttributes);
+    m_aAttributes.setAttributes (aPartnership.m_aAttributes);
   }
 
   @Override
   public String toString ()
   {
     return new ToStringGenerator (this).append ("name", m_sName)
-                                       .append ("senderIDs", m_aSenderIDs)
-                                       .append ("receiverIDs", m_aReceiverIDs)
-                                       .append ("attributes", m_aAttributes)
-                                       .toString ();
+        .append ("senderIDs", m_aSenderIDs)
+        .append ("receiverIDs", m_aReceiverIDs)
+        .append ("attributes", m_aAttributes)
+        .toString ();
   }
 }

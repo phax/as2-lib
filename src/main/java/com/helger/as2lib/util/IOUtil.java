@@ -189,7 +189,11 @@ public final class IOUtil
     ex.terminate ();
   }
 
-  public static File moveFile (final File aSrc, final File aDestFile, final boolean bOverwrite, final boolean bRename) throws IOException
+  @Nonnull
+  public static File moveFile (@Nonnull final File aSrc,
+                               @Nonnull final File aDestFile,
+                               final boolean bOverwrite,
+                               final boolean bRename) throws IOException
   {
     File aRealDestFile = aDestFile;
     if (!bOverwrite && aRealDestFile.exists ())

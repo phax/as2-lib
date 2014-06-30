@@ -37,6 +37,7 @@ import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
@@ -148,8 +149,8 @@ public final class AS2Util
 
   public static void createMDNData (@Nonnull final ISession aSession,
                                     @Nonnull final IMessageMDN aMdn,
-                                    final String sMicAlg,
-                                    final String sSignatureProtocol) throws Exception
+                                    @Nonnull final String sMicAlg,
+                                    @Nullable final String sSignatureProtocol) throws Exception
   {
     // Create the report and sub-body parts
     final MimeMultipart aReportParts = new MimeMultipart ();

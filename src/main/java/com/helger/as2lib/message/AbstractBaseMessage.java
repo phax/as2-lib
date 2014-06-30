@@ -46,20 +46,21 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.string.ToStringGenerator;
 
 /**
  * Base implementation of {@link IBaseMessage} as the base class for
  * {@link AbstractMessage} and {@link AbstractMessageMDN}.
- * 
+ *
  * @author Philip Helger
  */
 public abstract class AbstractBaseMessage implements IBaseMessage
 {
   private StringMap m_aAttributes = new StringMap ();
   private InternetHeaders m_aHeaders = new InternetHeaders ();
-  private Partnership m_aPartnership = new Partnership ();
+  private Partnership m_aPartnership = new Partnership ("auto-created-dummy");
 
   public AbstractBaseMessage ()
   {}
@@ -176,12 +177,10 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     setMessageID (generateMessageID ());
   }
 
-  public final void setPartnership (@Nullable final Partnership aPartnership)
+  public final void setPartnership (@Nonnull final Partnership aPartnership)
   {
-    if (aPartnership != null)
-      m_aPartnership = aPartnership;
-    else
-      m_aPartnership = new Partnership ();
+    ValueEnforcer.notNull (aPartnership, "Partnership");
+    m_aPartnership = aPartnership;
   }
 
   @Nonnull
