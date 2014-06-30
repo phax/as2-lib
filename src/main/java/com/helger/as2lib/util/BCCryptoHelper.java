@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.GeneralSecurityException;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
@@ -46,7 +45,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.SignatureException;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Locale;
@@ -60,14 +58,19 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
+import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
 import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
@@ -79,6 +82,7 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMEUtil;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.util.encoders.Base64;
 
@@ -165,44 +169,40 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   @Nonnull
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
-                               @Nonnull final Certificate aCert,
-                               @Nonnull final Key aKey) throws GeneralSecurityException,
-                                                       MessagingException,
-                                                       CMSException,
-                                                       IOException,
-                                                       SMIMEException
+                               @Nonnull final X509Certificate aX509Cert,
+                               @Nonnull final PrivateKey aKey) throws GeneralSecurityException,
+                                                              MessagingException,
+                                                              CMSException,
+                                                              IOException,
+                                                              SMIMEException
   {
     // Make sure the data is encrypted
     if (!isEncrypted (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted");
 
-    // Cast parameters to what BC needs
-    final X509Certificate x509Cert = _castCertificate (aCert);
-
     // Parse the MIME body into an SMIME envelope object
     final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
 
     // Get the recipient object for decryption
-    final RecipientId aRecipientID = new JceKeyTransRecipientId (x509Cert);
+    final RecipientId aRecipientID = new JceKeyTransRecipientId (aX509Cert);
 
     final RecipientInformation aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
     if (aRecipient == null)
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (_castKey (aKey)).setProvider ("BC"));
+    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aKey).setProvider ("BC"));
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
   @SuppressWarnings ("deprecation")
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
-                               @Nonnull final Certificate aCert,
+                               @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final String sAlgorithm) throws GeneralSecurityException,
                                                                 SMIMEException,
                                                                 CMSException
   {
-    final X509Certificate aX509Cert = _castCertificate (aCert);
     final ASN1ObjectIdentifier aEncAlg = _convertAlgorithmToBC (sAlgorithm);
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
@@ -216,39 +216,63 @@ public final class BCCryptoHelper implements ICryptoHelper
   @SuppressWarnings ("deprecation")
   @Nonnull
   public MimeBodyPart sign (@Nonnull final MimeBodyPart aPart,
-                            @Nonnull final Certificate aCert,
-                            @Nonnull final Key aKey,
+                            @Nonnull final X509Certificate aX509Cert,
+                            @Nonnull final PrivateKey aPrivKey,
                             @Nonnull final String sAlgorithm) throws GeneralSecurityException,
                                                              SMIMEException,
-                                                             MessagingException
+                                                             MessagingException,
+                                                             OperatorCreationException
   {
     final ASN1ObjectIdentifier aSignDigest = _convertAlgorithmToBC (sAlgorithm);
-    final X509Certificate aX509Cert = _castCertificate (aCert);
-    final PrivateKey aPrivKey = _castKey (aKey);
+
+    //
+    // create some smime capabilities in case someone wants to respond
+    //
+    final ASN1EncodableVector aSignedAttrs = new ASN1EncodableVector ();
+    final SMIMECapabilityVector caps = new SMIMECapabilityVector ();
+    caps.addCapability (aSignDigest);
+    aSignedAttrs.add (new SMIMECapabilitiesAttribute (caps));
+
+    // add an encryption key preference for encrypted responses -
+    // normally this would be different from the signing certificate...
+    // final IssuerAndSerialNumber issAndSer = new IssuerAndSerialNumber (new
+    // X500Name (signDN),
+    // aX509Cert.getSerialNumber ());
+    // aSignedAttrs.add (new SMIMEEncryptionKeyPreferenceAttribute (issAndSer));
 
     // create the generator for creating an smime/signed message
     final SMIMESignedGenerator aSGen = new SMIMESignedGenerator ();
-    aSGen.addSigner (aPrivKey, aX509Cert, aSignDigest.getId ());
+    // aSGen.addSigner (aPrivKey, aX509Cert, aSignDigest.getId ());
 
-    final MimeMultipart aSignedData = aSGen.generate (aPart, "BC");
+    // add a signer to the generator - this specifies we are using SHA1 and
+    // adding the smime attributes above to the signed attributes that
+    // will be generated as part of the signature. The encryption algorithm
+    // used is taken from the key - in this RSA with PKCS1Padding
+    aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider ("BC")
+                                                                            .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
+                                                                            .build ("SHA1withRSA", aPrivKey, aX509Cert));
+
+    // add our pool of certs and cerls (if any) to go with the signature
+    // aSGen.addCertificates (certs);
+
+    final MimeMultipart aSignedData = aSGen.generate (aPart);
 
     final MimeBodyPart aTmpBody = new MimeBodyPart ();
     aTmpBody.setContent (aSignedData);
-    aTmpBody.setHeader ("Content-Type", aSignedData.getContentType ());
+    aTmpBody.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aSignedData.getContentType ());
     return aTmpBody;
   }
 
   @SuppressWarnings ({ "unchecked", "deprecation" })
-  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, final Certificate aCert) throws GeneralSecurityException,
-                                                                                         IOException,
-                                                                                         MessagingException,
-                                                                                         CMSException
+  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, final X509Certificate aX509Cert) throws GeneralSecurityException,
+                                                                                                 IOException,
+                                                                                                 MessagingException,
+                                                                                                 CMSException
   {
     // Make sure the data is signed
     if (!isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed");
 
-    final X509Certificate aX509Cert = _castCertificate (aCert);
     final MimeMultipart aMainParts = (MimeMultipart) aPart.getContent ();
     final SMIMESigned aSignedPart = new SMIMESigned (aMainParts);
 
@@ -258,26 +282,6 @@ public final class BCCryptoHelper implements ICryptoHelper
         throw new SignatureException ("Verification failed");
 
     return aSignedPart.getContent ();
-  }
-
-  @Nonnull
-  private static X509Certificate _castCertificate (@Nonnull final Certificate aCert) throws GeneralSecurityException
-  {
-    if (aCert == null)
-      throw new GeneralSecurityException ("Certificate is null");
-    if (!(aCert instanceof X509Certificate))
-      throw new GeneralSecurityException ("Certificate must be an instance of X509Certificate");
-    return (X509Certificate) aCert;
-  }
-
-  @Nonnull
-  private static PrivateKey _castKey (@Nonnull final Key aKey) throws GeneralSecurityException
-  {
-    if (aKey == null)
-      throw new GeneralSecurityException ("Key is null");
-    if (!(aKey instanceof PrivateKey))
-      throw new GeneralSecurityException ("Key must implement PrivateKey interface");
-    return (PrivateKey) aKey;
   }
 
   @Nonnull

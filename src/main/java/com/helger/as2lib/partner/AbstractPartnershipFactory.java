@@ -56,8 +56,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nonnull
   public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
-    Partnership aRealPartnership = aPartnership.getName () == null ? null : getPartnership (m_aPartnerships,
-                                                                                            aPartnership.getName ());
+    Partnership aRealPartnership = getPartnership (m_aPartnerships, aPartnership.getName ());
     if (aRealPartnership == null)
       aRealPartnership = getPartnership (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
 

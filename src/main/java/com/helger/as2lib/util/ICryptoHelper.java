@@ -33,9 +33,9 @@
 package com.helger.as2lib.util;
 
 import java.io.InputStream;
-import java.security.Key;
 import java.security.KeyStore;
-import java.security.cert.Certificate;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.mail.internet.MimeBodyPart;
@@ -66,17 +66,17 @@ public interface ICryptoHelper
   String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull String sDigest, boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
-  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull Certificate aCert, @Nonnull Key aKey) throws Exception;
+  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull PrivateKey aKey) throws Exception;
 
   @Nonnull
-  MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart, @Nonnull Certificate aCert, @Nonnull String sAlgorithm) throws Exception;
+  MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull String sAlgorithm) throws Exception;
 
   @Nonnull
   MimeBodyPart sign (@Nonnull MimeBodyPart aPart,
-                     @Nonnull Certificate aCert,
-                     @Nonnull Key key,
+                     @Nonnull X509Certificate aCert,
+                     @Nonnull PrivateKey key,
                      @Nonnull String sAlgorithm) throws Exception;
 
   @Nonnull
-  MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nonnull Certificate aCert) throws Exception;
+  MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert) throws Exception;
 }
