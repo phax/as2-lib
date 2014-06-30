@@ -44,6 +44,7 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.string.ToStringGenerator;
@@ -111,7 +112,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     return m_aAttributes.getAttributeAsString (sKey);
   }
 
-  public final void setAttributes (@Nullable final StringMap aAttributes)
+  public final void setAttributes (@Nullable final IStringMap aAttributes)
   {
     m_aAttributes.setAttributes (aAttributes != null ? aAttributes.getAllAttributes () : null);
   }

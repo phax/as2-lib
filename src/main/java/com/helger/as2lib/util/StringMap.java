@@ -213,12 +213,26 @@ public class StringMap implements IStringMap, Serializable
   }
 
   @Nonnull
-  public final EChange setAttributes (@Nullable final Map <String, String> aValues)
+  public final EChange addAttributes (@Nullable final Map <String, String> aValues)
   {
-    EChange ret = clear ();
+    EChange ret = EChange.UNCHANGED;
     if (aValues != null)
       for (final Map.Entry <String, String> aEntry : aValues.entrySet ())
         ret = ret.or (setAttribute (aEntry.getKey (), aEntry.getValue ()));
+    return ret;
+  }
+
+  @Nonnull
+  public final EChange addAttributes (@Nullable final IStringMap aValues)
+  {
+    return addAttributes (aValues != null ? aValues.getAllAttributes () : null);
+  }
+
+  @Nonnull
+  public final EChange setAttributes (@Nullable final Map <String, String> aValues)
+  {
+    EChange ret = clear ();
+    ret = ret.or (addAttributes (aValues));
     return ret;
   }
 

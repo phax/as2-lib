@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 
@@ -58,7 +59,7 @@ public interface IBaseMessage extends Serializable
 
   void setAttribute (@Nonnull String sKey, @Nullable String sValue);
 
-  void setAttributes (@Nullable StringMap aAttributes);
+  void setAttributes (@Nullable IStringMap aAttributes);
 
   @Nullable
   String getHeader (@Nonnull String sKey);

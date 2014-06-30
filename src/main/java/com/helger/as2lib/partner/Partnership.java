@@ -92,21 +92,20 @@ public class Partnership implements Serializable
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public IStringMap getAttributes ()
   {
-    return new StringMap (m_aAttributes);
+    return m_aAttributes.getClone ();
   }
 
   public void addAttributes (@Nullable final IStringMap aAttributes)
   {
-    if (aAttributes != null)
-      m_aAttributes.setAttributes (aAttributes.getAllAttributes ());
+    m_aAttributes.addAttributes (aAttributes);
   }
 
   public void setAttributes (@Nullable final IStringMap aAttributes)
   {
-    m_aAttributes.clear ();
-    addAttributes (aAttributes);
+    m_aAttributes.setAttributes (aAttributes);
   }
 
   public void setReceiverID (@Nullable final String sKey, final String sValue)
@@ -139,13 +138,6 @@ public class Partnership implements Serializable
     return m_aReceiverIDs;
   }
 
-  public void setReceiverIDs (@Nullable final IStringMap aReceiverIDs)
-  {
-    m_aReceiverIDs.clear ();
-    if (aReceiverIDs != null)
-      m_aReceiverIDs.setAttributes (aReceiverIDs.getAllAttributes ());
-  }
-
   public void setSenderID (final String sKey, final String sValue)
   {
     m_aSenderIDs.setAttribute (sKey, sValue);
@@ -176,11 +168,6 @@ public class Partnership implements Serializable
     return m_aSenderIDs;
   }
 
-  public void setSenderIDs (@Nullable final IStringMap aSenderIDs)
-  {
-    m_aSenderIDs.setAttributes (aSenderIDs);
-  }
-
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
@@ -206,8 +193,8 @@ public class Partnership implements Serializable
   {
     if (aPartnership.getName () != null)
       setName (aPartnership.getName ());
-    setSenderIDs (aPartnership.m_aSenderIDs);
-    setReceiverIDs (aPartnership.m_aReceiverIDs);
+    m_aSenderIDs.setAttributes (aPartnership.m_aSenderIDs);
+    m_aReceiverIDs.setAttributes (aPartnership.m_aReceiverIDs);
     setAttributes (aPartnership.m_aAttributes);
   }
 
