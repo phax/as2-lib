@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import com.helger.as2lib.ISession;
@@ -71,7 +72,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_FILENAME);

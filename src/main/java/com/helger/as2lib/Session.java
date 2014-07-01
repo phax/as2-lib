@@ -44,8 +44,11 @@ import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IProcessor;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
+import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.commons.string.ToStringGenerator;
 
 public class Session implements ISession
 {
@@ -67,19 +70,16 @@ public class Session implements ISession
     CommandMap.setDefaultCommandMap (aCommandCap);
   }
 
-  @Nonnull
-  public ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
+  public final void addComponent (@Nonnull @Nonempty final String sComponentID,
+                                  @Nonnull final IDynamicComponent aComponent)
   {
-    return (ICertificateFactory) getComponent (ICertificateFactory.COMPID_CERTIFICATE_FACTORY);
-  }
-
-  public void setComponent (final String sComponentID, final IDynamicComponent aComponent)
-  {
+    ValueEnforcer.notEmpty (sComponentID, "ComponentID");
+    ValueEnforcer.notNull (aComponent, "Component");
     m_aComponents.put (sComponentID, aComponent);
   }
 
   @Nonnull
-  public IDynamicComponent getComponent (final String sComponentID) throws ComponentNotFoundException
+  public final IDynamicComponent getComponent (final String sComponentID) throws ComponentNotFoundException
   {
     final IDynamicComponent aComponent = m_aComponents.get (sComponentID);
     if (aComponent == null)
@@ -89,20 +89,32 @@ public class Session implements ISession
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, IDynamicComponent> getAllComponents ()
+  public final Map <String, IDynamicComponent> getAllComponents ()
   {
     return ContainerHelper.newMap (m_aComponents);
   }
 
   @Nonnull
-  public IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException
+  public final ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
+  {
+    return (ICertificateFactory) getComponent (ICertificateFactory.COMPID_CERTIFICATE_FACTORY);
+  }
+
+  @Nonnull
+  public final IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException
   {
     return (IPartnershipFactory) getComponent (IPartnershipFactory.COMPID_PARTNERSHIP_FACTORY);
   }
 
   @Nonnull
-  public IProcessor getProcessor () throws ComponentNotFoundException
+  public final IProcessor getProcessor () throws ComponentNotFoundException
   {
     return (IProcessor) getComponent (IProcessor.COMPID_PROCESSOR);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("components", m_aComponents).toString ();
   }
 }

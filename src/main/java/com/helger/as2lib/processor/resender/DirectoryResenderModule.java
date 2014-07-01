@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_RESEND_DIRECTORY);

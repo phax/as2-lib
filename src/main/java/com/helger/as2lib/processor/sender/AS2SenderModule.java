@@ -94,7 +94,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    final int nRetries = retries (aOptions);
+    final int nRetries = getRetries (aOptions);
 
     try
     {

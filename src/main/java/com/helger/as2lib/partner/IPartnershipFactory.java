@@ -35,15 +35,18 @@ package com.helger.as2lib.partner;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.util.StringMap;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 /**
  * original author unknown added getPartners method
- * 
+ *
  * @author joseph mcverry
  */
 public interface IPartnershipFactory extends IDynamicComponent
@@ -53,15 +56,19 @@ public interface IPartnershipFactory extends IDynamicComponent
   // throws an exception if the partnership doesn't exist
   Partnership getPartnership (Partnership aPartnership) throws OpenAS2Exception;
 
-  // looks up and fills in any header info for a specific msg's partnership
-  void updatePartnership (IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
+  void addPartnership (@Nonnull Partnership aPartnership);
+
+  void removePartnership (@Nonnull Partnership aPartnership);
 
   // looks up and fills in any header info for a specific msg's partnership
-  void updatePartnership (IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
+  void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
 
-  void setPartnerships (List <Partnership> aPartnerships);
+  // looks up and fills in any header info for a specific msg's partnership
+  void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
 
-  List <Partnership> getPartnerships ();
+  @Nonnull
+  @ReturnsMutableCopy
+  List <Partnership> getAllPartnerships ();
 
   Map <String, StringMap> getPartners ();
 }

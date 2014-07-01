@@ -94,7 +94,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty ("Message-ID", aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
     aConn.setRequestProperty ("Mime-Version", "1.0");
-    aConn.setRequestProperty ("Content-type", aMsg.getHeader ("Content-type"));
+    aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, "1.1");
     aConn.setRequestProperty ("Recipient-Address", aMsg.getHeader ("Recipient-Address"));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));

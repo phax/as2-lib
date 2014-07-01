@@ -35,6 +35,10 @@ package com.helger.as2lib.processor.receiver;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +55,8 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
   private boolean m_bBusy;
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
+  @OverridingMethodsMustInvokeSuper
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_POLLING_INTERVAL);

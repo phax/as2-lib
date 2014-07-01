@@ -83,9 +83,15 @@ public class Partnership implements Serializable
   }
 
   @Nullable
-  public String getAttribute (final String sKey)
+  public String getAttribute (@Nullable final String sKey)
   {
     return m_aAttributes.getAttributeAsString (sKey);
+  }
+
+  @Nullable
+  public String getAttribute (@Nullable final String sKey, @Nullable final String sDefault)
+  {
+    return m_aAttributes.getAttributeAsString (sKey, sDefault);
   }
 
   @Nonnull
@@ -159,7 +165,7 @@ public class Partnership implements Serializable
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
-           compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
+        compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
   }
 
   protected boolean compareIDs (@Nonnull final IStringMap aIDs, @Nonnull final IStringMap aCompareTo)
@@ -189,9 +195,9 @@ public class Partnership implements Serializable
   public String toString ()
   {
     return new ToStringGenerator (this).append ("name", m_sName)
-                                       .append ("senderIDs", m_aSenderIDs)
-                                       .append ("receiverIDs", m_aReceiverIDs)
-                                       .append ("attributes", m_aAttributes)
-                                       .toString ();
+        .append ("senderIDs", m_aSenderIDs)
+        .append ("receiverIDs", m_aReceiverIDs)
+        .append ("attributes", m_aAttributes)
+        .toString ();
   }
 }
