@@ -98,7 +98,6 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   public void handle (final AbstractNetModule aOwner, final Socket aSocket)
   {
-
     s_aLogger.info ("incoming connection" + " [" + getClientInfo (aSocket) + "]");
 
     final AS2Message aMsg = new AS2Message ();
