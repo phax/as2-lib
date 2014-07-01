@@ -79,13 +79,17 @@ public class DirectoryResenderModule extends AbstractResenderModule
   private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
 
   @Override
-  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     try
     {

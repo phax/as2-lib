@@ -122,18 +122,17 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       aMsg.setData (aReceivedPart);
       ContentType aReceivedContentType = new ContentType (aReceivedPart.getContentType ());
 
-      aReceivedContentType = new ContentType (aMsg.getHeader ("Content-Type"));
+      aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
 
       // MimeBodyPart receivedPart = new MimeBodyPart();
       aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData,
                                                                               aReceivedContentType.toString (),
                                                                               null)));
-      aReceivedPart.setHeader ("Content-Type", aReceivedContentType.toString ());
+      aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aReceivedContentType.toString ());
 
       aMsg.setData (aReceivedPart);
 
       receiveMDN (aMsg, aData, aSocket.getOutputStream ());
-
     }
     catch (final Exception ex)
     {
@@ -222,7 +221,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
   // Asynch MDN 2007-03-12
   /**
    * verify if the mic is matched.
-   * 
+   *
    * @param msg
    * @return true if mdn processed
    */
@@ -330,7 +329,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       mdnStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
-      final long nContentLength = StringParser.parseLong (mdn.getHeader ("Content-Length"), -1);
+      final long nContentLength = StringParser.parseLong (mdn.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
         StreamUtils.copyInputStreamToOutputStreamWithLimit (connIn, mdnStream, nContentLength);
       else

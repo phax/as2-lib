@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
@@ -44,14 +45,14 @@ import com.phloc.commons.mime.CMimeType;
 public class ByteArrayDataSource implements DataSource
 {
   private final String m_sContentType;
-  private final String m_sName;
   private byte [] m_aBytes;
+  private final String m_sName;
 
-  public ByteArrayDataSource (final byte [] bytes, final String contentType, final String name)
+  public ByteArrayDataSource (final byte [] aBytes, @Nullable final String sContentType, @Nullable final String sName)
   {
-    m_aBytes = bytes;
-    m_sContentType = contentType == null ? CMimeType.APPLICATION_OCTET_STREAM.getAsString () : contentType;
-    m_sName = name;
+    m_aBytes = aBytes;
+    m_sContentType = sContentType == null ? CMimeType.APPLICATION_OCTET_STREAM.getAsString () : sContentType;
+    m_sName = sName;
   }
 
   public byte [] getBytes ()
@@ -65,6 +66,7 @@ public class ByteArrayDataSource implements DataSource
     return m_sContentType;
   }
 
+  @Nullable
   public String getName ()
   {
     return m_sName;
@@ -76,12 +78,6 @@ public class ByteArrayDataSource implements DataSource
     return new NonBlockingByteArrayInputStream (m_aBytes);
   }
 
-  @Nonnull
-  public NonBlockingByteArrayOutputStream getOutputStream () throws IOException
-  {
-    return new WrappedOutputStream ();
-  }
-
   private class WrappedOutputStream extends NonBlockingByteArrayOutputStream
   {
     @Override
@@ -90,5 +86,11 @@ public class ByteArrayDataSource implements DataSource
       super.close ();
       ByteArrayDataSource.this.m_aBytes = toByteArray ();
     }
+  }
+
+  @Nonnull
+  public NonBlockingByteArrayOutputStream getOutputStream () throws IOException
+  {
+    return new WrappedOutputStream ();
   }
 }

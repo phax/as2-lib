@@ -90,11 +90,11 @@ public final class AS2Util
                                        @Nonnull final String sText) throws Exception
   {
     final AS2MessageMDN aMdn = new AS2MessageMDN (aMsg);
-    aMdn.setHeader (CAS2Header.HEADER_AS2_VERSION, "1.1");
+    aMdn.setHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
     // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
-    aMdn.setHeader (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
+    aMdn.setHeader (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMdn.setHeader (CAS2Header.HEADER_SERVER, CInfo.NAME_VERSION);
-    aMdn.setHeader (CAS2Header.HEADER_MIME_VERSION, "1.0");
+    aMdn.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aMdn.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
     aMdn.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
 
@@ -123,10 +123,10 @@ public final class AS2Util
     aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
     aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
                        "rfc822; " + aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
-    aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader ("Message-ID"));
+    aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
     aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.toString ());
 
-    final DispositionOptions aDispOptions = new DispositionOptions (aMsg.getHeader ("Disposition-Notification-Options"));
+    final DispositionOptions aDispOptions = new DispositionOptions (aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS));
     String sMIC = null;
     if (aDispOptions.getMICAlg () != null)
     {

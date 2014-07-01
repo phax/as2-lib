@@ -34,13 +34,16 @@ package com.helger.as2lib.processor.module;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 
 public interface IProcessorModule extends IDynamicComponent
 {
-  boolean canHandle (String sAction, IMessage aMsg, Map <String, Object> aOptions);
+  boolean canHandle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions);
 
-  void handle (String sAction, IMessage aMsg, Map <String, Object> aOptions) throws OpenAS2Exception;
+  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
 }

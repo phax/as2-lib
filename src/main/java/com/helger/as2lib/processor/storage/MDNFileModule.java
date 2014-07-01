@@ -38,6 +38,9 @@ import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
@@ -51,7 +54,9 @@ import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 
 public class MDNFileModule extends AbstractStorageModule
 {
-  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     // store mdn data
     if (aMsg.getMDN () == null)

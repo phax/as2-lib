@@ -66,5 +66,6 @@ public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry
 
   boolean getAndSetAttributeFlag (String sName);
 
+  @Nonnull
   Iterator <Entry <String, String>> iterator ();
 }

@@ -45,43 +45,46 @@ import com.helger.as2lib.exception.ProcessorException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.collections.ContainerHelper;
 
 public class DefaultProcessor extends AbstractProcessor
 {
-  private List <IProcessorModule> m_aModules;
+  private final List <IProcessorModule> m_aModules = new ArrayList <IProcessorModule> ();
 
-  public void setModules (@Nullable final List <IProcessorModule> aModules)
+  public final void addModule (@Nonnull final IProcessorModule aModule)
   {
-    m_aModules = aModules;
-  }
-
-  @Nonnull
-  public List <IProcessorModule> getModules ()
-  {
-    if (m_aModules == null)
-      m_aModules = new ArrayList <IProcessorModule> ();
-    return m_aModules;
+    ValueEnforcer.notNull (aModule, "Module");
+    m_aModules.add (aModule);
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IProcessorActiveModule> getActiveModules ()
+  public List <IProcessorModule> getAllModules ()
+  {
+    return ContainerHelper.newList (m_aModules);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public List <IProcessorActiveModule> getAllActiveModules ()
   {
     final List <IProcessorActiveModule> ret = new ArrayList <IProcessorActiveModule> ();
-    for (final IProcessorModule aModule : getModules ())
+    for (final IProcessorModule aModule : getAllModules ())
       if (aModule instanceof IProcessorActiveModule)
         ret.add ((IProcessorActiveModule) aModule);
     return ret;
   }
 
-  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final List <Throwable> aCauses = new ArrayList <Throwable> ();
     boolean bModuleFound = false;
 
-    for (final IProcessorModule aModule : getModules ())
-    {
+    for (final IProcessorModule aModule : getAllModules ())
       if (aModule.canHandle (sAction, aMsg, aOptions))
       {
         try
@@ -94,7 +97,6 @@ public class DefaultProcessor extends AbstractProcessor
           aCauses.add (ex);
         }
       }
-    }
 
     if (!aCauses.isEmpty ())
       throw new ProcessorException (this, aCauses);
@@ -104,7 +106,7 @@ public class DefaultProcessor extends AbstractProcessor
 
   public void startActiveModules ()
   {
-    for (final IProcessorActiveModule aModule : getActiveModules ())
+    for (final IProcessorActiveModule aModule : getAllActiveModules ())
       try
       {
         aModule.start ();
@@ -117,7 +119,7 @@ public class DefaultProcessor extends AbstractProcessor
 
   public void stopActiveModules ()
   {
-    for (final IProcessorActiveModule aModule : getActiveModules ())
+    for (final IProcessorActiveModule aModule : getAllActiveModules ())
       try
       {
         aModule.stop ();

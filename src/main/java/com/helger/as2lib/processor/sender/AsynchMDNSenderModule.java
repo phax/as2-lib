@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.Header;
 
 import org.slf4j.Logger;
@@ -65,14 +66,18 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AsynchMDNSenderModule.class);
 
-  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     if (!sAction.equals (IProcessorSenderModule.DO_SENDMDN))
       return false;
     return aMsg instanceof AS2Message;
   }
 
-  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     try
     {
@@ -85,22 +90,22 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     }
   }
 
-  protected void updateHttpHeaders (final HttpURLConnection aConn, final IMessage aMsg)
+  protected void updateHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final IMessage aMsg)
   {
-    aConn.setRequestProperty ("Connection", "close, TE");
-    aConn.setRequestProperty ("User-Agent", "OpenAS2 AsynchMDNSender");
+    aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+    aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setRequestProperty ("Date", DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
-    aConn.setRequestProperty ("Message-ID", aMsg.getMessageID ());
+    aConn.setRequestProperty (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aConn.setRequestProperty (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    aConn.setRequestProperty ("Mime-Version", "1.0");
+    aConn.setRequestProperty (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, "1.1");
-    aConn.setRequestProperty ("Recipient-Address", aMsg.getHeader ("Recipient-Address"));
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aConn.setRequestProperty (CAS2Header.HEADER_RECIPIENT_ADDRESS, aMsg.getHeader (CAS2Header.HEADER_RECIPIENT_ADDRESS));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aMsg.getHeader (CAS2Header.HEADER_AS2_FROM));
-    aConn.setRequestProperty ("Subject", aMsg.getHeader ("Subject"));
-    aConn.setRequestProperty ("From", aMsg.getHeader ("From"));
+    aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getHeader (CAS2Header.HEADER_SUBJECT));
+    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aMsg.getHeader (CAS2Header.HEADER_FROM));
   }
 
   private void _sendAsyncMDN (final AS2Message aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
@@ -120,8 +125,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       {
         s_aLogger.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-        aConn.setRequestProperty ("Connection", "close, TE");
-        aConn.setRequestProperty ("User-Agent", "OpenAS2 AS2Sender");
+        aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+        aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
         // Copy all the header from mdn to the RequestProperties of conn
         final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaders ();
         while (aHeaders.hasMoreElements ())
