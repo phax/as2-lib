@@ -65,9 +65,7 @@ public class AS2Message extends AbstractMessage
                                                                       .add ("msg", new MessageParameters (this))
                                                                       .add ("rand", new RandomParameters ());
 
-    String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID);
-    if (sIDFormat == null)
-      sIDFormat = DEFAULT_ID_FORMAT;
+    final String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID, DEFAULT_ID_FORMAT);
 
     final StringBuilder sMessageID = new StringBuilder ();
     sMessageID.append ('<');

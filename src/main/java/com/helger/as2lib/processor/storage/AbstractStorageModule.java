@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import com.helger.as2lib.ISession;
@@ -57,9 +58,9 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   public static final String PARAM_PROTOCOL = "protocol";
   public static final String PARAM_TEMPDIR = "tempdir";
 
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            final Map <String, Object> aOptions)
+  public final boolean canHandle (@Nonnull final String sAction,
+                                  @Nonnull final IMessage aMsg,
+                                  @Nullable final Map <String, Object> aOptions)
   {
     if (!sAction.equals (getModuleAction ()))
       return false;
@@ -71,7 +72,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
+  public final void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_FILENAME);
@@ -95,10 +96,9 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
     // make sure the parent directories exist
     final File aFile = new File (sFilename);
-    final File aParentDir = aFile.getParentFile ();
-    aParentDir.mkdirs ();
+    IOUtil.getFileOperationManager ().createDirRecursiveIfNotExisting (aFile.getParentFile ());
     // don't overwrite existing files
-    return IOUtil.getUniqueFile (aParentDir, FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
+    return IOUtil.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
   protected abstract String getFilename (IMessage aMsg, String sFileParam, String sAction) throws InvalidParameterException;
@@ -110,12 +110,16 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     {
       // write the data to a temporary directory first
       final File aTempDir = IOUtil.getDirectoryFile (sTempDirname);
-      final String sTempFilename = aMsgFile.getName ();
-      final File aTempFile = IOUtil.getUniqueFile (aTempDir, sTempFilename);
+      final File aTempFile = IOUtil.getUniqueFile (aTempDir, aMsgFile.getName ());
       writeStream (aIS, aTempFile);
 
       // copy the temp file over to the destination
-      aTempFile.renameTo (aMsgFile);
+      if (!aTempFile.renameTo (aMsgFile))
+        throw new IOException ("Rename from " +
+                               aTempFile.getAbsolutePath () +
+                               " to " +
+                               aMsgFile.getAbsolutePath () +
+                               " failed!");
     }
     else
     {
@@ -126,6 +130,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   protected void writeStream (@Nonnull @WillClose final InputStream aIS, final File aDestination) throws IOException
   {
     final FileOutputStream aOS = new FileOutputStream (aDestination);
-    StreamUtils.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS);
+    if (StreamUtils.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
+      throw new IOException ("Failed to write content to " + aDestination.getAbsolutePath ());
   }
 }

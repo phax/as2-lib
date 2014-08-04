@@ -40,13 +40,14 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IProcessor;
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 /**
  * The <code>Session</code> interface provides configuration and resource
  * information, and a means for components to access the functionality of other
  * components.
- * 
+ *
  * @author Aaron Silinskas
  * @see IDynamicComponent
  * @see com.helger.as2lib.cert.ICertificateFactory
@@ -56,31 +57,19 @@ import com.phloc.commons.annotations.ReturnsMutableCopy;
 public interface ISession
 {
   /**
-   * Short-cut method to retrieve a certificate factory.
-   * 
-   * @return the currently registered <code>CertificateFactory</code> component
-   * @throws ComponentNotFoundException
-   *         If a <code>CertificateFactory</code> component has not been
-   *         registered
-   * @see ICertificateFactory
-   * @see IDynamicComponent
-   */
-  ICertificateFactory getCertificateFactory () throws ComponentNotFoundException;
-
-  /**
    * Registers a component to a specified ID.
-   * 
+   *
    * @param sComponentID
    *        registers the component to this ID
    * @param aComponent
    *        component to register
    * @see IDynamicComponent
    */
-  void setComponent (String sComponentID, IDynamicComponent aComponent);
+  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent);
 
   /**
    * Gets the <code>Component</code> currently registered with an ID
-   * 
+   *
    * @param sComponentID
    *        ID to search for
    * @return the component registered to the ID or null
@@ -92,7 +81,7 @@ public interface ISession
 
   /**
    * Return a map of component ID's to <code>Component</code> objects.
-   * 
+   *
    * @return all registered components, mapped by ID
    */
   @Nonnull
@@ -100,24 +89,39 @@ public interface ISession
   Map <String, IDynamicComponent> getAllComponents ();
 
   /**
+   * Short-cut method to retrieve a certificate factory.
+   *
+   * @return the currently registered <code>CertificateFactory</code> component
+   * @throws ComponentNotFoundException
+   *         If a <code>CertificateFactory</code> component has not been
+   *         registered
+   * @see ICertificateFactory
+   * @see IDynamicComponent
+   */
+  @Nonnull
+  ICertificateFactory getCertificateFactory () throws ComponentNotFoundException;
+
+  /**
    * Short-cut method to retrieve a partner factory.
-   * 
+   *
    * @return the currently registered <code>PartnerFactory</code> component
    * @throws ComponentNotFoundException
    *         If a <code>PartnerFactory</code> component has not been registered
    * @see IPartnershipFactory
    * @see IDynamicComponent
    */
+  @Nonnull
   IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException;
 
   /**
    * Short-cut method to retrieve a processor.
-   * 
+   *
    * @return the currently registered <code>Processor</code> component
    * @throws ComponentNotFoundException
    *         If a <code>Processor</code> component has not been registered
    * @see IProcessor
    * @see IDynamicComponent
    */
+  @Nonnull
   IProcessor getProcessor () throws ComponentNotFoundException;
 }

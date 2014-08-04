@@ -35,25 +35,33 @@ package com.helger.as2lib.processor;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 
 public interface IProcessor extends IDynamicComponent
 {
   String COMPID_PROCESSOR = "processor";
 
-  void handle (String sAction, IMessage aMsg, Map <String, Object> aOptions) throws OpenAS2Exception;
+  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
 
-  List <IProcessorModule> getModules ();
+  void addModule (@Nonnull IProcessorModule aModule);
 
-  void setModules (List <IProcessorModule> aModules);
+  @Nonnull
+  @ReturnsMutableCopy
+  List <IProcessorModule> getAllModules ();
 
   void startActiveModules ();
 
   void stopActiveModules ();
 
-  List <IProcessorActiveModule> getActiveModules ();
+  @Nonnull
+  @ReturnsMutableCopy
+  List <IProcessorActiveModule> getAllActiveModules ();
 }

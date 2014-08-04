@@ -55,7 +55,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public AS2MessageMDN (@Nonnull final AS2Message aMsg)
   {
     super (aMsg);
-    // Swap headers
+    // Swap from and to
     setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getHeader (CAS2Header.HEADER_AS2_FROM));
     setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
   }
@@ -64,9 +64,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public String generateMessageID ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    String sDateFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_DATE_FORMAT);
-    if (sDateFormat == null)
-      sDateFormat = DEFAULT_DATE_FORMAT;
+    final String sDateFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_DATE_FORMAT, DEFAULT_DATE_FORMAT);
     aSB.append ("<OPENAS2-").append (DateUtil.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
@@ -74,8 +72,8 @@ public class AS2MessageMDN extends AbstractMessageMDN
 
     // Message details
     final Partnership aPartnership = getMessage ().getPartnership ();
-    final String sSenderID = aPartnership.getSenderID (CPartnershipIDs.PID_AS2);
     final String sReceiverID = aPartnership.getReceiverID (CPartnershipIDs.PID_AS2);
+    final String sSenderID = aPartnership.getSenderID (CPartnershipIDs.PID_AS2);
     aSB.append ('@').append (sReceiverID).append ('_').append (sSenderID);
 
     return aSB.append ('>').toString ();

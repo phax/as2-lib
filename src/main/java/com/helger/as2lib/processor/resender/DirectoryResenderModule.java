@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,13 +79,17 @@ public class DirectoryResenderModule extends AbstractResenderModule
   private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
 
   @Override
-  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     try
     {
@@ -111,7 +116,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   }
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_RESEND_DIRECTORY);

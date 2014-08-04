@@ -45,7 +45,7 @@ import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
   // How many times should this message be sent?
-  protected final int retries (@Nullable final Map <String, Object> aOptions)
+  protected final int getRetries (@Nullable final Map <String, Object> aOptions)
   {
     String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.SENDER_OPTION_RETRIES);
     if (sLeft == null)

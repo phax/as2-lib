@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
@@ -58,6 +59,7 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
@@ -82,7 +84,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   private Map <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (final ISession aSession, final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_OUTBOX_DIRECTORY);
@@ -344,25 +346,25 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       aBody.setDataHandler (new DataHandler (aByteSource));
       final String sEncodeType = aMsg.getPartnership ().getAttribute (Partnership.PA_CONTENT_TRANSFER_ENCODING);
       if (sEncodeType != null)
-        aBody.setHeader ("Content-Transfer-Encoding", sEncodeType);
+        aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
       else
       {
         // default is 8bit
-        aBody.setHeader ("Content-Transfer-Encoding", "8bit");
+        aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, "8bit");
       }
 
       // below statement is not filename related, just want to make it
       // consist with the parameter "mimetype="application/EDI-X12""
       // defined in config.xml 2007-06-01
-      aBody.setHeader ("Content-Type", sContentType);
+      aBody.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sContentType);
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
       final String sSendFilename = getAttributeAsString ("sendfilename");
-      if (sSendFilename != null && sSendFilename.equals ("true"))
+      if ("true".equals (sSendFilename))
       {
         final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);
-        aBody.setHeader ("Content-Disposition", "Attachment; filename=\"" + sMAFilename + "\"");
+        aBody.setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, "Attachment; filename=\"" + sMAFilename + "\"");
         aMsg.setContentDisposition ("Attachment; filename=\"" + sMAFilename + "\"");
       }
 

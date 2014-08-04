@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.util.IStringMap;
@@ -43,7 +46,7 @@ import com.helger.as2lib.util.IStringMap;
  * Session. Parameters for a component are defined as static strings<br>
  * Note: Any object that implements this interface must have a constructor with
  * no parameters, as these parameters should be passed to the init method.
- * 
+ *
  * @author Aaron Silinskas
  * @see AbstractDynamicComponent
  * @see ISession
@@ -54,17 +57,19 @@ public interface IDynamicComponent extends IStringMap
    * Returns a name for the component. These names are not guaranteed to be
    * unique, and are intended for display and logging. Generally this is the
    * class name of the Component object, without package information.
-   * 
+   *
    * @return name of the component
    */
+  @Nonnull
   String getName ();
 
   /**
    * Returns the Session used to initialize this Component. The returned session
    * is also used to locate other components if needed.
-   * 
+   *
    * @return this component's session
    */
+  @Nonnull
   ISession getSession ();
 
   /**
@@ -72,7 +77,7 @@ public interface IDynamicComponent extends IStringMap
    * parameters used by the component. Component implementations typically have
    * required parameter checking and code to start timers and threads within
    * this method.
-   * 
+   *
    * @param aSession
    *        the component uses this object to access other components
    * @param aParameters
@@ -83,5 +88,5 @@ public interface IDynamicComponent extends IStringMap
    *         If a required parameter is null in the parameters Map
    * @see ISession
    */
-  void initDynamicComponent (ISession aSession, IStringMap aParameters) throws OpenAS2Exception;
+  void initDynamicComponent (@Nonnull ISession aSession, @Nullable IStringMap aParameters) throws OpenAS2Exception;
 }

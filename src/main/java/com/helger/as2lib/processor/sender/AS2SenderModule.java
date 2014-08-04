@@ -42,6 +42,7 @@ import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
@@ -78,14 +79,18 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
 
-  public boolean canHandle (@Nonnull final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     if (!sAction.equals (IProcessorSenderModule.DO_SEND))
       return false;
     return aMsg instanceof AS2Message;
   }
 
-  public void handle (final String sAction, @Nonnull final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     s_aLogger.info ("message submitted" + aMsg.getLoggingText ());
     if (!(aMsg instanceof AS2Message))
@@ -94,7 +99,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    final int nRetries = retries (aOptions);
+    final int nRetries = getRetries (aOptions);
 
     try
     {
@@ -110,7 +115,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         updateHttpHeaders (aConn, aMsg);
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
-        final DispositionOptions aDispOptions = new DispositionOptions (aConn.getRequestProperty ("Disposition-Notification-Options"));
+        final DispositionOptions aDispOptions = new DispositionOptions (aConn.getRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS));
 
         // Calculate and get the original mic
         final boolean bIncludeHeaders = aMsg.getHistory ().getItemCount () > 1;
@@ -240,7 +245,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final NonBlockingByteArrayOutputStream aMdnStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
-      final long nContentLength = StringParser.parseLong (aMdn.getHeader ("Content-Length"), -1);
+      final long nContentLength = StringParser.parseLong (aMdn.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
         StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIn, aMdnStream, nContentLength);
       else
@@ -414,44 +419,45 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final Partnership aPartnership = aMsg.getPartnership ();
 
-    aConn.setRequestProperty ("Connection", "close, TE");
-    aConn.setRequestProperty ("User-Agent", "OpenAS2 AS2Sender");
+    aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+    aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setRequestProperty ("Date", DateUtil.getFormattedDateNow ("EEE, dd MMM yyyy HH:mm:ss Z"));
-    aConn.setRequestProperty ("Message-ID", aMsg.getMessageID ());
+    aConn.setRequestProperty (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aConn.setRequestProperty (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    aConn.setRequestProperty ("Mime-Version", "1.0");
-    aConn.setRequestProperty ("Content-type", aMsg.getContentType ());
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, "1.1");
-    aConn.setRequestProperty ("Recipient-Address", aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+    aConn.setRequestProperty (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getContentType ());
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aConn.setRequestProperty (CAS2Header.HEADER_RECIPIENT_ADDRESS,
+                              aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
-    aConn.setRequestProperty ("Subject", aMsg.getSubject ());
-    aConn.setRequestProperty ("From", aPartnership.getSenderID (Partnership.PID_EMAIL));
+    aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
+    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderID (Partnership.PID_EMAIL));
 
     final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
     if (sDispTo != null)
-      aConn.setRequestProperty ("Disposition-Notification-To", sDispTo);
+      aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
 
     final String sDispOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
     if (sDispOptions != null)
-      aConn.setRequestProperty ("Disposition-Notification-Options", sDispOptions);
+      aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispOptions);
 
     // Asynch MDN 2007-03-12
     final String sReceiptOption = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
     if (sReceiptOption != null)
-      aConn.setRequestProperty ("Receipt-delivery-option", sReceiptOption);
+      aConn.setRequestProperty (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptOption);
 
     // As of 2007-06-01
     final String sContentDisp = aMsg.getContentDisposition ();
     if (sContentDisp != null)
-      aConn.setRequestProperty ("Content-Disposition", sContentDisp);
+      aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisp);
   }
 
   // Asynch MDN 2007-03-12
   /**
    * for storing original mic & outgoing file into pending information file
-   * 
+   *
    * @param aMsg
    *        AS2Message
    * @param sMIC

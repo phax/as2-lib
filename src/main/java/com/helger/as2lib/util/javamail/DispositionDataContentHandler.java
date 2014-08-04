@@ -39,10 +39,13 @@ import java.io.OutputStream;
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.io.streams.StreamUtils;
 
 public class DispositionDataContentHandler implements DataContentHandler
@@ -59,12 +62,14 @@ public class DispositionDataContentHandler implements DataContentHandler
   public DispositionDataContentHandler ()
   {}
 
-  public byte [] getContent (final DataSource ds) throws IOException
+  @Nullable
+  public byte [] getContent (@Nonnull final DataSource ds) throws IOException
   {
     return StreamUtils.getAllBytes (StreamUtils.getBuffered (ds.getInputStream ()));
   }
 
-  public byte [] getTransferData (final DataFlavor df, final DataSource ds) throws IOException
+  @Nullable
+  public byte [] getTransferData (final DataFlavor df, @Nonnull final DataSource ds) throws IOException
   {
     if (ADF1.equals (df))
       return getContent (ds);
@@ -73,7 +78,7 @@ public class DispositionDataContentHandler implements DataContentHandler
 
   public DataFlavor [] getTransferDataFlavors ()
   {
-    return ADFs;
+    return ArrayHelper.getCopy (ADFs);
   }
 
   public void writeTo (final Object obj, final String mimeType, final OutputStream os) throws IOException

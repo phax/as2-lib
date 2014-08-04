@@ -40,19 +40,29 @@ public final class CAS2Header
   public static final String HEADER_AS2_FROM = "AS2-From";
   public static final String HEADER_AS2_TO = "AS2-To";
   public static final String HEADER_AS2_VERSION = "AS2-Version";
-  public static final String HEADER_MESSAGE_ID = "Message-ID";
-  public static final String HEADER_CONTENT_TYPE = "Content-Type";
+  public static final String HEADER_CONNECTION = "Connection";
   public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
-  public static final String HEADER_SUBJECT = "Subject";
-  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
-  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = "Disposition-Notification-Options";
-  public static final String HEADER_RECEIPT_DELIVERY_OPTION = "Receipt-Delivery-Option";
   public static final String HEADER_CONTENT_LENGTH = "Content-Length";
-  public static final String HEADER_FROM = "From";
-  public static final String HEADER_MIME_VERSION = "Mime-Version";
-  public static final String HEADER_SERVER = "Server";
+  public static final String HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
+  public static final String HEADER_CONTENT_TYPE = "Content-Type";
   public static final String HEADER_DATE = "Date";
+  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = "Disposition-Notification-Options";
+  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
+  public static final String HEADER_FROM = "From";
+  public static final String HEADER_MESSAGE_ID = "Message-ID";
+  public static final String HEADER_MIME_VERSION = "Mime-Version";
+  public static final String HEADER_RECEIPT_DELIVERY_OPTION = "Receipt-Delivery-Option";
+  public static final String HEADER_RECIPIENT_ADDRESS = "Recipient-Address";
+  public static final String HEADER_SERVER = "Server";
+  public static final String HEADER_SUBJECT = "Subject";
   public static final String HEADER_TRANSFER_ENCODING = "Transfer-Encoding";
+  public static final String HEADER_USER_AGENT = "User-Agent";
+
+  public static final String DEFAULT_CONNECTION = "close, TE";
+  public static final String DEFAULT_USER_AGENT = "OpenAS2 AS2Sender";
+  public static final String DEFAULT_MIME_VERSION = "1.0";
+  public static final String DEFAULT_AS2_VERSION = "1.1";
+  public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
 
   private CAS2Header ()
   {}

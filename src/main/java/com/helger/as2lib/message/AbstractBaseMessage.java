@@ -65,7 +65,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public AbstractBaseMessage ()
   {}
 
-  protected final void baseReadObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
+  protected final void baseReadObject (@Nonnull final ObjectInputStream aOIS) throws IOException,
+                                                                             ClassNotFoundException
   {
     // read in attributes
     m_aAttributes = (StringMap) aOIS.readObject ();

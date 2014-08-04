@@ -33,6 +33,8 @@
 package com.helger.as2lib;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -68,12 +70,16 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
     return nValue;
   }
 
-  public ISession getSession ()
+  @Nonnull
+  public final ISession getSession ()
   {
+    if (m_aSession == null)
+      throw new IllegalStateException ("No session present so far!");
     return m_aSession;
   }
 
-  public void initDynamicComponent (final ISession aSession, final IStringMap aParameters) throws OpenAS2Exception
+  @OverridingMethodsMustInvokeSuper
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aParameters) throws OpenAS2Exception
   {
     m_aSession = aSession;
     setAttributes (aParameters != null ? aParameters.getAllAttributes () : null);

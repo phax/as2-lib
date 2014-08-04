@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.phloc.commons.string.StringHelper;
+import com.phloc.commons.string.ToStringGenerator;
 
 public abstract class AbstractParameterParser
 {
@@ -52,7 +53,7 @@ public abstract class AbstractParameterParser
   /**
    * Set parameters from a string, like
    * "msg.sender.as2_id=ME,msg.headers.content-type=application/X12"
-   * 
+   *
    * @param sEncodedParams
    *        string to parse
    * @throws InvalidParameterException
@@ -73,7 +74,7 @@ public abstract class AbstractParameterParser
 
   /**
    * Set parameters from a string separated by delimiters.
-   * 
+   *
    * @param sFormat
    *        Comma separated list of parameters to set, like
    *        <code>msg.sender.as2_id,msg.receiver.as2_id,msg.header.content-type</code>
@@ -102,7 +103,7 @@ public abstract class AbstractParameterParser
 
   /**
    * Static way (why?) of getting at format method.
-   * 
+   *
    * @param sFormat
    *        the format to fill in
    * @param aParser
@@ -117,7 +118,7 @@ public abstract class AbstractParameterParser
 
   /**
    * Fill in a format string with information from a ParameterParser
-   * 
+   *
    * @param sFormat
    *        the format string to fill in
    * @return the filled in format string.
@@ -157,5 +158,11 @@ public abstract class AbstractParameterParser
     }
 
     return aResult.toString ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).toString ();
   }
 }

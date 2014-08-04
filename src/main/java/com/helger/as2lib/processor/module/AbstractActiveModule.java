@@ -34,6 +34,9 @@ package com.helger.as2lib.processor.module;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.ForcedStopException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.UnsupportedException;
@@ -44,7 +47,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 {
   private boolean m_bRunning;
 
-  public boolean isRunning ()
+  public final boolean isRunning ()
   {
     return m_bRunning;
   }
@@ -53,9 +56,18 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 
   public abstract void doStop () throws OpenAS2Exception;
 
-  public boolean canHandle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return false;
+  }
+
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+  {
+    throw new UnsupportedException ("Active modules don't handle anything by default");
   }
 
   public void forceStop (final Exception aCause)
@@ -70,11 +82,6 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
     {
       ex.terminate ();
     }
-  }
-
-  public void handle (final String sAaction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
-  {
-    throw new UnsupportedException ("Active modules don't handle anything by default");
   }
 
   private void _setRunning (final boolean bRunning)

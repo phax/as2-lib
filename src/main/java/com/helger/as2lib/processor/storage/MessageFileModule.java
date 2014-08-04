@@ -39,6 +39,7 @@ import java.util.Enumeration;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,9 @@ public class MessageFileModule extends AbstractStorageModule
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MessageFileModule.class);
 
-  public void handle (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     // store message content
     try
