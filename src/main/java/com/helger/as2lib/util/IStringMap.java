@@ -11,8 +11,8 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.ICloneable;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.ICloneable;
+import com.helger.commons.annotations.ReturnsMutableCopy;
 
 public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry <String, String>>
 {

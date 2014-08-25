@@ -70,9 +70,9 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.HTTPUtil;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.string.StringParser;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.string.StringParser;
 
 public class AS2MDNReceiverHandler implements INetModuleHandler
 {

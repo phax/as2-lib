@@ -50,7 +50,7 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageMDNParameters;
-import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
 public class MDNFileModule extends AbstractStorageModule
 {

@@ -60,8 +60,8 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.ReturnsMutableCopy;
 
 public class DirectoryResenderModule extends AbstractResenderModule
 {

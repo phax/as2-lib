@@ -40,7 +40,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateUtil;
-import com.phloc.commons.random.VerySecureRandom;
+import com.helger.commons.random.VerySecureRandom;
 
 public class AS2MessageMDN extends AbstractMessageMDN
 {

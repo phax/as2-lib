@@ -43,7 +43,7 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
 import com.helger.as2lib.util.StringMap;
-import com.phloc.commons.ValueEnforcer;
+import com.helger.commons.ValueEnforcer;
 
 public class DataHistoryItem implements Serializable
 {

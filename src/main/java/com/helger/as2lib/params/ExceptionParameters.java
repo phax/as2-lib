@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
-import com.phloc.commons.lang.StackTraceHelper;
+import com.helger.commons.lang.StackTraceHelper;
 
 public class ExceptionParameters extends AbstractParameterParser
 {

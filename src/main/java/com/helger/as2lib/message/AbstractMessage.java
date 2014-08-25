@@ -46,9 +46,9 @@ import javax.mail.internet.MimeBodyPart;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedException;
 import com.helger.as2lib.util.CAS2Header;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public abstract class AbstractMessage extends AbstractBaseMessage implements IMessage
 {

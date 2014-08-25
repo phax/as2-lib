@@ -86,10 +86,10 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.util.encoders.Base64;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.StreamUtils;
 
 public final class BCCryptoHelper implements ICryptoHelper
 {

@@ -70,10 +70,10 @@ import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionOptions;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.IOUtil;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.string.StringParser;
-import com.phloc.commons.timing.StopWatch;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.string.StringParser;
+import com.helger.commons.timing.StopWatch;
 
 public class AS2SenderModule extends AbstractHttpSenderModule
 {

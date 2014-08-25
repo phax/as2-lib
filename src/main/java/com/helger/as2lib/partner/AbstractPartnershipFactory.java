@@ -47,11 +47,11 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.IStringMap;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.string.StringHelper;
 
 public abstract class AbstractPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {

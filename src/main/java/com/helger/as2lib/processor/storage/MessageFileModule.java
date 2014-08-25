@@ -55,7 +55,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.util.DispositionType;
-import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
 public class MessageFileModule extends AbstractStorageModule
 {

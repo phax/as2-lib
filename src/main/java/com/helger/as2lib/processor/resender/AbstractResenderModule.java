@@ -37,7 +37,7 @@ import java.util.TimerTask;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
-import com.phloc.commons.CGlobal;
+import com.helger.commons.CGlobal;
 
 public abstract class AbstractResenderModule extends AbstractActiveModule implements IProcessorResenderModule
 {

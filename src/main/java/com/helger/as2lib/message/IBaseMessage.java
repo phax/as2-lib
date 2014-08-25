@@ -41,7 +41,7 @@ import javax.mail.internet.InternetHeaders;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.annotations.ReturnsMutableCopy;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.

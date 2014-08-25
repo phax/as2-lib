@@ -38,9 +38,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.processor.IProcessor;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.streams.NonBlockingStringWriter;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.streams.NonBlockingStringWriter;
 
 public class ProcessorException extends OpenAS2Exception
 {

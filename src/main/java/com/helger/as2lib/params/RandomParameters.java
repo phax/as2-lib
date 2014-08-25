@@ -36,8 +36,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.InvalidParameterException;
-import com.phloc.commons.random.VerySecureRandom;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.random.VerySecureRandom;
+import com.helger.commons.string.StringHelper;
 
 public class RandomParameters extends AbstractParameterParser
 {

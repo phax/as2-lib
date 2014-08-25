@@ -68,10 +68,10 @@ import com.helger.as2lib.util.HTTPUtil;
 import com.helger.as2lib.util.ICryptoHelper;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.timing.StopWatch;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.timing.StopWatch;
 
 public class AS2ReceiverHandler implements INetModuleHandler
 {

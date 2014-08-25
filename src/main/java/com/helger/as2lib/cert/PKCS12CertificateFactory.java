@@ -65,8 +65,8 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.IStringMap;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.io.streams.StreamUtils;
 
 public class PKCS12CertificateFactory extends AbstractCertificateFactory implements IAliasedCertificateFactory, IKeyStoreCertificateFactory, IStorableCertificateFactory
 {

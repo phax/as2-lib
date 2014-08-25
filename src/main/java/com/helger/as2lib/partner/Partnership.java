@@ -40,10 +40,10 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
 {

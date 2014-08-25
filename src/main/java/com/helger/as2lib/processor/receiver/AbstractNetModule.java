@@ -56,7 +56,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
-import com.phloc.commons.io.file.FilenameHelper;
+import com.helger.commons.io.file.FilenameHelper;
 
 public abstract class AbstractNetModule extends AbstractReceiverModule
 {

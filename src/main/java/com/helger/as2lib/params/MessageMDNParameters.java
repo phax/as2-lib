@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.IMessageMDN;
-import com.phloc.commons.ValueEnforcer;
+import com.helger.commons.ValueEnforcer;
 
 public class MessageMDNParameters extends AbstractParameterParser
 {

@@ -38,8 +38,8 @@ import javax.mail.internet.ContentDisposition;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.IMessage;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.StringHelper;
 
 public class MessageParameters extends AbstractParameterParser
 {

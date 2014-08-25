@@ -57,7 +57,7 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
-import com.phloc.commons.mime.CMimeType;
+import com.helger.commons.mime.CMimeType;
 
 @Immutable
 public final class AS2Util

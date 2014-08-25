@@ -49,8 +49,8 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
-import com.phloc.commons.io.file.FilenameHelper;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.streams.StreamUtils;
 
 public abstract class AbstractStorageModule extends AbstractProcessorModule implements IProcessorStorageModule
 {

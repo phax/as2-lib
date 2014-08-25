@@ -46,9 +46,9 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Base implementation of {@link IBaseMessage} as the base class for

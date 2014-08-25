@@ -43,9 +43,9 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.StreamUtils;
 
 public abstract class AbstractMessageMDN extends AbstractBaseMessage implements IMessageMDN
 {

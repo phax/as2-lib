@@ -42,7 +42,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.util.StringMap;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.annotations.ReturnsMutableCopy;
 
 /**
  * original author unknown added getPartners method

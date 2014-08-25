@@ -40,8 +40,8 @@ import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
-import com.phloc.commons.lang.CGStringHelper;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
 {

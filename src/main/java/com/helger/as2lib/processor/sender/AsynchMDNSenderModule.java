@@ -60,7 +60,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.IOUtil;
-import com.phloc.commons.timing.StopWatch;
+import com.helger.commons.timing.StopWatch;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {

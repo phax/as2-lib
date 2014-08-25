@@ -46,15 +46,15 @@ import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.InvalidMessageException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.io.file.FileIOError;
-import com.phloc.commons.io.file.FileOperationManager;
-import com.phloc.commons.io.file.FilenameHelper;
-import com.phloc.commons.io.file.LoggingFileOperationCallback;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.mutable.MutableLong;
-import com.phloc.commons.timing.StopWatch;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.file.FileIOError;
+import com.helger.commons.io.file.FileOperationManager;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.file.LoggingFileOperationCallback;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.mutable.MutableLong;
+import com.helger.commons.timing.StopWatch;
 
 @Immutable
 public final class IOUtil

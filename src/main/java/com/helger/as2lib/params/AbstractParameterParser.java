@@ -40,8 +40,8 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractParameterParser
 {

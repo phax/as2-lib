@@ -39,7 +39,7 @@ import java.security.GeneralSecurityException;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.io.streams.StreamUtils;
 
 public class KeyStoreWriter
 {

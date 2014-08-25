@@ -45,8 +45,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.io.streams.StreamUtils;
 
 public class DispositionDataContentHandler implements DataContentHandler
 {

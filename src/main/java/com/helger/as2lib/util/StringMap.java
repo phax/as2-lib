@@ -31,17 +31,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.OverrideOnDemand;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.collections.attrs.AbstractReadonlyAttributeContainer;
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.state.EChange;
-import com.phloc.commons.state.EContinue;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.CGlobal;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.OverrideOnDemand;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.attrs.AbstractReadonlyAttributeContainer;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.state.EChange;
+import com.helger.commons.state.EContinue;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Base class for all kind of string-string mapping container. This

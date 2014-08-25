@@ -38,9 +38,9 @@ import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.mime.CMimeType;
+import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.mime.CMimeType;
 
 public class ByteArrayDataSource implements DataSource
 {

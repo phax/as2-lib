@@ -46,7 +46,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IMessage;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.io.streams.StreamUtils;
 
 public class HTTPUtil
 {

@@ -63,11 +63,11 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
-import com.phloc.commons.annotations.ReturnsMutableObject;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.file.FileIOError;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.commons.mime.CMimeType;
+import com.helger.commons.annotations.ReturnsMutableObject;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.file.FileIOError;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.mime.CMimeType;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
 {

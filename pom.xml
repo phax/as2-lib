@@ -29,9 +29,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>phloc-commons</artifactId>
-      <version>4.3.5</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-commons</artifactId>
+      <version>5.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
