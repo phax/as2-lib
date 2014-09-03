@@ -73,6 +73,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   /**
    * @since 2007-06-01
    * @param sContentDisposition
+   *        Content disposition
    */
   public void setContentDisposition (@Nullable final String sContentDisposition)
   {

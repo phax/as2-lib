@@ -222,6 +222,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
    * verify if the mic is matched.
    *
    * @param msg
+   *        Message
    * @return true if mdn processed
    */
   public boolean checkAsyncMDN (final AS2Message msg)

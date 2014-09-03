@@ -57,6 +57,7 @@ public abstract class AbstractParameterParser
    * @param sEncodedParams
    *        string to parse
    * @throws InvalidParameterException
+   *         In case the string is incorrect
    */
   public void setParameters (@Nonnull final String sEncodedParams) throws InvalidParameterException
   {
@@ -83,6 +84,7 @@ public abstract class AbstractParameterParser
    * @param sValue
    *        string to parse, like <code>"NORINCO-WALMART.application/X12"</code>
    * @throws OpenAS2Exception
+   *         In case the string is incorrect
    */
   public void setParameters (@Nullable final String sFormat,
                              @Nullable final String sDelimiters,
@@ -110,6 +112,7 @@ public abstract class AbstractParameterParser
    *        the place to get the parsed info
    * @return the filled in format
    * @throws InvalidParameterException
+   *         In case the string is incorrect
    */
   public static String parse (@Nonnull final String sFormat, @Nonnull final AbstractParameterParser aParser) throws InvalidParameterException
   {
@@ -123,6 +126,7 @@ public abstract class AbstractParameterParser
    *        the format string to fill in
    * @return the filled in format string.
    * @throws InvalidParameterException
+   *         In case the string is incorrect
    */
   @Nonnull
   public String format (@Nonnull final String sFormat) throws InvalidParameterException
