@@ -274,7 +274,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     }
     catch (final Exception ex)
     {
-      s_aLogger.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
+      s_aLogger.error ("Error decrypting " + aMsg.getLoggingText (), ex);
       throw new DispositionException (new DispositionType ("automatic-action",
                                                            "MDN-sent-automatically",
                                                            "processed",
