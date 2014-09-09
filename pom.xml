@@ -11,6 +11,8 @@
   <packaging>bundle</packaging>
   <name>as2-lib</name>
   <description>Open AS2 fork - library part</description>
+  <url>https://github.com/phax/as2-lib</url>
+  <inceptionYear>2013</inceptionYear>
   
   <licenses>
     <license>
@@ -21,7 +23,7 @@
   </licenses>
  
   <scm>
-    <url>https://github.com/phax/as2-lib</url>
+    <url>http://github.com/phax/as2-lib</url>
     <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
     <tag>HEAD</tag>
