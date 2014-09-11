@@ -60,7 +60,18 @@ public interface IPartnershipFactory extends IDynamicComponent
 
   void removePartnership (@Nonnull Partnership aPartnership);
 
-  // looks up and fills in any header info for a specific msg's partnership
+  /**
+   * looks up and fills in any header info for a specific msg's partnership.
+   *
+   * @param aMsg
+   *        The message in which the partnership should be updated. May not be
+   *        <code>null</code> and must already contain a partnership with at
+   *        least name or sender and receiver IDs.
+   * @param bOverwrite
+   *        <code>true</code> to also set the subject of the message
+   * @throws OpenAS2Exception
+   *         In case of an error
+   */
   void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
 
   // looks up and fills in any header info for a specific msg's partnership

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -53,6 +54,7 @@ import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.string.StringHelper;
 
+@NotThreadSafe
 public abstract class AbstractPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {
   private final List <Partnership> m_aPartnerships = new ArrayList <Partnership> ();
@@ -60,9 +62,13 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nonnull
   public final Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
+    ValueEnforcer.notNull (aPartnership, "Partnership");
     Partnership aRealPartnership = getPartnershipOfName (m_aPartnerships, aPartnership.getName ());
     if (aRealPartnership == null)
+    {
+      // Found no partnership by name
       aRealPartnership = getPartnership (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
+    }
 
     if (aRealPartnership == null)
       throw new PartnershipNotFoundException ("Partnership not found: " + aPartnership);
@@ -99,6 +105,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   {
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMsg.getPartnership ());
+
+    // Update partnership data of message with the stored ones
     aMsg.getPartnership ().copyFrom (aPartnership);
 
     // Set attributes

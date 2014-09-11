@@ -48,6 +48,7 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.annotations.ReturnsMutableObject;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -185,6 +186,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nonnull
+  @ReturnsMutableObject (reason = "design")
   public final Partnership getPartnership ()
   {
     return m_aPartnership;

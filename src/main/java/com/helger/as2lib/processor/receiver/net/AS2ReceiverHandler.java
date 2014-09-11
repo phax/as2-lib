@@ -68,6 +68,7 @@ import com.helger.as2lib.util.HTTPUtil;
 import com.helger.as2lib.util.ICryptoHelper;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
@@ -81,7 +82,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
   public AS2ReceiverHandler (@Nonnull final AS2ReceiverModule aModule)
   {
-    m_aModule = aModule;
+    m_aModule = ValueEnforcer.notNull (aModule, "Module");
   }
 
   @Nonnull
@@ -164,8 +165,13 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // update the message
         try
         {
-          aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.HEADER_AS2_FROM));
-          aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
+          final String sAS2From = aMsg.getHeader (CAS2Header.HEADER_AS2_FROM);
+          aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, sAS2From);
+
+          final String sAS2To = aMsg.getHeader (CAS2Header.HEADER_AS2_TO);
+          aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, sAS2To);
+
+          // Fill all partnership attributes etc.
           getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
         }
         catch (final OpenAS2Exception ex)

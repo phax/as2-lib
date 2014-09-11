@@ -42,6 +42,7 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.annotations.ReturnsMutableObject;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -70,8 +71,26 @@ public interface IBaseMessage extends Serializable
   @Nonnull
   InternetHeaders getHeaders ();
 
+  /**
+   * Set a generic header. If it already exist it will be overwritten.
+   * 
+   * @param sKey
+   *        Header name
+   * @param sValue
+   *        Header value
+   * @see #addHeader(String, String)
+   */
   void setHeader (@Nonnull String sKey, @Nullable String sValue);
 
+  /**
+   * Add a generic header
+   * 
+   * @param sKey
+   *        Header name
+   * @param sValue
+   *        Header value
+   * @see #setHeader(String, String)
+   */
   void addHeader (@Nonnull String sKey, @Nullable String sValue);
 
   void setHeaders (@Nullable InternetHeaders aHeaders);
@@ -99,6 +118,7 @@ public interface IBaseMessage extends Serializable
   void updateMessageID ();
 
   @Nonnull
+  @ReturnsMutableObject (reason = "Design")
   Partnership getPartnership ();
 
   void setPartnership (@Nonnull Partnership aPartnership);
