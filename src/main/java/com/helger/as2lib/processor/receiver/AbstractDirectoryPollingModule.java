@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -48,7 +48,6 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.InvalidMessageException;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -59,6 +58,7 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
+import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
@@ -87,8 +87,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getParameterRequired (PARAM_OUTBOX_DIRECTORY);
-    getParameterRequired (PARAM_ERROR_DIRECTORY);
+    getAttributeAsStringRequired (PARAM_OUTBOX_DIRECTORY);
+    getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY);
   }
 
   @Override
@@ -97,7 +97,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     try
     {
       // scan the directory for new files
-      scanDirectory (getParameterRequired (PARAM_OUTBOX_DIRECTORY));
+      scanDirectory (getAttributeAsStringRequired (PARAM_OUTBOX_DIRECTORY));
 
       // update tracking info. if a file is ready, process it
       updateTracking ();
@@ -266,7 +266,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOUtil.getDirectoryFile (getParameterRequired (PARAM_SENT_DIRECTORY)), aFile.getName ());
+          aSentFile = new File (IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_SENT_DIRECTORY)), aFile.getName ());
           aSentFile = IOUtil.moveFile (aFile, aSentFile, false, true);
 
           s_aLogger.info ("moved " +
@@ -299,7 +299,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOUtil.handleError (aFile, getParameterRequired (PARAM_ERROR_DIRECTORY));
+      IOUtil.handleError (aFile, getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY));
     }
   }
 

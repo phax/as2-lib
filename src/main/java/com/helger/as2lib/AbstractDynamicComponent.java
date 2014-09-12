@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -38,8 +38,10 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.lang.CGStringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -54,7 +56,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   }
 
   @Nonnull
-  public final String getParameterRequired (@Nonnull final String sKey) throws InvalidParameterException
+  public final String getAttributeAsStringRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
     final String sValue = getAttributeAsString (sKey);
     if (sValue == null)
@@ -62,7 +64,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
     return sValue;
   }
 
-  public final int getParameterIntRequired (@Nonnull final String sKey) throws InvalidParameterException
+  public final int getAttributeAsIntRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
     final int nValue = getAttributeAsInt (sKey, Integer.MIN_VALUE);
     if (nValue == Integer.MIN_VALUE)
@@ -81,7 +83,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   @OverridingMethodsMustInvokeSuper
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aParameters) throws OpenAS2Exception
   {
-    m_aSession = aSession;
+    m_aSession = ValueEnforcer.notNull (aSession, "Session");
     setAttributes (aParameters != null ? aParameters.getAllAttributes () : null);
   }
 

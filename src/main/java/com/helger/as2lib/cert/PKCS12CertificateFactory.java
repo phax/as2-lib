@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -52,7 +52,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
-import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.CertificateExistsException;
 import com.helger.as2lib.exception.CertificateNotFoundException;
 import com.helger.as2lib.exception.InvalidParameterException;
@@ -63,6 +62,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotations.ReturnsMutableCopy;
@@ -177,7 +177,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public String getFilename () throws InvalidParameterException
   {
-    return getParameterRequired (PARAM_FILENAME);
+    return getAttributeAsStringRequired (PARAM_FILENAME);
   }
 
   public void setKeyStore (final KeyStore aKeyStore)
@@ -198,7 +198,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   @Nonnull
   public char [] getPassword () throws InvalidParameterException
   {
-    return getParameterRequired (PARAM_PASSWORD).toCharArray ();
+    return getAttributeAsStringRequired (PARAM_PASSWORD).toCharArray ();
   }
 
   public PrivateKey getPrivateKey (final X509Certificate aCert) throws OpenAS2Exception

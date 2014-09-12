@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -51,12 +51,12 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
+import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
@@ -93,7 +93,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   {
     try
     {
-      final File aResendDir = IOUtil.getDirectoryFile (getParameterRequired (PARAM_RESEND_DIRECTORY));
+      final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_RESEND_DIRECTORY));
       final File aResendFile = IOUtil.getUniqueFile (aResendDir, getFilename ());
       final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
       String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
@@ -119,8 +119,8 @@ public class DirectoryResenderModule extends AbstractResenderModule
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getParameterRequired (PARAM_RESEND_DIRECTORY);
-    getParameterRequired (PARAM_ERROR_DIRECTORY);
+    getAttributeAsStringRequired (PARAM_RESEND_DIRECTORY);
+    getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY);
   }
 
   @Override
@@ -149,7 +149,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
     if (getAttributeAsString (PARAM_RESEND_DELAY) == null)
       nResendDelay = DEFAULT_RESEND_DELAY;
     else
-      nResendDelay = getParameterIntRequired (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
+      nResendDelay = getAttributeAsIntRequired (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
 
     final long nResendTime = new Date ().getTime () + nResendDelay;
     return DateUtil.formatDate (DATE_FORMAT, new Date (nResendTime));
@@ -224,7 +224,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOUtil.handleError (aFile, getParameterRequired (PARAM_ERROR_DIRECTORY));
+      IOUtil.handleError (aFile, getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY));
     }
   }
 
@@ -232,7 +232,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   @ReturnsMutableCopy
   protected List <File> scanDirectory () throws OpenAS2Exception
   {
-    final File aResendDir = IOUtil.getDirectoryFile (getParameterRequired (PARAM_RESEND_DIRECTORY));
+    final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_RESEND_DIRECTORY));
 
     final File [] aFiles = aResendDir.listFiles ();
     if (aFiles == null)

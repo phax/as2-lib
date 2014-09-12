@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -75,7 +75,7 @@ public class MessageFileModule extends AbstractStorageModule
     // store message content
     try
     {
-      final File aMsgFile = getFile (aMsg, getParameterRequired (PARAM_FILENAME), sAction);
+      final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (PARAM_FILENAME), sAction);
       final InputStream aIS = aMsg.getData ().getInputStream ();
       store (aMsgFile, aIS);
       s_aLogger.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());

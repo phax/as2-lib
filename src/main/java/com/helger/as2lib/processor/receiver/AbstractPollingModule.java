@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -42,8 +42,8 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.IStringMap;
 
 public abstract class AbstractPollingModule extends AbstractReceiverModule
@@ -59,7 +59,7 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getParameterRequired (PARAM_POLLING_INTERVAL);
+    getAttributeAsStringRequired (PARAM_POLLING_INTERVAL);
   }
 
   public void setInterval (final int nSeconds)

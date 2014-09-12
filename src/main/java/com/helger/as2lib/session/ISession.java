@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -30,12 +30,13 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib;
+package com.helger.as2lib.session;
 
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;

@@ -1,7 +1,7 @@
 /**
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
- * Copyright (C) 2014 Philip Helger ph[at]phloc[dot]com
+ * Copyright (C) 2013-2014 Philip Helger philip[at]helger[dot]com
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -47,7 +47,6 @@ import javax.mail.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.HttpResponseException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
@@ -56,6 +55,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
+import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionType;
