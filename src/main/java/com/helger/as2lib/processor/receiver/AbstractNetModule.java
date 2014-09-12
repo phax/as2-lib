@@ -39,6 +39,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.InvalidMessageException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
@@ -57,6 +58,7 @@ import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.lang.CGStringHelper;
 
 public abstract class AbstractNetModule extends AbstractReceiverModule
 {
@@ -68,17 +70,22 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
   private MainThread m_aMainThread;
 
+  public AbstractNetModule ()
+  {}
+
   @Override
   public void doStart () throws OpenAS2Exception
   {
     try
     {
-      m_aMainThread = new MainThread (this, getAttributeAsString (PARAM_ADDRESS), getAttributeAsInt (PARAM_PORT, 0));
+      final String sAddress = getAttributeAsString (PARAM_ADDRESS);
+      final int nPort = getAttributeAsInt (PARAM_PORT, 0);
+      m_aMainThread = new MainThread (this, sAddress, nPort);
       m_aMainThread.start ();
     }
     catch (final IOException ioe)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedOpenAS2Exception (ioe);
     }
   }
 
@@ -101,6 +108,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     getParameterRequired (PARAM_PORT);
   }
 
+  @Nonnull
   protected abstract INetModuleHandler getHandler ();
 
   public void handleError (final IMessage aMsg, final OpenAS2Exception aSrcEx)
@@ -136,41 +144,33 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     }
     catch (final IOException ex)
     {
-      final WrappedException we = new WrappedException (ex);
+      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       we.terminate ();
     }
   }
 
-  protected static final class ConnectionThread extends Thread
+  private static final class ConnectionThread extends Thread
   {
+    private static final Logger s_aLogger = LoggerFactory.getLogger (ConnectionThread.class);
+
     private final AbstractNetModule m_aOwner;
     private final Socket m_aSocket;
 
-    public ConnectionThread (final AbstractNetModule aOwner, final Socket aSocket)
+    public ConnectionThread (@Nonnull final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
     {
-      super ();
+      super ("ConnectionThread-" + CGStringHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aSocket = aSocket;
-      start ();
-    }
-
-    public AbstractNetModule getOwner ()
-    {
-      return m_aOwner;
-    }
-
-    public Socket getSocket ()
-    {
-      return m_aSocket;
     }
 
     @Override
     public void run ()
     {
-      final Socket s = getSocket ();
+      s_aLogger.info ("ConnectionThread: run");
+      final Socket s = m_aSocket;
 
-      getOwner ().getHandler ().handle (getOwner (), s);
+      m_aOwner.getHandler ().handle (m_aOwner, s);
 
       try
       {
@@ -178,85 +178,73 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       }
       catch (final IOException ex)
       {
-        new WrappedException (ex).terminate ();
+        new WrappedOpenAS2Exception (ex).terminate ();
+      }
+      finally
+      {
+        s_aLogger.info ("ConnectionThread: done running");
       }
     }
   }
 
-  protected static final class MainThread extends Thread
+  private static final class MainThread extends Thread
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (MainThread.class);
 
     private final AbstractNetModule m_aOwner;
     private final ServerSocket m_aSocket;
-    private boolean m_bTerminated;
+    private volatile boolean m_bTerminated;
 
-    public MainThread (final AbstractNetModule aOwner, final String sAddress, final int nPort) throws IOException
+    public MainThread (@Nonnull final AbstractNetModule aOwner,
+                       @Nullable final String sAddress,
+                       @Nonnegative final int nPort) throws IOException
     {
-      super ();
+      super ("MainThread-" + CGStringHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aSocket = new ServerSocket ();
-      if (sAddress != null)
-        m_aSocket.bind (new InetSocketAddress (sAddress, nPort));
-      else
-        m_aSocket.bind (new InetSocketAddress (nPort));
-    }
-
-    public AbstractNetModule getOwner ()
-    {
-      return m_aOwner;
-    }
-
-    public ServerSocket getSocket ()
-    {
-      return m_aSocket;
-    }
-
-    public void setTerminated (final boolean bTerminated)
-    {
-      m_bTerminated = bTerminated;
-      if (m_aSocket != null)
-      {
-        try
-        {
-          m_aSocket.close ();
-        }
-        catch (final IOException ex)
-        {
-          m_aOwner.forceStop (ex);
-        }
-      }
-    }
-
-    public boolean isTerminated ()
-    {
-      return m_bTerminated;
+      final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)
+                                                      : new InetSocketAddress (sAddress, nPort);
+      m_aSocket.bind (aAddr);
+      s_aLogger.info ("Inited " + getName () + " at " + aAddr);
     }
 
     @Override
     public void run ()
     {
-      while (!isTerminated ())
+      s_aLogger.info ("MainThread: run");
+      while (!m_bTerminated && !isInterrupted ())
       {
         try
         {
           final Socket aConn = m_aSocket.accept ();
           aConn.setSoLinger (true, 60);
-          new ConnectionThread (getOwner (), aConn);
+          new ConnectionThread (m_aOwner, aConn).start ();
         }
-        catch (final IOException ex)
+        catch (final Exception ex)
         {
-          if (!isTerminated ())
+          if (!m_bTerminated)
             m_aOwner.forceStop (ex);
         }
       }
 
-      s_aLogger.info ("exited");
+      s_aLogger.info ("MainThread: done running");
     }
 
     public void terminate ()
     {
-      setTerminated (true);
+      if (!m_bTerminated)
+      {
+        m_bTerminated = true;
+        if (m_aSocket != null)
+          try
+          {
+            m_aSocket.close ();
+          }
+          catch (final IOException ex)
+          {
+            m_aOwner.forceStop (ex);
+          }
+      }
     }
   }
 }

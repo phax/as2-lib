@@ -91,7 +91,7 @@ public final class IOUtil
   public static String getTransferRate (final long nBytes, @Nonnull final StopWatch aSW)
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append (nBytes).append (" bytes in ").append (aSW.getMillis () / 1000.0).append ("seconds at ");
+    aSB.append (nBytes).append (" bytes in ").append (aSW.getMillis () / 1000.0).append (" seconds at ");
 
     final long nMillis = aSW.getMillis ();
     if (nMillis != 0)

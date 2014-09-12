@@ -49,6 +49,8 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.streams.StreamUtils;
 
@@ -58,11 +60,18 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   public static final String PARAM_PROTOCOL = "protocol";
   public static final String PARAM_TEMPDIR = "tempdir";
 
+  private final String m_sModuleAction;
+
+  protected AbstractStorageModule (@Nonnull @Nonempty final String sModuleAction)
+  {
+    m_sModuleAction = ValueEnforcer.notEmpty (sModuleAction, "ModuleAction");
+  }
+
   public final boolean canHandle (@Nonnull final String sAction,
                                   @Nonnull final IMessage aMsg,
                                   @Nullable final Map <String, Object> aOptions)
   {
-    if (!sAction.equals (getModuleAction ()))
+    if (!sAction.equals (m_sModuleAction))
       return false;
 
     final String sModProtocol = getAttributeAsString (PARAM_PROTOCOL);
@@ -77,8 +86,6 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     super.initDynamicComponent (aSession, aOptions);
     getParameterRequired (PARAM_FILENAME);
   }
-
-  protected abstract String getModuleAction ();
 
   /**
    * @since 2007-06-01

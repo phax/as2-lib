@@ -57,7 +57,7 @@ import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
@@ -211,7 +211,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     {
       HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST, false);
 
-      final WrappedException we = new WrappedException (ex);
+      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }

@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.HttpResponseException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
@@ -178,7 +178,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
-      final WrappedException wioe = new WrappedException (ex);
+      final WrappedOpenAS2Exception wioe = new WrappedOpenAS2Exception (ex);
       wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
@@ -187,7 +187,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a resend
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 

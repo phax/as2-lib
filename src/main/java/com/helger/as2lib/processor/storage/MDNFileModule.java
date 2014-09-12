@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
@@ -54,6 +54,11 @@ import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
 public class MDNFileModule extends AbstractStorageModule
 {
+  public MDNFileModule ()
+  {
+    super (DO_STOREMDN);
+  }
+
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
@@ -70,14 +75,8 @@ public class MDNFileModule extends AbstractStorageModule
     }
     catch (final IOException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
-  }
-
-  @Override
-  protected String getModuleAction ()
-  {
-    return DO_STOREMDN;
   }
 
   @Override

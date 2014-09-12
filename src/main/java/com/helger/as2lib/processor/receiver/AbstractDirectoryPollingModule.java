@@ -52,7 +52,7 @@ import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.InvalidMessageException;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.CFileAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AbstractParameterParser;
@@ -109,7 +109,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     }
     catch (final Exception ex)
     {
-      new WrappedException (ex).terminate ();
+      new WrappedOpenAS2Exception (ex).terminate ();
       forceStop (ex);
     }
   }
@@ -372,7 +372,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     }
     catch (final MessagingException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
 
     // update the message's partnership with any stored information

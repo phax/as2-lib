@@ -54,7 +54,7 @@ import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.HttpResponseException;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.CFileAttribute;
@@ -208,7 +208,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
-      final WrappedException wioe = new WrappedException (ex);
+      final WrappedOpenAS2Exception wioe = new WrappedOpenAS2Exception (ex);
       wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
@@ -217,7 +217,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a resend
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -238,30 +238,30 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     try
     {
       // Create a MessageMDN and copy HTTP headers
-      final IMessageMDN aMdn = new AS2MessageMDN (aMsg);
-      copyHttpHeaders (aConn, aMdn.getHeaders ());
+      final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
+      copyHttpHeaders (aConn, aMDN.getHeaders ());
 
       // Receive the MDN data
-      final InputStream aConnIn = aConn.getInputStream ();
-      final NonBlockingByteArrayOutputStream aMdnStream = new NonBlockingByteArrayOutputStream ();
+      final InputStream aConnIS = aConn.getInputStream ();
+      final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
-      final long nContentLength = StringParser.parseLong (aMdn.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
+      final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
-        StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIn, aMdnStream, nContentLength);
+        StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIS, aMDNStream, nContentLength);
       else
-        StreamUtils.copyInputStreamToOutputStream (aConnIn, aMdnStream);
+        StreamUtils.copyInputStreamToOutputStream (aConnIS, aMDNStream);
 
-      final MimeBodyPart aPart = new MimeBodyPart (aMdn.getHeaders (), aMdnStream.toByteArray ());
+      final MimeBodyPart aPart = new MimeBodyPart (aMDN.getHeaders (), aMDNStream.toByteArray ());
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
-      aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
-      getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
+      aMDN.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMDN.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 
@@ -317,7 +317,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final Exception ex)
     {
-      final WrappedException we = new WrappedException (ex);
+      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }
@@ -462,9 +462,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * @param aMsg
    *        AS2Message
    * @param sMIC
-   * @throws WrappedException
+   * @throws WrappedOpenAS2Exception
    */
-  protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws WrappedException
+  protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws WrappedOpenAS2Exception
   {
     try
     {
@@ -497,7 +497,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final Exception ex)
     {
-      final WrappedException we = new WrappedException (ex);
+      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }

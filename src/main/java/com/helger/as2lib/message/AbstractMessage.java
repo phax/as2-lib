@@ -44,7 +44,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
@@ -141,7 +141,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     }
     catch (final Exception ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -179,8 +179,8 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   public String toString ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ());
-    aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ());
+    aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
+    aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
 
     aSB.append ("\nHeaders:{");
     final Enumeration <?> aHeaders = getHeaders ().getAllHeaders ();
@@ -191,7 +191,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       if (aHeaders.hasMoreElements ())
         aSB.append (", ");
     }
-    aSB.append ("}").append ("\nAttributes:").append (getAllAttributes ());
+    aSB.append ("}").append ("\nAttributes:").append (getAllAttributes ().getAllAttributes ());
 
     final IMessageMDN aMDN = getMDN ();
     if (aMDN != null)

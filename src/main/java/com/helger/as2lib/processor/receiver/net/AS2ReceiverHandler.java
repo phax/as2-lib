@@ -51,7 +51,7 @@ import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.message.IMessage;
@@ -78,29 +78,23 @@ public class AS2ReceiverHandler implements INetModuleHandler
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiverHandler.class);
 
-  private final AS2ReceiverModule m_aModule;
+  private final AS2ReceiverModule m_aReceiverModule;
 
   public AS2ReceiverHandler (@Nonnull final AS2ReceiverModule aModule)
   {
-    m_aModule = ValueEnforcer.notNull (aModule, "Module");
+    m_aReceiverModule = ValueEnforcer.notNull (aModule, "Module");
   }
 
   @Nonnull
   @Nonempty
-  public String getClientInfo (@Nonnull final Socket aSocket)
+  public static String getClientInfo (@Nonnull final Socket aSocket)
   {
-    return " " + aSocket.getInetAddress ().getHostAddress () + " " + Integer.toString (aSocket.getPort ());
-  }
-
-  @Nonnull
-  public AS2ReceiverModule getModule ()
-  {
-    return m_aModule;
+    return aSocket.getInetAddress ().getHostAddress () + ":" + Integer.toString (aSocket.getPort ());
   }
 
   public void handle (final AbstractNetModule owner, @Nonnull final Socket aSocket)
   {
-    s_aLogger.info ("incoming connection" + getClientInfo (aSocket));
+    s_aLogger.info ("Incoming connection " + getClientInfo (aSocket));
 
     final AS2Message aMsg = createMessage (aSocket);
 
@@ -126,7 +120,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       s_aLogger.info ("received " +
                       IOUtil.getTransferRate (aMsgData.length, aSW) +
-                      " from" +
+                      " from " +
                       getClientInfo (aSocket) +
                       aMsg.getLoggingText ());
 
@@ -172,7 +166,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, sAS2To);
 
           // Fill all partnership attributes etc.
-          getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
+          m_aReceiverModule.getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
         }
         catch (final OpenAS2Exception ex)
         {
@@ -192,7 +186,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // Process the received message
         try
         {
-          getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
+          m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
         }
         catch (final OpenAS2Exception ex)
         {
@@ -226,22 +220,22 @@ public class AS2ReceiverHandler implements INetModuleHandler
             {
               StreamUtils.close (aOS);
             }
-            s_aLogger.info ("sent HTTP OK" + getClientInfo (aSocket) + aMsg.getLoggingText ());
+            s_aLogger.info ("sent HTTP OK " + getClientInfo (aSocket) + aMsg.getLoggingText ());
           }
         }
         catch (final Exception ex)
         {
-          throw new WrappedException ("Error creating and returning MDN, message was stilled processed", ex);
+          throw new WrappedOpenAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
         }
       }
       catch (final DispositionException ex)
       {
         sendMDN (aSocket, aMsg, ex.getDisposition (), ex.getText ());
-        getModule ().handleError (aMsg, ex);
+        m_aReceiverModule.handleError (aMsg, ex);
       }
       catch (final OpenAS2Exception ex)
       {
-        getModule ().handleError (aMsg, ex);
+        m_aReceiverModule.handleError (aMsg, ex);
       }
     }
   }
@@ -260,7 +254,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
   protected final void decryptAndVerify (@Nonnull final IMessage aMsg) throws OpenAS2Exception
   {
-    final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
+    final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
 
     try
@@ -323,7 +317,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       try
       {
-        final IMessageMDN aMdn = AS2Util.createMDN (getModule ().getSession (), aMsg, aDisposition, sText);
+        final IMessageMDN aMdn = AS2Util.createMDN (m_aReceiverModule.getSession (), aMsg, aDisposition, sText);
 
         final OutputStream aOS = StreamUtils.getBuffered (aSocket.getOutputStream ());
         // if asyncMDN requested, close connection and initiate separate MDN
@@ -336,10 +330,10 @@ public class AS2ReceiverHandler implements INetModuleHandler
           aOS.close ();
           s_aLogger.info ("setup to send asynch MDN [" +
                           aDisposition.toString () +
-                          "]" +
+                          "] " +
                           getClientInfo (aSocket) +
                           aMsg.getLoggingText ());
-          getModule ().getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
+          m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
           return;
         }
 
@@ -366,16 +360,16 @@ public class AS2ReceiverHandler implements INetModuleHandler
         aOS.close ();
 
         // Save sent MDN for later examination
-        getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
         s_aLogger.info ("sent MDN [" +
                         aDisposition.toString () +
-                        "]" +
+                        "] " +
                         getClientInfo (aSocket) +
                         aMsg.getLoggingText ());
       }
       catch (final Exception ex)
       {
-        final WrappedException we = new WrappedException ("Error sending MDN", ex);
+        final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception ("Error sending MDN", ex);
         we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
         we.terminate ();
       }

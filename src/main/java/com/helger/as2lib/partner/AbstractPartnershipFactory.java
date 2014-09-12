@@ -60,7 +60,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   private final List <Partnership> m_aPartnerships = new ArrayList <Partnership> ();
 
   @Nonnull
-  public final Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
     Partnership aRealPartnership = getPartnershipOfName (m_aPartnerships, aPartnership.getName ());

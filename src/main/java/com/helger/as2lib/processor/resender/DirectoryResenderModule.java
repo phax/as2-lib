@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.ISession;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.util.DateUtil;
@@ -111,7 +111,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
     }
     catch (final IOException ioe)
     {
-      throw new WrappedException (ioe);
+      throw new WrappedOpenAS2Exception (ioe);
     }
   }
 
@@ -181,10 +181,18 @@ public class DirectoryResenderModule extends AbstractResenderModule
       try
       {
         final ObjectInputStream aOIS = new ObjectInputStream (new FileInputStream (aFile));
-        final String sMethod = (String) aOIS.readObject ();
-        final String sRetries = (String) aOIS.readObject ();
-        aMsg = (IMessage) aOIS.readObject ();
-        aOIS.close ();
+        String sMethod;
+        String sRetries;
+        try
+        {
+          sMethod = (String) aOIS.readObject ();
+          sRetries = (String) aOIS.readObject ();
+          aMsg = (IMessage) aOIS.readObject ();
+        }
+        finally
+        {
+          aOIS.close ();
+        }
 
         // Transmit the message
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
@@ -204,11 +212,11 @@ public class DirectoryResenderModule extends AbstractResenderModule
       }
       catch (final IOException ex)
       {
-        throw new WrappedException (ex);
+        throw new WrappedOpenAS2Exception (ex);
       }
       catch (final ClassNotFoundException ex)
       {
-        throw new WrappedException (ex);
+        throw new WrappedOpenAS2Exception (ex);
       }
     }
     catch (final OpenAS2Exception ex)

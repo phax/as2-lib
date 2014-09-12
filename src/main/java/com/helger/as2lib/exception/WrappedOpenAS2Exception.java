@@ -32,22 +32,22 @@
  */
 package com.helger.as2lib.exception;
 
-public class WrappedException extends OpenAS2Exception
+public class WrappedOpenAS2Exception extends OpenAS2Exception
 {
-  public WrappedException ()
+  public WrappedOpenAS2Exception ()
   {}
 
-  public WrappedException (final String sMsg)
+  public WrappedOpenAS2Exception (final String sMsg)
   {
     super (sMsg);
   }
 
-  public WrappedException (final String sMsg, final Throwable aCause)
+  public WrappedOpenAS2Exception (final String sMsg, final Throwable aCause)
   {
     super (sMsg, aCause);
   }
 
-  public WrappedException (final Throwable aCause)
+  public WrappedOpenAS2Exception (final Throwable aCause)
   {
     super (aCause);
   }

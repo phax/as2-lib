@@ -45,6 +45,11 @@ import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 
+/**
+ * Process incoming messages.
+ * 
+ * @author Philip Helger
+ */
 public interface IProcessor extends IDynamicComponent
 {
   String COMPID_PROCESSOR = "processor";

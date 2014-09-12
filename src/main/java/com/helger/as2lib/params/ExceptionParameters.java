@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.commons.lang.StackTraceHelper;
 
 public class ExceptionParameters extends AbstractParameterParser
@@ -74,9 +74,9 @@ public class ExceptionParameters extends AbstractParameterParser
       throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
     Throwable aUnwrappedTarget;
-    if (m_aTarget instanceof WrappedException)
+    if (m_aTarget instanceof WrappedOpenAS2Exception)
     {
-      aUnwrappedTarget = ((WrappedException) m_aTarget).getCause ();
+      aUnwrappedTarget = ((WrappedOpenAS2Exception) m_aTarget).getCause ();
       if (aUnwrappedTarget == null)
         aUnwrappedTarget = m_aTarget;
     }

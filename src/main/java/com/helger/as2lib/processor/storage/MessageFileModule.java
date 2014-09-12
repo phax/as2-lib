@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
@@ -62,6 +62,11 @@ public class MessageFileModule extends AbstractStorageModule
   public static final String PARAM_HEADER = "header";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MessageFileModule.class);
+
+  public MessageFileModule ()
+  {
+    super (DO_STORE);
+  }
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
@@ -98,15 +103,9 @@ public class MessageFileModule extends AbstractStorageModule
       }
       catch (final IOException ex)
       {
-        throw new WrappedException (ex);
+        throw new WrappedOpenAS2Exception (ex);
       }
     }
-  }
-
-  @Override
-  protected String getModuleAction ()
-  {
-    return DO_STORE;
   }
 
   @Override

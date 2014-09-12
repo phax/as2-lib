@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
@@ -71,7 +71,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     }
     catch (final IOException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 

@@ -58,7 +58,7 @@ import com.helger.as2lib.exception.CertificateNotFoundException;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.KeyNotFoundException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedException;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
@@ -109,7 +109,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final KeyStoreException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -166,7 +166,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -248,7 +248,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -266,7 +266,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -282,7 +282,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -297,7 +297,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final Exception ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
 
     load (getFilename (), getPassword ());
@@ -312,7 +312,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final IOException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -328,11 +328,11 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final IOException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
     finally
     {
@@ -358,7 +358,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -375,7 +375,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -393,7 +393,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final IOException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
   }
 
@@ -405,11 +405,11 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final IOException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedException (ex);
+      throw new WrappedOpenAS2Exception (ex);
     }
     finally
     {
