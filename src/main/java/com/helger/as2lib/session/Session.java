@@ -43,7 +43,7 @@ import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
-import com.helger.as2lib.processor.IProcessor;
+import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
@@ -80,8 +80,9 @@ public class Session implements ISession
   }
 
   @Nonnull
-  public final IDynamicComponent getComponent (final String sComponentID) throws ComponentNotFoundException
+  public final IDynamicComponent getComponent (@Nonnull @Nonempty final String sComponentID) throws ComponentNotFoundException
   {
+    ValueEnforcer.notEmpty (sComponentID, "ComponentID");
     final IDynamicComponent aComponent = m_aComponents.get (sComponentID);
     if (aComponent == null)
       throw new ComponentNotFoundException (sComponentID);
@@ -108,9 +109,9 @@ public class Session implements ISession
   }
 
   @Nonnull
-  public final IProcessor getProcessor () throws ComponentNotFoundException
+  public final IMessageProcessor getProcessor () throws ComponentNotFoundException
   {
-    return (IProcessor) getComponent (IProcessor.COMPID_PROCESSOR);
+    return (IMessageProcessor) getComponent (IMessageProcessor.COMPID_MESSAGE_PROCESSOR);
   }
 
   @Override

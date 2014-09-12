@@ -37,17 +37,17 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.processor.IProcessor;
+import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.streams.NonBlockingStringWriter;
 
 public class ProcessorException extends OpenAS2Exception
 {
-  private final IProcessor m_aProcessor;
+  private final IMessageProcessor m_aProcessor;
   private final List <Throwable> m_aCauses;
 
-  public ProcessorException (@Nonnull final IProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
+  public ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
   {
     if (aProcessor == null)
       throw new NullPointerException ("processor");
@@ -58,7 +58,7 @@ public class ProcessorException extends OpenAS2Exception
   }
 
   @Nonnull
-  public final IProcessor getProcessor ()
+  public final IMessageProcessor getProcessor ()
   {
     return m_aProcessor;
   }

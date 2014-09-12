@@ -81,5 +81,6 @@ public interface IPartnershipFactory extends IDynamicComponent
   @ReturnsMutableCopy
   List <Partnership> getAllPartnerships ();
 
+  @Deprecated
   Map <String, StringMap> getPartners ();
 }

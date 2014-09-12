@@ -40,7 +40,7 @@ import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
-import com.helger.as2lib.processor.IProcessor;
+import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 
@@ -53,7 +53,7 @@ import com.helger.commons.annotations.ReturnsMutableCopy;
  * @see IDynamicComponent
  * @see com.helger.as2lib.cert.ICertificateFactory
  * @see com.helger.as2lib.partner.IPartnershipFactory
- * @see com.helger.as2lib.processor.IProcessor
+ * @see com.helger.as2lib.processor.IMessageProcessor
  */
 public interface ISession
 {
@@ -73,12 +73,12 @@ public interface ISession
    *
    * @param sComponentID
    *        ID to search for
-   * @return the component registered to the ID or null
+   * @return the component registered to the ID and never <code>null</code>.
    * @throws ComponentNotFoundException
    *         If a component is not registered with the ID
    */
   @Nonnull
-  IDynamicComponent getComponent (String sComponentID) throws ComponentNotFoundException;
+  IDynamicComponent getComponent (@Nonnull @Nonempty String sComponentID) throws ComponentNotFoundException;
 
   /**
    * Return a map of component ID's to <code>Component</code> objects.
@@ -120,9 +120,9 @@ public interface ISession
    * @return the currently registered <code>Processor</code> component
    * @throws ComponentNotFoundException
    *         If a <code>Processor</code> component has not been registered
-   * @see IProcessor
+   * @see IMessageProcessor
    * @see IDynamicComponent
    */
   @Nonnull
-  IProcessor getProcessor () throws ComponentNotFoundException;
+  IMessageProcessor getProcessor () throws ComponentNotFoundException;
 }

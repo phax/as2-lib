@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
+import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.HttpResponseException;
 import com.helger.as2lib.exception.InvalidParameterException;
@@ -265,7 +266,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 
-      getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+      try
+      {
+        getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+      }
+      catch (final ComponentNotFoundException ex)
+      {
+        // No processor found
+      }
 
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
 

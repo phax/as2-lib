@@ -32,41 +32,14 @@
  */
 package com.helger.as2lib.processor;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.processor.module.IProcessorActiveModule;
-import com.helger.as2lib.processor.module.IProcessorModule;
-import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.as2lib.AbstractDynamicComponent;
 
 /**
- * Process incoming messages.
+ * Abstract empty implementation of {@link IMessageProcessor}.
  * 
  * @author Philip Helger
  */
-public interface IProcessor extends IDynamicComponent
+public abstract class AbstractMessageProcessor extends AbstractDynamicComponent implements IMessageProcessor
 {
-  String COMPID_PROCESSOR = "processor";
-
-  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
-
-  void addModule (@Nonnull IProcessorModule aModule);
-
-  @Nonnull
-  @ReturnsMutableCopy
-  List <IProcessorModule> getAllModules ();
-
-  void startActiveModules ();
-
-  void stopActiveModules ();
-
-  @Nonnull
-  @ReturnsMutableCopy
-  List <IProcessorActiveModule> getAllActiveModules ();
+  /* empty */
 }

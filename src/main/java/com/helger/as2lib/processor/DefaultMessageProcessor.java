@@ -49,7 +49,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
 
-public class DefaultProcessor extends AbstractProcessor
+public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
   private final List <IProcessorModule> m_aModules = new ArrayList <IProcessorModule> ();
 
