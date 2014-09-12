@@ -35,9 +35,11 @@ package com.helger.as2lib.partner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.AbstractDynamicComponent;
@@ -48,26 +50,72 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.IStringMap;
+import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.state.EChange;
 import com.helger.commons.string.StringHelper;
 
 @NotThreadSafe
 public abstract class AbstractPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {
+  private final PartnerMap m_aPartners = new PartnerMap ();
   private final List <Partnership> m_aPartnerships = new ArrayList <Partnership> ();
 
+  public void addPartner (@Nonnull final StringMap aNewPartner) throws OpenAS2Exception
+  {
+    m_aPartners.add (aNewPartner);
+  }
+
   @Nonnull
+  public EChange removePartner (@Nullable final String sPartnerName)
+  {
+    return m_aPartners.removePartner (sPartnerName);
+  }
+
+  @Nullable
+  public StringMap getPartnerOfName (@Nullable final String sPartnerName)
+  {
+    return m_aPartners.getPartnerOfName (sPartnerName);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public Set <String> getAllPartnerNames ()
+  {
+    return m_aPartners.getAllPartnerNames ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public List <StringMap> getAllPartners ()
+  {
+    return m_aPartners.getAllPartners ();
+  }
+
+  @Nonnull
+  public IPartnerMap getPartnerMap ()
+  {
+    return m_aPartners;
+  }
+
+  protected final void setPartners (@Nonnull final PartnerMap aPartners)
+  {
+    m_aPartners.set (aPartners);
+  }
+
+  @Nonnull
+  @OverridingMethodsMustInvokeSuper
   public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    Partnership aRealPartnership = getPartnershipOfName (m_aPartnerships, aPartnership.getName ());
+    Partnership aRealPartnership = getPartnershipByName (m_aPartnerships, aPartnership.getName ());
     if (aRealPartnership == null)
     {
       // Found no partnership by name
-      aRealPartnership = getPartnership (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
+      aRealPartnership = getPartnershipByID (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
     }
 
     if (aRealPartnership == null)
@@ -95,10 +143,11 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     m_aPartnerships.add (aPartnership);
   }
 
-  public final void removePartnership (@Nonnull final Partnership aPartnership)
+  @Nonnull
+  public final EChange removePartnership (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    m_aPartnerships.remove (aPartnership);
+    return EChange.valueOf (m_aPartnerships.remove (aPartnership));
   }
 
   public final void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
@@ -128,16 +177,16 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Nullable
-  protected final Partnership getPartnership (@Nonnull final IStringMap aSenderIDs,
-                                              @Nonnull final IStringMap aReceiverIDs)
+  protected final Partnership getPartnershipByID (@Nonnull final IStringMap aSenderIDs,
+                                                  @Nonnull final IStringMap aReceiverIDs)
   {
     for (final Partnership aPartnership : m_aPartnerships)
     {
       final IStringMap aCurrentSenderIDs = aPartnership.getAllSenderIDs ();
-      if (compareMap (aSenderIDs, aCurrentSenderIDs))
+      if (arePartnerIDsPresent (aSenderIDs, aCurrentSenderIDs))
       {
         final IStringMap aCurrentReceiverIDs = aPartnership.getAllReceiverIDs ();
-        if (compareMap (aReceiverIDs, aCurrentReceiverIDs))
+        if (arePartnerIDsPresent (aReceiverIDs, aCurrentReceiverIDs))
           return aPartnership;
       }
     }
@@ -146,7 +195,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Nullable
-  protected static Partnership getPartnershipOfName (@Nonnull final List <Partnership> aPartnerships,
+  protected static Partnership getPartnershipByName (@Nonnull final List <Partnership> aPartnerships,
                                                      @Nullable final String sName)
   {
     if (StringHelper.hasText (sName))
@@ -156,8 +205,17 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     return null;
   }
 
-  // returns true if all values in searchIds match values in partnerIds
-  private static boolean compareMap (@Nonnull final IStringMap aSearchIDs, @Nonnull final IStringMap aPartnerIds)
+  /**
+   * @param aSearchIDs
+   *        Search IDs
+   * @param aPartnerIds
+   *        Partner IDs.
+   * @return <code>true</code> if searchIds is not empty and if all values in
+   *         searchIds match values in partnerIds. This means that partnerIds
+   *         can contain more elements than searchIds
+   */
+  private static boolean arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs,
+                                               @Nonnull final IStringMap aPartnerIds)
   {
     if (aSearchIDs.containsNoAttribute ())
       return false;

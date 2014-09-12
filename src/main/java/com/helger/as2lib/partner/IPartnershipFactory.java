@@ -33,16 +33,19 @@
 package com.helger.as2lib.partner;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.state.EChange;
 
 /**
  * original author unknown added getPartners method
@@ -53,12 +56,32 @@ public interface IPartnershipFactory extends IDynamicComponent
 {
   String COMPID_PARTNERSHIP_FACTORY = "partnershipfactory";
 
+  void addPartner (@Nonnull StringMap aNewPartner) throws OpenAS2Exception;
+
+  @Nonnull
+  EChange removePartner (@Nullable String sPartnerName);
+
+  @Nullable
+  IStringMap getPartnerOfName (@Nullable String sPartnerName);
+
+  @Nonnull
+  @ReturnsMutableCopy
+  Set <String> getAllPartnerNames ();
+
+  @Nonnull
+  @ReturnsMutableCopy
+  List <? extends IStringMap> getAllPartners ();
+
+  @Nonnull
+  IPartnerMap getPartnerMap ();
+
   // throws an exception if the partnership doesn't exist
   Partnership getPartnership (Partnership aPartnership) throws OpenAS2Exception;
 
   void addPartnership (@Nonnull Partnership aPartnership);
 
-  void removePartnership (@Nonnull Partnership aPartnership);
+  @Nonnull
+  EChange removePartnership (@Nonnull Partnership aPartnership);
 
   /**
    * looks up and fills in any header info for a specific msg's partnership.
@@ -77,10 +100,10 @@ public interface IPartnershipFactory extends IDynamicComponent
   // looks up and fills in any header info for a specific msg's partnership
   void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
 
+  /**
+   * @return A list of all contained partnerships.
+   */
   @Nonnull
   @ReturnsMutableCopy
   List <Partnership> getAllPartnerships ();
-
-  @Deprecated
-  Map <String, StringMap> getPartners ();
 }
