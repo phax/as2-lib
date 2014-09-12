@@ -36,34 +36,37 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nullable;
 
+import com.helger.as2lib.cert.ECertificatePartnershipType;
+
 public class CertificateNotFoundException extends OpenAS2Exception
 {
-  private final String m_sPartnershipType;
-  private final String m_aAlias;
+  private final ECertificatePartnershipType m_ePartnershipType;
+  private final String m_sAlias;
 
-  public CertificateNotFoundException (@Nullable final String sPartnershipType, @Nullable final String sAlias)
+  public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
+                                       @Nullable final String sAlias)
   {
-    super ("Type: " + sPartnershipType + ", Alias: " + sAlias);
-    m_sPartnershipType = sPartnershipType;
-    m_aAlias = sAlias;
+    super ("Type: " + ePartnershipType + ", Alias: " + sAlias);
+    m_ePartnershipType = ePartnershipType;
+    m_sAlias = sAlias;
   }
 
   public CertificateNotFoundException (@Nullable final X509Certificate aCert)
   {
     super ("Certificate not in store: " + aCert);
-    m_sPartnershipType = null;
-    m_aAlias = null;
+    m_ePartnershipType = null;
+    m_sAlias = null;
   }
 
   @Nullable
-  public String getPartnershipType ()
+  public ECertificatePartnershipType getPartnershipType ()
   {
-    return m_sPartnershipType;
+    return m_ePartnershipType;
   }
 
   @Nullable
   public String getAlias ()
   {
-    return m_aAlias;
+    return m_sAlias;
   }
 }

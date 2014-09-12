@@ -47,6 +47,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -56,7 +57,6 @@ import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -104,7 +104,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
     final AS2Message aMsg = createMessage (aSocket);
 
-    byte [] aData = null;
+    byte [] aMsgData = null;
 
     // Time the transmission
     final StopWatch aSW = new StopWatch (true);
@@ -112,7 +112,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = HTTPUtil.readData (aSocket, aMsg);
+      aMsgData = HTTPUtil.readData (aSocket, aMsg);
     }
     catch (final Exception ex)
     {
@@ -122,10 +122,10 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
     aSW.stop ();
 
-    if (aData != null)
+    if (aMsgData != null)
     {
       s_aLogger.info ("received " +
-                      IOUtil.getTransferRate (aData.length, aSW) +
+                      IOUtil.getTransferRate (aMsgData.length, aSW) +
                       " from" +
                       getClientInfo (aSocket) +
                       aMsg.getLoggingText ());
@@ -146,7 +146,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           final String sReceivedContentType = aReceivedContentType.toString ();
 
           final MimeBodyPart aReceivedPart = new MimeBodyPart ();
-          aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null)));
+          aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aMsgData, sReceivedContentType, null)));
           aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
           aMsg.setData (aReceivedPart);
         }
@@ -258,7 +258,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     return aMsg;
   }
 
-  protected final void decryptAndVerify (final IMessage aMsg) throws OpenAS2Exception
+  protected final void decryptAndVerify (@Nonnull final IMessage aMsg) throws OpenAS2Exception
   {
     final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
@@ -270,7 +270,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // Decrypt
         s_aLogger.debug ("decrypting" + aMsg.getLoggingText ());
 
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_RECEIVER);
+        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
         final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
         final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (), aReceiverCert, aReceiverKey);
         aMsg.setData (aDecryptedData);
@@ -296,7 +296,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       {
         s_aLogger.debug ("verifying signature" + aMsg.getLoggingText ());
 
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
         aMsg.setData (aCryptoHelper.verify (aMsg.getData (), aSenderCert));
       }
     }

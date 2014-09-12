@@ -48,6 +48,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.HttpResponseException;
@@ -260,7 +261,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PARTNERSHIP_TYPE_SENDER);
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 
@@ -379,7 +380,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Sign the data if requested
       if (bSign)
       {
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
         final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
 
@@ -399,7 +400,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
 
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, Partnership.PARTNERSHIP_TYPE_RECEIVER);
+        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
         aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, sAlgorithm);
 
         // Asynch MDN 2007-03-12

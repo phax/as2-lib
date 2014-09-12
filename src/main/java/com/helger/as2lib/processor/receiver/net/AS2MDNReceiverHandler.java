@@ -53,6 +53,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -61,7 +62,6 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
@@ -162,7 +162,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
 
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, Partnership.PARTNERSHIP_TYPE_SENDER);
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 

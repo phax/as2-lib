@@ -47,10 +47,6 @@ import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
 {
-  // Sender partner type
-  public static final String PARTNERSHIP_TYPE_SENDER = "sender";
-  // Receiver partner type
-  public static final String PARTNERSHIP_TYPE_RECEIVER = "receiver";
   // Email address
   public static final String PID_EMAIL = "email";
   // AS1 or AS2
@@ -186,7 +182,7 @@ public class Partnership implements Serializable
   /**
    * Set all fields of this partnership with the data from the provided
    * partnership.
-   * 
+   *
    * @param aPartnership
    *        The partnership to copy the data from. May not be <code>null</code>.
    */
