@@ -38,19 +38,22 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.util.StringMap;
+import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 
-public interface IPartnerMap
+public interface IPartnershipMap
 {
   @Nullable
-  StringMap getPartnerOfName (@Nullable String sPartnerName);
+  Partnership getPartnershipByName (@Nullable String sName);
+
+  @Nullable
+  Partnership getPartnershipByID (@Nonnull IStringMap aSenderIDs, @Nonnull IStringMap aReceiverIDs);
 
   @Nonnull
   @ReturnsMutableCopy
-  Set <String> getAllPartnerNames ();
+  Set <String> getAllPartnershipNames ();
 
   @Nonnull
   @ReturnsMutableCopy
-  List <StringMap> getAllPartners ();
+  List <Partnership> getAllPartnerships ();
 }

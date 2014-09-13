@@ -32,6 +32,9 @@
  */
 package com.helger.as2lib;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -47,6 +50,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
 {
+  protected final ReadWriteLock m_aRWLock = new ReentrantReadWriteLock ();
   private ISession m_aSession;
 
   @Nonnull

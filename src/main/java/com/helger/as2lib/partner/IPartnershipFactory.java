@@ -75,9 +75,6 @@ public interface IPartnershipFactory extends IDynamicComponent
   @Nonnull
   IPartnerMap getPartnerMap ();
 
-  // throws an exception if the partnership doesn't exist
-  Partnership getPartnership (Partnership aPartnership) throws OpenAS2Exception;
-
   void addPartnership (@Nonnull Partnership aPartnership);
 
   @Nonnull
@@ -100,10 +97,24 @@ public interface IPartnershipFactory extends IDynamicComponent
   // looks up and fills in any header info for a specific msg's partnership
   void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
 
+  // throws an exception if the partnership doesn't exist
+  @Nonnull
+  Partnership getPartnership (Partnership aPartnership) throws OpenAS2Exception;
+
+  @Nullable
+  Partnership getPartnershipByName (@Nullable String sName);
+
+  @Nonnull
+  @ReturnsMutableCopy
+  Set <String> getAllPartnershipNames ();
+
   /**
    * @return A list of all contained partnerships.
    */
   @Nonnull
   @ReturnsMutableCopy
   List <Partnership> getAllPartnerships ();
+
+  @Nonnull
+  IPartnershipMap getPartnershipMap ();
 }
