@@ -43,6 +43,13 @@ public class CertificateNotFoundException extends OpenAS2Exception
   private final ECertificatePartnershipType m_ePartnershipType;
   private final String m_sAlias;
 
+  public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType)
+  {
+    super ("Type: " + ePartnershipType + ", no alias found");
+    m_ePartnershipType = ePartnershipType;
+    m_sAlias = null;
+  }
+
   public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
                                        @Nullable final String sAlias)
   {

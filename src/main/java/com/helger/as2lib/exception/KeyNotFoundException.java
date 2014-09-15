@@ -34,14 +34,23 @@ package com.helger.as2lib.exception;
 
 import java.security.cert.X509Certificate;
 
+import javax.annotation.Nullable;
+
 public class KeyNotFoundException extends OpenAS2Exception
 {
-  public KeyNotFoundException (final X509Certificate aCert, final String sAlias)
+  public KeyNotFoundException (@Nullable final X509Certificate aCert)
+  {
+    super ("Certificate: " + aCert + " not found");
+  }
+
+  public KeyNotFoundException (@Nullable final X509Certificate aCert, @Nullable final String sAlias)
   {
     this (aCert, sAlias, null);
   }
 
-  public KeyNotFoundException (final X509Certificate aCert, final String sAlias, final Throwable aCause)
+  public KeyNotFoundException (@Nullable final X509Certificate aCert,
+                               @Nullable final String sAlias,
+                               @Nullable final Throwable aCause)
   {
     super ("Certificate: " + aCert + ", Alias: " + sAlias, aCause);
   }
