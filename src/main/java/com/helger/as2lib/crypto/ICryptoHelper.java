@@ -42,13 +42,6 @@ import javax.mail.internet.MimeBodyPart;
 
 public interface ICryptoHelper
 {
-  String DIGEST_MD5 = "md5";
-  String DIGEST_SHA1 = "sha1";
-  String CRYPT_CAST5 = "cast5";
-  String CRYPT_3DES = "3des";
-  String CRYPT_IDEA = "idea";
-  String CRYPT_RC2 = "rc2";
-
   boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
 
   @Nonnull

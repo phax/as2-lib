@@ -40,7 +40,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -61,11 +60,8 @@ import javax.mail.internet.MimeMultipart;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
-import org.bouncycastle.cms.CMSAlgorithm;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
@@ -87,7 +83,6 @@ import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
@@ -134,7 +129,7 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                             MessagingException,
                                                             IOException
   {
-    final ASN1ObjectIdentifier aMICAlg = _convertAlgorithmToBC (sDigest);
+    final ASN1ObjectIdentifier aMICAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sDigest);
 
     final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), "BC");
 
@@ -204,7 +199,7 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                                 SMIMEException,
                                                                 CMSException
   {
-    final ASN1ObjectIdentifier aEncAlg = _convertAlgorithmToBC (sAlgorithm);
+    final ASN1ObjectIdentifier aEncAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm);
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
     aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider ("BC"));
@@ -224,7 +219,7 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                              MessagingException,
                                                              OperatorCreationException
   {
-    final ASN1ObjectIdentifier aSignDigest = _convertAlgorithmToBC (sAlgorithm);
+    final ASN1ObjectIdentifier aSignDigest = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm);
 
     //
     // create some smime capabilities in case someone wants to respond
@@ -283,26 +278,6 @@ public final class BCCryptoHelper implements ICryptoHelper
         throw new SignatureException ("Verification failed");
 
     return aSignedPart.getContent ();
-  }
-
-  @Nonnull
-  private static ASN1ObjectIdentifier _convertAlgorithmToBC (@Nonnull final String sAlgorithm) throws NoSuchAlgorithmException
-  {
-    ValueEnforcer.notNull (sAlgorithm, "Algorithm");
-
-    if (sAlgorithm.equalsIgnoreCase (DIGEST_MD5))
-      return PKCSObjectIdentifiers.md5;
-    if (sAlgorithm.equalsIgnoreCase (DIGEST_SHA1))
-      return OIWObjectIdentifiers.idSHA1;
-    if (sAlgorithm.equalsIgnoreCase (CRYPT_3DES))
-      return PKCSObjectIdentifiers.des_EDE3_CBC;
-    if (sAlgorithm.equalsIgnoreCase (CRYPT_CAST5))
-      return CMSAlgorithm.CAST5_CBC;
-    if (sAlgorithm.equalsIgnoreCase (CRYPT_IDEA))
-      return CMSAlgorithm.IDEA_CBC;
-    if (sAlgorithm.equalsIgnoreCase (CRYPT_RC2))
-      return PKCSObjectIdentifiers.RC2_CBC;
-    throw new NoSuchAlgorithmException ("Unknown algorithm to BC: " + sAlgorithm);
   }
 
   @Nonnull
