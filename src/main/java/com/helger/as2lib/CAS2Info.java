@@ -30,17 +30,17 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util;
+package com.helger.as2lib;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class CInfo
+public final class CAS2Info
 {
   public static final String NAME = "ph-OpenAS2";
   public static final String VERSION = "v1.0";
   public static final String NAME_VERSION = NAME + " " + VERSION;
 
-  private CInfo ()
+  private CAS2Info ()
   {}
 }

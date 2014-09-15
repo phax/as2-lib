@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util;
+package com.helger.as2lib.crypto;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -86,6 +86,8 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.util.encoders.Base64;
 
+import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.ICryptoHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;

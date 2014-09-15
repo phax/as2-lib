@@ -44,8 +44,10 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
+import com.helger.as2lib.crypto.BCCryptoHelper;
 import com.helger.as2lib.exception.CertificateNotFoundException;
 import com.helger.as2lib.exception.KeyNotFoundException;
 import com.helger.as2lib.message.AS2Message;
@@ -94,7 +96,7 @@ public final class AS2Util
     aMdn.setHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
     // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
     aMdn.setHeader (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aMdn.setHeader (CAS2Header.HEADER_SERVER, CInfo.NAME_VERSION);
+    aMdn.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
     aMdn.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aMdn.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
     aMdn.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
@@ -116,7 +118,7 @@ public final class AS2Util
     }
     aMdn.setText (AbstractParameterParser.parse (sText, new MessageParameters (aMsg)));
     aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
-                       CInfo.NAME_VERSION +
+                       CAS2Info.NAME_VERSION +
                            "@" +
                            aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
                            ":" +

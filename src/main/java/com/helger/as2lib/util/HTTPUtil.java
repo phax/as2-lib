@@ -46,13 +46,19 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IMessage;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.StreamUtils;
 
-public class HTTPUtil
+public final class HTTPUtil
 {
   public static final String MA_HTTP_REQ_TYPE = "HTTP_REQUEST_TYPE";
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
 
+  private HTTPUtil ()
+  {}
+
+  @Nonnull
+  @Nonempty
   public static String getHTTPResponseMessage (final int nResponseCode)
   {
     String sMsg;

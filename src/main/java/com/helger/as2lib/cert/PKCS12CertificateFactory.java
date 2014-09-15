@@ -79,6 +79,9 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   private KeyStore m_aKeyStore;
 
+  public PKCS12CertificateFactory ()
+  {}
+
   @Nonnull
   public String getAlias (@Nonnull final Partnership aPartnership,
                           @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
@@ -171,11 +174,6 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   public String getFilename () throws InvalidParameterException
   {
     return getAttributeAsStringRequired (PARAM_FILENAME);
-  }
-
-  public void setKeyStore (@Nullable final KeyStore aKeyStore)
-  {
-    m_aKeyStore = aKeyStore;
   }
 
   @Nullable
