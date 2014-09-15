@@ -58,6 +58,7 @@ import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.lang.CGStringHelper;
 
 public abstract class AbstractNetModule extends AbstractReceiverModule
@@ -111,7 +112,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   @Nonnull
   protected abstract INetModuleHandler getHandler ();
 
-  public void handleError (final IMessage aMsg, final OpenAS2Exception aSrcEx)
+  public void handleError (@Nonnull final IMessage aMsg, final OpenAS2Exception aSrcEx)
   {
     aSrcEx.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
     aSrcEx.terminate ();
@@ -130,6 +131,11 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       final FileOutputStream aFOS = new FileOutputStream (aMsgFile);
 
       aFOS.write (sMsgText.getBytes ());
+
+      // Enable this line, to also store the body of the source message
+      if (false)
+        StreamUtils.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
+
       aFOS.close ();
 
       // make sure an error of this event is logged
@@ -142,7 +148,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.terminate ();
     }
-    catch (final IOException ex)
+    catch (final Exception ex)
     {
       final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
