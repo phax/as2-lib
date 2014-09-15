@@ -38,7 +38,7 @@ import java.security.KeyStore;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.util.ICryptoHelper;
+import com.helger.as2lib.crypto.ICryptoHelper;
 import com.helger.commons.io.streams.StreamUtils;
 
 public final class KeyStoreReader

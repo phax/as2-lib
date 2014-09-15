@@ -87,7 +87,6 @@ import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.util.encoders.Base64;
 
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.ICryptoHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
