@@ -97,8 +97,8 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   public String toString ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("MDN From:").append (getPartnership ().getAllSenderIDs ());
-    aSB.append ("To:").append (getPartnership ().getAllReceiverIDs ());
+    aSB.append ("MDN From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
+    aSB.append ("To:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
 
     aSB.append ("\r\nHeaders:{");
     final Enumeration <?> aHeaders = getHeaders ().getAllHeaders ();
@@ -112,8 +112,8 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
     aSB.append ("}")
        .append ("\r\nAttributes:")
-       .append (getAllAttributes ())
-       .append ("\r\nText: \r\n")
+       .append (getAllAttributes ().getAllAttributes ())
+       .append ("\r\nText:\r\n")
        .append (getText ())
        .append ("\r\n");
     return aSB.toString ();

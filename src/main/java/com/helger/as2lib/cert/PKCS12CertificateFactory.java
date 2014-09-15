@@ -81,6 +81,23 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   public PKCS12CertificateFactory ()
   {}
 
+  @Override
+  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  {
+    super.initDynamicComponent (aSession, aOptions);
+
+    try
+    {
+      m_aKeyStore = AS2Util.getCryptoHelper ().createNewKeyStore ();
+    }
+    catch (final Exception ex)
+    {
+      throw new WrappedOpenAS2Exception (ex);
+    }
+
+    load (getFilename (), getPassword ());
+  }
+
   @Nonnull
   public String getAlias (@Nonnull final Partnership aPartnership,
                           @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
@@ -291,23 +308,6 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     {
       throw new WrappedOpenAS2Exception (ex);
     }
-  }
-
-  @Override
-  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
-  {
-    super.initDynamicComponent (aSession, aOptions);
-
-    try
-    {
-      m_aKeyStore = AS2Util.getCryptoHelper ().getKeyStore ();
-    }
-    catch (final Exception ex)
-    {
-      throw new WrappedOpenAS2Exception (ex);
-    }
-
-    load (getFilename (), getPassword ());
   }
 
   public void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception

@@ -131,7 +131,8 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     final ASN1ObjectIdentifier aMICAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sDigest);
 
-    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), "BC");
+    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (),
+                                                                    BouncyCastleProvider.PROVIDER_NAME);
 
     // convert the Mime data to a byte array, then to an InputStream
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
@@ -187,7 +188,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aKey).setProvider ("BC"));
+    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aKey).setProvider (BouncyCastleProvider.PROVIDER_NAME));
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
@@ -202,9 +203,10 @@ public final class BCCryptoHelper implements ICryptoHelper
     final ASN1ObjectIdentifier aEncAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm);
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
-    aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider ("BC"));
+    aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (BouncyCastleProvider.PROVIDER_NAME));
 
-    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider ("BC").build ();
+    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                  .build ();
     final MimeBodyPart aEncData = aGen.generate (aPart, aEncryptor);
     return aEncData;
   }
@@ -244,7 +246,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // adding the smime attributes above to the signed attributes that
     // will be generated as part of the signature. The encryption algorithm
     // used is taken from the key - in this RSA with PKCS1Padding
-    aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider ("BC")
+    aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
                                                                             .build ("SHA1withRSA", aPrivKey, aX509Cert));
 
@@ -274,7 +276,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     for (final SignerInformation aSignerInfo : (Collection <SignerInformation>) aSignedPart.getSignerInfos ()
                                                                                            .getSigners ())
-      if (!aSignerInfo.verify (aX509Cert, "BC"))
+      if (!aSignerInfo.verify (aX509Cert, BouncyCastleProvider.PROVIDER_NAME))
         throw new SignatureException ("Verification failed");
 
     return aSignedPart.getContent ();
@@ -302,15 +304,15 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public KeyStore getKeyStore () throws KeyStoreException, NoSuchProviderException
+  public KeyStore createNewKeyStore () throws KeyStoreException, NoSuchProviderException
   {
-    return KeyStore.getInstance ("PKCS12", "BC");
+    return KeyStore.getInstance ("PKCS12", BouncyCastleProvider.PROVIDER_NAME);
   }
 
   @Nonnull
   public KeyStore loadKeyStore (@Nullable final InputStream aIS, @Nonnull final char [] aPassword) throws Exception
   {
-    final KeyStore aKeyStore = getKeyStore ();
+    final KeyStore aKeyStore = createNewKeyStore ();
     if (aIS != null)
       aKeyStore.load (aIS, aPassword);
     return aKeyStore;

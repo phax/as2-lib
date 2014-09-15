@@ -45,7 +45,7 @@ public interface ICryptoHelper
   boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
 
   @Nonnull
-  KeyStore getKeyStore () throws Exception;
+  KeyStore createNewKeyStore () throws Exception;
 
   @Nonnull
   KeyStore loadKeyStore (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws Exception;
