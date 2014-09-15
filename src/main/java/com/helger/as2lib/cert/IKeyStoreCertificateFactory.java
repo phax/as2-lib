@@ -34,7 +34,10 @@ package com.helger.as2lib.cert;
 
 import java.security.KeyStore;
 
+import javax.annotation.Nonnull;
+
 public interface IKeyStoreCertificateFactory extends ICertificateFactory
 {
+  @Nonnull
   KeyStore getKeyStore ();
 }

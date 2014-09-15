@@ -59,7 +59,7 @@ public final class HTTPUtil
 
   @Nonnull
   @Nonempty
-  public static String getHTTPResponseMessage (final int nResponseCode)
+  private static String _getHTTPResponseMessage (final int nResponseCode)
   {
     String sMsg;
     switch (nResponseCode)
@@ -197,7 +197,7 @@ public final class HTTPUtil
     byte [] aData = null;
     // Get the stream and read in the HTTP request and headers
     final InputStream aIS = StreamUtils.getBuffered (aSocket.getInputStream ());
-    final String [] aRequest = readRequest (aIS);
+    final String [] aRequest = _readRequest (aIS);
     aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
     aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
     aMsg.setHeaders (new InternetHeaders (aIS));
@@ -273,7 +273,7 @@ public final class HTTPUtil
   }
 
   @Nonnull
-  public static String [] readRequest (@Nonnull final InputStream aIS) throws IOException
+  private static String [] _readRequest (@Nonnull final InputStream aIS) throws IOException
   {
     int nByteBuf = aIS.read ();
     final StringBuilder aSB = new StringBuilder ();
@@ -313,7 +313,7 @@ public final class HTTPUtil
                                        final int nResponseCode,
                                        final boolean bHasData) throws IOException
   {
-    final String sMsg = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + "\r\n";
+    final String sMsg = Integer.toString (nResponseCode) + " " + _getHTTPResponseMessage (nResponseCode) + "\r\n";
     aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
     if (!bHasData)
     {

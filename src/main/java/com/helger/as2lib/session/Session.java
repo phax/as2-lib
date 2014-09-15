@@ -99,19 +99,19 @@ public class Session implements ISession
   @Nonnull
   public final ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
   {
-    return (ICertificateFactory) getComponent (ICertificateFactory.COMPID_CERTIFICATE_FACTORY);
+    return (ICertificateFactory) getComponent (ICertificateFactory.COMPONENT_ID_CERTIFICATE_FACTORY);
   }
 
   @Nonnull
   public final IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException
   {
-    return (IPartnershipFactory) getComponent (IPartnershipFactory.COMPID_PARTNERSHIP_FACTORY);
+    return (IPartnershipFactory) getComponent (IPartnershipFactory.COMPONENT_ID_PARTNERSHIP_FACTORY);
   }
 
   @Nonnull
   public final IMessageProcessor getProcessor () throws ComponentNotFoundException
   {
-    return (IMessageProcessor) getComponent (IMessageProcessor.COMPID_MESSAGE_PROCESSOR);
+    return (IMessageProcessor) getComponent (IMessageProcessor.COMPONEND_ID_MESSAGE_PROCESSOR);
   }
 
   @Override

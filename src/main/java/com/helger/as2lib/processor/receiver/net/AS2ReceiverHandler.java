@@ -329,7 +329,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           aOS.flush ();
           aOS.close ();
           s_aLogger.info ("setup to send asynch MDN [" +
-                          aDisposition.toString () +
+                          aDisposition.getAsString () +
                           "] " +
                           getClientInfo (aSocket) +
                           aMsg.getLoggingText ());
@@ -362,7 +362,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // Save sent MDN for later examination
         m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
         s_aLogger.info ("sent MDN [" +
-                        aDisposition.toString () +
+                        aDisposition.getAsString () +
                         "] " +
                         getClientInfo (aSocket) +
                         aMsg.getLoggingText ());

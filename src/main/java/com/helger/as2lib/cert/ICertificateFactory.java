@@ -35,6 +35,9 @@ package com.helger.as2lib.cert;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
@@ -42,13 +45,17 @@ import com.helger.as2lib.message.IMessageMDN;
 
 public interface ICertificateFactory extends IDynamicComponent
 {
-  String COMPID_CERTIFICATE_FACTORY = "certificatefactory";
+  String COMPONENT_ID_CERTIFICATE_FACTORY = "certificatefactory";
 
-  X509Certificate getCertificate (IMessage aMsg, ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+  @Nonnull
+  X509Certificate getCertificate (@Nonnull IMessage aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
-  PrivateKey getPrivateKey (IMessage aMsg, X509Certificate aCert) throws OpenAS2Exception;
+  @Nonnull
+  PrivateKey getPrivateKey (@Nullable IMessage aMsg, @Nullable X509Certificate aCert) throws OpenAS2Exception;
 
-  X509Certificate getCertificate (IMessageMDN aMsg, ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+  @Nonnull
+  X509Certificate getCertificate (@Nonnull IMessageMDN aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
-  PrivateKey getPrivateKey (IMessageMDN aMsg, X509Certificate aCert) throws OpenAS2Exception;
+  @Nonnull
+  PrivateKey getPrivateKey (@Nullable IMessageMDN aMsg, @Nullable X509Certificate aCert) throws OpenAS2Exception;
 }

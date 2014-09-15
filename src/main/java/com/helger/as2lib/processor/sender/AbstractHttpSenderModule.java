@@ -75,14 +75,20 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     }
   }
 
-  // Copy headers from an Http connection to an InternetHeaders object
+  /**
+   * Copy headers from an Http connection to an InternetHeaders object
+   *
+   * @param aConn
+   *        Connection
+   * @param aHeaders
+   *        Headers
+   */
   protected void copyHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final InternetHeaders aHeaders)
   {
     for (final Map.Entry <String, List <String>> aConnHeader : aConn.getHeaderFields ().entrySet ())
     {
       final String sHeaderName = aConnHeader.getKey ();
       if (sHeaderName != null)
-      {
         for (final String sValue : aConnHeader.getValue ())
         {
           if (aHeaders.getHeader (sHeaderName) == null)
@@ -90,7 +96,6 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
           else
             aHeaders.addHeader (sHeaderName, sValue);
         }
-      }
     }
   }
 }

@@ -144,8 +144,8 @@ public final class IOUtil
   @Nonnull
   public static File getUniqueFile (@Nonnull final File aDir, @Nullable final String sFilename)
   {
-    int nCounter = -1;
     final String sBaseFilename = FilenameHelper.getAsSecureValidFilename (sFilename);
+    int nCounter = -1;
     while (true)
     {
       final File aTest = new File (aDir, nCounter == -1 ? sBaseFilename : sBaseFilename +
@@ -203,15 +203,16 @@ public final class IOUtil
       aRealDestFile = getUniqueFile (aRealDestFile.getAbsoluteFile ().getParentFile (), aRealDestFile.getName ());
     }
 
-    final FileIOError aIOErr = s_aFOM.copyFile (aSrc, aRealDestFile);
+    // Copy
+    FileIOError aIOErr = s_aFOM.copyFile (aSrc, aRealDestFile);
     if (aIOErr.isFailure ())
       throw new IOException ("Copy failed: " + aIOErr.toString ());
 
-    // if (!new File(file.getAbsolutePath()).delete()) { // do this if file
-    // deletion always fails, may help
-    if (!aSrc.delete ())
+    // Delete old
+    aIOErr = s_aFOM.deleteFile (aSrc);
+    if (aIOErr.isFailure ())
     {
-      aRealDestFile.delete ();
+      s_aFOM.deleteFile (aRealDestFile);
       throw new IOException ("Move failed, unable to delete " + aSrc);
     }
     return aRealDestFile;

@@ -128,7 +128,7 @@ public final class AS2Util
     aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
                        "rfc822; " + aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
     aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
-    aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.toString ());
+    aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
     final DispositionOptions aDispOptions = new DispositionOptions (aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS));
     String sMIC = null;

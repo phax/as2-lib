@@ -185,13 +185,13 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
       try
       {
-        new DispositionType (sDisposition).validate ();
+        DispositionType.parse (sDisposition).validate ();
       }
       catch (final DispositionException ex)
       {
         ex.setText (aMsg.getMDN ().getText ());
 
-        if ((ex.getDisposition () != null) && ex.getDisposition ().isWarning ())
+        if (ex.getDisposition () != null && ex.getDisposition ().isWarning ())
         {
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
@@ -235,9 +235,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       // use original message id. to open the pending information file
       // from pendinginfo folder.
       final String ORIG_MESSAGEID = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-      final String pendinginfofile = getModule ().getSession ()
-                                                 .getComponent ("processor")
-                                                 .getAttributeAsString ("pendingmdninfo") +
+      final String pendinginfofile = getModule ().getSession ().getProcessor ().getAttributeAsString ("pendingmdninfo") +
                                      "/" +
                                      ORIG_MESSAGEID.substring (1, ORIG_MESSAGEID.length () - 1);
       final BufferedReader pendinginfo = new BufferedReader (new FileReader (pendinginfofile));
@@ -278,7 +276,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       s_aLogger.info ("delete pendinginfo file : " +
                       fpendinginfofile.getName () +
                       " from pending folder : " +
-                      getModule ().getSession ().getComponent ("processor").getAttributeAsString ("pendingmdn") +
+                      getModule ().getSession ().getProcessor ().getAttributeAsString ("pendingmdn") +
                       msg.getLoggingText ());
 
       fpendinginfofile.delete ();

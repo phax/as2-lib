@@ -52,7 +52,7 @@ import com.helger.commons.annotations.ReturnsMutableCopy;
  */
 public interface IMessageProcessor extends IDynamicComponent
 {
-  String COMPID_MESSAGE_PROCESSOR = "message-processor";
+  String COMPONEND_ID_MESSAGE_PROCESSOR = "message-processor";
 
   void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
 

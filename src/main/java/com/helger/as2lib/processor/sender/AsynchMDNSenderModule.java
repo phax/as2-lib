@@ -108,7 +108,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty (CAS2Header.HEADER_FROM, aMsg.getHeader (CAS2Header.HEADER_FROM));
   }
 
-  private void _sendAsyncMDN (final AS2Message aMsg, final Map <String, Object> aOptions) throws OpenAS2Exception
+  private void _sendAsyncMDN (@Nonnull final AS2Message aMsg, @Nonnull final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     s_aLogger.info ("Async MDN submitted" + aMsg.getLoggingText ());
     final DispositionType aDisposition = new DispositionType ("automatic-action", "MDN-sent-automatically", "processed");
@@ -155,11 +155,11 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
             nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
-          s_aLogger.error ("sent AsyncMDN [" + aDisposition.toString () + "] Fail " + aMsg.getLoggingText ());
+          s_aLogger.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
           throw new HttpResponseException (sUrl.toString (), nResponseCode, aConn.getResponseMessage ());
         }
 
-        s_aLogger.info ("sent AsyncMDN [" + aDisposition.toString () + "] OK " + aMsg.getLoggingText ());
+        s_aLogger.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
 
         // log & store mdn into backup folder.
         ((ISession) aOptions.get ("session")).getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);

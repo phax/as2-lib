@@ -75,7 +75,6 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 {
   public static final String PARAM_FILENAME = "filename";
   public static final String PARAM_PASSWORD = "password";
-  public static final String PARAM_INTERVAL = "interval";
 
   private KeyStore m_aKeyStore;
 
@@ -176,9 +175,11 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     return getAttributeAsStringRequired (PARAM_FILENAME);
   }
 
-  @Nullable
+  @Nonnull
   public KeyStore getKeyStore ()
   {
+    if (m_aKeyStore == null)
+      throw new IllegalStateException ("No keystore present");
     return m_aKeyStore;
   }
 

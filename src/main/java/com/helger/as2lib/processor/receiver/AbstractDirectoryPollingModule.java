@@ -239,8 +239,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
        * attribute "status" then copy the transmitted file to pending folder and
        * wait for the receiver to make another HTTP call to post AsyncMDN
        */
-      if (aMsg.getAttribute (CFileAttribute.MA_STATUS) != null &&
-          aMsg.getAttribute (CFileAttribute.MA_STATUS).equals (CFileAttribute.MA_PENDING))
+      if (CFileAttribute.MA_PENDING.equals (aMsg.getAttribute (CFileAttribute.MA_STATUS)))
       {
         final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_PENDING),
                                             aMsg.getAttribute (CFileAttribute.MA_PENDINGFILE));
@@ -260,13 +259,13 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
       // If the Sent Directory option is set, move the transmitted file to
       // the sent directory
-
       if (getAttributeAsString (PARAM_SENT_DIRECTORY) != null)
       {
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_SENT_DIRECTORY)), aFile.getName ());
+          aSentFile = new File (IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_SENT_DIRECTORY)),
+                                aFile.getName ());
           aSentFile = IOUtil.moveFile (aFile, aSentFile, false, true);
 
           s_aLogger.info ("moved " +

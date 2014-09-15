@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor.sender;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,6 +71,7 @@ import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionOptions;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.IOUtil;
+import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.string.StringParser;
@@ -302,7 +302,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       try
       {
-        new DispositionType (sDisposition).validate ();
+        DispositionType.parse (sDisposition).validate ();
       }
       catch (final DispositionException ex)
       {
@@ -474,15 +474,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    */
   protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws WrappedOpenAS2Exception
   {
+    OutputStream aFOS = null;
     try
     {
-      final String pendingFolder = getSession ().getComponent ("processor").getAttributeAsString ("pendingmdninfo");
+      final String pendingFolder = getSession ().getProcessor ().getAttributeAsString ("pendingmdninfo");
 
-      final FileOutputStream aFOS = new FileOutputStream (pendingFolder +
-                                                          "/" +
-                                                          aMsg.getMessageID ().substring (1,
-                                                                                          aMsg.getMessageID ()
-                                                                                              .length () - 1));
+      aFOS = FileUtils.getOutputStream (pendingFolder +
+                                        "/" +
+                                        aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1));
       aFOS.write ((sMIC + "\n").getBytes ());
 
       if (s_aLogger.isDebugEnabled ())
@@ -491,7 +490,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // input pending folder & original outgoing file name to get and
       // unique file name
       // in order to avoid file overwritting.
-      final String sPendingFile = getSession ().getComponent ("processor").getAttributeAsString ("pendingmdn") +
+      final String sPendingFile = getSession ().getProcessor ().getAttributeAsString ("pendingmdn") +
                                   "/" +
                                   aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1);
 
@@ -499,7 +498,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                       sPendingFile +
                       aMsg.getLoggingText ());
       aFOS.write (sPendingFile.getBytes ());
-      aFOS.close ();
       aMsg.setAttribute (CFileAttribute.MA_PENDINGFILE, sPendingFile);
       aMsg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_PENDING);
     }
@@ -508,6 +506,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
+    }
+    finally
+    {
+      StreamUtils.close (aFOS);
     }
   }
 }

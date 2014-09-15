@@ -51,7 +51,7 @@ public class DispositionException extends OpenAS2Exception
                                @Nullable final String sText,
                                @Nullable final Throwable aCause)
   {
-    super (aDisposition.toString (), aCause);
+    super (aDisposition.getAsString (), aCause);
     m_aDisposition = aDisposition;
     m_sText = sText;
   }
