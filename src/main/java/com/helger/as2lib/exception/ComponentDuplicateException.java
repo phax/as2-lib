@@ -42,11 +42,11 @@ import com.helger.commons.annotations.Nonempty;
  * 
  * @author Philip Helger
  */
-public class DuplicateComponentException extends OpenAS2Exception
+public class ComponentDuplicateException extends OpenAS2Exception
 {
   private final String m_sComponentID;
 
-  public DuplicateComponentException (@Nonnull @Nonempty final String sComponentID)
+  public ComponentDuplicateException (@Nonnull @Nonempty final String sComponentID)
   {
     super (sComponentID);
     m_sComponentID = sComponentID;

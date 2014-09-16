@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
-import com.helger.as2lib.exception.DuplicateComponentException;
+import com.helger.as2lib.exception.ComponentDuplicateException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.commons.annotations.Nonempty;
@@ -67,7 +67,7 @@ public interface ISession
    *        component to register
    * @see IDynamicComponent
    */
-  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent) throws DuplicateComponentException;
+  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent) throws ComponentDuplicateException;
 
   /**
    * Gets the <code>Component</code> currently registered with an ID

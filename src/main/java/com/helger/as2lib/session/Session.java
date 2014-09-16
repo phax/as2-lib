@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
-import com.helger.as2lib.exception.DuplicateComponentException;
+import com.helger.as2lib.exception.ComponentDuplicateException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
@@ -77,26 +77,26 @@ public class Session implements ISession
   }
 
   public final void addComponent (@Nonnull @Nonempty final String sComponentID,
-                                  @Nonnull final IDynamicComponent aComponent) throws DuplicateComponentException
+                                  @Nonnull final IDynamicComponent aComponent) throws ComponentDuplicateException
   {
     ValueEnforcer.notEmpty (sComponentID, "ComponentID");
     ValueEnforcer.notNull (aComponent, "Component");
     if (m_aComponents.containsKey (sComponentID))
-      throw new DuplicateComponentException (sComponentID);
+      throw new ComponentDuplicateException (sComponentID);
     m_aComponents.put (sComponentID, aComponent);
   }
 
-  public void setCertificateFactory (@Nonnull final ICertificateFactory aCertFactory) throws DuplicateComponentException
+  public void setCertificateFactory (@Nonnull final ICertificateFactory aCertFactory) throws ComponentDuplicateException
   {
     addComponent (COMPONENT_ID_CERTIFICATE_FACTORY, aCertFactory);
   }
 
-  public void setPartnershipFactory (@Nonnull final IPartnershipFactory aPartnershipFactory) throws DuplicateComponentException
+  public void setPartnershipFactory (@Nonnull final IPartnershipFactory aPartnershipFactory) throws ComponentDuplicateException
   {
     addComponent (COMPONENT_ID_PARTNERSHIP_FACTORY, aPartnershipFactory);
   }
 
-  public void setMessageProcessor (@Nonnull final IMessageProcessor aMsgProcessor) throws DuplicateComponentException
+  public void setMessageProcessor (@Nonnull final IMessageProcessor aMsgProcessor) throws ComponentDuplicateException
   {
     addComponent (COMPONENT_ID_MESSAGE_PROCESSOR, aMsgProcessor);
   }

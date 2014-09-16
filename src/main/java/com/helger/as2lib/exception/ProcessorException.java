@@ -38,6 +38,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.processor.IMessageProcessor;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.streams.NonBlockingStringWriter;
@@ -47,12 +48,12 @@ public class ProcessorException extends OpenAS2Exception
   private final IMessageProcessor m_aProcessor;
   private final List <Throwable> m_aCauses;
 
-  public ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
+  public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
+                             @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    if (aProcessor == null)
-      throw new NullPointerException ("processor");
-    if (ContainerHelper.isEmpty (aCauses))
-      throw new IllegalArgumentException ("causes may be empty");
+    ValueEnforcer.notNull (aProcessor, "Processor");
+    ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
+
     m_aProcessor = aProcessor;
     m_aCauses = ContainerHelper.newList (aCauses);
   }
@@ -76,10 +77,10 @@ public class ProcessorException extends OpenAS2Exception
     final NonBlockingStringWriter aStrWriter = new NonBlockingStringWriter ();
     final PrintWriter aWriter = new PrintWriter (aStrWriter);
     aWriter.print (super.getMessage ());
-    for (final Throwable e : m_aCauses)
+    for (final Throwable aCause : m_aCauses)
     {
       aWriter.println ();
-      e.printStackTrace (aWriter);
+      aCause.printStackTrace (aWriter);
     }
     aWriter.flush ();
     return aStrWriter.getAsString ();
