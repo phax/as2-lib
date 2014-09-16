@@ -39,6 +39,11 @@ import java.util.Map;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * Certificate factory with support for alias handling
+ * 
+ * @author unknown
+ */
 public interface IAliasedCertificateFactory extends ICertificateFactory
 {
   X509Certificate getCertificate (String sAlias) throws OpenAS2Exception;

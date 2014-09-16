@@ -173,7 +173,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
       aMsg.setMessageID (aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
-      getModule ().getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+      getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
 
       // check if the mic (message integrity check) is correct
 
@@ -235,7 +235,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       // use original message id. to open the pending information file
       // from pendinginfo folder.
       final String ORIG_MESSAGEID = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-      final String pendinginfofile = getModule ().getSession ().getProcessor ().getAttributeAsString ("pendingmdninfo") +
+      final String pendinginfofile = getModule ().getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdninfo") +
                                      "/" +
                                      ORIG_MESSAGEID.substring (1, ORIG_MESSAGEID.length () - 1);
       final BufferedReader pendinginfo = new BufferedReader (new FileReader (pendinginfofile));
@@ -276,7 +276,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       s_aLogger.info ("delete pendinginfo file : " +
                       fpendinginfofile.getName () +
                       " from pending folder : " +
-                      getModule ().getSession ().getProcessor ().getAttributeAsString ("pendingmdn") +
+                      getModule ().getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdn") +
                       msg.getLoggingText ());
 
       fpendinginfofile.delete ();

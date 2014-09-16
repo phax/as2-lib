@@ -34,6 +34,11 @@ package com.helger.as2lib.cert;
 
 import com.helger.as2lib.AbstractDynamicComponent;
 
+/**
+ * Abstract implementation of {@link ICertificateFactory}.
+ * 
+ * @author Philip Helger
+ */
 public abstract class AbstractCertificateFactory extends AbstractDynamicComponent implements ICertificateFactory
 {
   /* empty */

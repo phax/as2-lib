@@ -199,7 +199,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
 
         final Map <String, Object> aOptions = new HashMap <String, Object> ();
         aOptions.put (IProcessorSenderModule.SENDER_OPTION_RETRIES, sRetries);
-        getSession ().getProcessor ().handle (sMethod, aMsg, aOptions);
+        getSession ().getMessageProcessor ().handle (sMethod, aMsg, aOptions);
 
         if (IOUtil.getFileOperationManager ().deleteFile (aFile).isFailure ())
         {

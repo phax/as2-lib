@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.ComponentNotFoundException;
+import com.helger.as2lib.exception.DuplicateComponentException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
@@ -53,6 +54,10 @@ import com.helger.commons.string.ToStringGenerator;
 
 public class Session implements ISession
 {
+  public static final String COMPONENT_ID_CERTIFICATE_FACTORY = "certificatefactory";
+  public static final String COMPONENT_ID_PARTNERSHIP_FACTORY = "partnershipfactory";
+  public static final String COMPONENT_ID_MESSAGE_PROCESSOR = "message-processor";
+
   private final Map <String, IDynamicComponent> m_aComponents = new HashMap <String, IDynamicComponent> ();
 
   /**
@@ -72,11 +77,28 @@ public class Session implements ISession
   }
 
   public final void addComponent (@Nonnull @Nonempty final String sComponentID,
-                                  @Nonnull final IDynamicComponent aComponent)
+                                  @Nonnull final IDynamicComponent aComponent) throws DuplicateComponentException
   {
     ValueEnforcer.notEmpty (sComponentID, "ComponentID");
     ValueEnforcer.notNull (aComponent, "Component");
+    if (m_aComponents.containsKey (sComponentID))
+      throw new DuplicateComponentException (sComponentID);
     m_aComponents.put (sComponentID, aComponent);
+  }
+
+  public void setCertificateFactory (@Nonnull final ICertificateFactory aCertFactory) throws DuplicateComponentException
+  {
+    addComponent (COMPONENT_ID_CERTIFICATE_FACTORY, aCertFactory);
+  }
+
+  public void setPartnershipFactory (@Nonnull final IPartnershipFactory aPartnershipFactory) throws DuplicateComponentException
+  {
+    addComponent (COMPONENT_ID_PARTNERSHIP_FACTORY, aPartnershipFactory);
+  }
+
+  public void setMessageProcessor (@Nonnull final IMessageProcessor aMsgProcessor) throws DuplicateComponentException
+  {
+    addComponent (COMPONENT_ID_MESSAGE_PROCESSOR, aMsgProcessor);
   }
 
   @Nonnull
@@ -99,19 +121,19 @@ public class Session implements ISession
   @Nonnull
   public final ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
   {
-    return (ICertificateFactory) getComponent (ICertificateFactory.COMPONENT_ID_CERTIFICATE_FACTORY);
+    return (ICertificateFactory) getComponent (COMPONENT_ID_CERTIFICATE_FACTORY);
   }
 
   @Nonnull
   public final IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException
   {
-    return (IPartnershipFactory) getComponent (IPartnershipFactory.COMPONENT_ID_PARTNERSHIP_FACTORY);
+    return (IPartnershipFactory) getComponent (COMPONENT_ID_PARTNERSHIP_FACTORY);
   }
 
   @Nonnull
-  public final IMessageProcessor getProcessor () throws ComponentNotFoundException
+  public final IMessageProcessor getMessageProcessor () throws ComponentNotFoundException
   {
-    return (IMessageProcessor) getComponent (IMessageProcessor.COMPONEND_ID_MESSAGE_PROCESSOR);
+    return (IMessageProcessor) getComponent (COMPONENT_ID_MESSAGE_PROCESSOR);
   }
 
   @Override

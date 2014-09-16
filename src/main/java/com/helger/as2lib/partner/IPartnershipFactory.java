@@ -54,8 +54,6 @@ import com.helger.commons.state.EChange;
  */
 public interface IPartnershipFactory extends IDynamicComponent
 {
-  String COMPONENT_ID_PARTNERSHIP_FACTORY = "partnershipfactory";
-
   void addPartner (@Nonnull StringMap aNewPartner) throws OpenAS2Exception;
 
   @Nonnull

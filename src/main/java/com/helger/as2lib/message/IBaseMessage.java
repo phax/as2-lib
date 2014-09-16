@@ -41,6 +41,7 @@ import javax.mail.internet.InternetHeaders;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
+import com.helger.commons.IHasStringRepresentation;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.annotations.ReturnsMutableObject;
 
@@ -49,7 +50,7 @@ import com.helger.commons.annotations.ReturnsMutableObject;
  *
  * @author Philip Helger
  */
-public interface IBaseMessage extends Serializable
+public interface IBaseMessage extends IHasStringRepresentation, Serializable
 {
   @Nullable
   String getAttribute (@Nullable String sKey);
@@ -73,7 +74,7 @@ public interface IBaseMessage extends Serializable
 
   /**
    * Set a generic header. If it already exist it will be overwritten.
-   * 
+   *
    * @param sKey
    *        Header name
    * @param sValue
@@ -84,7 +85,7 @@ public interface IBaseMessage extends Serializable
 
   /**
    * Add a generic header
-   * 
+   *
    * @param sKey
    *        Header name
    * @param sValue

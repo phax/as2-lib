@@ -268,7 +268,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       try
       {
-        getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
       catch (final ComponentNotFoundException ex)
       {
@@ -477,7 +477,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     OutputStream aFOS = null;
     try
     {
-      final String pendingFolder = getSession ().getProcessor ().getAttributeAsString ("pendingmdninfo");
+      final String pendingFolder = getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdninfo");
 
       aFOS = FileUtils.getOutputStream (pendingFolder +
                                         "/" +
@@ -490,7 +490,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // input pending folder & original outgoing file name to get and
       // unique file name
       // in order to avoid file overwritting.
-      final String sPendingFile = getSession ().getProcessor ().getAttributeAsString ("pendingmdn") +
+      final String sPendingFile = getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdn") +
                                   "/" +
                                   aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1);
 

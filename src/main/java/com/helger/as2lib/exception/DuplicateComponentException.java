@@ -30,15 +30,32 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.cert;
+package com.helger.as2lib.exception;
+
+import javax.annotation.Nonnull;
+
+import com.helger.commons.annotations.Nonempty;
 
 /**
- * Determine the different certificate partnership types
+ * Exception to be thrown if a component with the specified ID is already
+ * registered.
  * 
  * @author Philip Helger
  */
-public enum ECertificatePartnershipType
+public class DuplicateComponentException extends OpenAS2Exception
 {
-  SENDER,
-  RECEIVER;
+  private final String m_sComponentID;
+
+  public DuplicateComponentException (@Nonnull @Nonempty final String sComponentID)
+  {
+    super (sComponentID);
+    m_sComponentID = sComponentID;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getComponentID ()
+  {
+    return m_sComponentID;
+  }
 }

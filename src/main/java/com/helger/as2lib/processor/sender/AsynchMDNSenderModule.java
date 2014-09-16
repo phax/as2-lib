@@ -162,7 +162,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         s_aLogger.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
 
         // log & store mdn into backup folder.
-        ((ISession) aOptions.get ("session")).getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        ((ISession) aOptions.get ("session")).getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
       finally
       {
@@ -196,6 +196,6 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     final Map <String, Object> aOptions = new HashMap <String, Object> ();
     aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
     aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    getSession ().getProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
+    getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
   }
 }

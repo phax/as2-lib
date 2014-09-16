@@ -44,6 +44,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
 
@@ -93,8 +94,9 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     m_sText = sText;
   }
 
-  @Override
-  public String toString ()
+  @Nonnull
+  @Nonempty
+  public String getAsString ()
   {
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ("MDN From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
@@ -117,6 +119,13 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
        .append (getText ())
        .append ("\r\n");
     return aSB.toString ();
+  }
+
+  @Override
+  @Deprecated
+  public String toString ()
+  {
+    return getAsString ();
   }
 
   @SuppressWarnings ("unchecked")

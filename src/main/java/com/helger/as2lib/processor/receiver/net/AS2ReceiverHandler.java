@@ -186,7 +186,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // Process the received message
         try
         {
-          m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
+          m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
         }
         catch (final OpenAS2Exception ex)
         {
@@ -333,7 +333,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                           "] " +
                           getClientInfo (aSocket) +
                           aMsg.getLoggingText ());
-          m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
+          m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
           return;
         }
 
@@ -360,7 +360,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         aOS.close ();
 
         // Save sent MDN for later examination
-        m_aReceiverModule.getSession ().getProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
         s_aLogger.info ("sent MDN [" +
                         aDisposition.getAsString () +
                         "] " +

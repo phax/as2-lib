@@ -232,7 +232,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
         throw new InvalidMessageException ("No Data");
 
       // Transmit the message
-      getSession ().getProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
+      getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
 
       /*
        * asynch mdn logic 2007-03-12 If the return status is pending in msg's

@@ -71,7 +71,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
     aOptions.put (IProcessorResenderModule.OPTION_RESEND_METHOD, sHow);
     aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
-    getSession ().getProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
+    getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
     return true;
   }
 }

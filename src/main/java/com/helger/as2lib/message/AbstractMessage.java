@@ -175,8 +175,9 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     return m_aHistory;
   }
 
-  @Override
-  public String toString ()
+  @Nonnull
+  @Nonempty
+  public String getAsString ()
   {
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
@@ -198,6 +199,13 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       aSB.append ("\nMDN:").append (aMDN.toString ());
 
     return aSB.toString ();
+  }
+
+  @Override
+  @Deprecated
+  public String toString ()
+  {
+    return getAsString ();
   }
 
   @SuppressWarnings ("unchecked")
