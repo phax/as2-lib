@@ -81,4 +81,7 @@ public interface IMessage extends IBaseMessage
   boolean isRequestingMDN ();
 
   boolean isRequestingAsynchMDN ();
+
+  @Deprecated
+  String toString ();
 }

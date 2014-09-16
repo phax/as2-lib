@@ -34,7 +34,10 @@ package com.helger.as2lib.exception;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.message.IMessage;
+import com.helger.commons.annotations.Nonempty;
 
 public class NoModuleException extends OpenAS2Exception
 {
@@ -44,7 +47,7 @@ public class NoModuleException extends OpenAS2Exception
 
   public NoModuleException (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    super (toString (sAction, aMsg, aOptions));
+    super (getAsString (sAction, aMsg, aOptions));
     m_sAction = sAction;
     m_aMsg = aMsg;
     m_aOptions = aOptions;
@@ -65,13 +68,21 @@ public class NoModuleException extends OpenAS2Exception
     return m_aOptions;
   }
 
-  @Override
-  public String toString ()
+  public String getAsString ()
   {
-    return toString (getAction (), getMsg (), getOptions ());
+    return getAsString (getAction (), getMsg (), getOptions ());
   }
 
-  protected static String toString (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  @Override
+  @Deprecated
+  public String toString ()
+  {
+    return getAsString ();
+  }
+
+  @Nonnull
+  @Nonempty
+  protected static String getAsString (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
     return "NoModuleException: Requested action: " + sAction + " Message: " + aMsg + " Options: " + aOptions;
   }

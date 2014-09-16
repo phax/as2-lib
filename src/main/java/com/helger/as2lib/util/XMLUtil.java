@@ -90,11 +90,11 @@ public final class XMLUtil
     {
       final String sName = eChild.getAttribute (sNodeKeyName);
       if (sName == null)
-        throw new OpenAS2Exception (eChild.toString () + " does not have key attribute: " + sNodeKeyName);
+        throw new OpenAS2Exception (eChild.getTagName () + " does not have key attribute: " + sNodeKeyName);
 
       final String sValue = eChild.getAttribute (sNodeValueName);
       if (sValue == null)
-        throw new OpenAS2Exception (eChild.toString () + " does not have value attribute: " + sNodeValueName);
+        throw new OpenAS2Exception (eChild.getTagName () + " does not have value attribute: " + sNodeValueName);
 
       ret.setAttribute (sName, sValue);
     }

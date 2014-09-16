@@ -65,7 +65,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   {
     final StringBuilder aSB = new StringBuilder ();
     final String sDateFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_DATE_FORMAT, DEFAULT_DATE_FORMAT);
-    aSB.append ("<OPENAS2-").append (DateUtil.getFormattedDateNow (sDateFormat));
+    aSB.append ("<PH-OPENAS2-").append (DateUtil.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
     aSB.append ('-').append (aRandomFormatter.format (VerySecureRandom.getInstance ().nextInt (10000)));

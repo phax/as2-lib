@@ -196,7 +196,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
     final IMessageMDN aMDN = getMDN ();
     if (aMDN != null)
-      aSB.append ("\nMDN:").append (aMDN.toString ());
+      aSB.append ("\nMDN:").append (aMDN.getAsString ());
 
     return aSB.toString ();
   }

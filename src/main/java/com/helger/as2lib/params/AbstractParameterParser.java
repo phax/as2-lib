@@ -131,7 +131,7 @@ public abstract class AbstractParameterParser
   @Nonnull
   public String format (@Nonnull final String sFormat) throws InvalidParameterException
   {
-    final StringBuilder aResult = new StringBuilder ();
+    final StringBuilder aSB = new StringBuilder ();
     for (int nNext = 0; nNext < sFormat.length (); ++nNext)
     {
       int nPrev = nNext;
@@ -140,13 +140,13 @@ public abstract class AbstractParameterParser
       nNext = sFormat.indexOf ('$', nPrev);
       if (nNext == -1)
       {
-        aResult.append (sFormat.substring (nPrev, sFormat.length ()));
+        aSB.append (sFormat.substring (nPrev, sFormat.length ()));
         break;
       }
 
       // Save text before $xxx$ sequence, if there is any
       if (nNext > nPrev)
-        aResult.append (sFormat.substring (nPrev, nNext));
+        aSB.append (sFormat.substring (nPrev, nNext));
 
       // Find end of $xxx$ sequence
       nPrev = nNext + 1;
@@ -156,12 +156,12 @@ public abstract class AbstractParameterParser
 
       // If we have just $$ then output $, else we have $xxx$, lookup xxx
       if (nNext == nPrev)
-        aResult.append ("$");
+        aSB.append ("$");
       else
-        aResult.append (getParameter (sFormat.substring (nPrev, nNext)));
+        aSB.append (getParameter (sFormat.substring (nPrev, nNext)));
     }
 
-    return aResult.toString ();
+    return aSB.toString ();
   }
 
   @Override

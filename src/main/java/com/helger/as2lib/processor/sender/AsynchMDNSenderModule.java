@@ -156,13 +156,15 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
           s_aLogger.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
-          throw new HttpResponseException (sUrl.toString (), nResponseCode, aConn.getResponseMessage ());
+          throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
         }
 
         s_aLogger.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
 
         // log & store mdn into backup folder.
-        ((ISession) aOptions.get ("session")).getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        ((ISession) aOptions.get ("session")).getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN,
+                                                                             aMsg,
+                                                                             null);
       }
       finally
       {

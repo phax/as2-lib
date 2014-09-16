@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.CertificateException;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
 
@@ -51,14 +52,12 @@ public class OpenAS2KeyStore implements ICertificateStore
 {
   private final KeyStore m_aKeyStore;
 
-  public OpenAS2KeyStore (@Nonnull final KeyStore keyStore)
+  public OpenAS2KeyStore (@Nonnull final KeyStore aKeyStore)
   {
-    if (keyStore == null)
-      throw new NullPointerException ("keyStore");
-
-    m_aKeyStore = keyStore;
+    m_aKeyStore = ValueEnforcer.notNull (aKeyStore, "KeyStore");
   }
 
+  @Nonnull
   public KeyStore getKeyStore ()
   {
     return m_aKeyStore;
@@ -79,32 +78,32 @@ public class OpenAS2KeyStore implements ICertificateStore
   }
 
   @Nullable
-  public Certificate getCertificate (final String alias) throws CertificateException
+  public Certificate getCertificate (final String sAlias) throws CertificateException
   {
     try
     {
-      return getKeyStore ().getCertificate (alias);
+      return getKeyStore ().getCertificate (sAlias);
     }
     catch (final KeyStoreException kse)
     {
-      throw new CertificateException ("Error getting certificate for alias: " + alias, kse);
+      throw new CertificateException ("Error getting certificate for alias: " + sAlias, kse);
     }
   }
 
-  public void setCertificate (final String alias, final Certificate cert) throws CertificateException
+  public void setCertificate (final String sAlias, final Certificate aCert) throws CertificateException
   {
     try
     {
-      getKeyStore ().setCertificateEntry (alias, cert);
+      getKeyStore ().setCertificateEntry (sAlias, aCert);
     }
     catch (final KeyStoreException kse)
     {
-      throw new CertificateException ("Error setting certificate: " + alias, kse);
+      throw new CertificateException ("Error setting certificate: " + sAlias, kse);
     }
   }
 
   @Nullable
-  public String getAlias (final Certificate cert) throws CertificateException
+  public String getAlias (@Nonnull final Certificate cert) throws CertificateException
   {
     try
     {
@@ -116,15 +115,15 @@ public class OpenAS2KeyStore implements ICertificateStore
     }
   }
 
-  public void removeCertificate (final String alias) throws CertificateException
+  public void removeCertificate (final String sAlias) throws CertificateException
   {
     try
     {
-      getKeyStore ().deleteEntry (alias);
+      getKeyStore ().deleteEntry (sAlias);
     }
     catch (final KeyStoreException kse)
     {
-      throw new CertificateException ("Error while removing certificate: " + alias, kse);
+      throw new CertificateException ("Error while removing certificate: " + sAlias, kse);
     }
   }
 
@@ -146,29 +145,29 @@ public class OpenAS2KeyStore implements ICertificateStore
   }
 
   @Nullable
-  public Key getKey (final String alias, final char [] password) throws CertificateException
+  public Key getKey (final String sAlias, final char [] aPassword) throws CertificateException
   {
     try
     {
-      return getKeyStore ().getKey (alias, password);
+      return getKeyStore ().getKey (sAlias, aPassword);
     }
     catch (final GeneralSecurityException gse)
     {
-      throw new CertificateException ("Error getting key for alias: " + alias, gse);
+      throw new CertificateException ("Error getting key for alias: " + sAlias, gse);
     }
   }
 
-  public void setKey (final String alias, final Key key, final char [] password) throws CertificateException
+  public void setKey (final String sAlias, final Key aKey, final char [] aPassword) throws CertificateException
   {
     final KeyStore ks = getKeyStore ();
     try
     {
-      final Certificate [] certChain = ks.getCertificateChain (alias);
-      ks.setKeyEntry (alias, key, password, certChain);
+      final Certificate [] certChain = ks.getCertificateChain (sAlias);
+      ks.setKeyEntry (sAlias, aKey, aPassword, certChain);
     }
     catch (final KeyStoreException kse)
     {
-      throw new CertificateException ("Error setting key for alias: " + alias, kse);
+      throw new CertificateException ("Error setting key for alias: " + sAlias, kse);
     }
   }
 }

@@ -44,6 +44,9 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
@@ -66,6 +69,7 @@ import com.helger.commons.mime.CMimeType;
 @Immutable
 public final class AS2Util
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Util.class);
   private static final String HEADER_RECEIVED_CONTENT_MIC = "Received-Content-MIC";
   private static final String HEADER_DISPOSITION = "Disposition";
   private static final String HEADER_ORIGINAL_MESSAGE_ID = "Original-Message-ID";
@@ -269,6 +273,8 @@ public final class AS2Util
             aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
             aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }
+          else
+            s_aLogger.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());
       }
     }
   }

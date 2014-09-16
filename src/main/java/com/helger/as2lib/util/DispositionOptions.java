@@ -109,16 +109,16 @@ public final class DispositionOptions
       return "";
     }
 
-    final StringBuilder aOptions = new StringBuilder ();
-    aOptions.append ("signed-receipt-protocol=")
-            .append (getProtocolImportance ())
-            .append (", ")
-            .append (getProtocol ())
-            .append ("; signed-receipt-micalg=")
-            .append (getMICAlgImportance ())
-            .append (", ")
-            .append (getMICAlg ());
-    return aOptions.toString ();
+    final StringBuilder aSB = new StringBuilder ();
+    aSB.append ("signed-receipt-protocol=")
+       .append (getProtocolImportance ())
+       .append (", ")
+       .append (getProtocol ())
+       .append ("; signed-receipt-micalg=")
+       .append (getMICAlgImportance ())
+       .append (", ")
+       .append (getMICAlg ());
+    return aSB.toString ();
   }
 
   public void parseOptions (@Nonnull final String sOptions) throws OpenAS2Exception
@@ -150,6 +150,7 @@ public final class DispositionOptions
   }
 
   @Override
+  @Deprecated
   public String toString ()
   {
     return makeOptions ();

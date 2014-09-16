@@ -127,7 +127,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
       final File aMsgFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sDirectory),
                                                   FilenameHelper.getAsSecureValidFilename (sName));
-      final String sMsgText = aMsg.toString ();
+      final String sMsgText = aMsg.getAsString ();
       final FileOutputStream aFOS = new FileOutputStream (aMsgFile);
 
       aFOS.write (sMsgText.getBytes ());

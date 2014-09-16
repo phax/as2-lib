@@ -40,7 +40,7 @@ public class HttpResponseException extends OpenAS2Exception
 
   public HttpResponseException (final String sUrl, final int nCode, final String sMessage)
   {
-    super ("Http Response from " + sUrl + ": " + Integer.toString (nCode) + " - " + sMessage);
+    super ("Http Response from " + sUrl + ": " + nCode + " - " + sMessage);
     m_sURL = sUrl;
     m_nCode = nCode;
     m_sMessage = sMessage;

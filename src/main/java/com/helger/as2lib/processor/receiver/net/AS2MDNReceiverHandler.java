@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataHandler;
+import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
@@ -70,6 +71,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.HTTPUtil;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.string.StringParser;
@@ -80,17 +82,19 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   private final AS2MDNReceiverModule m_aModule;
 
-  public AS2MDNReceiverHandler (final AS2MDNReceiverModule aModule)
+  public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
-    super ();
     m_aModule = aModule;
   }
 
-  public String getClientInfo (final Socket aSockt)
+  @Nonnull
+  @Nonempty
+  public String getClientInfo (@Nonnull final Socket aSockt)
   {
-    return " " + aSockt.getInetAddress ().getHostAddress () + " " + Integer.toString (aSockt.getPort ());
+    return aSockt.getInetAddress ().getHostAddress () + " " + aSockt.getPort ();
   }
 
+  @Nonnull
   public AS2MDNReceiverModule getModule ()
   {
     return m_aModule;
@@ -98,7 +102,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   public void handle (final AbstractNetModule aOwner, final Socket aSocket)
   {
-    s_aLogger.info ("incoming connection" + " [" + getClientInfo (aSocket) + "]");
+    s_aLogger.info ("incoming connection [" + getClientInfo (aSocket) + "]");
 
     final AS2Message aMsg = new AS2Message ();
 
@@ -235,7 +239,9 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       // use original message id. to open the pending information file
       // from pendinginfo folder.
       final String ORIG_MESSAGEID = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-      final String pendinginfofile = getModule ().getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdninfo") +
+      final String pendinginfofile = getModule ().getSession ()
+                                                 .getMessageProcessor ()
+                                                 .getAttributeAsString ("pendingmdninfo") +
                                      "/" +
                                      ORIG_MESSAGEID.substring (1, ORIG_MESSAGEID.length () - 1);
       final BufferedReader pendinginfo = new BufferedReader (new FileReader (pendinginfofile));

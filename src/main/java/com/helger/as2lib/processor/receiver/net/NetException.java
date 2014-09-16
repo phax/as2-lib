@@ -34,20 +34,14 @@ package com.helger.as2lib.processor.receiver.net;
 
 import java.net.InetAddress;
 
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class NetException extends OpenAS2Exception
 {
-  public NetException ()
-  {}
-
-  public NetException (final String sMsg)
+  public NetException (final InetAddress aAddress, final int nPort, @Nullable final Throwable aCause)
   {
-    super (sMsg);
-  }
-
-  public NetException (final InetAddress aAddress, final int nPort, final Throwable aCause)
-  {
-    super ("Address = " + aAddress + " port = " + Integer.toString (nPort), aCause);
+    super ("Address = " + aAddress + " port = " + nPort, aCause);
   }
 }

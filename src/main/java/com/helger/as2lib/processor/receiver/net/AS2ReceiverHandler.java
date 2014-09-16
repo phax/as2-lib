@@ -89,7 +89,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
   @Nonempty
   public static String getClientInfo (@Nonnull final Socket aSocket)
   {
-    return aSocket.getInetAddress ().getHostAddress () + ":" + Integer.toString (aSocket.getPort ());
+    return aSocket.getInetAddress ().getHostAddress () + ":" + aSocket.getPort ();
   }
 
   public void handle (final AbstractNetModule owner, @Nonnull final Socket aSocket)

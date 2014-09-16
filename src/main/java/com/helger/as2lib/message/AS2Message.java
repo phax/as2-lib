@@ -67,19 +67,19 @@ public class AS2Message extends AbstractMessage
 
     final String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID, DEFAULT_ID_FORMAT);
 
-    final StringBuilder sMessageID = new StringBuilder ();
-    sMessageID.append ('<');
+    final StringBuilder aSB = new StringBuilder ();
+    aSB.append ('<');
     try
     {
-      sMessageID.append (AbstractParameterParser.parse (sIDFormat, params));
+      aSB.append (AbstractParameterParser.parse (sIDFormat, params));
     }
     catch (final InvalidParameterException ex)
     {
       // useless, but what to do?
-      sMessageID.append (sIDFormat);
+      aSB.append (sIDFormat);
     }
-    sMessageID.append ('>');
-    return sMessageID.toString ();
+    aSB.append ('>');
+    return aSB.toString ();
   }
 
   public boolean isRequestingMDN ()

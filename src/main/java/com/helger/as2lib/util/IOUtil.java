@@ -213,7 +213,7 @@ public final class IOUtil
     if (aIOErr.isFailure ())
     {
       s_aFOM.deleteFile (aRealDestFile);
-      throw new IOException ("Move failed, unable to delete " + aSrc);
+      throw new IOException ("Move failed, unable to delete " + aSrc + ": " + aIOErr.toString ());
     }
     return aRealDestFile;
   }

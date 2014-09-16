@@ -86,10 +86,10 @@ public class CompositeParameters extends AbstractParameterParser
       if (!aKeyParts.hasMoreTokens ())
         throw new InvalidParameterException ("Invalid key format", this, sKey, null);
 
-      final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
+      final StringBuilder aSB = new StringBuilder (aKeyParts.nextToken ());
       while (aKeyParts.hasMoreTokens ())
-        aKeyBuf.append ('.').append (aKeyParts.nextToken ());
-      aParser.setParameter (aKeyBuf.toString (), sValue);
+        aSB.append ('.').append (aKeyParts.nextToken ());
+      aParser.setParameter (aSB.toString (), sValue);
     }
     else
       if (!getIgnoreMissingParsers ())

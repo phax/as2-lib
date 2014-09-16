@@ -118,27 +118,28 @@ public class MessageFileModule extends AbstractStorageModule
 
   protected InputStream getHeaderStream (@Nonnull final IMessage aMsg)
   {
-    final StringBuilder aHeaderBuf = new StringBuilder ();
+    final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aHeaderBuf.append ("Headers:\r\n");
+    aSB.append ("Headers:\r\n");
 
     final Enumeration <?> aHeaderLines = aMsg.getHeaders ().getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
       final String sHeaderLine = (String) aHeaderLines.nextElement ();
-      aHeaderBuf.append (sHeaderLine).append ("\r\n");
+      aSB.append (sHeaderLine).append ("\r\n");
     }
 
-    aHeaderBuf.append ("\r\n");
+    aSB.append ("\r\n");
 
     // write attributes to the string buffer
-    aHeaderBuf.append ("Attributes:\r\n");
+    aSB.append ("Attributes:\r\n");
     for (final Map.Entry <String, String> attrEntry : aMsg.getAllAttributes ())
     {
-      aHeaderBuf.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
+      aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
     }
 
-    return new NonBlockingByteArrayInputStream (aHeaderBuf.toString ().getBytes ());
+    // TODO which charset?
+    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes ());
   }
 }

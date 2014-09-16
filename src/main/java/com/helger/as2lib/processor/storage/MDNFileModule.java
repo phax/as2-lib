@@ -88,31 +88,32 @@ public class MDNFileModule extends AbstractStorageModule
     return AbstractParameterParser.parse (sFileParam, aCompParams);
   }
 
-  protected InputStream getMDNStream (final IMessageMDN aMdn)
+  protected InputStream getMDNStream (@Nonnull final IMessageMDN aMdn)
   {
-    final StringBuilder aMdnBuf = new StringBuilder ();
+    final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aMdnBuf.append ("Headers:\r\n");
+    aSB.append ("Headers:\r\n");
 
     final Enumeration <?> aHeaderLines = aMdn.getHeaders ().getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
       final String sHeaderLine = (String) aHeaderLines.nextElement ();
-      aMdnBuf.append (sHeaderLine).append ("\r\n");
+      aSB.append (sHeaderLine).append ("\r\n");
     }
 
-    aMdnBuf.append ("\r\n");
+    aSB.append ("\r\n");
 
     // write attributes to the string buffer
-    aMdnBuf.append ("Attributes:\r\n");
+    aSB.append ("Attributes:\r\n");
     for (final Map.Entry <String, String> aEntry : aMdn.getAllAttributes ())
     {
-      aMdnBuf.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append ("\r\n");
+      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append ("\r\n");
     }
     // finally, write the MDN text
-    aMdnBuf.append ("Text:\r\n").append (aMdn.getText ());
+    aSB.append ("Text:\r\n").append (aMdn.getText ());
 
-    return new NonBlockingByteArrayInputStream (aMdnBuf.toString ().getBytes ());
+    // TODO which charset?
+    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes ());
   }
 }
