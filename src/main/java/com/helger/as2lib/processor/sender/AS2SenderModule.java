@@ -349,8 +349,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                             aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
       InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
       InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + Partnership.PID_EMAIL,
-                                            aPartnership.getSenderID (Partnership.PID_EMAIL));
+                                            "Sender: " + CPartnershipIDs.PID_EMAIL,
+                                            aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
       InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
     catch (final InvalidParameterException ex)
@@ -442,7 +442,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
     aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
-    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderID (Partnership.PID_EMAIL));
+    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
 
     final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
     if (sDispTo != null)

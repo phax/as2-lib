@@ -292,7 +292,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     // Set attributes
     if (bOverwrite)
     {
-      final String sSubject = aPartnership.getAttribute (Partnership.PA_SUBJECT);
+      final String sSubject = aPartnership.getAttribute (CPartnershipIDs.PA_SUBJECT);
       if (sSubject != null)
       {
         aMsg.setSubject (AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));

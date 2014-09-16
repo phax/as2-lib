@@ -56,7 +56,7 @@ import com.helger.as2lib.message.CFileAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.CAS2Header;
@@ -343,7 +343,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       final ByteArrayDataSource aByteSource = new ByteArrayDataSource (aData, sContentType, null);
       final MimeBodyPart aBody = new MimeBodyPart ();
       aBody.setDataHandler (new DataHandler (aByteSource));
-      final String sEncodeType = aMsg.getPartnership ().getAttribute (Partnership.PA_CONTENT_TRANSFER_ENCODING);
+      final String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
       if (sEncodeType != null)
         aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
       else

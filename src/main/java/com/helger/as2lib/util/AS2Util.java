@@ -62,7 +62,6 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.session.ISession;
 import com.helger.commons.mime.CMimeType;
 
@@ -111,7 +110,7 @@ public final class AS2Util
     aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
     aSession.getPartnershipFactory ().updatePartnership (aMdn, true);
 
-    aMdn.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverID (Partnership.PID_EMAIL));
+    aMdn.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_EMAIL));
     final String sSubject = aMdn.getPartnership ().getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
     if (sSubject != null)
     {

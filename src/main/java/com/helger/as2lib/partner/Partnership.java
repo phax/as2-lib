@@ -47,15 +47,6 @@ import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
 {
-  /** Email address */
-  public static final String PID_EMAIL = "email";
-  /** AS1 or AS2 */
-  public static final String PA_PROTOCOL = "protocol";
-  /** Subject sent in messages */
-  public static final String PA_SUBJECT = "subject";
-  /** optional content transfer encoding value */
-  public static final String PA_CONTENT_TRANSFER_ENCODING = "content_transfer_encoding";
-
   private String m_sName;
   private final StringMap m_aAttributes = new StringMap ();
   private final StringMap m_aReceiverIDs = new StringMap ();
