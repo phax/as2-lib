@@ -34,6 +34,8 @@ package com.helger.as2lib.util;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.helger.as2lib.CAS2Info;
+
 @Immutable
 public final class CAS2Header
 {
@@ -59,7 +61,7 @@ public final class CAS2Header
   public static final String HEADER_USER_AGENT = "User-Agent";
 
   public static final String DEFAULT_CONNECTION = "close, TE";
-  public static final String DEFAULT_USER_AGENT = "OpenAS2 AS2Sender";
+  public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender";
   public static final String DEFAULT_MIME_VERSION = "1.0";
   public static final String DEFAULT_AS2_VERSION = "1.1";
   public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
