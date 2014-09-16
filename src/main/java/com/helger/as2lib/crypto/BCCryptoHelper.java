@@ -66,7 +66,9 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
@@ -262,10 +264,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @SuppressWarnings ({ "unchecked", "deprecation" })
-  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, final X509Certificate aX509Cert) throws GeneralSecurityException,
-                                                                                                 IOException,
-                                                                                                 MessagingException,
-                                                                                                 CMSException
+  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, @Nonnull final X509Certificate aX509Cert) throws GeneralSecurityException,
+                                                                                                          IOException,
+                                                                                                          MessagingException,
+                                                                                                          CMSException,
+                                                                                                          OperatorCreationException
   {
     // Make sure the data is signed
     if (!isSigned (aPart))
@@ -273,11 +276,15 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final MimeMultipart aMainParts = (MimeMultipart) aPart.getContent ();
     final SMIMESigned aSignedPart = new SMIMESigned (aMainParts);
+    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                    .build (aX509Cert);
 
     for (final SignerInformation aSignerInfo : (Collection <SignerInformation>) aSignedPart.getSignerInfos ()
                                                                                            .getSigners ())
-      if (!aSignerInfo.verify (aX509Cert, BouncyCastleProvider.PROVIDER_NAME))
+    {
+      if (!aSignerInfo.verify (aSIV))
         throw new SignatureException ("Verification failed");
+    }
 
     return aSignedPart.getContent ();
   }
