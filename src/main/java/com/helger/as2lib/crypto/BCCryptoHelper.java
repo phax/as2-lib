@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.crypto;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
@@ -42,6 +41,7 @@ import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PrivilegedAction;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
@@ -76,17 +76,22 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
-import org.bouncycastle.mail.smime.SMIMESigned;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
+import org.bouncycastle.mail.smime.SMIMESignedParser;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.base64.Base64;
+import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.priviledged.AccessControllerHelper;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle
@@ -95,6 +100,8 @@ import com.helger.commons.io.streams.StreamUtils;
  */
 public final class BCCryptoHelper implements ICryptoHelper
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (BCCryptoHelper.class);
+
   public BCCryptoHelper ()
   {
     Security.addProvider (new BouncyCastleProvider ());
@@ -105,7 +112,14 @@ public final class BCCryptoHelper implements ICryptoHelper
     aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_signature");
     aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_mime");
     aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.multipart_signed");
-    CommandMap.setDefaultCommandMap (aCommandMap);
+    AccessControllerHelper.run (new PrivilegedAction <Object> ()
+    {
+      public Object run ()
+      {
+        CommandMap.setDefaultCommandMap (aCommandMap);
+        return null;
+      }
+    });
   }
 
   public boolean isEncrypted (@Nonnull final MimeBodyPart aPart) throws MessagingException
@@ -129,13 +143,34 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
+  private static NonBlockingByteArrayInputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
+  {
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (aData);
+
+    int nScanPos = 0;
+    final int nLen = aData.length;
+    while (nScanPos < (nLen - 1))
+    {
+      if (aData[nScanPos] != '\r' || aData[nScanPos + 1] != '\n')
+        break;
+
+      // skip \r\n
+      aIS.read ();
+      aIS.read ();
+      nScanPos += 2;
+    }
+
+    return aIS;
+  }
+
+  @Nonnull
   public String calculateMIC (@Nonnull final MimeBodyPart aPart,
-                              @Nonnull final String sDigest,
+                              @Nonnull final String sDigestAlgorithm,
                               final boolean bIncludeHeaders) throws GeneralSecurityException,
                                                             MessagingException,
                                                             IOException
   {
-    final ASN1ObjectIdentifier aMICAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sDigest);
+    final ASN1ObjectIdentifier aMICAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sDigestAlgorithm);
 
     final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (),
                                                                     BouncyCastleProvider.PROVIDER_NAME);
@@ -164,10 +199,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     {}
     aDigIS.close ();
 
+    // Build result
     final byte [] aMIC = aDigIS.getMessageDigest ().digest ();
     final String sMICString = Base64.encodeBytes (aMIC);
 
-    return sMICString + ", " + sDigest;
+    return sMICString + ", " + sDigestAlgorithm;
   }
 
   @Nonnull
@@ -270,46 +306,36 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                                                                           IOException,
                                                                                                           MessagingException,
                                                                                                           CMSException,
-                                                                                                          OperatorCreationException
+                                                                                                          OperatorCreationException,
+                                                                                                          SMIMEException
   {
     // Make sure the data is signed
     if (!isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed");
 
-    final MimeMultipart aMainParts = (MimeMultipart) aPart.getContent ();
-    final SMIMESigned aSignedPart = new SMIMESigned (aMainParts);
-    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
-                                                                                    .build (aX509Cert);
+    final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
+    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().build (),
+                                                                   aMainPart);
 
-    for (final Object aSigner : aSignedPart.getSignerInfos ().getSigners ())
+    if (!aSignedParser.getCertificates ().getMatches (null).isEmpty ())
+    {
+      // I didn't stumble across this case so far - that's why the certificate
+      // is explicitly passed in
+      s_aLogger.info ("Signed part contains certificates");
+    }
+
+    // Verify certificate
+    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                    .build (aX509Cert.getPublicKey ());
+
+    for (final Object aSigner : aSignedParser.getSignerInfos ().getSigners ())
     {
       final SignerInformation aSignerInfo = (SignerInformation) aSigner;
       if (!aSignerInfo.verify (aSIV))
         throw new SignatureException ("Verification failed");
     }
 
-    return aSignedPart.getContent ();
-  }
-
-  @Nonnull
-  private static NonBlockingByteArrayInputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
-  {
-    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (aData);
-
-    int nScanPos = 0;
-    final int nLen = aData.length;
-    while (nScanPos < (nLen - 1))
-    {
-      if (!new String (aData, nScanPos, 2).equals ("\r\n"))
-        break;
-
-      // skip \r\n
-      aIS.read ();
-      aIS.read ();
-      nScanPos += 2;
-    }
-
-    return aIS;
+    return aSignedParser.getContent ();
   }
 
   @Nonnull
@@ -330,14 +356,14 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
   {
-    final FileInputStream aFIS = new FileInputStream (sFilename);
+    final InputStream aIS = FileUtils.getInputStream (sFilename);
     try
     {
-      return loadKeyStore (aFIS, aPassword);
+      return loadKeyStore (aIS, aPassword);
     }
     finally
     {
-      StreamUtils.close (aFIS);
+      StreamUtils.close (aIS);
     }
   }
 }

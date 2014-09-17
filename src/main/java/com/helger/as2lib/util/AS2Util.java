@@ -234,7 +234,7 @@ public final class AS2Util
     // (size));
   }
 
-  public static void parseMDN (final IMessage aMsg, final X509Certificate aReceiver) throws Exception
+  public static void parseMDN (final IMessage aMsg, final X509Certificate aReceiverCert) throws Exception
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
     MimeBodyPart aMainPart = aMdn.getData ();
@@ -242,7 +242,7 @@ public final class AS2Util
 
     if (aCryptoHelper.isSigned (aMainPart))
     {
-      aMainPart = aCryptoHelper.verify (aMainPart, aReceiver);
+      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert);
     }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
