@@ -45,7 +45,6 @@ import java.security.PrivateKey;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
-import java.util.Collection;
 import java.util.Locale;
 
 import javax.activation.CommandMap;
@@ -82,13 +81,18 @@ import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
-import org.bouncycastle.util.encoders.Base64;
 
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.commons.base64.Base64;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
 
+/**
+ * Implementation of {@link ICryptoHelper} based on BouncyCastle
+ *
+ * @author Philip Helger
+ */
 public final class BCCryptoHelper implements ICryptoHelper
 {
   public BCCryptoHelper ()
@@ -149,19 +153,19 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
 
     final byte [] aData = aBAOS.toByteArray ();
+    aBAOS.close ();
 
-    final InputStream bIn = _trimCRLFPrefix (aData);
+    final NonBlockingByteArrayInputStream aIS = _trimCRLFPrefix (aData);
 
     // calculate the hash of the data and mime header
-    final DigestInputStream aDigIS = new DigestInputStream (bIn, aMessageDigest);
+    final DigestInputStream aDigIS = new DigestInputStream (aIS, aMessageDigest);
     final byte [] aBuf = new byte [4096];
     while (aDigIS.read (aBuf) >= 0)
     {}
-
-    aBAOS.close ();
+    aDigIS.close ();
 
     final byte [] aMIC = aDigIS.getMessageDigest ().digest ();
-    final String sMICString = new String (Base64.encode (aMIC));
+    final String sMICString = Base64.encodeBytes (aMIC);
 
     return sMICString + ", " + sDigest;
   }
@@ -194,7 +198,6 @@ public final class BCCryptoHelper implements ICryptoHelper
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
-  @SuppressWarnings ("deprecation")
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
@@ -213,7 +216,6 @@ public final class BCCryptoHelper implements ICryptoHelper
     return aEncData;
   }
 
-  @SuppressWarnings ("deprecation")
   @Nonnull
   public MimeBodyPart sign (@Nonnull final MimeBodyPart aPart,
                             @Nonnull final X509Certificate aX509Cert,
@@ -263,7 +265,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     return aTmpBody;
   }
 
-  @SuppressWarnings ({ "unchecked", "deprecation" })
+  @Nonnull
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, @Nonnull final X509Certificate aX509Cert) throws GeneralSecurityException,
                                                                                                           IOException,
                                                                                                           MessagingException,
@@ -279,9 +281,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                                     .build (aX509Cert);
 
-    for (final SignerInformation aSignerInfo : (Collection <SignerInformation>) aSignedPart.getSignerInfos ()
-                                                                                           .getSigners ())
+    for (final Object aSigner : aSignedPart.getSignerInfos ().getSigners ())
     {
+      final SignerInformation aSignerInfo = (SignerInformation) aSigner;
       if (!aSignerInfo.verify (aSIV))
         throw new SignatureException ("Verification failed");
     }
@@ -290,7 +292,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  private static InputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
+  private static NonBlockingByteArrayInputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
   {
     final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (aData);
 
