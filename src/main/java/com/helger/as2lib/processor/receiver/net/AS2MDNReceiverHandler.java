@@ -78,6 +78,9 @@ import com.helger.commons.string.StringParser;
 
 public class AS2MDNReceiverHandler implements INetModuleHandler
 {
+  private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
+  private static final String ATTR_PENDINGMDN = "pendingmdn";
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2MDNReceiverHandler.class);
 
   private final AS2MDNReceiverModule m_aModule;
@@ -241,7 +244,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final String ORIG_MESSAGEID = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
       final String pendinginfofile = getModule ().getSession ()
                                                  .getMessageProcessor ()
-                                                 .getAttributeAsString ("pendingmdninfo") +
+                                                 .getAttributeAsString (ATTR_PENDINGMDNINFO) +
                                      "/" +
                                      ORIG_MESSAGEID.substring (1, ORIG_MESSAGEID.length () - 1);
       final BufferedReader pendinginfo = new BufferedReader (new FileReader (pendinginfofile));
@@ -282,7 +285,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       s_aLogger.info ("delete pendinginfo file : " +
                       fpendinginfofile.getName () +
                       " from pending folder : " +
-                      getModule ().getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdn") +
+                      getModule ().getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDN) +
                       msg.getLoggingText ());
 
       fpendinginfofile.delete ();

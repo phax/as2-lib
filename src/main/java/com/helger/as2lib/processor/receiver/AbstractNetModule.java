@@ -63,10 +63,10 @@ import com.helger.commons.lang.CGStringHelper;
 
 public abstract class AbstractNetModule extends AbstractReceiverModule
 {
-  public static final String PARAM_ADDRESS = "address";
-  public static final String PARAM_PORT = "port";
-  public static final String PARAM_ERROR_DIRECTORY = "errordir";
-  public static final String PARAM_ERRORS = "errors";
+  public static final String ATTR_ADDRESS = "address";
+  public static final String ATTR_PORT = "port";
+  public static final String ATTR_ERROR_DIRECTORY = "errordir";
+  public static final String ATTR_ERRORS = "errors";
   public static final String DEFAULT_ERRORS = "$date.yyyyMMddhhmmss$";
 
   private MainThread m_aMainThread;
@@ -79,8 +79,8 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   {
     try
     {
-      final String sAddress = getAttributeAsString (PARAM_ADDRESS);
-      final int nPort = getAttributeAsInt (PARAM_PORT, 0);
+      final String sAddress = getAttributeAsString (ATTR_ADDRESS);
+      final int nPort = getAttributeAsInt (ATTR_PORT, 0);
       m_aMainThread = new MainThread (this, sAddress, nPort);
       m_aMainThread.start ();
     }
@@ -106,7 +106,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     super.initDynamicComponent (aSession, aOptions);
 
     // Ensure port parameter is present
-    getAttributeAsStringRequired (PARAM_PORT);
+    getAttributeAsStringRequired (ATTR_PORT);
   }
 
   @Nonnull
@@ -122,8 +122,8 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sName = aParams.format (getAttributeAsString (PARAM_ERRORS, DEFAULT_ERRORS));
-      final String sDirectory = getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY);
+      final String sName = aParams.format (getAttributeAsString (ATTR_ERRORS, DEFAULT_ERRORS));
+      final String sDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
 
       final File aMsgFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sDirectory),
                                                   FilenameHelper.getAsSecureValidFilename (sName));

@@ -35,6 +35,7 @@ package com.helger.as2lib.message;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
@@ -49,8 +50,11 @@ import com.helger.commons.annotations.Nonempty;
 public class AS2Message extends AbstractMessage
 {
   public static final String PROTOCOL_AS2 = "as2";
-  public static final String DEFAULT_ID_FORMAT = "OPENAS2-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+  public static final String DEFAULT_ID_FORMAT = CAS2Info.NAME +
+                                                 "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
+  @Nonnull
+  @Nonempty
   public final String getProtocol ()
   {
     return PROTOCOL_AS2;

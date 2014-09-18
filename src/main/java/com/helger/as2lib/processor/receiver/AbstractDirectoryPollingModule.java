@@ -71,13 +71,14 @@ import com.helger.commons.mime.CMimeType;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
 {
-  public static final String PARAM_OUTBOX_DIRECTORY = "outboxdir";
-  public static final String PARAM_ERROR_DIRECTORY = "errordir";
-  public static final String PARAM_SENT_DIRECTORY = "sentdir";
-  public static final String PARAM_FORMAT = "format";
-  public static final String PARAM_DELIMITERS = "delimiters";
-  public static final String PARAM_DEFAULTS = "defaults";
-  public static final String PARAM_MIMETYPE = "mimetype";
+  public static final String ATTR_OUTBOX_DIRECTORY = "outboxdir";
+  public static final String ATTR_ERROR_DIRECTORY = "errordir";
+  public static final String ATTR_SENT_DIRECTORY = "sentdir";
+  public static final String ATTR_FORMAT = "format";
+  public static final String ATTR_DELIMITERS = "delimiters";
+  public static final String ATTR_DEFAULTS = "defaults";
+  public static final String ATTR_MIMETYPE = "mimetype";
+  public static final String ATTR_SENDFILENAME = "sendfilename";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractDirectoryPollingModule.class);
 
@@ -87,8 +88,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getAttributeAsStringRequired (PARAM_OUTBOX_DIRECTORY);
-    getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY);
+    getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
+    getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
   }
 
   @Override
@@ -97,7 +98,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     try
     {
       // scan the directory for new files
-      scanDirectory (getAttributeAsStringRequired (PARAM_OUTBOX_DIRECTORY));
+      scanDirectory (getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY));
 
       // update tracking info. if a file is ready, process it
       updateTracking ();
@@ -124,7 +125,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     {
       throw new InvalidParameterException ("Error getting list of files in directory",
                                            this,
-                                           PARAM_OUTBOX_DIRECTORY,
+                                           ATTR_OUTBOX_DIRECTORY,
                                            aDir.getAbsolutePath ());
     }
 
@@ -259,12 +260,12 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
       // If the Sent Directory option is set, move the transmitted file to
       // the sent directory
-      if (getAttributeAsString (PARAM_SENT_DIRECTORY) != null)
+      if (containsAttribute (ATTR_SENT_DIRECTORY))
       {
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_SENT_DIRECTORY)),
+          aSentFile = new File (IOUtil.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
                                 aFile.getName ());
           aSentFile = IOUtil.moveFile (aFile, aSentFile, false, true);
 
@@ -298,7 +299,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOUtil.handleError (aFile, getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY));
+      IOUtil.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }
 
@@ -308,22 +309,22 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   {
     final MessageParameters aParams = new MessageParameters (aMsg);
 
-    final String sDefaults = getAttributeAsString (PARAM_DEFAULTS);
+    final String sDefaults = getAttributeAsString (ATTR_DEFAULTS);
     if (sDefaults != null)
       aParams.setParameters (sDefaults);
 
     final String sFilename = aFile.getName ();
-    final String sFormat = getAttributeAsString (PARAM_FORMAT);
+    final String sFormat = getAttributeAsString (ATTR_FORMAT);
     if (sFormat != null)
     {
-      final String sDelimiters = getAttributeAsString (PARAM_DELIMITERS, ".-");
+      final String sDelimiters = getAttributeAsString (ATTR_DELIMITERS, ".-");
       aParams.setParameters (sFormat, sDelimiters, sFilename);
     }
 
     try
     {
       final byte [] aData = SimpleFileIO.readFileBytes (aFile);
-      String sContentType = getAttributeAsString (PARAM_MIMETYPE);
+      String sContentType = getAttributeAsString (ATTR_MIMETYPE);
       if (sContentType == null)
       {
         sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
@@ -359,7 +360,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
-      final String sSendFilename = getAttributeAsString ("sendfilename");
+      final String sSendFilename = getAttributeAsString (ATTR_SENDFILENAME);
       if ("true".equals (sSendFilename))
       {
         final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);

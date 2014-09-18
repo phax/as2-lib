@@ -38,7 +38,7 @@ public interface IProcessorSenderModule extends IProcessorModule
 {
   String DO_SEND = "send";
   String DO_SENDMDN = "sendmdn";
-  String SENDER_OPTION_RETRIES = "retries";
+  String ATTR_SENDER_OPTION_RETRIES = "retries";
   // Infinite
   int DEFAULT_RETRIES = -1;
 }

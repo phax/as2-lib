@@ -74,7 +74,7 @@ public class MDNFileModule extends AbstractStorageModule
 
     try
     {
-      final File aMdnFile = getFile (aMsg, getAttributeAsStringRequired (PARAM_FILENAME), "");
+      final File aMdnFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), "");
       final InputStream aIS = getMDNStream (aMsg.getMDN ());
       store (aMdnFile, aIS);
     }

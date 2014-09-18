@@ -73,8 +73,8 @@ import com.helger.commons.io.streams.StreamUtils;
 
 public class PKCS12CertificateFactory extends AbstractCertificateFactory implements IAliasedCertificateFactory, IKeyStoreCertificateFactory, IStorableCertificateFactory
 {
-  public static final String PARAM_FILENAME = "filename";
-  public static final String PARAM_PASSWORD = "password";
+  public static final String ATTR_FILENAME = "filename";
+  public static final String ATTR_PASSWORD = "password";
 
   private KeyStore m_aKeyStore;
 
@@ -183,13 +183,13 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setFilename (@Nullable final String sFilename)
   {
-    setAttribute (PARAM_FILENAME, sFilename);
+    setAttribute (ATTR_FILENAME, sFilename);
   }
 
   @Nonnull
   public String getFilename () throws InvalidParameterException
   {
-    return getAttributeAsStringRequired (PARAM_FILENAME);
+    return getAttributeAsStringRequired (ATTR_FILENAME);
   }
 
   @Nonnull
@@ -202,13 +202,13 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setPassword (@Nonnull final char [] aPassword)
   {
-    setAttribute (PARAM_PASSWORD, new String (aPassword));
+    setAttribute (ATTR_PASSWORD, new String (aPassword));
   }
 
   @Nonnull
   public char [] getPassword () throws InvalidParameterException
   {
-    return getAttributeAsStringRequired (PARAM_PASSWORD).toCharArray ();
+    return getAttributeAsStringRequired (ATTR_PASSWORD).toCharArray ();
   }
 
   @Nonnull

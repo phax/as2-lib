@@ -48,7 +48,7 @@ import com.helger.as2lib.util.IStringMap;
 
 public abstract class AbstractPollingModule extends AbstractReceiverModule
 {
-  public static final String PARAM_POLLING_INTERVAL = "interval";
+  public static final String ATTR_POLLING_INTERVAL = "interval";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PollTask.class);
 
   private Timer m_aTimer;
@@ -59,17 +59,17 @@ public abstract class AbstractPollingModule extends AbstractReceiverModule
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getAttributeAsStringRequired (PARAM_POLLING_INTERVAL);
+    getAttributeAsStringRequired (ATTR_POLLING_INTERVAL);
   }
 
   public void setInterval (final int nSeconds)
   {
-    setAttribute (PARAM_POLLING_INTERVAL, nSeconds);
+    setAttribute (ATTR_POLLING_INTERVAL, nSeconds);
   }
 
   public int getInterval ()
   {
-    return getAttributeAsInt (PARAM_POLLING_INTERVAL, 0);
+    return getAttributeAsInt (ATTR_POLLING_INTERVAL, 0);
   }
 
   public abstract void poll ();

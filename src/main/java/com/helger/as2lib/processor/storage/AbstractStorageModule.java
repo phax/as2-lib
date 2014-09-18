@@ -56,9 +56,9 @@ import com.helger.commons.io.streams.StreamUtils;
 
 public abstract class AbstractStorageModule extends AbstractProcessorModule implements IProcessorStorageModule
 {
-  public static final String PARAM_FILENAME = "filename";
-  public static final String PARAM_PROTOCOL = "protocol";
-  public static final String PARAM_TEMPDIR = "tempdir";
+  public static final String ATTR_FILENAME = "filename";
+  public static final String ATTR_PROTOCOL = "protocol";
+  public static final String ATTR_TEMPDIR = "tempdir";
 
   private final String m_sModuleAction;
 
@@ -74,7 +74,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     if (!sAction.equals (m_sModuleAction))
       return false;
 
-    final String sModProtocol = getAttributeAsString (PARAM_PROTOCOL);
+    final String sModProtocol = getAttributeAsString (ATTR_PROTOCOL);
     if (sModProtocol == null)
       return false;
     return sModProtocol.equals (aMsg.getProtocol ());
@@ -84,7 +84,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   public final void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getAttributeAsStringRequired (PARAM_FILENAME);
+    getAttributeAsStringRequired (ATTR_FILENAME);
   }
 
   /**
@@ -112,7 +112,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected void store (final File aMsgFile, final InputStream aIS) throws IOException
   {
-    final String sTempDirname = getAttributeAsString (PARAM_TEMPDIR);
+    final String sTempDirname = getAttributeAsString (ATTR_TEMPDIR);
     if (sTempDirname != null)
     {
       // write the data to a temporary directory first

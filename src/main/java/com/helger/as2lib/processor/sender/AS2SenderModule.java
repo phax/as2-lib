@@ -80,6 +80,8 @@ import com.helger.commons.timing.StopWatch;
 
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
+  private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
+  private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
 
   public boolean canHandle (@Nonnull final String sAction,
@@ -487,7 +489,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     OutputStream aFOS = null;
     try
     {
-      final String pendingFolder = getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdninfo");
+      final String pendingFolder = getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDNINFO);
 
       aFOS = FileUtils.getOutputStream (pendingFolder +
                                         "/" +
@@ -500,7 +502,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // input pending folder & original outgoing file name to get and
       // unique file name
       // in order to avoid file overwritting.
-      final String sPendingFile = getSession ().getMessageProcessor ().getAttributeAsString ("pendingmdn") +
+      final String sPendingFile = getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDN) +
                                   "/" +
                                   aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1);
 

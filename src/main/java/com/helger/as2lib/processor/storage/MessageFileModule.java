@@ -64,7 +64,7 @@ import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
  */
 public class MessageFileModule extends AbstractStorageModule
 {
-  public static final String PARAM_HEADER = "header";
+  public static final String ATTR_HEADER = "header";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (MessageFileModule.class);
 
@@ -80,7 +80,7 @@ public class MessageFileModule extends AbstractStorageModule
     // store message content
     try
     {
-      final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (PARAM_FILENAME), sAction);
+      final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), sAction);
       final InputStream aIS = aMsg.getData ().getInputStream ();
       store (aMsgFile, aIS);
       s_aLogger.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
@@ -96,7 +96,7 @@ public class MessageFileModule extends AbstractStorageModule
                                       ex);
     }
 
-    final String sHeaderFilename = getAttributeAsString (PARAM_HEADER);
+    final String sHeaderFilename = getAttributeAsString (ATTR_HEADER);
     if (sHeaderFilename != null)
     {
       try

@@ -53,9 +53,8 @@ import com.helger.commons.random.VerySecureRandom;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
-
-  public static final String PARAM_READ_TIMEOUT = "readtimeout";
-  public static final String PARAM_CONNECT_TIMEOUT = "connecttimeout";
+  public static final String ATTR_READ_TIMEOUT = "readtimeout";
+  public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
 
   @Nonnull
   public HttpURLConnection getConnection (final String sUrl,
@@ -72,8 +71,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
       aConn.setRequestMethod (sRequestMethod);
-      aConn.setConnectTimeout (getAttributeAsInt (PARAM_CONNECT_TIMEOUT, 60000));
-      aConn.setReadTimeout (getAttributeAsInt (PARAM_READ_TIMEOUT, 60000));
+      aConn.setConnectTimeout (getAttributeAsInt (ATTR_CONNECT_TIMEOUT, 60000));
+      aConn.setReadTimeout (getAttributeAsInt (ATTR_READ_TIMEOUT, 60000));
 
       if (aConn instanceof HttpsURLConnection)
       {

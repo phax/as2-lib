@@ -51,12 +51,13 @@ import com.helger.commons.state.EChange;
 @NotThreadSafe
 public final class PartnerMap implements IPartnerMap
 {
+  private static final String PARTNER_NAME = "name";
   private final Map <String, StringMap> m_aMap = new LinkedHashMap <String, StringMap> ();
 
   public void addPartner (@Nonnull final StringMap aNewPartner) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aNewPartner, "NewPartner");
-    final String sName = aNewPartner.getAttributeAsString ("name");
+    final String sName = aNewPartner.getAttributeAsString (PARTNER_NAME);
     if (m_aMap.containsKey (sName))
       throw new OpenAS2Exception ("Partner is defined more than once: '" + sName + "'");
 

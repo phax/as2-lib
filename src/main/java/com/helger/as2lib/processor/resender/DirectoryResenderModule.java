@@ -66,15 +66,15 @@ import com.helger.commons.annotations.ReturnsMutableCopy;
 public class DirectoryResenderModule extends AbstractResenderModule
 {
   private static final String DATE_FORMAT = "MM-dd-yy-HH-mm-ss";
-  public static final String PARAM_RESEND_DIRECTORY = "resenddir";
-  public static final String PARAM_ERROR_DIRECTORY = "errordir";
+  public static final String ATTR_RESEND_DIRECTORY = "resenddir";
+  public static final String ATTR_ERROR_DIRECTORY = "errordir";
   // in seconds
-  public static final String PARAM_RESEND_DELAY = "resenddelay";
+  public static final String ATTR_RESEND_DELAY_SECONDS = "resenddelay";
 
   // TODO Resend set to 15 minutes. Implement a scaling resend time with
   // eventual permanent failure of transmission
   // 15 minutes
-  public static final long DEFAULT_RESEND_DELAY = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
+  public static final long DEFAULT_RESEND_DELAY_MS = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
@@ -93,7 +93,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   {
     try
     {
-      final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_RESEND_DIRECTORY));
+      final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
       final File aResendFile = IOUtil.getUniqueFile (aResendDir, getFilename ());
       final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
       String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
@@ -119,8 +119,8 @@ public class DirectoryResenderModule extends AbstractResenderModule
   public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
-    getAttributeAsStringRequired (PARAM_RESEND_DIRECTORY);
-    getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY);
+    getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);
+    getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
   }
 
   @Override
@@ -145,13 +145,13 @@ public class DirectoryResenderModule extends AbstractResenderModule
   @Nonnull
   protected String getFilename () throws InvalidParameterException
   {
-    long nResendDelay;
-    if (getAttributeAsString (PARAM_RESEND_DELAY) == null)
-      nResendDelay = DEFAULT_RESEND_DELAY;
+    long nResendDelayMS;
+    if (!containsAttribute (ATTR_RESEND_DELAY_SECONDS))
+      nResendDelayMS = DEFAULT_RESEND_DELAY_MS;
     else
-      nResendDelay = getAttributeAsIntRequired (PARAM_RESEND_DELAY) * CGlobal.MILLISECONDS_PER_SECOND;
+      nResendDelayMS = getAttributeAsIntRequired (ATTR_RESEND_DELAY_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
 
-    final long nResendTime = new Date ().getTime () + nResendDelay;
+    final long nResendTime = new Date ().getTime () + nResendDelayMS;
     return DateUtil.formatDate (DATE_FORMAT, new Date (nResendTime));
   }
 
@@ -198,7 +198,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 
         final Map <String, Object> aOptions = new HashMap <String, Object> ();
-        aOptions.put (IProcessorSenderModule.SENDER_OPTION_RETRIES, sRetries);
+        aOptions.put (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES, sRetries);
         getSession ().getMessageProcessor ().handle (sMethod, aMsg, aOptions);
 
         if (IOUtil.getFileOperationManager ().deleteFile (aFile).isFailure ())
@@ -224,7 +224,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOUtil.handleError (aFile, getAttributeAsStringRequired (PARAM_ERROR_DIRECTORY));
+      IOUtil.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }
 
@@ -232,14 +232,14 @@ public class DirectoryResenderModule extends AbstractResenderModule
   @ReturnsMutableCopy
   protected List <File> scanDirectory () throws OpenAS2Exception
   {
-    final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (PARAM_RESEND_DIRECTORY));
+    final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
 
     final File [] aFiles = aResendDir.listFiles ();
     if (aFiles == null)
     {
       throw new InvalidParameterException ("Error getting list of files in directory",
                                            this,
-                                           PARAM_RESEND_DIRECTORY,
+                                           ATTR_RESEND_DIRECTORY,
                                            aResendDir.getAbsolutePath ());
     }
 
