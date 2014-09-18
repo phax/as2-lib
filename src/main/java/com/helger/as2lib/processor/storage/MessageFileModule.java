@@ -57,6 +57,11 @@ import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
+/**
+ * Store a message to a file
+ *
+ * @author Philip Helger
+ */
 public class MessageFileModule extends AbstractStorageModule
 {
   public static final String PARAM_HEADER = "header";
@@ -116,6 +121,7 @@ public class MessageFileModule extends AbstractStorageModule
     return AbstractParameterParser.parse (sFileParam, aCompParams);
   }
 
+  @Nonnull
   protected InputStream getHeaderStream (@Nonnull final IMessage aMsg)
   {
     final StringBuilder aSB = new StringBuilder ();

@@ -52,6 +52,11 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageMDNParameters;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
+/**
+ * Store an MDN to a file
+ * 
+ * @author Philip Helger
+ */
 public class MDNFileModule extends AbstractStorageModule
 {
   public MDNFileModule ()

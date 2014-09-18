@@ -160,7 +160,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
             nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
             nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
         {
-          s_aLogger.error ("Error url " + sUrl + " rc " + nResponseCode + " rm " + aConn.getResponseMessage ());
+          s_aLogger.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
           throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
         }
 
@@ -205,7 +205,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final HttpResponseException ex)
     {
       // Resend if the HTTP Response has an error code
-      s_aLogger.error ("error hre " + ex.getMessage ());
+      s_aLogger.error ("Http Response Error " + ex.getMessage ());
       ex.terminate ();
       _resend (aMsg, ex, nRetries);
     }
