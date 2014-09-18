@@ -71,6 +71,7 @@ import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionOptions;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.IOUtil;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
@@ -111,10 +112,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Create the HTTP connection and set up headers
       final String sUrl = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_URL);
+
       final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
       try
       {
         updateHttpHeaders (aConn, aMsg);
+
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
         final DispositionOptions aDispOptions = new DispositionOptions (aConn.getRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS));
@@ -252,6 +255,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIS, aMDNStream, nContentLength);
       else
         StreamUtils.copyInputStreamToOutputStream (aConnIS, aMDNStream);
+
+      if (false)
+      {
+        // Debug print the whole MDN stream
+        System.out.println (aMDNStream.getAsString (CCharset.CHARSET_ISO_8859_1_OBJ));
+      }
 
       final MimeBodyPart aPart = new MimeBodyPart (aMDN.getHeaders (), aMDNStream.toByteArray ());
       aMsg.getMDN ().setData (aPart);

@@ -35,14 +35,21 @@ package com.helger.as2lib.processor.sender;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.mail.internet.InternetHeaders;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.util.http.DoNothingTrustManager;
+import com.helger.as2lib.util.http.HostnameVerifierAlwaysTrue;
+import com.helger.commons.random.VerySecureRandom;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
@@ -67,9 +74,28 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setRequestMethod (sRequestMethod);
       aConn.setConnectTimeout (getAttributeAsInt (PARAM_CONNECT_TIMEOUT, 60000));
       aConn.setReadTimeout (getAttributeAsInt (PARAM_READ_TIMEOUT, 60000));
+
+      if (aConn instanceof HttpsURLConnection)
+      {
+        // SSL handling
+        final HttpsURLConnection aConns = (HttpsURLConnection) aConn;
+
+        // Trust all server certificates
+        final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
+        aSSLCtx.init (null, new TrustManager [] { new DoNothingTrustManager () }, VerySecureRandom.getInstance ());
+        aConns.setSSLSocketFactory (aSSLCtx.getSocketFactory ());
+
+        // Trust all host names
+        aConns.setHostnameVerifier (new HostnameVerifierAlwaysTrue ());
+      }
+
       return aConn;
     }
     catch (final IOException ex)
+    {
+      throw new WrappedOpenAS2Exception (ex);
+    }
+    catch (final GeneralSecurityException ex)
     {
       throw new WrappedOpenAS2Exception (ex);
     }
