@@ -292,7 +292,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Verify if the original mic is equal to the mic in returned MDN
       final String sReturnMIC = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_MIC);
 
-      if (!sReturnMIC.replaceAll (" ", "").equals (sOriginalMIC.replaceAll (" ", "")))
+      // Catch ReturnMIC == null in case the attribute is simply missing
+      if (sReturnMIC == null || !sReturnMIC.replaceAll (" ", "").equals (sOriginalMIC.replaceAll (" ", "")))
       {
         // file was sent completely but the returned mic was not matched,
         // don't know it needs or needs not to be resent ? it's depended on

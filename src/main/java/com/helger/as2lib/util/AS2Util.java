@@ -234,7 +234,7 @@ public final class AS2Util
     // (size));
   }
 
-  public static void parseMDN (final IMessage aMsg, final X509Certificate aReceiverCert) throws Exception
+  public static void parseMDN (@Nonnull final IMessage aMsg, @Nonnull final X509Certificate aReceiverCert) throws Exception
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
     MimeBodyPart aMainPart = aMdn.getData ();
