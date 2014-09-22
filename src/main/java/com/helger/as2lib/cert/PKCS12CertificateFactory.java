@@ -223,6 +223,8 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
     try
     {
+      // This method heuristically scans the keystore and delivery the first
+      // result.
       sAlias = aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
         throw new KeyNotFoundException (aCert);
