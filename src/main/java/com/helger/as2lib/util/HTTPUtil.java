@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -47,7 +46,6 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.streams.StreamUtils;
 
 public final class HTTPUtil
 {
@@ -191,12 +189,13 @@ public final class HTTPUtil
     return sMsg;
   }
 
-  public static byte [] readData (@Nonnull final Socket aSocket, @Nonnull final IMessage aMsg) throws IOException,
-                                                                                              MessagingException
+  public static byte [] readData (@Nonnull final IAS2InputStreamProvider aISP,
+                                  @Nonnull final IAS2OutputStreamCreator aOSC,
+                                  @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
     byte [] aData = null;
     // Get the stream and read in the HTTP request and headers
-    final InputStream aIS = StreamUtils.getBuffered (aSocket.getInputStream ());
+    final InputStream aIS = aISP.getInputStream ();
     final String [] aRequest = _readRequest (aIS);
     aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
     aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
@@ -251,14 +250,14 @@ public final class HTTPUtil
         }
         else
         {
-          sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
+          sendHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
           throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
       }
       else
         if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
         {
-          sendHTTPResponse (aSocket.getOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
+          sendHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
           throw new IOException ("Content-Length missing");
         }
     }

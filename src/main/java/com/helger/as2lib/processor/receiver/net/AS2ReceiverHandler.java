@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -63,6 +62,8 @@ import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
+import com.helger.as2lib.util.AS2InputStreamProviderSocket;
+import com.helger.as2lib.util.AS2OutputStreamCreatorSocket;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DispositionType;
@@ -222,13 +223,15 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
     byte [] aMsgData = null;
 
+    final IAS2OutputStreamCreator aOSC = new AS2OutputStreamCreatorSocket (aSocket);
+
     // Time the transmission
     final StopWatch aSW = new StopWatch (true);
 
     // Read in the message request, headers, and data
     try
     {
-      aMsgData = HTTPUtil.readData (aSocket, aMsg);
+      aMsgData = HTTPUtil.readData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
     }
     catch (final Exception ex)
     {
@@ -246,16 +249,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                       sClientInfo +
                       aMsg.getLoggingText ());
 
-      final IAS2OutputStreamCreator aOSP = new IAS2OutputStreamCreator ()
-      {
-        @Nonnull
-        public OutputStream createOutputStream () throws IOException
-        {
-          return StreamUtils.getBuffered (aSocket.getOutputStream ());
-        }
-      };
-
-      handleIncomingMessage (sClientInfo, aMsgData, aMsg, aOSP);
+      handleIncomingMessage (sClientInfo, aMsgData, aMsg, aOSC);
     }
   }
 
