@@ -192,7 +192,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         {
           // Don't resend or fail, just log an error if one occurs while
           // receiving the MDN
-          s_aLogger.error (OpenAS2Exception.SOURCE_MESSAGE, ex);
           final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN");
           oae2.initCause (ex);
           oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
