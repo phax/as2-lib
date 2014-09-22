@@ -305,7 +305,7 @@ public final class HTTPUtil
       aRequestParts[2] = aTokens.nextToken ();
       return aRequestParts;
     }
-    throw new IOException ("Invalid HTTP Request");
+    throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
   public static void sendHTTPResponse (@Nonnull @WillNotClose final OutputStream aOS,
