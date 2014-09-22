@@ -50,6 +50,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.CertificateExistsException;
 import com.helger.as2lib.exception.CertificateNotFoundException;
 import com.helger.as2lib.exception.InvalidParameterException;
@@ -75,6 +78,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_PASSWORD = "password";
+  private static final Logger s_aLogger = LoggerFactory.getLogger (PKCS12CertificateFactory.class);
 
   private KeyStore m_aKeyStore;
 
@@ -263,6 +267,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
       aKeyStore.setCertificateEntry (sAlias, aCert);
       save (getFilename (), getPassword ());
+      s_aLogger.info ("Added certificate alias '" + sAlias + "' of certificate '" + aCert.getSubjectDN ());
     }
     catch (final GeneralSecurityException ex)
     {
