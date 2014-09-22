@@ -218,7 +218,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     {
       HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST, false);
 
-      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
+      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }

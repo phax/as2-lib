@@ -92,7 +92,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final Exception ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
 
     load (getFilename (), getPassword ());
@@ -132,7 +132,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final KeyStoreException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -177,7 +177,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -266,7 +266,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -290,7 +290,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -306,7 +306,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -328,11 +328,11 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final IOException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
     finally
     {
@@ -359,7 +359,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -376,7 +376,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -403,11 +403,11 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     catch (final IOException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
     finally
     {

@@ -214,7 +214,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
-      final WrappedOpenAS2Exception wioe = new WrappedOpenAS2Exception (ex);
+      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
       wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
@@ -223,7 +223,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a resend
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -337,7 +337,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final Exception ex)
     {
-      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
+      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }
@@ -482,9 +482,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * @param aMsg
    *        AS2Message
    * @param sMIC
-   * @throws WrappedOpenAS2Exception
+   * @throws OpenAS2Exception
    */
-  protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws WrappedOpenAS2Exception
+  protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws OpenAS2Exception
   {
     OutputStream aFOS = null;
     try
@@ -515,7 +515,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final Exception ex)
     {
-      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
+      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
     }

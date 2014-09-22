@@ -103,14 +103,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       // update tracking info. if a file is ready, process it
       updateTracking ();
     }
-    catch (final OpenAS2Exception ex)
-    {
-      ex.terminate ();
-      forceStop (ex);
-    }
     catch (final Exception ex)
     {
-      new WrappedOpenAS2Exception (ex).terminate ();
+      WrappedOpenAS2Exception.wrap (ex).terminate ();
       forceStop (ex);
     }
   }
@@ -372,7 +367,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     }
     catch (final MessagingException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
 
     // update the message's partnership with any stored information

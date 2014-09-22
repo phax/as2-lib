@@ -369,7 +369,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       }
       catch (final Exception ex)
       {
-        final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception ("Error sending MDN", ex);
+        final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
         we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
         we.terminate ();
       }

@@ -32,14 +32,13 @@
  */
 package com.helger.as2lib.exception;
 
-public class WrappedOpenAS2Exception extends OpenAS2Exception
-{
-  public WrappedOpenAS2Exception ()
-  {}
+import javax.annotation.Nonnull;
 
-  public WrappedOpenAS2Exception (final String sMsg)
+public final class WrappedOpenAS2Exception extends OpenAS2Exception
+{
+  private WrappedOpenAS2Exception (final Throwable aCause)
   {
-    super (sMsg);
+    super (aCause);
   }
 
   public WrappedOpenAS2Exception (final String sMsg, final Throwable aCause)
@@ -47,8 +46,11 @@ public class WrappedOpenAS2Exception extends OpenAS2Exception
     super (sMsg, aCause);
   }
 
-  public WrappedOpenAS2Exception (final Throwable aCause)
+  @Nonnull
+  public static OpenAS2Exception wrap (@Nonnull final Throwable t)
   {
-    super (aCause);
+    if (t instanceof OpenAS2Exception)
+      return (OpenAS2Exception) t;
+    return new WrappedOpenAS2Exception (t);
   }
 }

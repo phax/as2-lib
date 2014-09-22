@@ -180,7 +180,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
-      final WrappedOpenAS2Exception wioe = new WrappedOpenAS2Exception (ex);
+      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
       wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
@@ -189,7 +189,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a resend
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 

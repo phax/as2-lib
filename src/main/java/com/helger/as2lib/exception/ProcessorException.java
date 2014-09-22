@@ -60,7 +60,10 @@ public class ProcessorException extends OpenAS2Exception
   public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
                              @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super (CGStringHelper.getClassLocalName (aProcessor) + ": caused by\n" + _getMessage (aCauses));
+    super ("Processor '" +
+           CGStringHelper.getClassLocalName (aProcessor) +
+           " threw exception(s):" +
+           _getMessage (aCauses));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 

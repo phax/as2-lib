@@ -141,7 +141,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     }
     catch (final Exception ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 

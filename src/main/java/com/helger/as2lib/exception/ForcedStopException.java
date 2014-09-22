@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.exception;
 
-public class ForcedStopException extends WrappedOpenAS2Exception
+public class ForcedStopException extends OpenAS2Exception
 {
   public ForcedStopException (final Throwable aSource)
   {

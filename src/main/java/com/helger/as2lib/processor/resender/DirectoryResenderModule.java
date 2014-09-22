@@ -111,7 +111,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
     }
     catch (final IOException ioe)
     {
-      throw new WrappedOpenAS2Exception (ioe);
+      throw WrappedOpenAS2Exception.wrap (ioe);
     }
   }
 
@@ -212,11 +212,11 @@ public class DirectoryResenderModule extends AbstractResenderModule
       }
       catch (final IOException ex)
       {
-        throw new WrappedOpenAS2Exception (ex);
+        throw WrappedOpenAS2Exception.wrap (ex);
       }
       catch (final ClassNotFoundException ex)
       {
-        throw new WrappedOpenAS2Exception (ex);
+        throw WrappedOpenAS2Exception.wrap (ex);
       }
     }
     catch (final OpenAS2Exception ex)

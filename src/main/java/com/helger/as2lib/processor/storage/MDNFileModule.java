@@ -54,7 +54,7 @@ import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
 /**
  * Store an MDN to a file
- * 
+ *
  * @author Philip Helger
  */
 public class MDNFileModule extends AbstractStorageModule
@@ -80,7 +80,7 @@ public class MDNFileModule extends AbstractStorageModule
     }
     catch (final IOException ex)
     {
-      throw new WrappedOpenAS2Exception (ex);
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 

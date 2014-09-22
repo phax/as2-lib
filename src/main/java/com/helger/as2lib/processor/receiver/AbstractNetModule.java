@@ -86,7 +86,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     }
     catch (final IOException ioe)
     {
-      throw new WrappedOpenAS2Exception (ioe);
+      throw WrappedOpenAS2Exception.wrap (ioe);
     }
   }
 
@@ -143,14 +143,9 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
                                                                       aMsgFile.getAbsolutePath ());
       im.terminate ();
     }
-    catch (final OpenAS2Exception ex)
-    {
-      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      ex.terminate ();
-    }
     catch (final Exception ex)
     {
-      final WrappedOpenAS2Exception we = new WrappedOpenAS2Exception (ex);
+      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       we.terminate ();
     }
@@ -184,7 +179,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       }
       catch (final IOException ex)
       {
-        new WrappedOpenAS2Exception (ex).terminate ();
+        WrappedOpenAS2Exception.wrap (ex).terminate ();
       }
       finally
       {

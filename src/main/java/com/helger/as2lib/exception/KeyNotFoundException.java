@@ -52,6 +52,6 @@ public class KeyNotFoundException extends OpenAS2Exception
                                @Nullable final String sAlias,
                                @Nullable final Throwable aCause)
   {
-    super ("Certificate: " + aCert + ", Alias: " + sAlias, aCause);
+    super ("Alias: " + sAlias + " in Certificate: " + aCert, aCause);
   }
 }
