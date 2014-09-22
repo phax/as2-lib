@@ -35,11 +35,9 @@ package com.helger.as2lib.message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
@@ -183,16 +181,10 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
     aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
 
-    aSB.append ("\nHeaders:{");
-    final Enumeration <?> aHeaders = getHeaders ().getAllHeaders ();
-    while (aHeaders.hasMoreElements ())
-    {
-      final Header aHeader = (Header) aHeaders.nextElement ();
-      aSB.append (aHeader.getName ()).append ("=").append (aHeader.getValue ());
-      if (aHeaders.hasMoreElements ())
-        aSB.append (", ");
-    }
-    aSB.append ("}").append ("\nAttributes:").append (getAllAttributes ().getAllAttributes ());
+    aSB.append ("\nHeaders:")
+       .append (getHeadersFormatted ())
+       .append ("\nAttributes:")
+       .append (getAllAttributes ().getAllAttributes ());
 
     final IMessageMDN aMDN = getMDN ();
     if (aMDN != null)

@@ -176,14 +176,13 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
       // the 3 msg attributes have to be reset before calling MDNFileModule
-      aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
       aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
+      aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
       aMsg.setMessageID (aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
       getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
 
       // check if the mic (message integrity check) is correct
-
       if (checkAsyncMDN (aMsg))
         HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
       else
@@ -197,7 +196,6 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       catch (final DispositionException ex)
       {
         ex.setText (aMsg.getMDN ().getText ());
-
         if (ex.getDisposition () != null && ex.getDisposition ().isWarning ())
         {
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);

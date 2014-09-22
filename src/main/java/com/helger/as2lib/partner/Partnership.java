@@ -180,10 +180,15 @@ public class Partnership implements Serializable
   public void copyFrom (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    m_sName = aPartnership.getName ();
-    m_aSenderIDs.setAttributes (aPartnership.m_aSenderIDs);
-    m_aReceiverIDs.setAttributes (aPartnership.m_aReceiverIDs);
-    m_aAttributes.setAttributes (aPartnership.m_aAttributes);
+
+    // Avoid doing something
+    if (aPartnership != this)
+    {
+      m_sName = aPartnership.getName ();
+      m_aSenderIDs.setAttributes (aPartnership.m_aSenderIDs);
+      m_aReceiverIDs.setAttributes (aPartnership.m_aReceiverIDs);
+      m_aAttributes.setAttributes (aPartnership.m_aAttributes);
+    }
   }
 
   @Override

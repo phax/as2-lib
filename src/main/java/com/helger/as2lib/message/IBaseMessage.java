@@ -42,6 +42,7 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.IHasStringRepresentation;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.annotations.ReturnsMutableObject;
 
@@ -71,6 +72,10 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
 
   @Nonnull
   InternetHeaders getHeaders ();
+
+  @Nonnull
+  @Nonempty
+  String getHeadersFormatted ();
 
   /**
    * Set a generic header. If it already exist it will be overwritten.

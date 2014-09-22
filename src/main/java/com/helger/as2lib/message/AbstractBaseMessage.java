@@ -36,9 +36,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
@@ -47,6 +50,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.annotations.ReturnsMutableObject;
 import com.helger.commons.string.ToStringGenerator;
@@ -156,6 +160,20 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public final InternetHeaders getHeaders ()
   {
     return m_aHeaders;
+  }
+
+  @Nonnull
+  @Nonempty
+  public final String getHeadersFormatted ()
+  {
+    final Map <String, String> aMap = new TreeMap <String, String> ();
+    final Enumeration <?> aHeaders = m_aHeaders.getAllHeaders ();
+    while (aHeaders.hasMoreElements ())
+    {
+      final Header aHeader = (Header) aHeaders.nextElement ();
+      aMap.put (aHeader.getName (), aHeader.getValue ());
+    }
+    return aMap.toString ();
   }
 
   public final void addHeader (@Nonnull final String sKey, @Nullable final String sValue)
