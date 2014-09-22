@@ -110,7 +110,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   }
 
   @Nonnull
-  protected abstract INetModuleHandler getHandler ();
+  public abstract INetModuleHandler createHandler ();
 
   public void handleError (@Nonnull final IMessage aMsg, final OpenAS2Exception aSrcEx)
   {
@@ -171,7 +171,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       s_aLogger.info ("ConnectionThread: run");
       final Socket s = m_aSocket;
 
-      m_aOwner.getHandler ().handle (m_aOwner, s);
+      m_aOwner.createHandler ().handle (m_aOwner, s);
 
       try
       {

@@ -66,6 +66,16 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
     return ContainerHelper.newList (m_aModules);
   }
 
+  @Nullable
+  public <T extends IProcessorModule> T getModuleOfClass (@Nonnull final Class <T> aClass)
+  {
+    ValueEnforcer.notNull (aClass, "Class");
+    for (final IProcessorModule aModule : m_aModules)
+      if (aClass.isAssignableFrom (aModule.getClass ()))
+        return aClass.cast (aModule);
+    return null;
+  }
+
   @Nonnull
   @ReturnsMutableCopy
   public List <IProcessorActiveModule> getAllActiveModules ()

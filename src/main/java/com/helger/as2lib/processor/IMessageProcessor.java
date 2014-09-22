@@ -60,6 +60,9 @@ public interface IMessageProcessor extends IDynamicComponent
   @ReturnsMutableCopy
   List <IProcessorModule> getAllModules ();
 
+  @Nullable
+  <T extends IProcessorModule> T getModuleOfClass (@Nonnull Class <T> aClass);
+
   void startActiveModules ();
 
   void stopActiveModules ();

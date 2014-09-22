@@ -38,7 +38,6 @@ import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
-import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 
 public class AS2MDNReceiverModule extends AbstractNetModule
 {
@@ -87,7 +86,7 @@ public class AS2MDNReceiverModule extends AbstractNetModule
 
   @Override
   @Nonnull
-  protected INetModuleHandler getHandler ()
+  public AS2MDNReceiverHandler createHandler ()
   {
     return new AS2MDNReceiverHandler (this);
   }
