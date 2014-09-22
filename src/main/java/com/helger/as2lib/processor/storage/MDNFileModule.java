@@ -41,6 +41,9 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
@@ -59,6 +62,8 @@ import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
  */
 public class MDNFileModule extends AbstractStorageModule
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MDNFileModule.class);
+
   public MDNFileModule ()
   {
     super (DO_STOREMDN);
@@ -77,6 +82,7 @@ public class MDNFileModule extends AbstractStorageModule
       final File aMdnFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), "");
       final InputStream aIS = getMDNStream (aMsg.getMDN ());
       store (aMdnFile, aIS);
+      s_aLogger.info ("stored MDN to " + aMdnFile.getAbsolutePath ());
     }
     catch (final IOException ex)
     {
