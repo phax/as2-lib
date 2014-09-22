@@ -45,6 +45,8 @@ import java.security.PrivilegedAction;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.activation.CommandMap;
@@ -61,6 +63,7 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
@@ -82,6 +85,7 @@ import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.bouncycastle.util.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,15 +265,17 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                              MessagingException,
                                                              OperatorCreationException
   {
-    final ASN1ObjectIdentifier aSignDigest = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm);
+    // create a CertStore containing the certificates we want carried
+    // in the signature
+    final List <X509Certificate> aCertList = new ArrayList <X509Certificate> ();
+    aCertList.add (aX509Cert);
+    final Store aCertStore = new JcaCertStore (aCertList);
 
-    //
     // create some smime capabilities in case someone wants to respond
-    //
     final ASN1EncodableVector aSignedAttrs = new ASN1EncodableVector ();
-    final SMIMECapabilityVector caps = new SMIMECapabilityVector ();
-    caps.addCapability (aSignDigest);
-    aSignedAttrs.add (new SMIMECapabilitiesAttribute (caps));
+    final SMIMECapabilityVector aCapabilities = new SMIMECapabilityVector ();
+    aCapabilities.addCapability (ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm));
+    aSignedAttrs.add (new SMIMECapabilitiesAttribute (aCapabilities));
 
     // add an encryption key preference for encrypted responses -
     // normally this would be different from the signing certificate...
@@ -291,7 +297,7 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                                             .build ("SHA1withRSA", aPrivKey, aX509Cert));
 
     // add our pool of certs and cerls (if any) to go with the signature
-    // aSGen.addCertificates (certs);
+    aSGen.addCertificates (aCertStore);
 
     final MimeMultipart aSignedData = aSGen.generate (aPart);
 
