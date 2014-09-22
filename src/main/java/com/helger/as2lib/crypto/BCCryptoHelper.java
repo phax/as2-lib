@@ -46,6 +46,7 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -63,7 +64,9 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
@@ -91,6 +94,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.base64.Base64;
+import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
@@ -323,11 +327,21 @@ public final class BCCryptoHelper implements ICryptoHelper
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().build (),
                                                                    aMainPart);
 
-    if (!aSignedParser.getCertificates ().getMatches (null).isEmpty ())
+    final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
+    if (!aContainedCerts.isEmpty ())
     {
       // I didn't stumble across this case so far - that's why the certificate
       // is explicitly passed in
-      s_aLogger.info ("Signed part contains certificates");
+      if (aContainedCerts.size () == 1)
+      {
+        final X509CertificateHolder aCertHolder = ((X509CertificateHolder) ContainerHelper.getFirstElement (aContainedCerts));
+        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                        .getCertificate (aCertHolder);
+        if (!aX509Cert.equals (aCert))
+          s_aLogger.warn ("Contained certificate differes from passed certificate!");
+      }
+      else
+        s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates");
     }
 
     // Verify certificate
