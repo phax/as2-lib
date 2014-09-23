@@ -39,9 +39,9 @@ import com.helger.as2lib.exception.PartnershipNotFoundException;
 import com.helger.commons.annotations.OverrideOnDemand;
 
 /**
- * A special partnership factory that adds a partnership if it is not existing
- * yet.
- * 
+ * A special in-memory partnership factory that adds a partnership if it is not
+ * existing yet.
+ *
  * @author Philip Helger
  */
 public class SelfFillingPartnershipFactory extends AbstractPartnershipFactory

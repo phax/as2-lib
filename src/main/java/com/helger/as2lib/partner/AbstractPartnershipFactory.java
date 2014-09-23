@@ -49,6 +49,9 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.IsLocked;
+import com.helger.commons.annotations.IsLocked.ELockType;
+import com.helger.commons.annotations.OverrideOnDemand;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
@@ -58,12 +61,23 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   private final PartnerMap m_aPartners = new PartnerMap ();
   private final PartnershipMap m_aPartnerships = new PartnershipMap ();
 
+  /**
+   * Callback method that is invoked, when this object is modified. This method
+   * must be overridden to do something useful. A use case scenario could e.g.
+   * be automatic storage of changes.
+   */
+  @OverrideOnDemand
+  @IsLocked (ELockType.WRITE)
+  protected void markAsChanged ()
+  {}
+
   protected final void setPartners (@Nonnull final PartnerMap aPartners)
   {
     m_aRWLock.writeLock ().lock ();
     try
     {
       m_aPartners.setPartners (aPartners);
+      markAsChanged ();
     }
     finally
     {
@@ -77,6 +91,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     try
     {
       m_aPartners.addPartner (aNewPartner);
+      markAsChanged ();
     }
     finally
     {
@@ -90,7 +105,10 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     m_aRWLock.writeLock ().lock ();
     try
     {
-      return m_aPartners.removePartner (sPartnerName);
+      if (m_aPartners.removePartner (sPartnerName).isUnchanged ())
+        return EChange.UNCHANGED;
+      markAsChanged ();
+      return EChange.CHANGED;
     }
     finally
     {
@@ -247,6 +265,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     try
     {
       m_aPartnerships.setPartnerships (aPartnerships);
+      markAsChanged ();
     }
     finally
     {
@@ -260,6 +279,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     try
     {
       m_aPartnerships.addPartnership (aPartnership);
+      markAsChanged ();
     }
     finally
     {
@@ -273,7 +293,10 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     m_aRWLock.writeLock ().lock ();
     try
     {
-      return m_aPartnerships.removePartnership (aPartnership);
+      if (m_aPartnerships.removePartnership (aPartnership).isUnchanged ())
+        return EChange.UNCHANGED;
+      markAsChanged ();
+      return EChange.CHANGED;
     }
     finally
     {
