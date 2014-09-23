@@ -50,6 +50,7 @@ import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.XMLUtil;
+import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
@@ -210,22 +211,29 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
     return aPartnership;
   }
 
+  /**
+   * Store the current status of the partnerships to a file.
+   *
+   * @throws OpenAS2Exception
+   */
   public void storePartnership () throws OpenAS2Exception
   {
     final String sFilename = getFilename ();
 
-    long nIndex = 0;
-    File f;
-    do
     {
-      f = new File (sFilename + '.' + StringHelper.getLeadingZero (nIndex, 7));
-      nIndex++;
-    } while (f.exists ());
+      long nIndex = 0;
+      File aBackupFile;
+      do
+      {
+        aBackupFile = new File (sFilename + '.' + StringHelper.getLeadingZero (nIndex, 7));
+        nIndex++;
+      } while (aBackupFile.exists ());
 
-    s_aLogger.info ("backing up " + sFilename + " to " + f.getName ());
+      s_aLogger.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
-    final File fr = new File (sFilename);
-    fr.renameTo (f);
+      final File fr = new File (sFilename);
+      FileOperations.renameFile (fr, aBackupFile);
+    }
 
     final IMicroDocument aDoc = new MicroDocument ();
     final IMicroElement ePartnerships = aDoc.appendElement ("partnerships");
