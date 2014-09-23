@@ -59,13 +59,16 @@ public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
    */
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
-  protected void onAddPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     // Ensure the X509 key is contained for certificate store alias retrieval
     if (!aPartnership.containsSenderID (CPartnershipIDs.PID_X509_ALIAS))
       aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
     if (!aPartnership.containsReceiverID (CPartnershipIDs.PID_X509_ALIAS))
       aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
+
+    if (!aPartnership.containsSenderID (CPartnershipIDs.PID_EMAIL))
+      aPartnership.setSenderID (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
   }
 
   @Override
@@ -78,7 +81,7 @@ public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
     }
     catch (final PartnershipNotFoundException ex)
     {
-      onAddPartnership (aPartnership);
+      onBeforeAddPartnership (aPartnership);
 
       // Create a new one
       addPartnership (aPartnership);

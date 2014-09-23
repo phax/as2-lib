@@ -65,7 +65,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 {
   private StringMap m_aAttributes = new StringMap ();
   private InternetHeaders m_aHeaders = new InternetHeaders ();
-  private Partnership m_aPartnership = new Partnership ("auto-created-dummy");
+  private Partnership m_aPartnership = new Partnership ();
 
   public AbstractBaseMessage ()
   {}

@@ -102,8 +102,8 @@ public final class AS2Util
     aMdn.setHeader (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMdn.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
     aMdn.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aMdn.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
     aMdn.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
+    aMdn.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
 
     // get the MDN partnership info
     aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));

@@ -68,6 +68,7 @@ import com.helger.commons.string.StringHelper;
 public class XMLPartnershipFactory extends AbstractPartnershipFactory
 {
   public static final String ATTR_FILENAME = "filename";
+  public static final String ATTR_DISABLE_BACKUP = "disablebackup";
   private static final String PARTNER_NAME = "name";
   private static final Logger s_aLogger = LoggerFactory.getLogger (XMLPartnershipFactory.class);
 
@@ -220,6 +221,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
   {
     final String sFilename = getFilename ();
 
+    if (!containsAttribute (ATTR_DISABLE_BACKUP))
     {
       long nIndex = 0;
       File aBackupFile;
@@ -244,18 +246,20 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
         ePartner.setAttribute (aAttr.getKey (), aAttr.getValue ());
     }
 
-    for (final Partnership partnership : getAllPartnerships ())
+    for (final Partnership aPartnership : getAllPartnerships ())
     {
       final IMicroElement ePartnership = ePartnerships.appendElement ("partnership");
-      ePartnership.setAttribute (PARTNER_NAME, partnership.getName ());
+      ePartnership.setAttribute (PARTNER_NAME, aPartnership.getName ());
 
       final IMicroElement eSender = ePartnership.appendElement ("sender");
-      eSender.setAttribute (PARTNER_NAME, partnership.getSenderID (PARTNER_NAME));
+      for (final Map.Entry <String, String> aAttr : aPartnership.getAllSenderIDs ())
+        eSender.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
       final IMicroElement eReceiver = ePartnership.appendElement ("receiver");
-      eReceiver.setAttribute (PARTNER_NAME, partnership.getReceiverID (PARTNER_NAME));
+      for (final Map.Entry <String, String> aAttr : aPartnership.getAllReceiverIDs ())
+        eReceiver.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
-      for (final Map.Entry <String, String> aAttr : partnership.getAllAttributes ())
+      for (final Map.Entry <String, String> aAttr : aPartnership.getAllAttributes ())
         ePartnership.appendElement ("attribute")
                     .setAttribute (PARTNER_NAME, aAttr.getKey ())
                     .setAttribute ("value", aAttr.getValue ());

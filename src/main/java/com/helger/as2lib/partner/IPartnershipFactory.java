@@ -57,7 +57,7 @@ public interface IPartnershipFactory extends IDynamicComponent
   void addPartner (@Nonnull StringMap aNewPartner) throws OpenAS2Exception;
 
   @Nonnull
-  EChange removePartner (@Nullable String sPartnerName);
+  EChange removePartner (@Nullable String sPartnerName) throws OpenAS2Exception;
 
   @Nullable
   IStringMap getPartnerOfName (@Nullable String sPartnerName);
@@ -73,10 +73,10 @@ public interface IPartnershipFactory extends IDynamicComponent
   @Nonnull
   IPartnerMap getPartnerMap ();
 
-  void addPartnership (@Nonnull Partnership aPartnership);
+  void addPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
   @Nonnull
-  EChange removePartnership (@Nonnull Partnership aPartnership);
+  EChange removePartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
   /**
    * looks up and fills in any header info for a specific msg's partnership.

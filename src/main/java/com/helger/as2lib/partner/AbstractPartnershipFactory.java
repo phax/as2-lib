@@ -65,13 +65,16 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
    * Callback method that is invoked, when this object is modified. This method
    * must be overridden to do something useful. A use case scenario could e.g.
    * be automatic storage of changes.
+   *
+   * @throws OpenAS2Exception
+   *         In case anything goes wrong
    */
   @OverrideOnDemand
   @IsLocked (ELockType.WRITE)
-  protected void markAsChanged ()
+  protected void markAsChanged () throws OpenAS2Exception
   {}
 
-  protected final void setPartners (@Nonnull final PartnerMap aPartners)
+  protected final void setPartners (@Nonnull final PartnerMap aPartners) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -100,7 +103,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Nonnull
-  public EChange removePartner (@Nullable final String sPartnerName)
+  public EChange removePartner (@Nullable final String sPartnerName) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -259,7 +262,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     }
   }
 
-  protected final void setPartnerships (@Nullable final PartnershipMap aPartnerships)
+  protected final void setPartnerships (@Nullable final PartnershipMap aPartnerships) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -273,7 +276,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     }
   }
 
-  public final void addPartnership (@Nonnull final Partnership aPartnership)
+  public final void addPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -288,7 +291,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Nonnull
-  public final EChange removePartnership (@Nonnull final Partnership aPartnership)
+  public final EChange removePartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try

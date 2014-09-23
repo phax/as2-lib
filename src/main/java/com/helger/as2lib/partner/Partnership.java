@@ -47,15 +47,26 @@ import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
 {
+  public static final String DEFAULT_NAME = "auto-created-dummy";
+
   private String m_sName;
   private final StringMap m_aAttributes = new StringMap ();
   private final StringMap m_aReceiverIDs = new StringMap ();
   private final StringMap m_aSenderIDs = new StringMap ();
 
+  public Partnership ()
+  {
+    this (DEFAULT_NAME);
+  }
+
   public Partnership (@Nonnull final String sName)
   {
-    ValueEnforcer.notNull (sName, "Name");
-    m_sName = sName;
+    setName (sName);
+  }
+
+  public void setName (@Nonnull final String sName)
+  {
+    m_sName = ValueEnforcer.notNull (sName, "Name");
   }
 
   @Nonnull
