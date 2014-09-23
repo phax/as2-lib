@@ -45,6 +45,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IMessage;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 
 public final class HTTPUtil
@@ -189,19 +190,15 @@ public final class HTTPUtil
     return sMsg;
   }
 
-  public static byte [] readData (@Nonnull final IAS2InputStreamProvider aISP,
+  public static byte [] readData (@Nonnull final InputStream aIS,
                                   @Nonnull final IAS2OutputStreamCreator aOSC,
-                                  @Nonnull final IMessage aMsg) throws IOException, MessagingException
+                                  @Nonnull final IMessage aMsg) throws IOException
   {
-    byte [] aData = null;
-    // Get the stream and read in the HTTP request and headers
-    final InputStream aIS = aISP.getInputStream ();
-    final String [] aRequest = _readRequest (aIS);
-    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
-    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
-    aMsg.setHeaders (new InternetHeaders (aIS));
+    ValueEnforcer.notNull (aIS, "InputStream");
+
     final DataInputStream aDataIS = new DataInputStream (aIS);
     // Retrieve the message content
+    byte [] aData = null;
     if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
     {
       final String sTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_TRANSFER_ENCODING);
@@ -269,6 +266,22 @@ public final class HTTPUtil
       aDataIS.readFully (aData);
     }
     return aData;
+  }
+
+  public static byte [] readHeaderAndData (@Nonnull final IAS2InputStreamProvider aISP,
+                                           @Nonnull final IAS2OutputStreamCreator aOSC,
+                                           @Nonnull final IMessage aMsg) throws IOException, MessagingException
+  {
+    // Get the stream and read in the HTTP request and headers
+    final InputStream aIS = aISP.getInputStream ();
+    final String [] aRequest = _readRequest (aIS);
+    // Request type (e.g. "POST")
+    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
+    // Request URL (e.g. "/as2")
+    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
+    aMsg.setHeaders (new InternetHeaders (aIS));
+
+    return readData (aIS, aOSC, aMsg);
   }
 
   @Nonnull

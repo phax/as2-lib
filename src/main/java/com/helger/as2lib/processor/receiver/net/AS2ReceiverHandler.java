@@ -231,7 +231,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aMsgData = HTTPUtil.readData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
+      aMsgData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
     }
     catch (final Exception ex)
     {
@@ -338,7 +338,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // send
         if (aMsg.isRequestingAsynchMDN ())
         {
-          HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
+          HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, true);
           aOS.write ("Content-Length: 0\r\n\r\n".getBytes ());
           aOS.flush ();
           aOS.close ();

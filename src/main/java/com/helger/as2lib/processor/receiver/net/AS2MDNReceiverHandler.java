@@ -119,7 +119,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = HTTPUtil.readData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
+      aData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN

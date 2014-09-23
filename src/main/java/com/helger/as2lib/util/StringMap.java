@@ -35,8 +35,8 @@ package com.helger.as2lib.util;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -74,13 +74,13 @@ public class StringMap implements IStringMap, Serializable
 
   public StringMap ()
   {
-    m_aAttrs = new HashMap <String, String> ();
+    m_aAttrs = new LinkedHashMap <String, String> ();
   }
 
   public StringMap (@Nonnull final Map <String, String> aMap)
   {
     ValueEnforcer.notNull (aMap, "Map");
-    m_aAttrs = ContainerHelper.newMap (aMap);
+    m_aAttrs = ContainerHelper.newOrderedMap (aMap);
   }
 
   public StringMap (@Nonnull final IStringMap aCont)
@@ -100,7 +100,7 @@ public class StringMap implements IStringMap, Serializable
   @ReturnsMutableCopy
   public Map <String, String> getAllAttributes ()
   {
-    return ContainerHelper.newMap (m_aAttrs);
+    return ContainerHelper.newOrderedMap (m_aAttrs);
   }
 
   @Nullable
@@ -295,7 +295,7 @@ public class StringMap implements IStringMap, Serializable
   @ReturnsMutableCopy
   public Set <String> getAllAttributeNames ()
   {
-    return ContainerHelper.newSet (m_aAttrs.keySet ());
+    return ContainerHelper.newOrderedSet (m_aAttrs.keySet ());
   }
 
   @Nonnull
