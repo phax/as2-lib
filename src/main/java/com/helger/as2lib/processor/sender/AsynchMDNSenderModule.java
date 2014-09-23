@@ -47,6 +47,7 @@ import javax.mail.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.exception.HttpResponseException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
@@ -55,9 +56,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
-import com.helger.as2lib.session.ISession;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.commons.timing.StopWatch;
@@ -75,40 +74,15 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     return aMsg instanceof AS2Message;
   }
 
-  public void handle (@Nonnull final String sAction,
-                      @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+  private void _resend (@Nonnull final IMessage aMsg, final OpenAS2Exception aCause) throws OpenAS2Exception
   {
-    try
-    {
-      _sendAsyncMDN ((AS2Message) aMsg, aOptions);
-    }
-    finally
-    {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("asynch mdn message sent");
-    }
+    final Map <String, Object> aOptions = new HashMap <String, Object> ();
+    aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
+    aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
+    getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
   }
 
-  protected void updateHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final IMessage aMsg)
-  {
-    aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-    aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
-
-    aConn.setRequestProperty (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aConn.setRequestProperty (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
-    // make sure this is the encoding used in the msg, run TBF1
-    aConn.setRequestProperty (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aConn.setRequestProperty (CAS2Header.HEADER_RECIPIENT_ADDRESS, aMsg.getHeader (CAS2Header.HEADER_RECIPIENT_ADDRESS));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aMsg.getHeader (CAS2Header.HEADER_AS2_FROM));
-    aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getHeader (CAS2Header.HEADER_SUBJECT));
-    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aMsg.getHeader (CAS2Header.HEADER_FROM));
-  }
-
-  private void _sendAsyncMDN (@Nonnull final AS2Message aMsg, @Nonnull final Map <String, Object> aOptions) throws OpenAS2Exception
+  private void _sendAsyncMDN (@Nonnull final AS2Message aMsg) throws OpenAS2Exception
   {
     s_aLogger.info ("Async MDN submitted" + aMsg.getLoggingText ());
     final DispositionType aDisposition = new DispositionType ("automatic-action", "MDN-sent-automatically", "processed");
@@ -162,9 +136,14 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         s_aLogger.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
 
         // log & store mdn into backup folder.
-        ((ISession) aOptions.get ("session")).getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN,
-                                                                             aMsg,
-                                                                             null);
+        try
+        {
+          getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+        }
+        catch (final ComponentNotFoundException ex)
+        {
+          // May be
+        }
       }
       finally
       {
@@ -175,7 +154,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     {
       // Resend if the HTTP Response has an error code
       ex.terminate ();
-      resend (aMsg, ex);
+      _resend (aMsg, ex);
     }
     catch (final IOException ex)
     {
@@ -184,7 +163,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       wioe.terminate ();
 
-      resend (aMsg, wioe);
+      _resend (aMsg, wioe);
     }
     catch (final Exception ex)
     {
@@ -193,11 +172,18 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     }
   }
 
-  protected void resend (final IMessage aMsg, final OpenAS2Exception aCause) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    final Map <String, Object> aOptions = new HashMap <String, Object> ();
-    aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
-    aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
+    try
+    {
+      _sendAsyncMDN ((AS2Message) aMsg);
+    }
+    finally
+    {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("asynch mdn message sent");
+    }
   }
 }

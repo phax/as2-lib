@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.ICryptoHelper;
+import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
@@ -327,10 +328,10 @@ public class AS2ReceiverHandler implements INetModuleHandler
         final IMessageMDN aMdn = AS2Util.createMDN (m_aReceiverModule.getSession (), aMsg, aDisposition, sText);
 
         final OutputStream aOS = aOSP.createOutputStream ();
-        // if asyncMDN requested, close connection and initiate separate MDN
-        // send
         if (aMsg.isRequestingAsynchMDN ())
         {
+          // if asyncMDN requested, close connection and initiate separate MDN
+          // send
           HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
           aOS.write ("Content-Length: 0\r\n\r\n".getBytes ());
           aOS.flush ();
@@ -340,35 +341,46 @@ public class AS2ReceiverHandler implements INetModuleHandler
                           "] " +
                           sClientInfo +
                           aMsg.getLoggingText ());
+
+          // trigger explicit sending
           m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
-          return;
         }
-
-        // otherwise, send sync MDN back on same connection
-        HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
-
-        // make sure to set the content-length header
-        final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
-        final MimeBodyPart aPart = aMdn.getData ();
-        StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-        aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.size ()));
-
-        final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
-        while (aHeaders.hasMoreElements ())
+        else
         {
-          final String sHeader = (String) aHeaders.nextElement () + "\r\n";
-          aOS.write (sHeader.getBytes ());
+          // otherwise, send sync MDN back on same connection
+          HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
+
+          // make sure to set the content-length header
+          final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
+          final MimeBodyPart aPart = aMdn.getData ();
+          StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
+          aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.size ()));
+
+          final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
+          while (aHeaders.hasMoreElements ())
+          {
+            final String sHeader = (String) aHeaders.nextElement () + "\r\n";
+            aOS.write (sHeader.getBytes ());
+          }
+          aOS.write ("\r\n".getBytes ());
+
+          aData.writeTo (aOS);
+          aOS.flush ();
+          aOS.close ();
+
+          // Save sent MDN for later examination
+          try
+          {
+            m_aReceiverModule.getSession ()
+                             .getMessageProcessor ()
+                             .handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+          }
+          catch (final ComponentNotFoundException ex)
+          {
+            // May be...
+          }
+          s_aLogger.info ("sent MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
         }
-
-        aOS.write ("\r\n".getBytes ());
-
-        aData.writeTo (aOS);
-        aOS.flush ();
-        aOS.close ();
-
-        // Save sent MDN for later examination
-        m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
-        s_aLogger.info ("sent MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
       }
       catch (final Exception ex)
       {
