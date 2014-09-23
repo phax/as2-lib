@@ -68,8 +68,8 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   public static final String ATTR_ADDRESS = "address";
   public static final String ATTR_PORT = "port";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
-  public static final String ATTR_ERRORS = "errors";
-  public static final String DEFAULT_ERRORS = "$date.yyyyMMddhhmmss$";
+  public static final String ATTR_ERROR_FORMAT = "errorformat";
+  public static final String DEFAULT_ERROR_FORMAT = "$date.yyyyMMddhhmmss$";
 
   // Macros for responses
   public static final String MSG_SENDER = "$" + MessageParameters.KEY_SENDER + "." + CPartnershipIDs.PID_AS2 + "$";
@@ -157,7 +157,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   @Nonnull
   public abstract INetModuleHandler createHandler ();
 
-  public void handleError (@Nonnull final IMessage aMsg, final OpenAS2Exception aSrcEx)
+  public void handleError (@Nonnull final IMessage aMsg, @Nonnull final OpenAS2Exception aSrcEx)
   {
     aSrcEx.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
     aSrcEx.terminate ();
@@ -167,7 +167,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sName = aParams.format (getAttributeAsString (ATTR_ERRORS, DEFAULT_ERRORS));
+      final String sName = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
 
       final File aMsgFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sDirectory),
