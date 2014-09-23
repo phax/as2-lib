@@ -157,6 +157,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nonnull
+  @ReturnsMutableObject (reason = "design")
   public final InternetHeaders getHeaders ()
   {
     return m_aHeaders;

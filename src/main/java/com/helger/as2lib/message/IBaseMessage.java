@@ -71,6 +71,7 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
   String getHeader (@Nonnull String sKey, @Nullable String sDelimiter);
 
   @Nonnull
+  @ReturnsMutableObject (reason = "design")
   InternetHeaders getHeaders ();
 
   @Nonnull

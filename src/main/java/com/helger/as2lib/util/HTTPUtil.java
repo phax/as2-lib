@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -270,24 +272,8 @@ public final class HTTPUtil
   }
 
   @Nonnull
-  public static byte [] readHeaderAndData (@Nonnull final IAS2InputStreamProvider aISP,
-                                           @Nonnull final IAS2OutputStreamCreator aOSC,
-                                           @Nonnull final IMessage aMsg) throws IOException, MessagingException
-  {
-    // Get the stream and read in the HTTP request and headers
-    final InputStream aIS = aISP.getInputStream ();
-    final String [] aRequest = _readRequest (aIS);
-    // Request type (e.g. "POST")
-    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
-    // Request URL (e.g. "/as2")
-    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
-    aMsg.setHeaders (new InternetHeaders (aIS));
-
-    return readData (aIS, aOSC, aMsg);
-  }
-
-  @Nonnull
-  private static String [] _readRequest (@Nonnull final InputStream aIS) throws IOException
+  @Nonempty
+  private static String [] _readRequestInfo (@Nonnull final InputStream aIS) throws IOException
   {
     int nByteBuf = aIS.read ();
     final StringBuilder aSB = new StringBuilder ();
@@ -323,6 +309,23 @@ public final class HTTPUtil
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
+  @Nonnull
+  public static byte [] readHeaderAndData (@Nonnull final IAS2InputStreamProvider aISP,
+                                           @Nonnull final IAS2OutputStreamCreator aOSC,
+                                           @Nonnull final IMessage aMsg) throws IOException, MessagingException
+  {
+    // Get the stream and read in the HTTP request and headers
+    final InputStream aIS = aISP.getInputStream ();
+    final String [] aRequest = _readRequestInfo (aIS);
+    // Request type (e.g. "POST")
+    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
+    // Request URL (e.g. "/as2")
+    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
+    aMsg.setHeaders (new InternetHeaders (aIS));
+
+    return readData (aIS, aOSC, aMsg);
+  }
+
   public static void startHTTPResponse (@Nonnull @WillNotClose final OutputStream aOS, final int nResponseCode) throws IOException
   {
     final String sMsg = Integer.toString (nResponseCode) + " " + _getHTTPResponseMessage (nResponseCode) + "\r\n";
@@ -340,5 +343,29 @@ public final class HTTPUtil
     // Flush and close
     aOS.flush ();
     aOS.close ();
+  }
+
+  /**
+   * Copy headers from an Http connection to an InternetHeaders object
+   *
+   * @param aConn
+   *        Connection
+   * @param aHeaders
+   *        Headers
+   */
+  public static void copyHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final InternetHeaders aHeaders)
+  {
+    for (final Map.Entry <String, List <String>> aConnHeader : aConn.getHeaderFields ().entrySet ())
+    {
+      final String sHeaderName = aConnHeader.getKey ();
+      if (sHeaderName != null)
+        for (final String sHeaderValue : aConnHeader.getValue ())
+        {
+          if (aHeaders.getHeader (sHeaderName) == null)
+            aHeaders.setHeader (sHeaderName, sHeaderValue);
+          else
+            aHeaders.addHeader (sHeaderName, sHeaderValue);
+        }
+    }
   }
 }

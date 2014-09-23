@@ -36,11 +36,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
-import javax.mail.internet.InternetHeaders;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -97,30 +94,6 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
-    }
-  }
-
-  /**
-   * Copy headers from an Http connection to an InternetHeaders object
-   *
-   * @param aConn
-   *        Connection
-   * @param aHeaders
-   *        Headers
-   */
-  protected void copyHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final InternetHeaders aHeaders)
-  {
-    for (final Map.Entry <String, List <String>> aConnHeader : aConn.getHeaderFields ().entrySet ())
-    {
-      final String sHeaderName = aConnHeader.getKey ();
-      if (sHeaderName != null)
-        for (final String sValue : aConnHeader.getValue ())
-        {
-          if (aHeaders.getHeader (sHeaderName) == null)
-            aHeaders.setHeader (sHeaderName, sValue);
-          else
-            aHeaders.addHeader (sHeaderName, sValue);
-        }
     }
   }
 }

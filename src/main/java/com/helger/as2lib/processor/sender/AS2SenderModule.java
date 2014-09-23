@@ -70,6 +70,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.DispositionOptions;
 import com.helger.as2lib.util.DispositionType;
+import com.helger.as2lib.util.HTTPUtil;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileUtils;
@@ -244,7 +245,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-      copyHttpHeaders (aConn, aMDN.getHeaders ());
+      HTTPUtil.copyHttpHeaders (aConn, aMDN.getHeaders ());
 
       // Receive the MDN data
       final InputStream aConnIS = aConn.getInputStream ();

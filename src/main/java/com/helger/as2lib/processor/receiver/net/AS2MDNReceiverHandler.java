@@ -41,15 +41,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
@@ -310,28 +307,11 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     return true;
   }
 
-  // Copy headers from an Http connection to an InternetHeaders object
-  protected static void copyHttpHeaders (final HttpURLConnection conn, final InternetHeaders headers)
-  {
-    for (final Map.Entry <String, List <String>> connHeader : conn.getHeaderFields ().entrySet ())
-    {
-      final String headerName = connHeader.getKey ();
-      if (headerName != null)
-        for (final String value : connHeader.getValue ())
-        {
-          if (headers.getHeader (headerName) == null)
-            headers.setHeader (headerName, value);
-          else
-            headers.addHeader (headerName, value);
-        }
-    }
-  }
-
   public void reparse (final AS2Message msg, final HttpURLConnection conn)
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN mdn = new AS2MessageMDN (msg);
-    copyHttpHeaders (conn, mdn.getHeaders ());
+    HTTPUtil.copyHttpHeaders (conn, mdn.getHeaders ());
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream mdnStream = null;
