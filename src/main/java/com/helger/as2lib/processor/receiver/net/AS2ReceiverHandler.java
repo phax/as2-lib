@@ -127,7 +127,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                              "processed",
                                                              "Error",
                                                              "unexpected-processing-error"),
-                                        AS2ReceiverModule.DISP_PARSING_MIME_FAILED,
+                                        AbstractNetModule.DISP_PARSING_MIME_FAILED,
                                         ex);
       }
 
@@ -151,7 +151,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                              "processed",
                                                              "Error",
                                                              "authentication-failed"),
-                                        AS2ReceiverModule.DISP_PARTNERSHIP_NOT_FOUND,
+                                        AbstractNetModule.DISP_PARTNERSHIP_NOT_FOUND,
                                         ex);
       }
 
@@ -171,7 +171,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                              "processed",
                                                              "Error",
                                                              "unexpected-processing-error"),
-                                        AS2ReceiverModule.DISP_STORAGE_FAILED,
+                                        AbstractNetModule.DISP_STORAGE_FAILED,
                                         ex);
       }
 
@@ -184,7 +184,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                    aResponseHandler,
                    aMsg,
                    new DispositionType ("automatic-action", "MDN-sent-automatically", "processed"),
-                   AS2ReceiverModule.DISP_SUCCESS);
+                   AbstractNetModule.DISP_SUCCESS);
         }
         else
         {
@@ -288,7 +288,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                            "processed",
                                                            "Error",
                                                            "decryption-failed"),
-                                      AS2ReceiverModule.DISP_DECRYPTION_ERROR,
+                                      AbstractNetModule.DISP_DECRYPTION_ERROR,
                                       ex);
     }
 
@@ -310,7 +310,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                                            "processed",
                                                            "Error",
                                                            "integrity-check-failed"),
-                                      AS2ReceiverModule.DISP_VERIFY_SIGNATURE_FAILED,
+                                      AbstractNetModule.DISP_VERIFY_SIGNATURE_FAILED,
                                       ex);
     }
   }

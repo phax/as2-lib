@@ -52,7 +52,7 @@ public class CompositeParameters extends AbstractParameterParser
   }
 
   public CompositeParameters (final boolean bIgnoreMissingParsers,
-                              final Map <String, AbstractParameterParser> aParameterParsers)
+                              final Map <String, ? extends AbstractParameterParser> aParameterParsers)
   {
     this (bIgnoreMissingParsers);
     getParameterParsers ().putAll (aParameterParsers);

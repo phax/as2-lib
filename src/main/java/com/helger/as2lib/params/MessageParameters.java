@@ -47,7 +47,7 @@ public class MessageParameters extends AbstractParameterParser
   public static final String KEY_RECEIVER = "receiver";
   public static final String KEY_ATTRIBUTES = "attributes";
   public static final String KEY_HEADERS = "headers";
-  public static final String KEY_CONTENT_FILENAME = "content-disposition";
+  public static final String KEY_CONTENT_DISPOSITION = "content-disposition";
 
   private final IMessage m_aTarget;
 
@@ -99,7 +99,7 @@ public class MessageParameters extends AbstractParameterParser
       return m_aTarget.getAttribute (sAreaValue);
     if (sArea.equals (KEY_HEADERS))
       return m_aTarget.getHeader (sAreaValue);
-    if (sArea.equals (KEY_CONTENT_FILENAME) && sAreaValue.equals ("filename"))
+    if (sArea.equals (KEY_CONTENT_DISPOSITION) && sAreaValue.equals ("filename"))
     {
       String sReturnFilename = "noContentDispositionFilename";
       final String sFilename = m_aTarget.getContentDisposition ();
