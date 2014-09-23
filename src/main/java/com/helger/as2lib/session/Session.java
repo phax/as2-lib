@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.session;
 
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +42,8 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.exception.ComponentDuplicateException;
+import com.helger.as2lib.exception.ComponentNotFoundException;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
@@ -50,6 +51,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.priviledged.AccessControllerHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public class Session implements ISession
@@ -70,10 +72,17 @@ public class Session implements ISession
      * These handlers are used by the JavaMail API to encode and decode
      * information of specific mime types.
      */
-    final MailcapCommandMap aCommandCap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    aCommandCap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
+    final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
+    aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
                             DispositionDataContentHandler.class.getName ());
-    CommandMap.setDefaultCommandMap (aCommandCap);
+    AccessControllerHelper.run (new PrivilegedAction <Object> ()
+    {
+      public Object run ()
+      {
+        CommandMap.setDefaultCommandMap (aCommandMap);
+        return null;
+      }
+    });
   }
 
   public final void addComponent (@Nonnull @Nonempty final String sComponentID,
