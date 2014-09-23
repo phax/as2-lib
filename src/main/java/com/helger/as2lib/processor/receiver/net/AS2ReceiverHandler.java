@@ -175,26 +175,19 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                         ex);
       }
 
-      // Transmit a success MDN if requested
       try
       {
         if (aMsg.isRequestingMDN ())
         {
+          // Transmit a success MDN if requested
           sendMDN (sClientInfo, aOSP, aMsg, new DispositionType ("automatic-action",
                                                                  "MDN-sent-automatically",
                                                                  "processed"), AS2ReceiverModule.DISP_SUCCESS);
         }
         else
         {
-          final OutputStream aOS = aOSP.createOutputStream ();
-          try
-          {
-            HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
-          }
-          finally
-          {
-            StreamUtils.close (aOS);
-          }
+          // Just send a HTTP OK
+          HTTPUtil.sendSimpleHTTPResponse (aOSP.createOutputStream (), HttpURLConnection.HTTP_OK);
           s_aLogger.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
         }
       }
@@ -338,7 +331,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         // send
         if (aMsg.isRequestingAsynchMDN ())
         {
-          HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, true);
+          HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
           aOS.write ("Content-Length: 0\r\n\r\n".getBytes ());
           aOS.flush ();
           aOS.close ();
@@ -352,7 +345,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         }
 
         // otherwise, send sync MDN back on same connection
-        HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, true);
+        HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
 
         // make sure to set the content-length header
         final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();

@@ -40,6 +40,7 @@ import java.net.HttpURLConnection;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
@@ -190,6 +191,7 @@ public final class HTTPUtil
     return sMsg;
   }
 
+  @Nonnull
   public static byte [] readData (@Nonnull final InputStream aIS,
                                   @Nonnull final IAS2OutputStreamCreator aOSC,
                                   @Nonnull final IMessage aMsg) throws IOException
@@ -247,16 +249,15 @@ public final class HTTPUtil
         }
         else
         {
-          sendHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
+          sendSimpleHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED);
           throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
       }
       else
-        if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
-        {
-          sendHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED, false);
-          throw new IOException ("Content-Length missing");
-        }
+      {
+        sendSimpleHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED);
+        throw new IOException ("Content-Length missing");
+      }
     }
     else
     {
@@ -268,6 +269,7 @@ public final class HTTPUtil
     return aData;
   }
 
+  @Nonnull
   public static byte [] readHeaderAndData (@Nonnull final IAS2InputStreamProvider aISP,
                                            @Nonnull final IAS2OutputStreamCreator aOSC,
                                            @Nonnull final IMessage aMsg) throws IOException, MessagingException
@@ -321,17 +323,22 @@ public final class HTTPUtil
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
-  public static void sendHTTPResponse (@Nonnull @WillNotClose final OutputStream aOS,
-                                       final int nResponseCode,
-                                       final boolean bHasData) throws IOException
+  public static void startHTTPResponse (@Nonnull @WillNotClose final OutputStream aOS, final int nResponseCode) throws IOException
   {
     final String sMsg = Integer.toString (nResponseCode) + " " + _getHTTPResponseMessage (nResponseCode) + "\r\n";
     aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
-    if (!bHasData)
-    {
-      // if no data will be sent, write the HTTP code
-      aOS.write ("\r\n".getBytes ());
-      aOS.write (sMsg.getBytes ());
-    }
+  }
+
+  public static void sendSimpleHTTPResponse (@Nonnull @WillClose final OutputStream aOS, final int nResponseCode) throws IOException
+  {
+    final String sMsg = Integer.toString (nResponseCode) + " " + _getHTTPResponseMessage (nResponseCode) + "\r\n";
+    aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
+    // No headers
+    aOS.write ("\r\n".getBytes ());
+    // Write message
+    aOS.write (sMsg.getBytes ());
+    // Flush and close
+    aOS.flush ();
+    aOS.close ();
   }
 }

@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
+import javax.annotation.WillClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
@@ -156,8 +157,9 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
   /**
    * method for receiving & processing Async MDN sent from receiver.
    */
-  protected final void receiveMDN (final AS2Message aMsg, final byte [] aData, final OutputStream aOS) throws OpenAS2Exception,
-                                                                                                      IOException
+  protected final void receiveMDN (final AS2Message aMsg,
+                                   final byte [] aData,
+                                   @Nonnull @WillClose final OutputStream aOS) throws OpenAS2Exception, IOException
   {
     try
     {
@@ -189,9 +191,9 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
       // check if the mic (message integrity check) is correct
       if (checkAsyncMDN (aMsg))
-        HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_OK, false);
+        HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
       else
-        HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_NOT_FOUND, false);
+        HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_NOT_FOUND);
 
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
       try
@@ -201,7 +203,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       catch (final DispositionException ex)
       {
         ex.setText (aMsg.getMDN ().getText ());
-        if (ex.getDisposition () != null && ex.getDisposition ().isWarning ())
+        if (ex.getDisposition ().isWarning ())
         {
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
@@ -214,12 +216,12 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     }
     catch (final IOException ex)
     {
-      HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST, false);
+      HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST);
       throw ex;
     }
     catch (final Exception ex)
     {
-      HTTPUtil.sendHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST, false);
+      HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST);
 
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
