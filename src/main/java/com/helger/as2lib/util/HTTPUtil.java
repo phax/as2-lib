@@ -43,13 +43,13 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
-import javax.annotation.WillNotClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public final class HTTPUtil
 {
@@ -61,7 +61,7 @@ public final class HTTPUtil
 
   @Nonnull
   @Nonempty
-  private static String _getHTTPResponseMessage (final int nResponseCode)
+  public static String getHTTPResponseMessage (final int nResponseCode)
   {
     String sMsg;
     switch (nResponseCode)
@@ -195,7 +195,7 @@ public final class HTTPUtil
 
   @Nonnull
   public static byte [] readData (@Nonnull final InputStream aIS,
-                                  @Nonnull final IAS2OutputStreamCreator aOSC,
+                                  @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                   @Nonnull final IMessage aMsg) throws IOException
   {
     ValueEnforcer.notNull (aIS, "InputStream");
@@ -251,13 +251,13 @@ public final class HTTPUtil
         }
         else
         {
-          sendSimpleHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED);
+          sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
           throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
       }
       else
       {
-        sendSimpleHTTPResponse (aOSC.createOutputStream (), HttpURLConnection.HTTP_LENGTH_REQUIRED);
+        sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
         throw new IOException ("Content-Length missing");
       }
     }
@@ -311,7 +311,7 @@ public final class HTTPUtil
 
   @Nonnull
   public static byte [] readHeaderAndData (@Nonnull final IAS2InputStreamProvider aISP,
-                                           @Nonnull final IAS2OutputStreamCreator aOSC,
+                                           @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                            @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
     // Get the stream and read in the HTTP request and headers
@@ -323,18 +323,12 @@ public final class HTTPUtil
     aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
     aMsg.setHeaders (new InternetHeaders (aIS));
 
-    return readData (aIS, aOSC, aMsg);
-  }
-
-  public static void startHTTPResponse (@Nonnull @WillNotClose final OutputStream aOS, final int nResponseCode) throws IOException
-  {
-    final String sMsg = Integer.toString (nResponseCode) + " " + _getHTTPResponseMessage (nResponseCode) + "\r\n";
-    aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
+    return readData (aIS, aResponseHandler, aMsg);
   }
 
   public static void sendSimpleHTTPResponse (@Nonnull @WillClose final OutputStream aOS, final int nResponseCode) throws IOException
   {
-    final String sMsg = Integer.toString (nResponseCode) + " " + _getHTTPResponseMessage (nResponseCode) + "\r\n";
+    final String sMsg = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + "\r\n";
     aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
     // No headers
     aOS.write ("\r\n".getBytes ());
@@ -343,6 +337,15 @@ public final class HTTPUtil
     // Flush and close
     aOS.flush ();
     aOS.close ();
+  }
+
+  public static void sendSimpleHTTPResponse (@Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                             final int nResponseCode) throws IOException
+  {
+    final InternetHeaders aHeaders = new InternetHeaders ();
+    final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
+    aData.write ((Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + "\r\n").getBytes ());
+    aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
   }
 
   /**

@@ -64,13 +64,13 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
+import com.helger.as2lib.util.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.AS2InputStreamProviderSocket;
-import com.helger.as2lib.util.AS2OutputStreamCreatorSocket;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.HTTPUtil;
-import com.helger.as2lib.util.IAS2OutputStreamCreator;
+import com.helger.as2lib.util.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
@@ -110,14 +110,14 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
     final AS2Message aMsg = new AS2Message ();
 
-    final IAS2OutputStreamCreator aOSC = new AS2OutputStreamCreatorSocket (aSocket);
+    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
 
     byte [] aData = null;
 
     // Read in the message request, headers, and data
     try
     {
-      aData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
+      aData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN

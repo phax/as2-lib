@@ -32,16 +32,15 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Enumeration;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.mail.internet.ContentType;
+import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
@@ -63,13 +62,13 @@ import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
+import com.helger.as2lib.util.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.AS2InputStreamProviderSocket;
-import com.helger.as2lib.util.AS2OutputStreamCreatorSocket;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.HTTPUtil;
-import com.helger.as2lib.util.IAS2OutputStreamCreator;
+import com.helger.as2lib.util.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
@@ -99,7 +98,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
   public void handleIncomingMessage (@Nonnull final String sClientInfo,
                                      @Nonnull final byte [] aMsgData,
                                      @Nonnull final AS2Message aMsg,
-                                     @Nonnull final IAS2OutputStreamCreator aOSP)
+                                     @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
     // TODO store HTTP request, headers, and data to file in Received folder
     // -> use message-id for filename?
@@ -181,14 +180,16 @@ public class AS2ReceiverHandler implements INetModuleHandler
         if (aMsg.isRequestingMDN ())
         {
           // Transmit a success MDN if requested
-          sendMDN (sClientInfo, aOSP, aMsg, new DispositionType ("automatic-action",
-                                                                 "MDN-sent-automatically",
-                                                                 "processed"), AS2ReceiverModule.DISP_SUCCESS);
+          sendMDN (sClientInfo,
+                   aResponseHandler,
+                   aMsg,
+                   new DispositionType ("automatic-action", "MDN-sent-automatically", "processed"),
+                   AS2ReceiverModule.DISP_SUCCESS);
         }
         else
         {
           // Just send a HTTP OK
-          HTTPUtil.sendSimpleHTTPResponse (aOSP.createOutputStream (), HttpURLConnection.HTTP_OK);
+          HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
           s_aLogger.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
         }
       }
@@ -199,7 +200,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     }
     catch (final DispositionException ex)
     {
-      sendMDN (sClientInfo, aOSP, aMsg, ex.getDisposition (), ex.getText ());
+      sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
       m_aReceiverModule.handleError (aMsg, ex);
     }
     catch (final OpenAS2Exception ex)
@@ -217,7 +218,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
     byte [] aMsgData = null;
 
-    final IAS2OutputStreamCreator aOSC = new AS2OutputStreamCreatorSocket (aSocket);
+    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
 
     // Time the transmission
     final StopWatch aSW = new StopWatch (true);
@@ -225,7 +226,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aMsgData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aOSC, aMsg);
+      aMsgData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
     }
     catch (final Exception ex)
     {
@@ -243,7 +244,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                       sClientInfo +
                       aMsg.getLoggingText ());
 
-      handleIncomingMessage (sClientInfo, aMsgData, aMsg, aOSC);
+      handleIncomingMessage (sClientInfo, aMsgData, aMsg, aResponseHandler);
     }
   }
 
@@ -315,7 +316,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
   }
 
   protected void sendMDN (@Nonnull final String sClientInfo,
-                          @Nonnull final IAS2OutputStreamCreator aOSP,
+                          @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                           @Nonnull final AS2Message aMsg,
                           final DispositionType aDisposition,
                           final String sText)
@@ -327,15 +328,15 @@ public class AS2ReceiverHandler implements INetModuleHandler
       {
         final IMessageMDN aMdn = AS2Util.createMDN (m_aReceiverModule.getSession (), aMsg, aDisposition, sText);
 
-        final OutputStream aOS = aOSP.createOutputStream ();
         if (aMsg.isRequestingAsynchMDN ())
         {
           // if asyncMDN requested, close connection and initiate separate MDN
           // send
-          HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
-          aOS.write ("Content-Length: 0\r\n\r\n".getBytes ());
-          aOS.flush ();
-          aOS.close ();
+          final InternetHeaders aHeaders = new InternetHeaders ();
+          aHeaders.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (0));
+          final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
+          aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
+
           s_aLogger.info ("setup to send asynch MDN [" +
                           aDisposition.getAsString () +
                           "] " +
@@ -348,25 +349,15 @@ public class AS2ReceiverHandler implements INetModuleHandler
         else
         {
           // otherwise, send sync MDN back on same connection
-          HTTPUtil.startHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
 
-          // make sure to set the content-length header
+          // Get data and therefore content length for sync MDN
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           final MimeBodyPart aPart = aMdn.getData ();
           StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
           aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.size ()));
 
-          final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaderLines ();
-          while (aHeaders.hasMoreElements ())
-          {
-            final String sHeader = (String) aHeaders.nextElement () + "\r\n";
-            aOS.write (sHeader.getBytes ());
-          }
-          aOS.write ("\r\n".getBytes ());
-
-          aData.writeTo (aOS);
-          aOS.flush ();
-          aOS.close ();
+          // start HTTP response
+          aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.getHeaders (), aData);
 
           // Save sent MDN for later examination
           try
