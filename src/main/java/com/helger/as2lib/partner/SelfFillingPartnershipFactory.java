@@ -66,9 +66,6 @@ public class SelfFillingPartnershipFactory extends AbstractPartnershipFactory
       aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
     if (!aPartnership.containsReceiverID (CPartnershipIDs.PID_X509_ALIAS))
       aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
-
-    if (!aPartnership.containsSenderID (CPartnershipIDs.PID_EMAIL))
-      aPartnership.setSenderID (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
   }
 
   @Override
