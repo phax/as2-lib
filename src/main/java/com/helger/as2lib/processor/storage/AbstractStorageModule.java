@@ -51,6 +51,7 @@ import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.streams.StreamUtils;
 
@@ -110,7 +111,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected abstract String getFilename (IMessage aMsg, String sFileParam, String sAction) throws InvalidParameterException;
 
-  protected void store (final File aMsgFile, final InputStream aIS) throws IOException
+  protected void store (@Nonnull final File aMsgFile, @Nonnull @WillClose final InputStream aIS) throws IOException
   {
     final String sTempDirname = getAttributeAsString (ATTR_TEMPDIR);
     if (sTempDirname != null)
@@ -118,10 +119,10 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
       // write the data to a temporary directory first
       final File aTempDir = IOUtil.getDirectoryFile (sTempDirname);
       final File aTempFile = IOUtil.getUniqueFile (aTempDir, aMsgFile.getName ());
-      writeStream (aIS, aTempFile);
+      _writeStream (aIS, aTempFile);
 
       // copy the temp file over to the destination
-      if (!aTempFile.renameTo (aMsgFile))
+      if (FileOperations.renameFile (aTempFile, aMsgFile).isFailure ())
         throw new IOException ("Rename from " +
                                aTempFile.getAbsolutePath () +
                                " to " +
@@ -130,11 +131,12 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     }
     else
     {
-      writeStream (aIS, aMsgFile);
+      // Write directly to the destination file
+      _writeStream (aIS, aMsgFile);
     }
   }
 
-  protected void writeStream (@Nonnull @WillClose final InputStream aIS, final File aDestination) throws IOException
+  private void _writeStream (@Nonnull @WillClose final InputStream aIS, @Nonnull final File aDestination) throws IOException
   {
     final FileOutputStream aOS = new FileOutputStream (aDestination);
     if (StreamUtils.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())

@@ -58,7 +58,7 @@ import com.helger.as2lib.util.DispositionType;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 
 /**
- * Store a message to a file
+ * Store message content and optionally message headers and attributes to a file
  *
  * @author Philip Helger
  */
@@ -96,6 +96,7 @@ public class MessageFileModule extends AbstractStorageModule
                                       ex);
     }
 
+    // Store message headers and attributes
     final String sHeaderFilename = getAttributeAsString (ATTR_HEADER);
     if (sHeaderFilename != null)
     {

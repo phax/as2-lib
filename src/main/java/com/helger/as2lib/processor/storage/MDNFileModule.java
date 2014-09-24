@@ -99,6 +99,7 @@ public class MDNFileModule extends AbstractStorageModule
     return AbstractParameterParser.parse (sFileParam, aCompParams);
   }
 
+  @Nonnull
   protected InputStream getMDNStream (@Nonnull final IMessageMDN aMdn)
   {
     final StringBuilder aSB = new StringBuilder ();
