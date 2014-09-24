@@ -216,6 +216,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
    * Store the current status of the partnerships to a file.
    *
    * @throws OpenAS2Exception
+   *         In case of an error
    */
   public void storePartnership () throws OpenAS2Exception
   {
