@@ -226,7 +226,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aMsgData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aMsgData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
     }
     catch (final Exception ex)
     {

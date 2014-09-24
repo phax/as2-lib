@@ -38,7 +38,7 @@ public final class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandl
 
     final OutputStream aOS = createOutputStream ();
 
-    // Send HTTP version and URL
+    // Send HTTP version and response code
     final String sMsg = Integer.toString (nHttpResponseCode) +
                         " " +
                         HTTPUtil.getHTTPResponseMessage (nHttpResponseCode) +

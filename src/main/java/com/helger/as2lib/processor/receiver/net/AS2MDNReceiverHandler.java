@@ -37,14 +37,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
@@ -117,7 +115,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = HTTPUtil.readHeaderAndData (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
@@ -141,7 +139,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
       aMsg.setData (aReceivedPart);
 
-      receiveMDN (aMsg, aData, aSocket.getOutputStream ());
+      receiveMDN (aMsg, aData, aResponseHandler);
     }
     catch (final Exception ex)
     {
@@ -156,7 +154,8 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
    */
   protected final void receiveMDN (final AS2Message aMsg,
                                    final byte [] aData,
-                                   @Nonnull @WillClose final OutputStream aOS) throws OpenAS2Exception, IOException
+                                   @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws OpenAS2Exception,
+                                                                                           IOException
   {
     try
     {
@@ -188,9 +187,9 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
       // check if the mic (message integrity check) is correct
       if (checkAsyncMDN (aMsg))
-        HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_OK);
+        HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
       else
-        HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_NOT_FOUND);
+        HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_NOT_FOUND);
 
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
       try
@@ -213,12 +212,12 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     }
     catch (final IOException ex)
     {
-      HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST);
+      HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
       throw ex;
     }
     catch (final Exception ex)
     {
-      HTTPUtil.sendSimpleHTTPResponse (aOS, HttpURLConnection.HTTP_BAD_REQUEST);
+      HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
 
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);

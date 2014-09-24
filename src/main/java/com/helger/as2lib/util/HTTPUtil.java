@@ -35,14 +35,13 @@ package com.helger.as2lib.util;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
@@ -55,6 +54,7 @@ public final class HTTPUtil
 {
   public static final String MA_HTTP_REQ_TYPE = "HTTP_REQUEST_TYPE";
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
+  public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
 
   private HTTPUtil ()
   {}
@@ -194,9 +194,9 @@ public final class HTTPUtil
   }
 
   @Nonnull
-  public static byte [] readData (@Nonnull final InputStream aIS,
-                                  @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                  @Nonnull final IMessage aMsg) throws IOException
+  public static byte [] readHttpPayload (@Nonnull final InputStream aIS,
+                                         @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                         @Nonnull final IMessage aMsg) throws IOException
   {
     ValueEnforcer.notNull (aIS, "InputStream");
 
@@ -271,6 +271,17 @@ public final class HTTPUtil
     return aData;
   }
 
+  /**
+   * Read the first line of the HTTP request InputStream and parse out HTTP
+   * method (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version
+   * (e.g. "HTTP/1.1")
+   *
+   * @param aIS
+   *        Stream to read the first line from
+   * @return An array with 3 elements, containing method, URL and HTTP version
+   * @throws IOException
+   *         In case of IO error
+   */
   @Nonnull
   @Nonempty
   private static String [] _readRequestInfo (@Nonnull final InputStream aIS) throws IOException
@@ -310,37 +321,29 @@ public final class HTTPUtil
   }
 
   @Nonnull
-  public static byte [] readHeaderAndData (@Nonnull final IAS2InputStreamProvider aISP,
-                                           @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                           @Nonnull final IMessage aMsg) throws IOException, MessagingException
+  public static byte [] readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
+                                         @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                         @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
     // Get the stream and read in the HTTP request and headers
     final InputStream aIS = aISP.getInputStream ();
     final String [] aRequest = _readRequestInfo (aIS);
-    // Request type (e.g. "POST")
+    // Request method (e.g. "POST")
     aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
     // Request URL (e.g. "/as2")
     aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
+    // HTTP version (e.g. "HTTP/1.1")
+    aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
+
+    // Parse all HTTP headers from stream
     aMsg.setHeaders (new InternetHeaders (aIS));
 
-    return readData (aIS, aResponseHandler, aMsg);
-  }
-
-  public static void sendSimpleHTTPResponse (@Nonnull @WillClose final OutputStream aOS, final int nResponseCode) throws IOException
-  {
-    final String sMsg = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + "\r\n";
-    aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
-    // No headers
-    aOS.write ("\r\n".getBytes ());
-    // Write message
-    aOS.write (sMsg.getBytes ());
-    // Flush and close
-    aOS.flush ();
-    aOS.close ();
+    // Read the message body
+    return readHttpPayload (aIS, aResponseHandler, aMsg);
   }
 
   public static void sendSimpleHTTPResponse (@Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                             final int nResponseCode) throws IOException
+                                             @Nonnegative final int nResponseCode) throws IOException
   {
     final InternetHeaders aHeaders = new InternetHeaders ();
     final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
