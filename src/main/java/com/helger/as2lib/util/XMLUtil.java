@@ -36,11 +36,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.microdom.IMicroElement;
 
 @Immutable
@@ -110,5 +115,64 @@ public final class XMLUtil
       ret.setAttribute (sName, sValue);
     }
     return ret;
+  }
+
+  private static void _updateDirectories (@Nonnull final StringMap aAttributes, @Nullable final String sBaseDirectory) throws OpenAS2Exception
+  {
+    for (final Map.Entry <String, String> attrEntry : aAttributes)
+    {
+      final String value = attrEntry.getValue ();
+      if (value.startsWith ("%home%"))
+      {
+        if (sBaseDirectory == null)
+          throw new OpenAS2Exception ("Base directory isn't set");
+        aAttributes.setAttribute (attrEntry.getKey (), sBaseDirectory + value.substring (6));
+      }
+    }
+  }
+
+  @Nonnull
+  public static <T extends IDynamicComponent> T createComponent (@Nonnull final IMicroElement aElement,
+                                                                 @Nonnull final Class <T> aClass,
+                                                                 @Nonnull final IAS2Session aSession,
+                                                                 @Nullable final String sBaseDirectory) throws OpenAS2Exception
+  {
+    ValueEnforcer.notNull (aElement, "Element");
+    ValueEnforcer.notNull (aClass, "Class");
+    ValueEnforcer.notNull (aSession, "Session");
+
+    // Read 'classname' attribute
+    final String sClassName = aElement.getAttribute ("classname");
+    if (sClassName == null)
+      throw new OpenAS2Exception ("Missing 'classname' attribute");
+
+    try
+    {
+      // Instantiate class
+      final T aObj = GenericReflection.newInstance (sClassName, aClass);
+      if (aObj == null)
+        throw new OpenAS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
+
+      // Read all parameters
+      final StringMap aParameters = XMLUtil.getAttrsWithLowercaseName (aElement);
+      if (sBaseDirectory != null)
+      {
+        // Replace %home% with session base directory
+        _updateDirectories (aParameters, sBaseDirectory);
+      }
+
+      // Init component
+      aObj.initDynamicComponent (aSession, aParameters);
+
+      return aObj;
+    }
+    catch (final OpenAS2Exception ex)
+    {
+      throw ex;
+    }
+    catch (final Exception ex)
+    {
+      throw new WrappedOpenAS2Exception ("Error creating component: " + sClassName, ex);
+    }
   }
 }
