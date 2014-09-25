@@ -46,7 +46,7 @@ import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
@@ -82,7 +82,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   @Override
-  public final void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public final void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_FILENAME);

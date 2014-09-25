@@ -41,7 +41,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
@@ -51,7 +51,7 @@ import com.helger.commons.string.ToStringGenerator;
 public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
 {
   protected final ReadWriteLock m_aRWLock = new ReentrantReadWriteLock ();
-  private ISession m_aSession;
+  private IAS2Session m_aSession;
 
   @Nonnull
   public String getName ()
@@ -77,7 +77,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   }
 
   @Nonnull
-  public final ISession getSession ()
+  public final IAS2Session getSession ()
   {
     if (m_aSession == null)
       throw new IllegalStateException ("No session present so far!");
@@ -85,7 +85,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   }
 
   @OverridingMethodsMustInvokeSuper
-  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aParameters) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws OpenAS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
     setAttributes (aParameters != null ? aParameters.getAllAttributes () : null);

@@ -46,9 +46,8 @@ import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 
 /**
- * The <code>Session</code> interface provides configuration and resource
- * information, and a means for components to access the functionality of other
- * components.
+ * This interface provides configuration and resource information, and a means
+ * for components to access the functionality of other components.
  *
  * @author Aaron Silinskas
  * @see IDynamicComponent
@@ -56,7 +55,7 @@ import com.helger.commons.annotations.ReturnsMutableCopy;
  * @see com.helger.as2lib.partner.IPartnershipFactory
  * @see com.helger.as2lib.processor.IMessageProcessor
  */
-public interface ISession
+public interface IAS2Session
 {
   /**
    * Registers a component to a specified ID.

@@ -56,7 +56,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.io.file.FilenameHelper;
@@ -146,7 +146,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 

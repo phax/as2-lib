@@ -62,7 +62,7 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.mime.CMimeType;
 
 @Immutable
@@ -91,7 +91,7 @@ public final class AS2Util
   }
 
   @Nonnull
-  public static IMessageMDN createMDN (@Nonnull final ISession aSession,
+  public static IMessageMDN createMDN (@Nonnull final IAS2Session aSession,
                                        @Nonnull final AS2Message aMsg,
                                        @Nonnull final DispositionType aDisposition,
                                        @Nonnull final String sText) throws Exception
@@ -154,7 +154,7 @@ public final class AS2Util
     return aMdn;
   }
 
-  public static void createMDNData (@Nonnull final ISession aSession,
+  public static void createMDNData (@Nonnull final IAS2Session aSession,
                                     @Nonnull final IMessageMDN aMdn,
                                     @Nonnull final String sMicAlg,
                                     @Nullable final String sSignatureProtocol) throws Exception

@@ -63,7 +63,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
@@ -86,7 +86,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   {}
 
   @Override
-  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 

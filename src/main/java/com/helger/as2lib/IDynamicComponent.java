@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IStringMap;
 
 /**
@@ -50,7 +50,7 @@ import com.helger.as2lib.util.IStringMap;
  *
  * @author Aaron Silinskas
  * @see AbstractDynamicComponent
- * @see ISession
+ * @see IAS2Session
  */
 public interface IDynamicComponent extends IStringMap
 {
@@ -71,7 +71,7 @@ public interface IDynamicComponent extends IStringMap
    * @return this component's session
    */
   @Nonnull
-  ISession getSession ();
+  IAS2Session getSession ();
 
   /**
    * After creating a Component object, this method should be called to set any
@@ -87,7 +87,7 @@ public interface IDynamicComponent extends IStringMap
    *         If an error occurs while initializing the component
    * @throws InvalidParameterException
    *         If a required parameter is null in the parameters Map
-   * @see ISession
+   * @see IAS2Session
    */
-  void initDynamicComponent (@Nonnull ISession aSession, @Nullable IStringMap aParameters) throws OpenAS2Exception;
+  void initDynamicComponent (@Nonnull IAS2Session aSession, @Nullable IStringMap aParameters) throws OpenAS2Exception;
 }

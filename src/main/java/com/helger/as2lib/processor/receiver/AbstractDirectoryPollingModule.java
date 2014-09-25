@@ -58,7 +58,7 @@ import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
@@ -85,7 +85,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   private Map <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);

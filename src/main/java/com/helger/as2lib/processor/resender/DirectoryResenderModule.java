@@ -56,7 +56,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
-import com.helger.as2lib.session.ISession;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
@@ -116,7 +116,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final ISession aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);

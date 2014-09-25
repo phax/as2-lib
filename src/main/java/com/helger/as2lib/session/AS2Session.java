@@ -54,7 +54,7 @@ import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.priviledged.AccessControllerHelper;
 import com.helger.commons.string.ToStringGenerator;
 
-public class Session implements ISession
+public class AS2Session implements IAS2Session
 {
   public static final String COMPONENT_ID_CERTIFICATE_FACTORY = "certificatefactory";
   public static final String COMPONENT_ID_PARTNERSHIP_FACTORY = "partnershipfactory";
@@ -65,7 +65,7 @@ public class Session implements ISession
   /**
    * Constructor
    */
-  public Session ()
+  public AS2Session ()
   {
     /*
      * Adds a group of content handlers to the Mailcap <code>CommandMap</code>.
