@@ -138,8 +138,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
 
   protected void loadAttributes (final IMicroElement node, final Partnership partnership) throws OpenAS2Exception
   {
-    final IStringMap nodes = XMLUtil.mapAttributeNodes (node, "attribute", PARTNER_NAME, "value");
-    partnership.addAllAttributes (nodes);
+    final IStringMap aAttributes = XMLUtil.mapAttributeNodes (node, "attribute", "name", "value");
+    partnership.addAllAttributes (aAttributes);
   }
 
   @Nonnull
@@ -262,7 +262,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
 
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllAttributes ())
         ePartnership.appendElement ("attribute")
-                    .setAttribute (PARTNER_NAME, aAttr.getKey ())
+                    .setAttribute ("name", aAttr.getKey ())
                     .setAttribute ("value", aAttr.getValue ());
     }
     if (MicroWriter.writeToFile (aDoc, new File (sFilename)).isFailure ())

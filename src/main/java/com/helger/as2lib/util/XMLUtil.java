@@ -49,10 +49,21 @@ public final class XMLUtil
   private XMLUtil ()
   {}
 
+  /**
+   * Get all attributes of the passed element as a map with a lowercase
+   * attribute name.
+   *
+   * @param aElement
+   *        The source element to extract the attributes from. May not be
+   *        <code>null</code>.
+   * @return A new map and never <code>null</code>.
+   */
   @Nonnull
   @ReturnsMutableCopy
   public static StringMap getAttrsWithLowercaseName (@Nonnull final IMicroElement aElement)
   {
+    ValueEnforcer.notNull (aElement, "Element");
+
     final StringMap ret = new StringMap ();
     final Map <String, String> aAttrs = aElement.getAllAttributes ();
     if (aAttrs != null)
