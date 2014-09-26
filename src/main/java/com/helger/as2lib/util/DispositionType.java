@@ -136,6 +136,9 @@ public final class DispositionType
   @Nonnull
   public static DispositionType parse (@Nullable final String sDisposition) throws OpenAS2Exception
   {
+    if (sDisposition == null)
+      throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition);
+
     final StringTokenizer aDispTokens = new StringTokenizer (sDisposition, "/;:", false);
     try
     {

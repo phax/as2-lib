@@ -53,6 +53,7 @@ public final class PartnershipMap implements IPartnershipMap
 
   public void setPartnerships (@Nonnull final PartnershipMap aPartnerships)
   {
+    ValueEnforcer.notNull (aPartnerships, "Partnerships");
     m_aMap.clear ();
     m_aMap.putAll (aPartnerships.m_aMap);
   }

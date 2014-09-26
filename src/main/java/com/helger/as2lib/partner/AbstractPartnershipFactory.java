@@ -262,7 +262,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     }
   }
 
-  protected final void setPartnerships (@Nullable final PartnershipMap aPartnerships) throws OpenAS2Exception
+  protected final void setPartnerships (@Nonnull final PartnershipMap aPartnerships) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
