@@ -70,6 +70,7 @@ import com.helger.commons.mime.CMimeType;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
 {
+  public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = "8bit";
   public static final String ATTR_OUTBOX_DIRECTORY = "outboxdir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   public static final String ATTR_SENT_DIRECTORY = "sentdir";
@@ -297,9 +298,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     }
   }
 
+  @Nonnull
   protected abstract IMessage createMessage ();
 
-  public void updateMessage (final IMessage aMsg, final File aFile) throws OpenAS2Exception
+  public void updateMessage (@Nonnull final IMessage aMsg, @Nonnull final File aFile) throws OpenAS2Exception
   {
     final MessageParameters aParams = new MessageParameters (aMsg);
 
@@ -344,7 +346,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       else
       {
         // default is 8bit
-        aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, "8bit");
+        aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, DEFAULT_CONTENT_TRANSFER_ENCODING);
       }
 
       // below statement is not filename related, just want to make it
@@ -358,8 +360,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       if ("true".equals (sSendFilename))
       {
         final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);
-        aBody.setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, "Attachment; filename=\"" + sMAFilename + "\"");
-        aMsg.setContentDisposition ("Attachment; filename=\"" + sMAFilename + "\"");
+        final String sContentDisposition = "Attachment; filename=\"" + sMAFilename + "\"";
+        aBody.setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisposition);
+        aMsg.setContentDisposition (sContentDisposition);
       }
 
       aMsg.setData (aBody);

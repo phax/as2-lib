@@ -51,7 +51,6 @@ import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.streams.StreamUtils;
 
@@ -122,7 +121,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
       _writeStream (aIS, aTempFile);
 
       // copy the temp file over to the destination
-      if (FileOperations.renameFile (aTempFile, aMsgFile).isFailure ())
+      if (IOUtil.getFileOperationManager ().renameFile (aTempFile, aMsgFile).isFailure ())
         throw new IOException ("Rename from " +
                                aTempFile.getAbsolutePath () +
                                " to " +

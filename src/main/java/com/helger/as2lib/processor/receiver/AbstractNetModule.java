@@ -33,8 +33,8 @@
 package com.helger.as2lib.processor.receiver;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -58,6 +58,7 @@ import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
+import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.lang.CGStringHelper;
@@ -166,25 +167,29 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sName = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
-      final String sDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
+      final String sErrorFilename = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
+      final String sErrorDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
+      final File aMsgErrorFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sErrorDirectory),
+                                                       FilenameHelper.getAsSecureValidFilename (sErrorFilename));
 
-      final File aMsgFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sDirectory),
-                                                  FilenameHelper.getAsSecureValidFilename (sName));
-      final String sMsgText = aMsg.getAsString ();
-      final FileOutputStream aFOS = new FileOutputStream (aMsgFile);
+      final OutputStream aFOS = FileUtils.getOutputStream (aMsgErrorFile);
+      try
+      {
+        final String sMsgText = aMsg.getAsString ();
+        aFOS.write (sMsgText.getBytes ());
 
-      aFOS.write (sMsgText.getBytes ());
-
-      // Enable this line, to also store the body of the source message
-      if (false)
-        StreamUtils.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
-
-      aFOS.close ();
+        // Enable this line, to also store the body of the source message
+        if (false)
+          StreamUtils.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
+      }
+      finally
+      {
+        StreamUtils.close (aFOS);
+      }
 
       // make sure an error of this event is logged
       final InvalidMessageException im = new InvalidMessageException ("Stored invalid message to " +
-                                                                      aMsgFile.getAbsolutePath ());
+                                                                      aMsgErrorFile.getAbsolutePath ());
       im.terminate ();
     }
     catch (final Exception ex)

@@ -47,10 +47,10 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
+import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.XMLUtil;
-import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
@@ -235,7 +235,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
       s_aLogger.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
       final File fr = new File (sFilename);
-      FileOperations.renameFile (fr, aBackupFile);
+      IOUtil.getFileOperationManager ().renameFile (fr, aBackupFile);
     }
 
     final IMicroDocument aDoc = new MicroDocument ();
