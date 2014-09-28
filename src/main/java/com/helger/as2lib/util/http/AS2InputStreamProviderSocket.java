@@ -1,4 +1,4 @@
-package com.helger.as2lib.util;
+package com.helger.as2lib.util.http;
 
 import java.io.IOException;
 import java.io.InputStream;
