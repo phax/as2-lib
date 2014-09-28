@@ -33,37 +33,103 @@
 package com.helger.as2lib.client;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.as2lib.message.AS2MessageMDN;
+import com.helger.as2lib.message.IMessageMDN;
+import com.helger.commons.ValueEnforcer;
 
 /**
  * This class contains the basic content that was received from an AS2 server as
  * a response.
  *
  * @author oleo Date: May 12, 2010 Time: 5:53:45 PM
+ * @author Philip Helger
  */
 public class AS2Response
 {
-  public String originalMessageId;
-  public String receivedMdnId;
-  public String text;
-  public String disposition;
-  public boolean isError = false;
-  public String errorDescription;
-  public Throwable exception;
+  private String m_sOriginalMessageID;
+  private Throwable m_aThrowable;
+  private String m_sMDNMessageID;
+  private String m_sMDNText;
+  private String m_sMDNDisposition;
 
   public AS2Response ()
   {}
+
+  public void setOriginalMessageID (@Nonnull final String sOriginalMessageID)
+  {
+    ValueEnforcer.notNull (sOriginalMessageID, "OriginalMessageID");
+    m_sOriginalMessageID = sOriginalMessageID;
+  }
+
+  /**
+   * The message ID of the original AS2 message.
+   */
+  @Nullable
+  public String getOriginalMessageID ()
+  {
+    return m_sOriginalMessageID;
+  }
+
+  public void setException (@Nonnull final Throwable t)
+  {
+    ValueEnforcer.notNull (t, "Throwable");
+    m_aThrowable = t;
+  }
+
+  public boolean hasException ()
+  {
+    return m_aThrowable != null;
+  }
+
+  @Nullable
+  public Throwable getException ()
+  {
+    return m_aThrowable;
+  }
+
+  public void setMDN (@Nonnull final IMessageMDN aMDN)
+  {
+    ValueEnforcer.notNull (aMDN, "MDN");
+    m_sMDNMessageID = aMDN.getMessageID ();
+    m_sMDNText = aMDN.getText ();
+    m_sMDNDisposition = aMDN.getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+  }
+
+  @Nullable
+  public String getMDNMessageID ()
+  {
+    return m_sMDNMessageID;
+  }
+
+  @Nullable
+  public String getMDNText ()
+  {
+    return m_sMDNText;
+  }
+
+  @Nullable
+  public String getMDNDisposition ()
+  {
+    return m_sMDNDisposition;
+  }
 
   @Nonnull
   public String getAsString ()
   {
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ('\n');
-    aSB.append ("originalId: ").append (originalMessageId).append ('\n');
-    aSB.append ("receivedId: ").append (receivedMdnId).append ('\n');
-    aSB.append ("disposition: ").append (disposition).append ('\n');
-    if (isError)
-      aSB.append ("errorDescription: ").append (errorDescription).append ('\n');
-    aSB.append ("text: ").append (text).append ('\n');
+    if (m_sOriginalMessageID != null)
+      aSB.append ("OriginalMessageID: ").append (m_sOriginalMessageID).append ('\n');
+    if (m_sMDNMessageID != null)
+      aSB.append ("MDN MessageID: ").append (m_sMDNMessageID).append ('\n');
+    if (m_sMDNDisposition != null)
+      aSB.append ("MDN Disposition: ").append (m_sMDNDisposition).append ('\n');
+    if (hasException ())
+      aSB.append ("Error message: ").append (m_aThrowable.getMessage ()).append ('\n');
+    if (m_sMDNText != null)
+      aSB.append ("MDN Text: ").append (m_sMDNText).append ('\n');
     return aSB.toString ();
   }
 }

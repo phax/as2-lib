@@ -106,8 +106,7 @@ public class AS2Client
     return aMsg;
   }
 
-  // TODO do object
-  // TODO extract interface
+  @Nonnull
   public static AS2Response sendSynchronous (@Nonnull final AS2ConnectionSettings aSettings,
                                              @Nonnull final AS2Request aRequest)
   {
@@ -118,11 +117,15 @@ public class AS2Client
       final Partnership aPartnership = _buildPartnership (aSettings);
 
       aMsg = _buildMessage (aPartnership, aRequest);
-      aResponse.originalMessageId = aMsg.getMessageID ();
+      aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
-      // logger.info("msgId to send: "+msg.getMessageID());
+      if (false)
+        s_aLogger.info ("msgId to send: " + aMsg.getMessageID ());
 
+      // Start a new session
       final AS2Session aSession = new AS2Session ();
+
+      // Dynamically add certificate factory
       {
         final StringMap aParams = new StringMap ();
         aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
@@ -133,27 +136,26 @@ public class AS2Client
         aSession.setCertificateFactory (aCertFactory);
       }
 
+      // Use a self-filling in-memory partnership factory
       final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
       aSession.setPartnershipFactory (aPartnershipFactory);
 
+      // And create a sender module that directly sends the message
       final AS2SenderModule aSender = new AS2SenderModule ();
       aSender.initDynamicComponent (aSession, null);
       aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, null);
     }
-    catch (final Exception ex)
+    catch (final Throwable t)
     {
-      s_aLogger.error (ex.getMessage (), ex);
-      aResponse.isError = true;
-      aResponse.exception = ex;
-      aResponse.errorDescription = ex.getMessage ();
+      s_aLogger.error ("Error sending message", t);
+      aResponse.setException (t);
     }
     finally
     {
       if (aMsg != null && aMsg.getMDN () != null)
       {
-        aResponse.receivedMdnId = aMsg.getMDN ().getMessageID ();
-        aResponse.text = aMsg.getMDN ().getText ();
-        aResponse.disposition = aMsg.getMDN ().getAttribute ("DISPOSITION");
+        // May be present, even in case of an exception
+        aResponse.setMDN (aMsg.getMDN ());
       }
     }
 
@@ -163,32 +165,32 @@ public class AS2Client
   }
 
   /**
-   * @param settings
+   * Send a message and await an asynchronous MDN
+   *
+   * @param aSettings
    *        Settings
-   * @param request
+   * @param aRequest
    *        Request
    * @return UnsupportedOperationException
    */
   @UnsupportedOperation
-  public AS2Response sendAsync (final AS2ConnectionSettings settings, final AS2Request request)
+  public AS2Response sendAsync (@Nonnull final AS2ConnectionSettings aSettings, final AS2Request aRequest)
   {
     throw new UnsupportedOperationException ();
-    // Response response = null;
-    // return response;
   }
 
   /**
-   * @param settings
+   * Process the incoming asynchronous MDN.
+   *
+   * @param aSettings
    *        Settings
-   * @param stream
+   * @param aIS
    *        Input stream
    * @return UnsupportedOperationException
    */
   @UnsupportedOperation
-  public AS2Response processAsyncReply (final AS2ConnectionSettings settings, final InputStream stream)
+  public AS2Response processAsyncReply (@Nonnull final AS2ConnectionSettings aSettings, final InputStream aIS)
   {
     throw new UnsupportedOperationException ();
-    // Response response = null;
-    // return response;
   }
 }

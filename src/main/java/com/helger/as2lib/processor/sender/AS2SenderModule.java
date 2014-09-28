@@ -89,61 +89,87 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                             @Nonnull final IMessage aMsg,
                             @Nullable final Map <String, Object> aOptions)
   {
-    if (!sAction.equals (IProcessorSenderModule.DO_SEND))
-      return false;
-    return aMsg instanceof AS2Message;
+    return IProcessorSenderModule.DO_SEND.equals (sAction) && aMsg instanceof AS2Message;
+  }
+
+  protected void checkRequired (@Nonnull final AS2Message aMsg) throws InvalidParameterException
+  {
+    final Partnership aPartnership = aMsg.getPartnership ();
+
+    try
+    {
+      InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
+      InvalidParameterException.checkValue (aMsg,
+                                            "Attribute: " + CPartnershipIDs.PA_AS2_URL,
+                                            aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+      InvalidParameterException.checkValue (aMsg,
+                                            "Receiver: " + CPartnershipIDs.PID_AS2,
+                                            aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
+      InvalidParameterException.checkValue (aMsg,
+                                            "Sender: " + CPartnershipIDs.PID_AS2,
+                                            aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
+      InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
+      InvalidParameterException.checkValue (aMsg,
+                                            "Sender: " + CPartnershipIDs.PID_EMAIL,
+                                            aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
+      InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
+    }
+    catch (final InvalidParameterException ex)
+    {
+      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      throw ex;
+    }
   }
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    s_aLogger.info ("message submitted" + aMsg.getLoggingText ());
-    if (!(aMsg instanceof AS2Message))
-      throw new OpenAS2Exception ("Can't send non-AS2 message");
+    final AS2Message aRealMsg = (AS2Message) aMsg;
+    s_aLogger.info ("message submitted: " + aRealMsg.getLoggingText ());
 
     // verify all required information is present for sending
-    checkRequired (aMsg);
+    checkRequired (aRealMsg);
 
     final int nRetries = getRetries (aOptions);
 
     try
     {
       // encrypt and/or sign the message if needed
-      final MimeBodyPart aSecuredData = secure (aMsg);
-      aMsg.setContentType (aSecuredData.getContentType ());
+      final MimeBodyPart aSecuredData = secure (aRealMsg);
+      aRealMsg.setContentType (aSecuredData.getContentType ());
 
       // Create the HTTP connection and set up headers
-      final String sUrl = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_URL);
+      final String sUrl = aRealMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_URL);
 
       final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
       try
       {
-        updateHttpHeaders (aConn, aMsg);
+        updateHttpHeaders (aConn, aRealMsg);
 
-        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
-        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
+        aRealMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
+        aRealMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
 
         final String sDispositionOptions = aConn.getRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
         final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
         // Calculate and get the original mic
-        final boolean bIncludeHeaders = aMsg.getHistory ().getItemCount () > 1;
+        final boolean bIncludeHeadersInMIC = aRealMsg.getHistory ().getItemCount () > 1;
 
-        final String sMIC = AS2Util.getCryptoHelper ().calculateMIC (aMsg.getData (),
+        final String sMIC = AS2Util.getCryptoHelper ().calculateMIC (aRealMsg.getData (),
                                                                      aDispositionOptions.getMICAlg (),
-                                                                     bIncludeHeaders);
+                                                                     bIncludeHeadersInMIC);
 
-        if (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
+        if (aRealMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
         {
           // if yes : PA_AS2_RECEIPT_OPTION != null
           // then keep the original mic & message id.
           // then wait for the another HTTP call by receivers
 
-          storePendingInfo ((AS2Message) aMsg, sMIC);
+          storePendingInfo (aRealMsg, sMIC);
         }
 
-        s_aLogger.info ("connecting to " + sUrl + aMsg.getLoggingText ());
+        s_aLogger.info ("connecting to " + sUrl + aRealMsg.getLoggingText ());
 
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
@@ -155,7 +181,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         final StopWatch aSW = new StopWatch (true);
         final long nBytes = IOUtil.copy (aMsgIS, aMsgOS);
         aSW.stop ();
-        s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+        s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aRealMsg.getLoggingText ());
 
         // Check the HTTP Response code
         final int nResponseCode = aConn.getResponseCode ();
@@ -174,14 +200,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         try
         {
           // Receive an MDN
-          if (aMsg.isRequestingMDN ())
+          if (aRealMsg.isRequestingMDN ())
           {
             // Check if the AsyncMDN is required
-            if (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) == null)
+            if (aRealMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) == null)
             {
               // go ahead to receive sync MDN
-              receiveMDN ((AS2Message) aMsg, aConn, sMIC);
-              s_aLogger.info ("message sent" + aMsg.getLoggingText ());
+              receiveMDN (aRealMsg, aConn, sMIC);
+              s_aLogger.info ("message sent" + aRealMsg.getLoggingText ());
             }
           }
         }
@@ -197,7 +223,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           // receiving the MDN
           final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN");
           oae2.initCause (ex);
-          oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+          oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aRealMsg);
           oae2.terminate ();
         }
       }
@@ -211,16 +237,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Resend if the HTTP Response has an error code
       s_aLogger.error ("Http Response Error " + ex.getMessage ());
       ex.terminate ();
-      _resend (aMsg, ex, nRetries);
+      _resend (aRealMsg, ex, nRetries);
     }
     catch (final IOException ex)
     {
       // Resend if a network error occurs during transmission
       final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
-      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aRealMsg);
       wioe.terminate ();
 
-      _resend (aMsg, wioe, nRetries);
+      _resend (aRealMsg, wioe, nRetries);
     }
     catch (final Exception ex)
     {
@@ -343,35 +369,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
-    }
-  }
-
-  protected void checkRequired (@Nonnull final IMessage aMsg) throws InvalidParameterException
-  {
-    final Partnership aPartnership = aMsg.getPartnership ();
-
-    try
-    {
-      InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
-      InvalidParameterException.checkValue (aMsg,
-                                            "Attribute: " + CPartnershipIDs.PA_AS2_URL,
-                                            aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
-      InvalidParameterException.checkValue (aMsg,
-                                            "Receiver: " + CPartnershipIDs.PID_AS2,
-                                            aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
-      InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + CPartnershipIDs.PID_AS2,
-                                            aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
-      InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
-      InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + CPartnershipIDs.PID_EMAIL,
-                                            aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
-      InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
-    }
-    catch (final InvalidParameterException ex)
-    {
-      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      throw ex;
     }
   }
 

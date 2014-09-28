@@ -33,6 +33,7 @@
 package com.helger.as2lib.exception;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.commons.annotations.Nonempty;
 
@@ -73,7 +74,9 @@ public class InvalidParameterException extends OpenAS2Exception
     return m_sValue;
   }
 
-  public static void checkValue (final Object aTarget, final String sValueName, final Object aValue) throws InvalidParameterException
+  public static void checkValue (@Nonnull final Object aTarget,
+                                 @Nonnull final String sValueName,
+                                 @Nullable final Object aValue) throws InvalidParameterException
   {
     if (aValue == null)
       throw new InvalidParameterException ("Value is missing", aTarget, sValueName, null);
@@ -81,7 +84,7 @@ public class InvalidParameterException extends OpenAS2Exception
 
   @Nonnull
   @Nonempty
-  public static String getAsString (final String sKey, final String sValue)
+  public static String getAsString (@Nullable final String sKey, @Nullable final String sValue)
   {
     return "Invalid parameter value for " + sKey + ": " + sValue;
   }
