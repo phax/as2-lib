@@ -46,20 +46,24 @@ import com.helger.commons.lang.EnumHelper;
 
 public enum ECryptoAlgorithm implements IHasID <String>
 {
-  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5),
-  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1),
-  CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC),
-  CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC),
-  CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC),
-  CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC);
+  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, ECryptoAlgorithmMode.DIGEST),
+  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, ECryptoAlgorithmMode.DIGEST),
+  CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC, ECryptoAlgorithmMode.CRYPT),
+  CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC, ECryptoAlgorithmMode.CRYPT),
+  CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC, ECryptoAlgorithmMode.CRYPT),
+  CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC, ECryptoAlgorithmMode.CRYPT);
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
+  private final ECryptoAlgorithmMode m_eMode;
 
-  private ECryptoAlgorithm (@Nonnull @Nonempty final String sID, @Nonnull final ASN1ObjectIdentifier aOID)
+  private ECryptoAlgorithm (@Nonnull @Nonempty final String sID,
+                            @Nonnull final ASN1ObjectIdentifier aOID,
+                            @Nonnull final ECryptoAlgorithmMode eMode)
   {
     m_sID = sID;
     m_aOID = aOID;
+    m_eMode = eMode;
   }
 
   @Nonnull
@@ -73,6 +77,12 @@ public enum ECryptoAlgorithm implements IHasID <String>
   public ASN1ObjectIdentifier getOID ()
   {
     return m_aOID;
+  }
+
+  @Nonnull
+  public ECryptoAlgorithmMode getCryptAlgorithmMode ()
+  {
+    return m_eMode;
   }
 
   @Nullable
