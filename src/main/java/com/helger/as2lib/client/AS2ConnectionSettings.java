@@ -32,28 +32,180 @@
  */
 package com.helger.as2lib.client;
 
+import java.io.File;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.as2lib.crypto.ECryptoAlgorithmMode;
+import com.helger.commons.ValueEnforcer;
 
 /**
  * @author oleo Date: May 12, 2010 Time: 5:16:57 PM
  */
-public final class AS2ConnectionSettings
+public class AS2ConnectionSettings
 {
-  public String p12FilePath;
-  public String p12FilePassword;
+  public static final String DEFAULT_MDN_OPTIONS = "signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1";
+  public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
+                                                         "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
-  public String senderEmail = "email";
-  public String senderAs2Id = "Sender";
-  public String senderKeyAlias = "key_pair";
+  private File m_aKeyStoreFile;
+  private String m_sKeyStorePassword;
 
-  public String receiverAs2Id = "Reciever";
-  public String receiverKeyAlias = "trusted_key";
-  public String receiverAs2Url = "http://172.16.148.1:8080/as2/HttpReceiver";
+  private String m_sEenderEmailAddress;
+  private String m_sSenderAS2ID;
+  private String m_sSenderKeyAlias;
 
-  public String partnershipName = "partnership name";
-  public String mdnOptions = "signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1";
-  public ECryptoAlgorithm encrypt = ECryptoAlgorithm.CRYPT_3DES;
-  public ECryptoAlgorithm sign = ECryptoAlgorithm.DIGEST_SHA1;
+  private String m_sReceiverAS2ID;
+  private String m_sReceiverKeyAlias;
+  private String m_sReceiverAS2URL;
 
-  public String messageIDFormat = "Test-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+  private String m_sPartnershipName;
+  private ECryptoAlgorithm m_eCryptAlgo;
+  private ECryptoAlgorithm m_eSignAlgo;
+  private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
+  private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
+
+  public AS2ConnectionSettings ()
+  {}
+
+  /**
+   * Set the details of the certificate store of the client. The keystore must
+   * be in PKCS12 format.
+   *
+   * @param aFile
+   *        The keystore file. May not be <code>null</code>.
+   * @param sPassword
+   *        The password used to open the key store. May not be
+   *        <code>null</code>.
+   */
+  public void setKeyStore (@Nonnull final File aFile, @Nonnull final String sPassword)
+  {
+    m_aKeyStoreFile = ValueEnforcer.notNull (aFile, "File");
+    m_sKeyStorePassword = ValueEnforcer.notNull (sPassword, "Password");
+  }
+
+  public File getKeyStoreFile ()
+  {
+    return m_aKeyStoreFile;
+  }
+
+  public String getKeyStorePassword ()
+  {
+    return m_sKeyStorePassword;
+  }
+
+  public void setSenderData (@Nonnull final String sAS2ID,
+                             @Nonnull final String sEmailAddress,
+                             @Nonnull final String sKeyAlias)
+  {
+    m_sSenderAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
+    m_sEenderEmailAddress = ValueEnforcer.notNull (sEmailAddress, "EmailAddress");
+    m_sSenderKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
+  }
+
+  public String getSenderAS2ID ()
+  {
+    return m_sSenderAS2ID;
+  }
+
+  public String getSenderEmailAddress ()
+  {
+    return m_sEenderEmailAddress;
+  }
+
+  public String getSenderKeyAlias ()
+  {
+    return m_sSenderKeyAlias;
+  }
+
+  public void setReceiverData (@Nonnull final String sAS2ID,
+                               @Nonnull final String sKeyAlias,
+                               @Nonnull final String sAS2URL)
+  {
+    m_sReceiverAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
+    m_sReceiverKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
+    m_sReceiverAS2URL = ValueEnforcer.notNull (sAS2URL, "AS2URL");
+  }
+
+  public String getReceiverAS2ID ()
+  {
+    return m_sReceiverAS2ID;
+  }
+
+  public String getReceiverKeyAlias ()
+  {
+    return m_sReceiverKeyAlias;
+  }
+
+  public String getReceiverAS2URL ()
+  {
+    return m_sReceiverAS2URL;
+  }
+
+  public void setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo, @Nullable final ECryptoAlgorithm eSignAlgo)
+  {
+    if (eCryptAlgo != null && eCryptAlgo.getCryptAlgorithmMode () != ECryptoAlgorithmMode.CRYPT)
+      throw new IllegalArgumentException ("The provided crypt algorithm is not possible for crypting.");
+    if (eSignAlgo != null && eSignAlgo.getCryptAlgorithmMode () != ECryptoAlgorithmMode.DIGEST)
+      throw new IllegalArgumentException ("The provided sign algorithm is not possible for digesting.");
+    m_eCryptAlgo = eCryptAlgo;
+    m_eSignAlgo = eSignAlgo;
+  }
+
+  @Nullable
+  public ECryptoAlgorithm getCryptAlgo ()
+  {
+    return m_eCryptAlgo;
+  }
+
+  @Nullable
+  public String getCryptAlgoID ()
+  {
+    return m_eCryptAlgo == null ? null : m_eCryptAlgo.getID ();
+  }
+
+  @Nullable
+  public ECryptoAlgorithm getSignAlgo ()
+  {
+    return m_eSignAlgo;
+  }
+
+  @Nullable
+  public String getSignAlgoID ()
+  {
+    return m_eSignAlgo == null ? null : m_eSignAlgo.getID ();
+  }
+
+  public void setPartnershipName (@Nonnull final String sPartnershipName)
+  {
+    m_sPartnershipName = ValueEnforcer.notNull (sPartnershipName, "PartnershipName");
+  }
+
+  public String getPartnershipName ()
+  {
+    return m_sPartnershipName;
+  }
+
+  public void setMDNOptions (@Nonnull final String sMDNOptions)
+  {
+    m_sMDNOptions = ValueEnforcer.notNull (sMDNOptions, "MDNOptions");
+  }
+
+  public String getMDNOptions ()
+  {
+    return m_sMDNOptions;
+  }
+
+  public void setMessageIDFormat (@Nonnull final String sMessageIDFormat)
+  {
+    m_sMessageIDFormat = ValueEnforcer.notNull (sMessageIDFormat, "MessageIDFormat");
+  }
+
+  public String getMessageIDFormat ()
+  {
+    return m_sMessageIDFormat;
+  }
 }

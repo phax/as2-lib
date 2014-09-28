@@ -37,8 +37,13 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public final class CAS2Info
 {
+  /** The name of this AS2 client. May not contain blanks. */
   public static final String NAME = "ph-OpenAS2";
+
+  /** The version of this AS2 client. May not contain blanks. */
   public static final String VERSION = "v1.0";
+
+  /** Combintation of {@link #NAME} and {@link #VERSION} separated by a blank. */
   public static final String NAME_VERSION = NAME + " " + VERSION;
 
   private CAS2Info ()

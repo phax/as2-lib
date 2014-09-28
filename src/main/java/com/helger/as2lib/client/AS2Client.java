@@ -61,26 +61,25 @@ public class AS2Client
   @Nonnull
   private static Partnership _buildPartnership (@Nonnull final AS2ConnectionSettings aSettings)
   {
-    final Partnership aPartnership = new Partnership (aSettings.partnershipName);
+    final Partnership aPartnership = new Partnership (aSettings.getPartnershipName ());
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_URL, aSettings.receiverAs2Url);
-    aPartnership.setReceiverID (CPartnershipIDs.PID_AS2, aSettings.receiverAs2Id);
-    aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aSettings.receiverKeyAlias);
+    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_URL, aSettings.getReceiverAS2URL ());
+    aPartnership.setReceiverID (CPartnershipIDs.PID_AS2, aSettings.getReceiverAS2ID ());
+    aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aSettings.getReceiverKeyAlias ());
 
-    aPartnership.setSenderID (CPartnershipIDs.PID_AS2, aSettings.senderAs2Id);
-    aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aSettings.senderKeyAlias);
-    aPartnership.setSenderID (CPartnershipIDs.PID_EMAIL, aSettings.senderEmail);
+    aPartnership.setSenderID (CPartnershipIDs.PID_AS2, aSettings.getSenderAS2ID ());
+    aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aSettings.getSenderKeyAlias ());
+    aPartnership.setSenderID (CPartnershipIDs.PID_EMAIL, aSettings.getSenderEmailAddress ());
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, aSettings.mdnOptions);
+    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, aSettings.getMDNOptions ());
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_ENCRYPT,
-                               aSettings.encrypt == null ? null : aSettings.encrypt.getID ());
-    aPartnership.setAttribute (CPartnershipIDs.PA_SIGN, aSettings.sign == null ? null : aSettings.sign.getID ());
-    aPartnership.setAttribute (CPartnershipIDs.PA_PROTOCOL, "as2");
+    aPartnership.setAttribute (CPartnershipIDs.PA_ENCRYPT, aSettings.getCryptAlgoID ());
+    aPartnership.setAttribute (CPartnershipIDs.PA_SIGN, aSettings.getSignAlgoID ());
+    aPartnership.setAttribute (CPartnershipIDs.PA_PROTOCOL, AS2Message.PROTOCOL_AS2);
     // partnership.setAttribute(AS2Partnership.PA_AS2_MDN_TO,"http://localhost:10080");
     aPartnership.setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION, null);
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID, aSettings.messageIDFormat);
+    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID, aSettings.getMessageIDFormat ());
     return aPartnership;
   }
 
@@ -125,8 +124,8 @@ public class AS2Client
       final AS2Session aSession = new AS2Session ();
       {
         final StringMap aParams = new StringMap ();
-        aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.p12FilePath);
-        aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.p12FilePassword);
+        aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
+        aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
 
         final PKCS12CertificateFactory aCertFactory = new PKCS12CertificateFactory ();
         aCertFactory.initDynamicComponent (aSession, aParams);
