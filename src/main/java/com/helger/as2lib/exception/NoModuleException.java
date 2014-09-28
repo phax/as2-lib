@@ -68,16 +68,10 @@ public class NoModuleException extends OpenAS2Exception
     return m_aOptions;
   }
 
+  @Nonnull
   public String getAsString ()
   {
     return getAsString (getAction (), getMsg (), getOptions ());
-  }
-
-  @Override
-  @Deprecated
-  public String toString ()
-  {
-    return getAsString ();
   }
 
   @Nonnull

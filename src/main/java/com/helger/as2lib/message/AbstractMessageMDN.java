@@ -45,6 +45,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractMessageMDN extends AbstractBaseMessage implements IMessageMDN
 {
@@ -101,7 +102,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     aSB.append ("MDN From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
     aSB.append ("\r\nTo:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
     aSB.append ("\r\nHeaders:")
-       .append (getHeadersFormatted ())
+       .append (getHeadersDebugFormatted ())
        .append ("\r\nAttributes:")
        .append (getAllAttributes ().getAllAttributes ())
        .append ("\r\nText:\r\n")
@@ -111,10 +112,13 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   }
 
   @Override
-  @Deprecated
   public String toString ()
   {
-    return getAsString ();
+    return ToStringGenerator.getDerived (super.toString ())
+                            .append ("message", m_aMessage)
+                            .append ("data", m_aData)
+                            .append ("text", m_sText)
+                            .toString ();
   }
 
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException

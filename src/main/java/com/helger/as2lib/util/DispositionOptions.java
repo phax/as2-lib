@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 public final class DispositionOptions
 {
@@ -114,10 +115,13 @@ public final class DispositionOptions
   }
 
   @Override
-  @Deprecated
   public String toString ()
   {
-    return getAsString ();
+    return new ToStringGenerator (this).append ("protocolImportance", m_sProtocolImportance)
+                                       .append ("protocol", m_sProtocol)
+                                       .append ("MICAlgImportance", m_sMICAlgImportance)
+                                       .append ("MICAlg", m_sMICAlg)
+                                       .toString ();
   }
 
   /**

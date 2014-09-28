@@ -103,15 +103,15 @@ public class OpenAS2KeyStore implements ICertificateStore
   }
 
   @Nullable
-  public String getAlias (@Nonnull final Certificate cert) throws CertificateException
+  public String getAlias (@Nonnull final Certificate aCert) throws CertificateException
   {
     try
     {
-      return getKeyStore ().getCertificateAlias (cert);
+      return getKeyStore ().getCertificateAlias (aCert);
     }
     catch (final KeyStoreException kse)
     {
-      throw new CertificateException ("Error getting alias for certificate: " + cert.toString (), kse);
+      throw new CertificateException ("Error getting alias for certificate: " + aCert.toString (), kse);
     }
   }
 

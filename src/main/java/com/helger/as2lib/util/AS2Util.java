@@ -257,6 +257,7 @@ public final class AS2Util
         final MimeBodyPart aReportPart = (MimeBodyPart) aReportParts.getBodyPart (j);
         if (aReportPart.isMimeType (CMimeType.TEXT_PLAIN.getAsString ()))
         {
+          // XXX is this "toString" really a correct solution?
           aMdn.setText (aReportPart.getContent ().toString ());
         }
         else

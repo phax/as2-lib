@@ -165,7 +165,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   @Nonnull
   @Nonempty
-  public final String getHeadersFormatted ()
+  public final String getHeadersDebugFormatted ()
   {
     final Map <String, String> aMap = new TreeMap <String, String> ();
     final Enumeration <?> aHeaders = m_aHeaders.getAllHeaders ();

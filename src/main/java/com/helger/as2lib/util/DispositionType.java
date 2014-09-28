@@ -43,6 +43,7 @@ import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.string.ToStringGenerator;
 
 public final class DispositionType
 {
@@ -127,10 +128,14 @@ public final class DispositionType
   }
 
   @Override
-  @Deprecated
   public String toString ()
   {
-    return getAsString ();
+    return new ToStringGenerator (this).append ("action", m_sAction)
+                                       .append ("MDNAction", m_sMDNAction)
+                                       .append ("status", m_sStatus)
+                                       .append ("statusDescription", m_sStatusDescription)
+                                       .append ("statusModified", m_sStatusModifier)
+                                       .toString ();
   }
 
   @Nonnull

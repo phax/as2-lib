@@ -76,7 +76,7 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
 
   @Nonnull
   @Nonempty
-  String getHeadersFormatted ();
+  String getHeadersDebugFormatted ();
 
   /**
    * Set a generic header. If it already exist it will be overwritten.

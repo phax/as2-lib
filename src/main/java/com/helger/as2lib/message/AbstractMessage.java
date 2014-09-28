@@ -47,6 +47,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractMessage extends AbstractBaseMessage implements IMessage
 {
@@ -182,7 +183,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
 
     aSB.append ("\nHeaders:")
-       .append (getHeadersFormatted ())
+       .append (getHeadersDebugFormatted ())
        .append ("\nAttributes:")
        .append (getAllAttributes ().getAllAttributes ());
 
@@ -194,10 +195,12 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   }
 
   @Override
-  @Deprecated
   public String toString ()
   {
-    return getAsString ();
+    return new ToStringGenerator (this).append ("data", m_aData)
+                                       .append ("MDN", m_aMDN)
+                                       .append ("history", m_aHistory)
+                                       .toString ();
   }
 
   @SuppressWarnings ("unchecked")
