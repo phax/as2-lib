@@ -34,7 +34,6 @@ package com.helger.as2lib.params;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.commons.lang.StackTraceHelper;

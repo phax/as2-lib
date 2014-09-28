@@ -30,62 +30,37 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.processor.sender;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.as2lib.exception.OpenAS2Exception;
 
-import com.helger.commons.annotations.Nonempty;
-
-public class InvalidParameterException extends OpenAS2Exception
+public class HttpResponseException extends OpenAS2Exception
 {
-  private final Object m_aTarget;
-  private final String m_sKey;
-  private final String m_sValue;
+  private final String m_sURL;
+  private final int m_nCode;
+  private final String m_sMessage;
 
-  public InvalidParameterException (final String sMsg, final Object aTarget, final String sKey, final String sValue)
+  public HttpResponseException (final String sUrl, final int nCode, final String sMessage)
   {
-    super (sMsg + " - " + getAsString (sKey, sValue));
-    m_aTarget = aTarget;
-    m_sKey = sKey;
-    m_sValue = sValue;
+    super ("Http Response from " + sUrl + ": " + nCode + " - " + sMessage);
+    m_sURL = sUrl;
+    m_nCode = nCode;
+    m_sMessage = sMessage;
   }
 
-  public InvalidParameterException (final String sMsg)
+  public String getUrl ()
   {
-    super (sMsg);
-    m_aTarget = null;
-    m_sKey = null;
-    m_sValue = null;
+    return m_sURL;
   }
 
-  public String getKey ()
+  public int getCode ()
   {
-    return m_sKey;
+    return m_nCode;
   }
 
-  public Object getTarget ()
+  @Override
+  public String getMessage ()
   {
-    return m_aTarget;
-  }
-
-  public String getValue ()
-  {
-    return m_sValue;
-  }
-
-  public static void checkValue (@Nonnull final Object aTarget,
-                                 @Nonnull final String sValueName,
-                                 @Nullable final Object aValue) throws InvalidParameterException
-  {
-    if (aValue == null)
-      throw new InvalidParameterException ("Value is missing", aTarget, sValueName, null);
-  }
-
-  @Nonnull
-  @Nonempty
-  public static String getAsString (@Nullable final String sKey, @Nullable final String sValue)
-  {
-    return "Invalid parameter value for " + sKey + ": " + sValue;
+    return m_sMessage;
   }
 }

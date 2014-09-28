@@ -52,7 +52,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.exception.DispositionException;
+import com.helger.as2lib.disposition.DispositionException;
+import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
@@ -66,7 +67,6 @@ import com.helger.as2lib.util.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.DispositionType;
 import com.helger.as2lib.util.HTTPUtil;
 import com.helger.as2lib.util.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;

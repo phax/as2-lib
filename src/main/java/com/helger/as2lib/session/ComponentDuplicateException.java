@@ -30,35 +30,33 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.session;
 
-public class HttpResponseException extends OpenAS2Exception
+import javax.annotation.Nonnull;
+
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.annotations.Nonempty;
+
+/**
+ * Exception to be thrown if a component with the specified ID is already
+ * registered.
+ * 
+ * @author Philip Helger
+ */
+public class ComponentDuplicateException extends OpenAS2Exception
 {
-  private final String m_sURL;
-  private final int m_nCode;
-  private final String m_sMessage;
+  private final String m_sComponentID;
 
-  public HttpResponseException (final String sUrl, final int nCode, final String sMessage)
+  public ComponentDuplicateException (@Nonnull @Nonempty final String sComponentID)
   {
-    super ("Http Response from " + sUrl + ": " + nCode + " - " + sMessage);
-    m_sURL = sUrl;
-    m_nCode = nCode;
-    m_sMessage = sMessage;
+    super (sComponentID);
+    m_sComponentID = sComponentID;
   }
 
-  public String getUrl ()
+  @Nonnull
+  @Nonempty
+  public String getComponentID ()
   {
-    return m_sURL;
-  }
-
-  public int getCode ()
-  {
-    return m_nCode;
-  }
-
-  @Override
-  public String getMessage ()
-  {
-    return m_sMessage;
+    return m_sComponentID;
   }
 }

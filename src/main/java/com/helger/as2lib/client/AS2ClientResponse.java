@@ -46,7 +46,7 @@ import com.helger.commons.ValueEnforcer;
  * @author oleo Date: May 12, 2010 Time: 5:53:45 PM
  * @author Philip Helger
  */
-public class AS2Response
+public class AS2ClientResponse
 {
   private String m_sOriginalMessageID;
   private Throwable m_aThrowable;
@@ -54,7 +54,7 @@ public class AS2Response
   private String m_sMDNText;
   private String m_sMDNDisposition;
 
-  public AS2Response ()
+  public AS2ClientResponse ()
   {}
 
   public void setOriginalMessageID (@Nonnull final String sOriginalMessageID)

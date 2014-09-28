@@ -36,7 +36,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.PartnershipNotFoundException;
 import com.helger.commons.annotations.OverrideOnDemand;
 
 /**

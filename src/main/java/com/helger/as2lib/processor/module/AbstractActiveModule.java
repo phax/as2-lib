@@ -37,9 +37,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.ForcedStopException;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.UnsupportedException;
+import com.helger.as2lib.exception.OpenAS2UnsupportedException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -67,7 +66,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    throw new UnsupportedException ("Active modules don't handle anything by default");
+    throw new OpenAS2UnsupportedException ("Active modules don't handle anything by default");
   }
 
   public void forceStop (final Exception aCause)

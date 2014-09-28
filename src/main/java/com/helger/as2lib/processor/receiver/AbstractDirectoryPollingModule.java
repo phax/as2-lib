@@ -48,13 +48,12 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.InvalidMessageException;
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.CFileAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AbstractParameterParser;
+import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;

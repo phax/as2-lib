@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.message.AS2Message;
 
 public class CompositParametersTest

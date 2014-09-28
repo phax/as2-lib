@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util;
+package com.helger.as2lib.disposition;
 
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -39,7 +39,6 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.DispositionException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.equals.EqualsUtils;

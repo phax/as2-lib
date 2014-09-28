@@ -30,25 +30,55 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.processor;
 
-public class MDNException extends OpenAS2Exception
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.message.IMessage;
+import com.helger.commons.annotations.Nonempty;
+
+public class NoModuleException extends OpenAS2Exception
 {
-  public MDNException ()
-  {}
+  private final Map <String, Object> m_aOptions;
+  private final IMessage m_aMsg;
+  private final String m_sAction;
 
-  public MDNException (final String sMsg)
+  public NoModuleException (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
   {
-    super (sMsg);
+    super (getAsString (sAction, aMsg, aOptions));
+    m_sAction = sAction;
+    m_aMsg = aMsg;
+    m_aOptions = aOptions;
   }
 
-  public MDNException (final String sMsg, final Throwable aCause)
+  public String getAction ()
   {
-    super (sMsg, aCause);
+    return m_sAction;
   }
 
-  public MDNException (final Throwable aCause)
+  public IMessage getMsg ()
   {
-    super (aCause);
+    return m_aMsg;
+  }
+
+  public Map <String, Object> getOptions ()
+  {
+    return m_aOptions;
+  }
+
+  @Nonnull
+  public String getAsString ()
+  {
+    return getAsString (getAction (), getMsg (), getOptions ());
+  }
+
+  @Nonnull
+  @Nonempty
+  protected static String getAsString (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  {
+    return "NoModuleException: Requested action: " + sAction + " Message: " + aMsg + " Options: " + aOptions;
   }
 }

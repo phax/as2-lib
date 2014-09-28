@@ -42,7 +42,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.PartnershipNotFoundException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AbstractParameterParser;

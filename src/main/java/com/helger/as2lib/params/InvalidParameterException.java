@@ -30,15 +30,63 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.params;
 
-public class UnsupportedException extends OpenAS2Exception
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.annotations.Nonempty;
+
+public class InvalidParameterException extends OpenAS2Exception
 {
-  public UnsupportedException ()
-  {}
+  private final Object m_aTarget;
+  private final String m_sKey;
+  private final String m_sValue;
 
-  public UnsupportedException (final String sMsg)
+  public InvalidParameterException (final String sMsg, final Object aTarget, final String sKey, final String sValue)
+  {
+    super (sMsg + " - " + getAsString (sKey, sValue));
+    m_aTarget = aTarget;
+    m_sKey = sKey;
+    m_sValue = sValue;
+  }
+
+  public InvalidParameterException (final String sMsg)
   {
     super (sMsg);
+    m_aTarget = null;
+    m_sKey = null;
+    m_sValue = null;
+  }
+
+  public String getKey ()
+  {
+    return m_sKey;
+  }
+
+  public Object getTarget ()
+  {
+    return m_aTarget;
+  }
+
+  public String getValue ()
+  {
+    return m_sValue;
+  }
+
+  public static void checkValue (@Nonnull final Object aTarget,
+                                 @Nonnull final String sValueName,
+                                 @Nullable final Object aValue) throws InvalidParameterException
+  {
+    if (aValue == null)
+      throw new InvalidParameterException ("Value is missing", aTarget, sValueName, null);
+  }
+
+  @Nonnull
+  @Nonempty
+  public static String getAsString (@Nullable final String sKey, @Nullable final String sValue)
+  {
+    return "Invalid parameter value for " + sKey + ": " + sValue;
   }
 }

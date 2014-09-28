@@ -30,12 +30,46 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.disposition;
 
-public class PartnershipNotFoundException extends OpenAS2Exception
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.as2lib.exception.OpenAS2Exception;
+
+public class DispositionException extends OpenAS2Exception
 {
-  public PartnershipNotFoundException (final String sMsg)
+  private final DispositionType m_aDisposition;
+  private String m_sText;
+
+  public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
   {
-    super (sMsg);
+    this (aDisposition, sText, null);
+  }
+
+  public DispositionException (@Nonnull final DispositionType aDisposition,
+                               @Nullable final String sText,
+                               @Nullable final Throwable aCause)
+  {
+    super (aDisposition.getAsString (), aCause);
+    m_aDisposition = aDisposition;
+    m_sText = sText;
+  }
+
+  @Nonnull
+  public DispositionType getDisposition ()
+  {
+    return m_aDisposition;
+  }
+
+  @Nullable
+  public String getText ()
+  {
+    return m_sText;
+  }
+
+  public void setText (@Nullable final String sText)
+  {
+    m_sText = sText;
   }
 }

@@ -35,8 +35,8 @@ package com.helger.as2lib.cert;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.params.InvalidParameterException;
 
 public interface IStorableCertificateFactory extends ICertificateFactory
 {

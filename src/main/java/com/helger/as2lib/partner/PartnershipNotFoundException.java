@@ -30,57 +30,14 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.partner;
 
-import java.util.List;
+import com.helger.as2lib.exception.OpenAS2Exception;
 
-import javax.annotation.Nonnull;
-
-import com.helger.as2lib.processor.IMessageProcessor;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.lang.CGStringHelper;
-import com.helger.commons.lang.StackTraceHelper;
-
-public class ProcessorException extends OpenAS2Exception
+public class PartnershipNotFoundException extends OpenAS2Exception
 {
-  private final IMessageProcessor m_aProcessor;
-  private final List <Throwable> m_aCauses;
-
-  @Nonnull
-  private static String _getMessage (@Nonnull @Nonempty final List <Throwable> aCauses)
+  public PartnershipNotFoundException (final String sMsg)
   {
-    final StringBuilder aSB = new StringBuilder ();
-    for (final Throwable aCause : aCauses)
-      aSB.append ('\n').append (StackTraceHelper.getStackAsString (aCause));
-    return aSB.toString ();
-  }
-
-  public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
-                             @Nonnull @Nonempty final List <Throwable> aCauses)
-  {
-    super ("Processor '" +
-           CGStringHelper.getClassLocalName (aProcessor) +
-           " threw exception(s):" +
-           _getMessage (aCauses));
-    ValueEnforcer.notNull (aProcessor, "Processor");
-    ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
-
-    m_aProcessor = aProcessor;
-    m_aCauses = ContainerHelper.newList (aCauses);
-  }
-
-  @Nonnull
-  public final IMessageProcessor getProcessor ()
-  {
-    return m_aProcessor;
-  }
-
-  @Nonnull
-  @Nonempty
-  public final List <Throwable> getCauses ()
-  {
-    return ContainerHelper.newList (m_aCauses);
+    super (sMsg);
   }
 }

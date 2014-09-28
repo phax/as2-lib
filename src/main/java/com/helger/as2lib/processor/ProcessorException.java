@@ -30,46 +30,57 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.processor;
+
+import java.util.List;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
-import com.helger.as2lib.util.DispositionType;
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.lang.StackTraceHelper;
 
-public class DispositionException extends OpenAS2Exception
+public class ProcessorException extends OpenAS2Exception
 {
-  private final DispositionType m_aDisposition;
-  private String m_sText;
+  private final IMessageProcessor m_aProcessor;
+  private final List <Throwable> m_aCauses;
 
-  public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
+  @Nonnull
+  private static String _getMessage (@Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    this (aDisposition, sText, null);
+    final StringBuilder aSB = new StringBuilder ();
+    for (final Throwable aCause : aCauses)
+      aSB.append ('\n').append (StackTraceHelper.getStackAsString (aCause));
+    return aSB.toString ();
   }
 
-  public DispositionException (@Nonnull final DispositionType aDisposition,
-                               @Nullable final String sText,
-                               @Nullable final Throwable aCause)
+  public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
+                             @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super (aDisposition.getAsString (), aCause);
-    m_aDisposition = aDisposition;
-    m_sText = sText;
+    super ("Processor '" +
+           CGStringHelper.getClassLocalName (aProcessor) +
+           " threw exception(s):" +
+           _getMessage (aCauses));
+    ValueEnforcer.notNull (aProcessor, "Processor");
+    ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
+
+    m_aProcessor = aProcessor;
+    m_aCauses = ContainerHelper.newList (aCauses);
   }
 
   @Nonnull
-  public DispositionType getDisposition ()
+  public final IMessageProcessor getProcessor ()
   {
-    return m_aDisposition;
+    return m_aProcessor;
   }
 
-  @Nullable
-  public String getText ()
+  @Nonnull
+  @Nonempty
+  public final List <Throwable> getCauses ()
   {
-    return m_sText;
-  }
-
-  public void setText (@Nullable final String sText)
-  {
-    m_sText = sText;
+    return ContainerHelper.newList (m_aCauses);
   }
 }

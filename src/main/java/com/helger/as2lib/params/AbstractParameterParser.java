@@ -38,7 +38,6 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;

@@ -48,12 +48,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.CAS2Info;
+import com.helger.as2lib.cert.CertificateNotFoundException;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
+import com.helger.as2lib.cert.KeyNotFoundException;
 import com.helger.as2lib.crypto.BCCryptoHelper;
 import com.helger.as2lib.crypto.ICryptoHelper;
-import com.helger.as2lib.exception.CertificateNotFoundException;
-import com.helger.as2lib.exception.KeyNotFoundException;
+import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.CNetAttribute;

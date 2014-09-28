@@ -44,8 +44,8 @@ import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 
-import com.helger.as2lib.exception.InvalidMessageException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.processor.receiver.InvalidMessageException;
 import com.helger.commons.CGlobal;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.file.FileIOError;

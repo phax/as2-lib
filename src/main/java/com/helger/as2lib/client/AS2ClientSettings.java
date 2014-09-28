@@ -44,8 +44,9 @@ import com.helger.commons.ValueEnforcer;
 
 /**
  * @author oleo Date: May 12, 2010 Time: 5:16:57 PM
+ * @author Philip Helger
  */
-public class AS2ConnectionSettings
+public class AS2ClientSettings
 {
   public static final String DEFAULT_MDN_OPTIONS = "signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1";
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
@@ -68,7 +69,7 @@ public class AS2ConnectionSettings
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
 
-  public AS2ConnectionSettings ()
+  public AS2ClientSettings ()
   {}
 
   /**

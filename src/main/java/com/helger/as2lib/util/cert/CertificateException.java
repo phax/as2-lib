@@ -30,20 +30,27 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.util.cert;
 
-public class ComponentNotFoundException extends OpenAS2Exception
+import com.helger.as2lib.exception.OpenAS2Exception;
+
+public class CertificateException extends OpenAS2Exception
 {
-  private final String m_sComponentName;
+  public CertificateException ()
+  {}
 
-  public ComponentNotFoundException (final String sComponentName)
+  public CertificateException (final String sMsg)
   {
-    super (sComponentName);
-    m_sComponentName = sComponentName;
+    super (sMsg);
   }
 
-  public String getComponentName ()
+  public CertificateException (final String sMsg, final Throwable aCause)
   {
-    return m_sComponentName;
+    super (sMsg, aCause);
+  }
+
+  public CertificateException (final Throwable aCause)
+  {
+    super (aCause);
   }
 }

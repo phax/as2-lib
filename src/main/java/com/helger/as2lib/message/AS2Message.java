@@ -36,10 +36,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
+import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;

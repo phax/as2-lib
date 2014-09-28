@@ -53,7 +53,7 @@ import com.helger.commons.mime.CMimeType;
  * @author oleo Date: May 12, 2010 Time: 5:48:26 PM
  * @author Philip Helger
  */
-public class AS2Request
+public class AS2ClientRequest
 {
   public static final String DEFAULT_CONTENT_TYPE = CMimeType.APPLICATION_XML.getAsString ();
 
@@ -70,12 +70,12 @@ public class AS2Request
    * @param sSubject
    *        The subject to use. May neither be <code>null</code> nor empty.
    */
-  public AS2Request (@Nonnull @Nonempty final String sSubject)
+  public AS2ClientRequest (@Nonnull @Nonempty final String sSubject)
   {
     m_sSubject = ValueEnforcer.notEmpty (sSubject, "Subject");
   }
 
-  public AS2Request setContentType (@Nonnull @Nonempty final String sContentType)
+  public AS2ClientRequest setContentType (@Nonnull @Nonempty final String sContentType)
   {
     m_sContentType = ValueEnforcer.notEmpty (sContentType, "ContentType");
     return this;
@@ -96,19 +96,20 @@ public class AS2Request
   }
 
   @Nonnull
-  public AS2Request setData (@Nonnull final File aFile)
+  public AS2ClientRequest setData (@Nonnull final File aFile)
   {
     return setData (FileUtils.getInputStream (aFile));
   }
 
   @Nonnull
-  public AS2Request setData (@Nonnull final InputStream aIS)
+  public AS2ClientRequest setData (@Nonnull final InputStream aIS)
   {
+    ValueEnforcer.notNull (aIS, "InputStream");
     return setData (StreamUtils.getAllBytes (aIS));
   }
 
   @Nonnull
-  public AS2Request setData (@Nonnull final byte [] aData)
+  public AS2ClientRequest setData (@Nonnull final byte [] aData)
   {
     m_aData = ValueEnforcer.notNull (aData, "Data");
     m_sText = null;
@@ -117,7 +118,7 @@ public class AS2Request
   }
 
   @Nonnull
-  public AS2Request setData (@Nonnull final String sText, @Nullable final Charset aCharset)
+  public AS2ClientRequest setData (@Nonnull final String sText, @Nullable final Charset aCharset)
   {
     m_aData = null;
     m_sText = ValueEnforcer.notNull (sText, "Text");
@@ -128,11 +129,17 @@ public class AS2Request
   public void applyDataOntoMimeBodyPart (final MimeBodyPart aPart) throws MessagingException
   {
     if (m_aData != null)
+    {
+      // Set content with a specific MIME type
       aPart.setContent (m_aData, m_sContentType);
+    }
     else
       if (m_sText != null)
+      {
+        // Set text with an optional charset
         aPart.setText (m_sText, m_aCharset == null ? null : m_aCharset.name ());
+      }
       else
-        throw new IllegalStateException ("No data specified in request!");
+        throw new IllegalStateException ("No data specified in AS2 client request!");
   }
 }

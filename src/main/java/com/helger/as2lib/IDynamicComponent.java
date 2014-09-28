@@ -35,8 +35,8 @@ package com.helger.as2lib;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IStringMap;
 

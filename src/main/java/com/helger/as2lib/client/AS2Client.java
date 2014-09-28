@@ -51,6 +51,7 @@ import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
+import com.helger.as2lib.session.ComponentDuplicateException;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotations.UnsupportedOperation;
 
@@ -59,7 +60,7 @@ public class AS2Client
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
 
   @Nonnull
-  private static Partnership _buildPartnership (@Nonnull final AS2ConnectionSettings aSettings)
+  private static Partnership _buildPartnership (@Nonnull final AS2ClientSettings aSettings)
   {
     final Partnership aPartnership = new Partnership (aSettings.getPartnershipName ());
 
@@ -85,8 +86,9 @@ public class AS2Client
   }
 
   @Nonnull
-  private static AS2Message _buildMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2Request aRequest) throws MessagingException,
-                                                                                                                       OpenAS2Exception
+  private static AS2Message _createMessage (@Nonnull final Partnership aPartnership,
+                                            @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
+                                                                                     OpenAS2Exception
   {
     final AS2Message aMsg = new AS2Message ();
     aMsg.setContentType (aRequest.getContentType ());
@@ -106,17 +108,37 @@ public class AS2Client
     return aMsg;
   }
 
-  @Nonnull
-  public static AS2Response sendSynchronous (@Nonnull final AS2ConnectionSettings aSettings,
-                                             @Nonnull final AS2Request aRequest)
+  private static void _initCertificateFactory (final AS2ClientSettings aSettings, final AS2Session aSession) throws OpenAS2Exception,
+                                                                                                            ComponentDuplicateException
   {
-    final AS2Response aResponse = new AS2Response ();
+    // Dynamically add certificate factory
+    final StringMap aParams = new StringMap ();
+    aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
+    aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
+
+    final PKCS12CertificateFactory aCertFactory = new PKCS12CertificateFactory ();
+    aCertFactory.initDynamicComponent (aSession, aParams);
+    aSession.setCertificateFactory (aCertFactory);
+  }
+
+  private static void _initPartnershipFactory (final AS2Session aSession) throws ComponentDuplicateException
+  {
+    // Use a self-filling in-memory partnership factory
+    final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
+    aSession.setPartnershipFactory (aPartnershipFactory);
+  }
+
+  @Nonnull
+  public static AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings,
+                                                   @Nonnull final AS2ClientRequest aRequest)
+  {
+    final AS2ClientResponse aResponse = new AS2ClientResponse ();
     IMessage aMsg = null;
     try
     {
       final Partnership aPartnership = _buildPartnership (aSettings);
 
-      aMsg = _buildMessage (aPartnership, aRequest);
+      aMsg = _createMessage (aPartnership, aRequest);
       aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
       if (false)
@@ -125,22 +147,11 @@ public class AS2Client
       // Start a new session
       final AS2Session aSession = new AS2Session ();
 
-      // Dynamically add certificate factory
-      {
-        final StringMap aParams = new StringMap ();
-        aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
-        aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
-
-        final PKCS12CertificateFactory aCertFactory = new PKCS12CertificateFactory ();
-        aCertFactory.initDynamicComponent (aSession, aParams);
-        aSession.setCertificateFactory (aCertFactory);
-      }
-
-      // Use a self-filling in-memory partnership factory
-      final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
-      aSession.setPartnershipFactory (aPartnershipFactory);
+      _initCertificateFactory (aSettings, aSession);
+      _initPartnershipFactory (aSession);
 
       // And create a sender module that directly sends the message
+      // No need for a message processor, as the sending is exactly one module
       final AS2SenderModule aSender = new AS2SenderModule ();
       aSender.initDynamicComponent (aSession, null);
       aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, null);
@@ -165,7 +176,8 @@ public class AS2Client
   }
 
   /**
-   * Send a message and await an asynchronous MDN
+   * Send a message and await an asynchronous MDN.<br>
+   * <b>This is not yet implemented!</b>
    *
    * @param aSettings
    *        Settings
@@ -174,13 +186,14 @@ public class AS2Client
    * @return UnsupportedOperationException
    */
   @UnsupportedOperation
-  public AS2Response sendAsync (@Nonnull final AS2ConnectionSettings aSettings, final AS2Request aRequest)
+  public AS2ClientResponse sendAsync (@Nonnull final AS2ClientSettings aSettings, final AS2ClientRequest aRequest)
   {
     throw new UnsupportedOperationException ();
   }
 
   /**
-   * Process the incoming asynchronous MDN.
+   * Process the incoming asynchronous MDN.<br>
+   * <b>This is not yet implemented!</b>
    *
    * @param aSettings
    *        Settings
@@ -189,7 +202,7 @@ public class AS2Client
    * @return UnsupportedOperationException
    */
   @UnsupportedOperation
-  public AS2Response processAsyncReply (@Nonnull final AS2ConnectionSettings aSettings, final InputStream aIS)
+  public AS2ClientResponse processAsyncReply (@Nonnull final AS2ClientSettings aSettings, final InputStream aIS)
   {
     throw new UnsupportedOperationException ();
   }

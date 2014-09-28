@@ -30,12 +30,30 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.exception;
+package com.helger.as2lib.cert;
 
-public class ForcedStopException extends OpenAS2Exception
+import java.security.cert.X509Certificate;
+
+import javax.annotation.Nullable;
+
+import com.helger.as2lib.exception.OpenAS2Exception;
+
+public class KeyNotFoundException extends OpenAS2Exception
 {
-  public ForcedStopException (final Throwable aSource)
+  public KeyNotFoundException (@Nullable final X509Certificate aCert)
   {
-    super (aSource);
+    super ("Certificate: " + aCert + " not found");
+  }
+
+  public KeyNotFoundException (@Nullable final X509Certificate aCert, @Nullable final String sAlias)
+  {
+    this (aCert, sAlias, null);
+  }
+
+  public KeyNotFoundException (@Nullable final X509Certificate aCert,
+                               @Nullable final String sAlias,
+                               @Nullable final Throwable aCause)
+  {
+    super ("Alias: " + sAlias + " in Certificate: " + aCert, aCause);
   }
 }

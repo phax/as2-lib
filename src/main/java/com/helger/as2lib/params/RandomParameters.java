@@ -35,7 +35,6 @@ package com.helger.as2lib.params;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.InvalidParameterException;
 import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringHelper;
 
