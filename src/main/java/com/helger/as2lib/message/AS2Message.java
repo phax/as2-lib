@@ -69,7 +69,7 @@ public class AS2Message extends AbstractMessage
                                                                       .add ("msg", new MessageParameters (this))
                                                                       .add ("rand", new RandomParameters ());
 
-    final String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID, DEFAULT_ID_FORMAT);
+    final String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, DEFAULT_ID_FORMAT);
 
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ('<');
@@ -88,12 +88,14 @@ public class AS2Message extends AbstractMessage
 
   public boolean isRequestingMDN ()
   {
+    // Requesting by partnership?
     final Partnership aPartnership = getPartnership ();
     final boolean bRequesting = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null ||
                                 aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null;
     if (bRequesting)
       return true;
 
+    // Requesting by request?
     final boolean bRequested = getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO) != null ||
                                getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null;
     return bRequested;
@@ -101,12 +103,16 @@ public class AS2Message extends AbstractMessage
 
   public boolean isRequestingAsynchMDN ()
   {
+    // Requesting by partnership?
     final Partnership aPartnership = getPartnership ();
+    // Same as regular MDN + PA_AS2_RECEIPT_OPTION
     final boolean bRequesting = (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null || aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null) &&
                                 aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null;
     if (bRequesting)
       return true;
 
+    // Requesting by request?
+    // Same as regular MDN + HEADER_RECEIPT_DELIVERY_OPTION
     final boolean bRequested = (getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO) != null || getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
                                getHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION) != null;
     return bRequested;

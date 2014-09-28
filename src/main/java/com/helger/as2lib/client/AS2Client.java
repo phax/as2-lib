@@ -63,7 +63,6 @@ public class AS2Client
   {
     final Partnership aPartnership = new Partnership (aSettings.getPartnershipName ());
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_URL, aSettings.getReceiverAS2URL ());
     aPartnership.setReceiverID (CPartnershipIDs.PID_AS2, aSettings.getReceiverAS2ID ());
     aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aSettings.getReceiverKeyAlias ());
 
@@ -71,21 +70,23 @@ public class AS2Client
     aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aSettings.getSenderKeyAlias ());
     aPartnership.setSenderID (CPartnershipIDs.PID_EMAIL, aSettings.getSenderEmailAddress ());
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, aSettings.getMDNOptions ());
-
+    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_URL, aSettings.getDestinationAS2URL ());
     aPartnership.setAttribute (CPartnershipIDs.PA_ENCRYPT, aSettings.getCryptAlgoID ());
     aPartnership.setAttribute (CPartnershipIDs.PA_SIGN, aSettings.getSignAlgoID ());
     aPartnership.setAttribute (CPartnershipIDs.PA_PROTOCOL, AS2Message.PROTOCOL_AS2);
-    // partnership.setAttribute(AS2Partnership.PA_AS2_MDN_TO,"http://localhost:10080");
+    // We want a sync MDN:
+    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, aSettings.getMDNOptions ());
+    if (false)
+      aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_TO, "http://localhost:10080");
+    // We don't want an async MDN:
     aPartnership.setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION, null);
-
-    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID, aSettings.getMessageIDFormat ());
+    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, aSettings.getMessageIDFormat ());
     return aPartnership;
   }
 
   @Nonnull
-  private static IMessage _buildMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2Request aRequest) throws MessagingException,
-                                                                                                                     OpenAS2Exception
+  private static AS2Message _buildMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2Request aRequest) throws MessagingException,
+                                                                                                                       OpenAS2Exception
   {
     final AS2Message aMsg = new AS2Message ();
     aMsg.setContentType (aRequest.getContentType ());

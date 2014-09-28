@@ -194,7 +194,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
       try
       {
-        DispositionType.parse (sDisposition).validate ();
+        DispositionType.createFromString (sDisposition).validate ();
       }
       catch (final DispositionException ex)
       {

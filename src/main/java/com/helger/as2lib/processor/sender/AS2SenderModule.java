@@ -123,18 +123,20 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
-        final DispositionOptions aDispOptions = new DispositionOptions (aConn.getRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS));
+
+        final String sDispositionOptions = aConn.getRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
+        final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
         // Calculate and get the original mic
         final boolean bIncludeHeaders = aMsg.getHistory ().getItemCount () > 1;
 
         final String sMIC = AS2Util.getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                                                     aDispOptions.getMICAlg (),
+                                                                     aDispositionOptions.getMICAlg (),
                                                                      bIncludeHeaders);
 
         if (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
         {
-          // if yes : PA_AS2_RECEIPT_OPTION) != null
+          // if yes : PA_AS2_RECEIPT_OPTION != null
           // then keep the original mic & message id.
           // then wait for the another HTTP call by receivers
 
@@ -238,8 +240,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * @param sOriginalMIC
    *        mic value from original msg
    */
-  protected void receiveMDN (final AS2Message aMsg, final HttpURLConnection aConn, final String sOriginalMIC) throws OpenAS2Exception,
-                                                                                                             IOException
+  protected void receiveMDN (@Nonnull final AS2Message aMsg,
+                             @Nonnull final HttpURLConnection aConn,
+                             @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
   {
     try
     {
@@ -251,7 +254,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final InputStream aConnIS = aConn.getInputStream ();
       final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ();
 
-      // Retrieve the message content
+      // Retrieve the whole MDN content
       final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
         StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIS, aMDNStream, nContentLength);
@@ -314,7 +317,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       try
       {
-        DispositionType.parse (sDisposition).validate ();
+        DispositionType.createFromString (sDisposition).validate ();
       }
       catch (final DispositionException ex)
       {
@@ -456,6 +459,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
     aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
 
+    // Determine where to send the MDN to
     final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
     if (sDispTo != null)
       aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);

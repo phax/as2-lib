@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.string.StringHelper;
 
 public final class DispositionOptions
 {
@@ -47,18 +48,14 @@ public final class DispositionOptions
   private String m_sProtocol;
   private String m_sProtocolImportance;
 
-  public DispositionOptions (@Nonnull final String sOptions) throws OpenAS2Exception
-  {
-    parseOptions (sOptions);
-  }
+  public DispositionOptions ()
+  {}
 
   public void setMICAlg (@Nullable final String sMICAlg)
   {
     m_sMICAlg = sMICAlg;
   }
 
-  // signed-receipt-protocol=optional, pkcs7-signature;
-  // signed-receipt-micalg=optional, sha1
   @Nullable
   public String getMICAlg ()
   {
@@ -99,47 +96,62 @@ public final class DispositionOptions
   }
 
   @Nonnull
-  public String makeOptions ()
+  public String getAsString ()
   {
-    if (getProtocolImportance () == null &&
-        getProtocol () == null &&
-        getMICAlgImportance () == null &&
-        getMICAlg () == null)
+    if (m_sProtocolImportance == null && m_sProtocol == null && m_sMICAlgImportance == null && m_sMICAlg == null)
     {
       return "";
     }
 
-    final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("signed-receipt-protocol=")
-       .append (getProtocolImportance ())
-       .append (", ")
-       .append (getProtocol ())
-       .append ("; signed-receipt-micalg=")
-       .append (getMICAlgImportance ())
-       .append (", ")
-       .append (getMICAlg ());
-    return aSB.toString ();
+    return "signed-receipt-protocol=" +
+           m_sProtocolImportance +
+           ", " +
+           m_sProtocol +
+           "; signed-receipt-micalg=" +
+           m_sMICAlgImportance +
+           ", " +
+           m_sMICAlg;
   }
 
-  public void parseOptions (@Nonnull final String sOptions) throws OpenAS2Exception
+  @Override
+  @Deprecated
+  public String toString ()
   {
-    setProtocolImportance (null);
-    setProtocol (null);
-    setMICAlgImportance (null);
-    setMICAlg (null);
-    if (sOptions != null)
+    return getAsString ();
+  }
+
+  /**
+   * Parse Strings like <code>signed-receipt-protocol=optional, pkcs7-signature;
+   * signed-receipt-micalg=optional, sha1</code>
+   *
+   * @param sOptions
+   *        The string to parse. May be <code>null</code> in which case an empty
+   *        object will be returned.
+   * @return Never <code>null</code>.
+   * @throws OpenAS2Exception
+   *         In the very unlikely case of a programming error in
+   *         {@link StringTokenizer}.
+   */
+  @Nonnull
+  public static DispositionOptions createFromString (@Nullable final String sOptions) throws OpenAS2Exception
+  {
+    final DispositionOptions ret = new DispositionOptions ();
+    if (StringHelper.hasText (sOptions))
     {
       try
       {
         final StringTokenizer aOptionTokens = new StringTokenizer (sOptions, "=,;", false);
         if (aOptionTokens.countTokens () > 5)
         {
+          // Skip "signed-receipt-protocol"
           aOptionTokens.nextToken ();
-          setProtocolImportance (aOptionTokens.nextToken ().trim ());
-          setProtocol (aOptionTokens.nextToken ().trim ());
+          ret.setProtocolImportance (aOptionTokens.nextToken ().trim ());
+          ret.setProtocol (aOptionTokens.nextToken ().trim ());
+
+          // Skip "signed-receipt-micalg"
           aOptionTokens.nextToken ();
-          setMICAlgImportance (aOptionTokens.nextToken ().trim ());
-          setMICAlg (aOptionTokens.nextToken ().trim ());
+          ret.setMICAlgImportance (aOptionTokens.nextToken ().trim ());
+          ret.setMICAlg (aOptionTokens.nextToken ().trim ());
         }
       }
       catch (final NoSuchElementException ex)
@@ -147,12 +159,6 @@ public final class DispositionOptions
         throw new OpenAS2Exception ("Invalid disposition options format: " + sOptions);
       }
     }
-  }
-
-  @Override
-  @Deprecated
-  public String toString ()
-  {
-    return makeOptions ();
+    return ret;
   }
 }

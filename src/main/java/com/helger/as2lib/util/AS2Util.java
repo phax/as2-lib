@@ -133,17 +133,18 @@ public final class AS2Util
     aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
     aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
-    final DispositionOptions aDispOptions = new DispositionOptions (aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS));
+    final String sDispositionOptions = aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
+    final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
     String sMIC = null;
-    if (aDispOptions.getMICAlg () != null)
+    if (aDispositionOptions.getMICAlg () != null)
     {
       sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                              aDispOptions.getMICAlg (),
+                                              aDispositionOptions.getMICAlg (),
                                               aMsg.getHistory ().getItemCount () > 1);
     }
 
     aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
-    createMDNData (aSession, aMdn, aDispOptions.getMICAlg (), aDispOptions.getProtocol ());
+    createMDNData (aSession, aMdn, aDispositionOptions.getMICAlg (), aDispositionOptions.getProtocol ());
 
     aMdn.updateMessageID ();
 

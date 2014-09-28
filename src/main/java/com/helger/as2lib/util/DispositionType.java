@@ -134,14 +134,14 @@ public final class DispositionType
   }
 
   @Nonnull
-  public static DispositionType parse (@Nullable final String sDisposition) throws OpenAS2Exception
+  public static DispositionType createFromString (@Nonnull final String sDisposition) throws OpenAS2Exception
   {
     if (sDisposition == null)
       throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition);
 
-    final StringTokenizer aDispTokens = new StringTokenizer (sDisposition, "/;:", false);
     try
     {
+      final StringTokenizer aDispTokens = new StringTokenizer (sDisposition, "/;:", false);
       final String sAction = aDispTokens.nextToken ().toLowerCase (Locale.US);
       final String sMDNAction = aDispTokens.nextToken ().toLowerCase (Locale.US);
       final String sStatus = aDispTokens.nextToken ().trim ().toLowerCase (Locale.US);

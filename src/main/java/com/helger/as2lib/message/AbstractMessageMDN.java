@@ -54,6 +54,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
   public AbstractMessageMDN (@Nonnull final IMessage aMsg)
   {
+    // Link MDN and message
     setMessage (aMsg);
     aMsg.setMDN (this);
   }
@@ -116,7 +117,6 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     return getAsString ();
   }
 
-  @SuppressWarnings ("unchecked")
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     baseReadObject (aOIS);
@@ -134,7 +134,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     }
     catch (final MessagingException ex)
     {
-      throw new IOException ("Messaging exception: " + ex.getMessage ());
+      throw new IOException ("Messaging exception", ex);
     }
   }
 

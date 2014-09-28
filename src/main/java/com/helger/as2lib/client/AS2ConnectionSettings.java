@@ -60,7 +60,7 @@ public class AS2ConnectionSettings
 
   private String m_sReceiverAS2ID;
   private String m_sReceiverKeyAlias;
-  private String m_sReceiverAS2URL;
+  private String m_sDestinationAS2URL;
 
   private String m_sPartnershipName;
   private ECryptoAlgorithm m_eCryptAlgo;
@@ -127,7 +127,7 @@ public class AS2ConnectionSettings
   {
     m_sReceiverAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
     m_sReceiverKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
-    m_sReceiverAS2URL = ValueEnforcer.notNull (sAS2URL, "AS2URL");
+    m_sDestinationAS2URL = ValueEnforcer.notNull (sAS2URL, "AS2URL");
   }
 
   public String getReceiverAS2ID ()
@@ -140,9 +140,9 @@ public class AS2ConnectionSettings
     return m_sReceiverKeyAlias;
   }
 
-  public String getReceiverAS2URL ()
+  public String getDestinationAS2URL ()
   {
-    return m_sReceiverAS2URL;
+    return m_sDestinationAS2URL;
   }
 
   public void setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo, @Nullable final ECryptoAlgorithm eSignAlgo)

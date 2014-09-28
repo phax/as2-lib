@@ -34,11 +34,23 @@ package com.helger.as2lib.partner;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Partnership IDs and attribute names. The IDs (starting with PID_) are using
+ * for setSenderID/setReceiverID where as the attributes (starting with PA_) are
+ * used with setAttribute
+ *
+ * @author Philip Helger
+ */
 @Immutable
 public final class CPartnershipIDs
 {
   /** AS2 ID */
   public static final String PID_AS2 = "as2_id";
+  /** Alias to an X509 Certificate */
+  public static final String PID_X509_ALIAS = "x509_alias";
+  /** Email address */
+  public static final String PID_EMAIL = "email";
+
   /** URL destination for AS2 transactions */
   public static final String PA_AS2_URL = "as2_url";
   /** Fill in to request an MDN for a transaction */
@@ -48,7 +60,7 @@ public final class CPartnershipIDs
   /** URL destination for an async MDN */
   public static final String PA_AS2_RECEIPT_OPTION = "as2_receipt_option";
   /** format to use for message-id if not default */
-  public static final String PA_MESSAGEID = "messageid";
+  public static final String PA_MESSAGEID_FORMAT = "messageid";
   /** Subject sent in MDN messages */
   public static final String PA_MDN_SUBJECT = "mdnsubject";
   /**
@@ -61,8 +73,6 @@ public final class CPartnershipIDs
   /** set this to override the date format used when generating message IDs */
   public static final String PA_DATE_FORMAT = "mid_date_format";
 
-  /** Alias to an X509 Certificate */
-  public static final String PID_X509_ALIAS = "x509_alias";
   /**
    * Set this to the algorithm to use for encryption, check
    * {@link com.helger.as2lib.crypto.ECryptoAlgorithm} constants for values
@@ -73,8 +83,6 @@ public final class CPartnershipIDs
    * {@link com.helger.as2lib.crypto.ECryptoAlgorithm} constants for values
    */
   public static final String PA_SIGN = "sign";
-  /** Email address */
-  public static final String PID_EMAIL = "email";
   /** AS1 or AS2 */
   public static final String PA_PROTOCOL = "protocol";
   /** Subject sent in messages */
