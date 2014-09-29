@@ -50,9 +50,7 @@ public class AS2ClientResponse
 {
   private String m_sOriginalMessageID;
   private Throwable m_aThrowable;
-  private String m_sMDNMessageID;
-  private String m_sMDNText;
-  private String m_sMDNDisposition;
+  private IMessageMDN m_aMDN;
 
   public AS2ClientResponse ()
   {}
@@ -92,27 +90,31 @@ public class AS2ClientResponse
   public void setMDN (@Nonnull final IMessageMDN aMDN)
   {
     ValueEnforcer.notNull (aMDN, "MDN");
-    m_sMDNMessageID = aMDN.getMessageID ();
-    m_sMDNText = aMDN.getText ();
-    m_sMDNDisposition = aMDN.getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+    m_aMDN = aMDN;
+  }
+
+  @Nullable
+  public IMessageMDN getMDN ()
+  {
+    return m_aMDN;
   }
 
   @Nullable
   public String getMDNMessageID ()
   {
-    return m_sMDNMessageID;
+    return m_aMDN == null ? null : m_aMDN.getMessageID ();
   }
 
   @Nullable
   public String getMDNText ()
   {
-    return m_sMDNText;
+    return m_aMDN == null ? null : m_aMDN.getText ();
   }
 
   @Nullable
   public String getMDNDisposition ()
   {
-    return m_sMDNDisposition;
+    return m_aMDN == null ? null : m_aMDN.getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
   }
 
   @Nonnull
@@ -122,14 +124,14 @@ public class AS2ClientResponse
     aSB.append ('\n');
     if (m_sOriginalMessageID != null)
       aSB.append ("OriginalMessageID: ").append (m_sOriginalMessageID).append ('\n');
-    if (m_sMDNMessageID != null)
-      aSB.append ("MDN MessageID: ").append (m_sMDNMessageID).append ('\n');
-    if (m_sMDNDisposition != null)
-      aSB.append ("MDN Disposition: ").append (m_sMDNDisposition).append ('\n');
+    if (getMDNMessageID () != null)
+      aSB.append ("MDN MessageID: ").append (getMDNMessageID ()).append ('\n');
+    if (getMDNDisposition () != null)
+      aSB.append ("MDN Disposition: ").append (getMDNDisposition ()).append ('\n');
     if (hasException ())
       aSB.append ("Error message: ").append (m_aThrowable.getMessage ()).append ('\n');
-    if (m_sMDNText != null)
-      aSB.append ("MDN Text: ").append (m_sMDNText).append ('\n');
+    if (getMDNText () != null)
+      aSB.append ("MDN Text: ").append (getMDNText ()).append ('\n');
     return aSB.toString ();
   }
 }

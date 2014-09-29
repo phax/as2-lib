@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.client;
 
-import java.io.InputStream;
-
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
@@ -53,11 +51,19 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.session.ComponentDuplicateException;
 import com.helger.as2lib.util.StringMap;
-import com.helger.commons.annotations.UnsupportedOperation;
 
-public class AS2Client
+/**
+ * A simple client that allows for sending AS2 Messages and retrieving of
+ * synchronous MDNs.
+ *
+ * @author Philip Helger
+ */
+public final class AS2Client
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
+
+  private AS2Client ()
+  {}
 
   @Nonnull
   private static Partnership _buildPartnership (@Nonnull final AS2ClientSettings aSettings)
@@ -173,37 +179,5 @@ public class AS2Client
     s_aLogger.info (aResponse.getAsString ());
 
     return aResponse;
-  }
-
-  /**
-   * Send a message and await an asynchronous MDN.<br>
-   * <b>This is not yet implemented!</b>
-   *
-   * @param aSettings
-   *        Settings
-   * @param aRequest
-   *        Request
-   * @return UnsupportedOperationException
-   */
-  @UnsupportedOperation
-  public AS2ClientResponse sendAsync (@Nonnull final AS2ClientSettings aSettings, final AS2ClientRequest aRequest)
-  {
-    throw new UnsupportedOperationException ();
-  }
-
-  /**
-   * Process the incoming asynchronous MDN.<br>
-   * <b>This is not yet implemented!</b>
-   *
-   * @param aSettings
-   *        Settings
-   * @param aIS
-   *        Input stream
-   * @return UnsupportedOperationException
-   */
-  @UnsupportedOperation
-  public AS2ClientResponse processAsyncReply (@Nonnull final AS2ClientSettings aSettings, final InputStream aIS)
-  {
-    throw new UnsupportedOperationException ();
   }
 }

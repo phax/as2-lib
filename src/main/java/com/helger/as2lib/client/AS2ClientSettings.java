@@ -43,6 +43,8 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmMode;
 import com.helger.commons.ValueEnforcer;
 
 /**
+ * Settings object for a message delivery.
+ *
  * @author oleo Date: May 12, 2010 Time: 5:16:57 PM
  * @author Philip Helger
  */
