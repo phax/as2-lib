@@ -33,6 +33,7 @@
 package com.helger.as2lib.client;
 
 import java.io.File;
+import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,6 +65,7 @@ public class AS2ClientSettings
   private String m_sReceiverAS2ID;
   private String m_sReceiverKeyAlias;
   private String m_sDestinationAS2URL;
+  public X509Certificate m_aReceiverCert;
 
   private String m_sPartnershipName;
   private ECryptoAlgorithm m_eCryptAlgo;
@@ -146,6 +148,22 @@ public class AS2ClientSettings
   public String getDestinationAS2URL ()
   {
     return m_sDestinationAS2URL;
+  }
+
+  public void setReceiverCertificate (@Nullable final X509Certificate aReceiverCertificate)
+  {
+    m_aReceiverCert = aReceiverCertificate;
+  }
+
+  /**
+   * @return The explicit certificate of the recipient. This might be used to
+   *         dynamically add it to the certificate factory for dynamic
+   *         partnership handling (like in PEPPOL). Maybe <code>null</code>.
+   */
+  @Nullable
+  public X509Certificate getReceiverCertificate ()
+  {
+    return m_aReceiverCert;
   }
 
   public void setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo, @Nullable final ECryptoAlgorithm eSignAlgo)

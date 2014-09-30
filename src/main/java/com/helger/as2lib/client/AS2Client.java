@@ -39,6 +39,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.cert.CertificateExistsException;
 import com.helger.as2lib.cert.PKCS12CertificateFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
@@ -114,8 +115,9 @@ public final class AS2Client
     return aMsg;
   }
 
-  private static void _initCertificateFactory (final AS2ClientSettings aSettings, final AS2Session aSession) throws OpenAS2Exception,
-                                                                                                            ComponentDuplicateException
+  private static void _initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
+                                               @Nonnull final AS2Session aSession) throws OpenAS2Exception,
+                                                                                  ComponentDuplicateException
   {
     // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
@@ -124,6 +126,18 @@ public final class AS2Client
 
     final PKCS12CertificateFactory aCertFactory = new PKCS12CertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
+    if (aSettings.getReceiverCertificate () != null)
+    {
+      // Dynamically add recipient certificate if provided
+      try
+      {
+        aCertFactory.addCertificate (aSettings.getReceiverKeyAlias (), aSettings.getReceiverCertificate (), false);
+      }
+      catch (final CertificateExistsException ex)
+      {
+        // ignore
+      }
+    }
     aSession.setCertificateFactory (aCertFactory);
   }
 
