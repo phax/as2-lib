@@ -411,7 +411,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aMsg.getHistory ().addItem (aHistoryItem);
 
         if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("signed data" + aMsg.getLoggingText ());
+          s_aLogger.debug ("Signed data" + aMsg.getLoggingText ());
       }
 
       // Encrypt the data if requested
@@ -428,7 +428,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aMsg.getHistory ().addItem (aHistoryItem);
 
         if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("encrypted data" + aMsg.getLoggingText ());
+          s_aLogger.debug ("Encrypted data" + aMsg.getLoggingText ());
       }
     }
 

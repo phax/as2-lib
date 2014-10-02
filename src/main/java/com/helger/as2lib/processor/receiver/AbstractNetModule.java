@@ -209,7 +209,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
     public ConnectionThread (@Nonnull final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
     {
-      super ("ConnectionThread-" + CGStringHelper.getClassLocalName (aOwner));
+      super ("AS2ConnectionThread-" + CGStringHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aSocket = aSocket;
     }
@@ -217,7 +217,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     @Override
     public void run ()
     {
-      s_aLogger.info ("ConnectionThread: run");
+      s_aLogger.info ("AS2ConnectionThread: run");
       final Socket s = m_aSocket;
 
       m_aOwner.createHandler ().handle (m_aOwner, s);
@@ -232,7 +232,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       }
       finally
       {
-        s_aLogger.info ("ConnectionThread: done running");
+        s_aLogger.info ("AS2ConnectionThread: done running");
       }
     }
   }
@@ -249,7 +249,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
                        @Nullable final String sAddress,
                        @Nonnegative final int nPort) throws IOException
     {
-      super ("MainThread-" + CGStringHelper.getClassLocalName (aOwner));
+      super ("AS2MainThread-" + CGStringHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aSocket = new ServerSocket ();
       final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)
@@ -261,7 +261,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     @Override
     public void run ()
     {
-      s_aLogger.info ("MainThread: run");
+      s_aLogger.info ("AS2MainThread: run");
       while (!m_bTerminated && !isInterrupted ())
       {
         try
@@ -277,7 +277,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
         }
       }
 
-      s_aLogger.info ("MainThread: done running");
+      s_aLogger.info ("AS2MainThread: done running");
     }
 
     public void terminate ()

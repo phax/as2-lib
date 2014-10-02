@@ -182,7 +182,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     finally
     {
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("asynch mdn message sent");
+        s_aLogger.debug ("Async MDN message sent");
     }
   }
 }

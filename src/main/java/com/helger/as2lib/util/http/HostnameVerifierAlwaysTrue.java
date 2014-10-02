@@ -43,7 +43,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Implementation of HostnameVerifier always returning <code>true</code>.
- * 
+ *
  * @author Philip Helger
  */
 public class HostnameVerifierAlwaysTrue implements HostnameVerifier
@@ -72,7 +72,7 @@ public class HostnameVerifierAlwaysTrue implements HostnameVerifier
 
   public boolean verify (final String sURLHostname, final SSLSession aSession)
   {
-    if (m_bDebug)
+    if (m_bDebug && s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Hostname '" + sURLHostname + "' is accepted by default in SSL session " + aSession + "!");
     return true;
   }

@@ -95,6 +95,20 @@ public class AS2ReceiverHandler implements INetModuleHandler
     return aSocket.getInetAddress ().getHostAddress () + ":" + aSocket.getPort ();
   }
 
+  /**
+   * This method can be used to handle an incoming HTTP message AFTER the
+   * headers where extracted.
+   *
+   * @param sClientInfo
+   *        Client connection info
+   * @param aMsgData
+   *        The message body
+   * @param aMsg
+   *        The AS2 message that will be filled by this method
+   * @param aResponseHandler
+   *        The response handler which handles HTTP error messages as well as
+   *        synchronous MDN.
+   */
   public void handleIncomingMessage (@Nonnull final String sClientInfo,
                                      @Nonnull final byte [] aMsgData,
                                      @Nonnull final AS2Message aMsg,
@@ -214,6 +228,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
+      // Read HTTP request incl. headers
       aMsgData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
     }
     catch (final Exception ex)
@@ -258,7 +273,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
       if (aCryptoHelper.isEncrypted (aMsg.getData ()))
       {
         // Decrypt
-        s_aLogger.debug ("decrypting" + aMsg.getLoggingText ());
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
 
         final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
         final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
@@ -280,7 +296,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       if (aCryptoHelper.isSigned (aMsg.getData ()))
       {
-        s_aLogger.debug ("verifying signature" + aMsg.getLoggingText ());
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
         aMsg.setData (aCryptoHelper.verify (aMsg.getData (), aSenderCert));

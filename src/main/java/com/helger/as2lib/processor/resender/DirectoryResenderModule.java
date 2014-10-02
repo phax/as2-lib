@@ -172,7 +172,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   protected void processFile (@Nonnull final File aFile) throws OpenAS2Exception
   {
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("processing " + aFile.getAbsolutePath ());
+      s_aLogger.debug ("Processing " + aFile.getAbsolutePath ());
 
     IMessage aMsg = null;
 
