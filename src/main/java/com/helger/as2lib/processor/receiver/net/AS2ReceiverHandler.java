@@ -122,11 +122,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       }
       catch (final Exception ex)
       {
-        throw new DispositionException (new DispositionType ("automatic-action",
-                                                             "MDN-sent-automatically",
-                                                             "processed",
-                                                             "Error",
-                                                             "unexpected-processing-error"),
+        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractNetModule.DISP_PARSING_MIME_FAILED,
                                         ex);
       }
@@ -146,11 +142,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       }
       catch (final OpenAS2Exception ex)
       {
-        throw new DispositionException (new DispositionType ("automatic-action",
-                                                             "MDN-sent-automatically",
-                                                             "processed",
-                                                             "Error",
-                                                             "authentication-failed"),
+        throw new DispositionException (DispositionType.createError ("authentication-failed"),
                                         AbstractNetModule.DISP_PARTNERSHIP_NOT_FOUND,
                                         ex);
       }
@@ -166,11 +158,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       }
       catch (final OpenAS2Exception ex)
       {
-        throw new DispositionException (new DispositionType ("automatic-action",
-                                                             "MDN-sent-automatically",
-                                                             "processed",
-                                                             "Error",
-                                                             "unexpected-processing-error"),
+        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractNetModule.DISP_STORAGE_FAILED,
                                         ex);
       }
@@ -183,7 +171,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           sendMDN (sClientInfo,
                    aResponseHandler,
                    aMsg,
-                   new DispositionType ("automatic-action", "MDN-sent-automatically", "processed"),
+                   DispositionType.createSuccess (),
                    AbstractNetModule.DISP_SUCCESS);
         }
         else
@@ -283,11 +271,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     catch (final Exception ex)
     {
       s_aLogger.error ("Error decrypting " + aMsg.getLoggingText (), ex);
-      throw new DispositionException (new DispositionType ("automatic-action",
-                                                           "MDN-sent-automatically",
-                                                           "processed",
-                                                           "Error",
-                                                           "decryption-failed"),
+      throw new DispositionException (DispositionType.createError ("decryption-failed"),
                                       AbstractNetModule.DISP_DECRYPTION_ERROR,
                                       ex);
     }
@@ -305,11 +289,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     catch (final Exception ex)
     {
       s_aLogger.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
-      throw new DispositionException (new DispositionType ("automatic-action",
-                                                           "MDN-sent-automatically",
-                                                           "processed",
-                                                           "Error",
-                                                           "integrity-check-failed"),
+      throw new DispositionException (DispositionType.createError ("integrity-check-failed"),
                                       AbstractNetModule.DISP_VERIFY_SIGNATURE_FAILED,
                                       ex);
     }
@@ -318,8 +298,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
   protected void sendMDN (@Nonnull final String sClientInfo,
                           @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                           @Nonnull final AS2Message aMsg,
-                          final DispositionType aDisposition,
-                          final String sText)
+                          @Nonnull final DispositionType aDisposition,
+                          @Nonnull final String sText)
   {
     final boolean bMdnBlocked = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN) != null;
     if (!bMdnBlocked)
@@ -334,6 +314,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           // send
           final InternetHeaders aHeaders = new InternetHeaders ();
           aHeaders.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (0));
+          // Empty data
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
 

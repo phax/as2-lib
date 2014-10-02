@@ -87,11 +87,7 @@ public class MessageFileModule extends AbstractStorageModule
     }
     catch (final Exception ex)
     {
-      throw new DispositionException (new DispositionType ("automatic-action",
-                                                           "MDN-sent-automatically",
-                                                           "processed",
-                                                           "Error",
-                                                           "Error storing transaction"),
+      throw new DispositionException (DispositionType.createError ("Error storing transaction"),
                                       AbstractNetModule.DISP_STORAGE_FAILED,
                                       ex);
     }

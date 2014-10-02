@@ -70,6 +70,16 @@ public interface ICryptoHelper
                      @Nonnull PrivateKey key,
                      @Nonnull String sAlgorithm) throws Exception;
 
+  /**
+   * Verify the specified Mime Body part against the part certificate
+   * 
+   * @param aPart
+   *        Original part
+   * @param aCert
+   *        Certificate to check against
+   * @return The signed content
+   * @throws Exception
+   */
   @Nonnull
   MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert) throws Exception;
 }

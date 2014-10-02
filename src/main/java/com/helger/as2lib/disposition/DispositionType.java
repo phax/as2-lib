@@ -46,16 +46,17 @@ import com.helger.commons.string.ToStringGenerator;
 
 public final class DispositionType
 {
+  public static final String ACTION_AUTOMATIC_ACTION = "automatic-action";
+  public static final String MDNACTION_MDN_SENT_AUTOMATICALLY = "MDN-sent-automatically";
+  public static final String STATUS_PROCESSED = "processed";
+  public static final String STATUS_MODIFIER_ERROR = "Error";
+  public static final String STATUS_MODIFIER_WARNING = "Warning";
+
   private final String m_sAction;
   private final String m_sMDNAction;
   private final String m_sStatus;
   private final String m_sStatusDescription;
   private final String m_sStatusModifier;
-
-  public DispositionType (@Nonnull final String sAction, @Nonnull final String sMDNAction, @Nonnull final String sStatus)
-  {
-    this (sAction, sMDNAction, sStatus, null, null);
-  }
 
   public DispositionType (@Nonnull final String sAction,
                           @Nonnull final String sMDNAction,
@@ -97,18 +98,19 @@ public final class DispositionType
 
   public boolean isWarning ()
   {
-    return EqualsUtils.nullSafeEqualsIgnoreCase (m_sStatusModifier, "warning");
+    return EqualsUtils.nullSafeEqualsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
   }
 
   public void validate () throws DispositionException
   {
     if (m_sStatus == null)
       throw new DispositionException (this, null);
-    if (!m_sStatus.equalsIgnoreCase ("processed"))
+    if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
       throw new DispositionException (this, null);
 
     if (m_sStatusModifier != null)
-      if (m_sStatusModifier.equalsIgnoreCase ("error") || m_sStatusModifier.equalsIgnoreCase ("warning"))
+      if (m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_ERROR) ||
+          m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_WARNING))
         throw new DispositionException (this, null);
   }
 
@@ -164,5 +166,21 @@ public final class DispositionType
     {
       throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition, ex);
     }
+  }
+
+  @Nonnull
+  public static DispositionType createSuccess ()
+  {
+    return new DispositionType (ACTION_AUTOMATIC_ACTION, MDNACTION_MDN_SENT_AUTOMATICALLY, STATUS_PROCESSED, null, null);
+  }
+
+  @Nonnull
+  public static DispositionType createError (@Nonnull final String sStatusDescription)
+  {
+    return new DispositionType (ACTION_AUTOMATIC_ACTION,
+                                MDNACTION_MDN_SENT_AUTOMATICALLY,
+                                STATUS_PROCESSED,
+                                STATUS_MODIFIER_ERROR,
+                                sStatusDescription);
   }
 }

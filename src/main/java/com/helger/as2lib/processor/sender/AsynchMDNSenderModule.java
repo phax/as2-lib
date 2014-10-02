@@ -84,7 +84,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   private void _sendAsyncMDN (@Nonnull final AS2Message aMsg) throws OpenAS2Exception
   {
     s_aLogger.info ("Async MDN submitted" + aMsg.getLoggingText ());
-    final DispositionType aDisposition = new DispositionType ("automatic-action", "MDN-sent-automatically", "processed");
+    final DispositionType aDisposition = DispositionType.createSuccess ();
 
     try
     {
