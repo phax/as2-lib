@@ -33,6 +33,7 @@
 package com.helger.as2lib.client;
 
 import javax.annotation.Nonnull;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
@@ -50,8 +51,8 @@ import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
-import com.helger.as2lib.session.ComponentDuplicateException;
 import com.helger.as2lib.util.StringMap;
+import com.helger.commons.annotations.OverrideOnDemand;
 
 /**
  * A simple client that allows for sending AS2 Messages and retrieving of
@@ -59,15 +60,17 @@ import com.helger.as2lib.util.StringMap;
  *
  * @author Philip Helger
  */
-public final class AS2Client
+public class AS2Client
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
 
-  private AS2Client ()
+  public AS2Client ()
   {}
 
   @Nonnull
-  private static Partnership _buildPartnership (@Nonnull final AS2ClientSettings aSettings)
+  @OverrideOnDemand
+  @OverridingMethodsMustInvokeSuper
+  protected Partnership buildPartnership (@Nonnull final AS2ClientSettings aSettings)
   {
     final Partnership aPartnership = new Partnership (aSettings.getPartnershipName ());
 
@@ -93,9 +96,10 @@ public final class AS2Client
   }
 
   @Nonnull
-  private static AS2Message _createMessage (@Nonnull final Partnership aPartnership,
-                                            @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
-                                                                                     OpenAS2Exception
+  @OverrideOnDemand
+  @OverridingMethodsMustInvokeSuper
+  protected AS2Message createMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
+                                                                                                                        OpenAS2Exception
   {
     final AS2Message aMsg = new AS2Message ();
     aMsg.setContentType (aRequest.getContentType ());
@@ -115,9 +119,8 @@ public final class AS2Client
     return aMsg;
   }
 
-  private static void _initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
-                                               @Nonnull final AS2Session aSession) throws OpenAS2Exception,
-                                                                                  ComponentDuplicateException
+  @OverrideOnDemand
+  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession) throws OpenAS2Exception
   {
     // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
@@ -141,7 +144,8 @@ public final class AS2Client
     aSession.setCertificateFactory (aCertFactory);
   }
 
-  private static void _initPartnershipFactory (final AS2Session aSession) throws ComponentDuplicateException
+  @OverrideOnDemand
+  protected void initPartnershipFactory (final AS2Session aSession) throws OpenAS2Exception
   {
     // Use a self-filling in-memory partnership factory
     final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
@@ -149,26 +153,56 @@ public final class AS2Client
   }
 
   @Nonnull
-  public static AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings,
-                                                   @Nonnull final AS2ClientRequest aRequest)
+  @OverrideOnDemand
+  protected AS2ClientResponse createResponse ()
   {
-    final AS2ClientResponse aResponse = new AS2ClientResponse ();
+    return new AS2ClientResponse ();
+  }
+
+  @Nonnull
+  @OverrideOnDemand
+  protected AS2Session createSession ()
+  {
+    return new AS2Session ();
+  }
+
+  /**
+   * @param aSettings
+   *        Client settings
+   * @param aSession
+   *        Current session
+   * @param aMsg
+   *        Current message
+   */
+  @OverrideOnDemand
+  protected void beforeSend (@Nonnull final AS2ClientSettings aSettings,
+                             @Nonnull final AS2Session aSession,
+                             @Nonnull final IMessage aMsg)
+  {}
+
+  @Nonnull
+  public AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings,
+                                            @Nonnull final AS2ClientRequest aRequest)
+  {
+    final AS2ClientResponse aResponse = createResponse ();
     IMessage aMsg = null;
     try
     {
-      final Partnership aPartnership = _buildPartnership (aSettings);
+      final Partnership aPartnership = buildPartnership (aSettings);
 
-      aMsg = _createMessage (aPartnership, aRequest);
+      aMsg = createMessage (aPartnership, aRequest);
       aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
       if (false)
         s_aLogger.info ("msgId to send: " + aMsg.getMessageID ());
 
       // Start a new session
-      final AS2Session aSession = new AS2Session ();
+      final AS2Session aSession = createSession ();
 
-      _initCertificateFactory (aSettings, aSession);
-      _initPartnershipFactory (aSession);
+      initCertificateFactory (aSettings, aSession);
+      initPartnershipFactory (aSession);
+
+      beforeSend (aSettings, aSession, aMsg);
 
       // And create a sender module that directly sends the message
       // No need for a message processor, as the sending is exactly one module
@@ -190,7 +224,8 @@ public final class AS2Client
       }
     }
 
-    s_aLogger.info (aResponse.getAsString ());
+    if (false)
+      s_aLogger.info (aResponse.getAsString ());
 
     return aResponse;
   }
