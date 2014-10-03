@@ -69,7 +69,6 @@
       <artifactId>ph-commons</artifactId>
       <version>5.0.2</version>
     </dependency>
-    <!-- Cannot switch to 1.50+ because of API incompatibilities -->
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk15on</artifactId>
