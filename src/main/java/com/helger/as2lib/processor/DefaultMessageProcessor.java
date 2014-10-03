@@ -36,8 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
@@ -46,15 +48,31 @@ import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.EChange;
 
+@NotThreadSafe
 public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
   private final List <IProcessorModule> m_aModules = new ArrayList <IProcessorModule> ();
 
-  public final void addModule (@Nonnull final IProcessorModule aModule)
+  public void addModule (@Nonnull final IProcessorModule aModule)
   {
     ValueEnforcer.notNull (aModule, "Module");
     m_aModules.add (aModule);
+  }
+
+  @Nonnull
+  public EChange removeModule (@Nullable final IProcessorModule aModule)
+  {
+    if (aModule == null)
+      return EChange.UNCHANGED;
+    return EChange.valueOf (m_aModules.remove (aModule));
+  }
+
+  @Nonnegative
+  public int getModuleCount ()
+  {
+    return m_aModules.size ();
   }
 
   @Nonnull
@@ -72,6 +90,18 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
       if (aClass.isAssignableFrom (aModule.getClass ()))
         return aClass.cast (aModule);
     return null;
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public <T extends IProcessorModule> List <T> getAllModulesOfClass (@Nonnull final Class <T> aClass)
+  {
+    ValueEnforcer.notNull (aClass, "Class");
+    final List <T> ret = new ArrayList <T> ();
+    for (final IProcessorModule aModule : m_aModules)
+      if (aClass.isAssignableFrom (aModule.getClass ()))
+        ret.add (aClass.cast (aModule));
+    return ret;
   }
 
   @Nonnull

@@ -35,6 +35,7 @@ package com.helger.as2lib.processor;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -44,6 +45,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.state.EChange;
 
 /**
  * Process incoming messages.
@@ -57,17 +59,27 @@ public interface IMessageProcessor extends IDynamicComponent
   void addModule (@Nonnull IProcessorModule aModule);
 
   @Nonnull
+  EChange removeModule (@Nullable IProcessorModule aModule);
+
+  @Nonnegative
+  int getModuleCount ();
+
+  @Nonnull
   @ReturnsMutableCopy
   List <IProcessorModule> getAllModules ();
 
   @Nullable
   <T extends IProcessorModule> T getModuleOfClass (@Nonnull Class <T> aClass);
 
-  void startActiveModules ();
-
-  void stopActiveModules ();
+  @Nonnull
+  @ReturnsMutableCopy
+  <T extends IProcessorModule> List <T> getAllModulesOfClass (@Nonnull Class <T> aClass);
 
   @Nonnull
   @ReturnsMutableCopy
   List <IProcessorActiveModule> getAllActiveModules ();
+
+  void startActiveModules ();
+
+  void stopActiveModules ();
 }
