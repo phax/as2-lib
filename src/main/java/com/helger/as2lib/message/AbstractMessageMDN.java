@@ -114,8 +114,9 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   @Override
   public String toString ()
   {
+    // Avoid endless loop when we reference Message which again references MDN
     return ToStringGenerator.getDerived (super.toString ())
-                            .append ("message", m_aMessage)
+                            .append ("message", m_aMessage != null ? m_aMessage.getMessageID () : null)
                             .append ("data", m_aData)
                             .append ("text", m_sText)
                             .toString ();
