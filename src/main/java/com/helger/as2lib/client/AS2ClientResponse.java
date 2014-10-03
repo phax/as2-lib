@@ -62,7 +62,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * The message ID of the original AS2 message.
+   * @return The message ID of the original AS2 message.
    */
   @Nullable
   public String getOriginalMessageID ()
