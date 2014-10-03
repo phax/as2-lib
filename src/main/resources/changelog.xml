@@ -35,5 +35,16 @@
 -->
 <changelog xmlns="http://www.phloc.com/ns/changelog/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.phloc.com/ns/changelog/1.0 schemas/changelog-1.0.xsd" version="1.0" component="as2-lib">
+  <release date="2014-10-03" version="1.0.1" />
+  <entry date="2014-10-02" category="api" action="change">
+    <change>
+      <text locale="en">Simplified Disposition field handling internally.</text>
+    </change>
+  </entry>
+  <entry date="2014-10-02" category="api" action="add">
+    <change>
+      <text locale="en">Added possibility for client to automatically register receiver certificate in local certificate factory</text>
+    </change>
+  </entry>
   <release date="2014-09-29" version="1.0.0" />
 </changelog>
