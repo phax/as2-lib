@@ -51,7 +51,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.OverrideOnDemand;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.collections.attrs.AbstractReadonlyAttributeContainer;
+import com.helger.commons.collections.attrs.AbstractGenericReadonlyAttributeContainer;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.state.EChange;
@@ -131,7 +131,7 @@ public class StringMap implements IStringMap, Serializable
   public final int getAttributeAsInt (@Nullable final String sName, final int nDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractReadonlyAttributeContainer.getAsInt (sName, sValue, nDefault);
+    return AbstractGenericReadonlyAttributeContainer.getAsInt (sName, sValue, nDefault);
   }
 
   public final long getAttributeAsLong (@Nullable final String sName)
@@ -142,7 +142,7 @@ public class StringMap implements IStringMap, Serializable
   public final long getAttributeAsLong (@Nullable final String sName, final long nDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractReadonlyAttributeContainer.getAsLong (sName, sValue, nDefault);
+    return AbstractGenericReadonlyAttributeContainer.getAsLong (sName, sValue, nDefault);
   }
 
   public final double getAttributeAsDouble (@Nullable final String sName)
@@ -153,7 +153,7 @@ public class StringMap implements IStringMap, Serializable
   public final double getAttributeAsDouble (@Nullable final String sName, final double dDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractReadonlyAttributeContainer.getAsDouble (sName, sValue, dDefault);
+    return AbstractGenericReadonlyAttributeContainer.getAsDouble (sName, sValue, dDefault);
   }
 
   public final boolean getAttributeAsBoolean (@Nullable final String sName)
@@ -164,7 +164,7 @@ public class StringMap implements IStringMap, Serializable
   public final boolean getAttributeAsBoolean (@Nullable final String sName, final boolean bDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractReadonlyAttributeContainer.getAsBoolean (sName, sValue, bDefault);
+    return AbstractGenericReadonlyAttributeContainer.getAsBoolean (sName, sValue, bDefault);
   }
 
   /**
