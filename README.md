@@ -7,7 +7,7 @@ and a server part which contains a standalone server. This project also contains
 
 See the [as2-server](https://github.com/phax/as2-server) project for a standalone server.
 
-See the [as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet) project for an integration into the Servlet sepcifications. 
+See the [as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet) project for an integration into the Servlet sepcifications and for use with the [PEPPOL](www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling. 
 
 #Maven usage
 Add the following to your pom.xml to use this artifact:
