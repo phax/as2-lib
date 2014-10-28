@@ -151,12 +151,42 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     return _getCertificate (ePartnershipType, sAlias);
   }
 
+  @Nullable
+  public X509Certificate getCertificateOrNull (@Nonnull final IMessage aMsg,
+                                               @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    try
+    {
+      return getCertificate (aMsg, ePartnershipType);
+    }
+    catch (final CertificateNotFoundException ex)
+    {
+      // No such certificate
+      return null;
+    }
+  }
+
   @Nonnull
   public X509Certificate getCertificate (@Nonnull final IMessageMDN aMDN,
                                          @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     final String sAlias = getAlias (aMDN.getPartnership (), ePartnershipType);
     return _getCertificate (ePartnershipType, sAlias);
+  }
+
+  @Nullable
+  public X509Certificate getCertificateOrNull (@Nonnull final IMessageMDN aMDN,
+                                               @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    try
+    {
+      return getCertificate (aMDN, ePartnershipType);
+    }
+    catch (final CertificateNotFoundException ex)
+    {
+      // No such certificate
+      return null;
+    }
   }
 
   @Nonnull

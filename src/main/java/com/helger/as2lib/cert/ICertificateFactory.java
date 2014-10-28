@@ -53,12 +53,19 @@ public interface ICertificateFactory extends IDynamicComponent
   @Nonnull
   X509Certificate getCertificate (@Nonnull IMessage aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
+  @Nullable
+  X509Certificate getCertificateOrNull (@Nonnull IMessage aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+
   @Nonnull
   PrivateKey getPrivateKey (@Nullable IMessage aMsg, @Nullable X509Certificate aCert) throws OpenAS2Exception;
 
   @Nonnull
-  X509Certificate getCertificate (@Nonnull IMessageMDN aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+  X509Certificate getCertificate (@Nonnull IMessageMDN aMDN, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+
+  @Nullable
+  X509Certificate getCertificateOrNull (@Nonnull IMessageMDN aMDN,
+                                        @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
   @Nonnull
-  PrivateKey getPrivateKey (@Nullable IMessageMDN aMsg, @Nullable X509Certificate aCert) throws OpenAS2Exception;
+  PrivateKey getPrivateKey (@Nullable IMessageMDN aMDN, @Nullable X509Certificate aCert) throws OpenAS2Exception;
 }
