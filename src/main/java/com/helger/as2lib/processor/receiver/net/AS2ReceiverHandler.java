@@ -89,166 +89,16 @@ public class AS2ReceiverHandler implements INetModuleHandler
   }
 
   @Nonnull
+  protected final AS2ReceiverModule getReceiverModule ()
+  {
+    return m_aReceiverModule;
+  }
+
+  @Nonnull
   @Nonempty
   public static String getClientInfo (@Nonnull final Socket aSocket)
   {
     return aSocket.getInetAddress ().getHostAddress () + ":" + aSocket.getPort ();
-  }
-
-  /**
-   * This method can be used to handle an incoming HTTP message AFTER the
-   * headers where extracted.
-   *
-   * @param sClientInfo
-   *        Client connection info
-   * @param aMsgData
-   *        The message body
-   * @param aMsg
-   *        The AS2 message that will be filled by this method
-   * @param aResponseHandler
-   *        The response handler which handles HTTP error messages as well as
-   *        synchronous MDN.
-   */
-  public void handleIncomingMessage (@Nonnull final String sClientInfo,
-                                     @Nonnull final byte [] aMsgData,
-                                     @Nonnull final AS2Message aMsg,
-                                     @Nonnull final IAS2HttpResponseHandler aResponseHandler)
-  {
-    // TODO store HTTP request, headers, and data to file in Received folder
-    // -> use message-id for filename?
-    try
-    {
-      // Put received data in a MIME body part
-      try
-      {
-        /*
-         * receivedPart = new MimeBodyPart(msg.getHeaders(), data);
-         * msg.setData(receivedPart); receivedContentType = new
-         * ContentType(receivedPart.getContentType());
-         */
-        final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
-        final String sReceivedContentType = aReceivedContentType.toString ();
-
-        final MimeBodyPart aReceivedPart = new MimeBodyPart ();
-        aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aMsgData, sReceivedContentType, null)));
-        aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
-        aMsg.setData (aReceivedPart);
-      }
-      catch (final Exception ex)
-      {
-        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_PARSING_MIME_FAILED,
-                                        ex);
-      }
-
-      // Extract AS2 ID's from header, find the message's partnership and
-      // update the message
-      try
-      {
-        final String sAS2From = aMsg.getHeader (CAS2Header.HEADER_AS2_FROM);
-        aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, sAS2From);
-
-        final String sAS2To = aMsg.getHeader (CAS2Header.HEADER_AS2_TO);
-        aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, sAS2To);
-
-        // Fill all partnership attributes etc.
-        m_aReceiverModule.getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
-      }
-      catch (final OpenAS2Exception ex)
-      {
-        throw new DispositionException (DispositionType.createError ("authentication-failed"),
-                                        AbstractNetModule.DISP_PARTNERSHIP_NOT_FOUND,
-                                        ex);
-      }
-
-      // Decrypt and verify signature of the data, and attach data to the
-      // message
-      decryptAndVerify (aMsg);
-
-      // Process the received message
-      try
-      {
-        m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
-      }
-      catch (final OpenAS2Exception ex)
-      {
-        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_STORAGE_FAILED,
-                                        ex);
-      }
-
-      try
-      {
-        if (aMsg.isRequestingMDN ())
-        {
-          // Transmit a success MDN if requested
-          sendMDN (sClientInfo,
-                   aResponseHandler,
-                   aMsg,
-                   DispositionType.createSuccess (),
-                   AbstractNetModule.DISP_SUCCESS);
-        }
-        else
-        {
-          // Just send a HTTP OK
-          HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
-          s_aLogger.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
-        }
-      }
-      catch (final Exception ex)
-      {
-        throw new WrappedOpenAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
-      }
-    }
-    catch (final DispositionException ex)
-    {
-      sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
-      m_aReceiverModule.handleError (aMsg, ex);
-    }
-    catch (final OpenAS2Exception ex)
-    {
-      m_aReceiverModule.handleError (aMsg, ex);
-    }
-  }
-
-  public void handle (final AbstractNetModule owner, @Nonnull final Socket aSocket)
-  {
-    final String sClientInfo = getClientInfo (aSocket);
-    s_aLogger.info ("Incoming connection " + sClientInfo);
-
-    final AS2Message aMsg = createMessage (aSocket);
-
-    byte [] aMsgData = null;
-
-    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
-
-    // Time the transmission
-    final StopWatch aSW = new StopWatch (true);
-
-    // Read in the message request, headers, and data
-    try
-    {
-      // Read HTTP request incl. headers
-      aMsgData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
-    }
-    catch (final Exception ex)
-    {
-      final NetException ne = new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
-      ne.terminate ();
-    }
-
-    aSW.stop ();
-
-    if (aMsgData != null)
-    {
-      s_aLogger.info ("received " +
-                      IOUtil.getTransferRate (aMsgData.length, aSW) +
-                      " from " +
-                      sClientInfo +
-                      aMsg.getLoggingText ());
-
-      handleIncomingMessage (sClientInfo, aMsgData, aMsg, aResponseHandler);
-    }
   }
 
   // Create a new message and record the source ip and port
@@ -263,7 +113,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     return aMsg;
   }
 
-  protected final void decryptAndVerify (@Nonnull final IMessage aMsg) throws OpenAS2Exception
+  protected void decrypt (@Nonnull final IMessage aMsg) throws OpenAS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
@@ -291,6 +141,12 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                       AbstractNetModule.DISP_DECRYPTION_ERROR,
                                       ex);
     }
+  }
+
+  protected void verify (@Nonnull final IMessage aMsg) throws OpenAS2Exception
+  {
+    final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
+    final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
 
     try
     {
@@ -377,6 +233,163 @@ public class AS2ReceiverHandler implements INetModuleHandler
         we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
         we.terminate ();
       }
+    }
+  }
+
+  /**
+   * This method can be used to handle an incoming HTTP message AFTER the
+   * headers where extracted.
+   *
+   * @param sClientInfo
+   *        Client connection info
+   * @param aMsgData
+   *        The message body
+   * @param aMsg
+   *        The AS2 message that will be filled by this method
+   * @param aResponseHandler
+   *        The response handler which handles HTTP error messages as well as
+   *        synchronous MDN.
+   */
+  public void handleIncomingMessage (@Nonnull final String sClientInfo,
+                                     @Nonnull final byte [] aMsgData,
+                                     @Nonnull final AS2Message aMsg,
+                                     @Nonnull final IAS2HttpResponseHandler aResponseHandler)
+  {
+    // TODO store HTTP request, headers, and data to file in Received folder
+    // -> use message-id for filename?
+    try
+    {
+      // Put received data in a MIME body part
+      try
+      {
+        /*
+         * receivedPart = new MimeBodyPart(msg.getHeaders(), data);
+         * msg.setData(receivedPart); receivedContentType = new
+         * ContentType(receivedPart.getContentType());
+         */
+        final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
+        final String sReceivedContentType = aReceivedContentType.toString ();
+
+        final MimeBodyPart aReceivedPart = new MimeBodyPart ();
+        aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aMsgData, sReceivedContentType, null)));
+        aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
+        aMsg.setData (aReceivedPart);
+      }
+      catch (final Exception ex)
+      {
+        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+                                        AbstractNetModule.DISP_PARSING_MIME_FAILED,
+                                        ex);
+      }
+
+      // Extract AS2 ID's from header, find the message's partnership and
+      // update the message
+      try
+      {
+        final String sAS2From = aMsg.getHeader (CAS2Header.HEADER_AS2_FROM);
+        aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, sAS2From);
+
+        final String sAS2To = aMsg.getHeader (CAS2Header.HEADER_AS2_TO);
+        aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, sAS2To);
+
+        // Fill all partnership attributes etc.
+        m_aReceiverModule.getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
+      }
+      catch (final OpenAS2Exception ex)
+      {
+        throw new DispositionException (DispositionType.createError ("authentication-failed"),
+                                        AbstractNetModule.DISP_PARTNERSHIP_NOT_FOUND,
+                                        ex);
+      }
+
+      // Decrypt and verify signature of the data, and attach data to the
+      // message
+      decrypt (aMsg);
+      verify (aMsg);
+
+      // Process the received message
+      try
+      {
+        m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
+      }
+      catch (final OpenAS2Exception ex)
+      {
+        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+                                        AbstractNetModule.DISP_STORAGE_FAILED,
+                                        ex);
+      }
+
+      try
+      {
+        if (aMsg.isRequestingMDN ())
+        {
+          // Transmit a success MDN if requested
+          sendMDN (sClientInfo,
+                   aResponseHandler,
+                   aMsg,
+                   DispositionType.createSuccess (),
+                   AbstractNetModule.DISP_SUCCESS);
+        }
+        else
+        {
+          // Just send a HTTP OK
+          HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
+          s_aLogger.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
+        }
+      }
+      catch (final Exception ex)
+      {
+        throw new WrappedOpenAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
+      }
+    }
+    catch (final DispositionException ex)
+    {
+      sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
+      m_aReceiverModule.handleError (aMsg, ex);
+    }
+    catch (final OpenAS2Exception ex)
+    {
+      m_aReceiverModule.handleError (aMsg, ex);
+    }
+  }
+
+  public void handle (final AbstractNetModule owner, @Nonnull final Socket aSocket)
+  {
+    final String sClientInfo = getClientInfo (aSocket);
+    s_aLogger.info ("Incoming connection " + sClientInfo);
+
+    final AS2Message aMsg = createMessage (aSocket);
+
+    byte [] aMsgData = null;
+
+    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
+
+    // Time the transmission
+    final StopWatch aSW = new StopWatch (true);
+
+    // Read in the message request, headers, and data
+    try
+    {
+      // Read HTTP request incl. headers
+      aMsgData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+    }
+    catch (final Exception ex)
+    {
+      final NetException ne = new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
+      ne.terminate ();
+    }
+
+    aSW.stop ();
+
+    if (aMsgData != null)
+    {
+      s_aLogger.info ("received " +
+                      IOUtil.getTransferRate (aMsgData.length, aSW) +
+                      " from " +
+                      sClientInfo +
+                      aMsg.getLoggingText ());
+
+      handleIncomingMessage (sClientInfo, aMsgData, aMsg, aResponseHandler);
     }
   }
 }
