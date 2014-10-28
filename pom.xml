@@ -41,7 +41,7 @@
     <version>1.3</version>
   </parent>
   <artifactId>as2-lib</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>as2-lib</name>
   <description>Open AS2 fork - library part</description>
@@ -60,7 +60,7 @@
     <url>http://github.com/phax/as2-lib</url>
     <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
-    <tag>as2-lib-1.0.3</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
