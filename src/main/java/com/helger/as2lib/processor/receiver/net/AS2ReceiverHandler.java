@@ -299,7 +299,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg, ECertificatePartnershipType.SENDER);
         aMsg.setData (aCryptoHelper.verify (aMsg.getData (), aSenderCert));
       }
     }

@@ -38,6 +38,7 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
 public interface ICryptoHelper
@@ -72,14 +73,15 @@ public interface ICryptoHelper
 
   /**
    * Verify the specified Mime Body part against the part certificate
-   * 
+   *
    * @param aPart
    *        Original part
    * @param aCert
-   *        Certificate to check against
+   *        Certificate to check against or <code>null</code> if the certificate
+   *        provided in the message should be used.
    * @return The signed content
    * @throws Exception
    */
   @Nonnull
-  MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert) throws Exception;
+  MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nullable X509Certificate aCert) throws Exception;
 }
