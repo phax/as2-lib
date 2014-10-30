@@ -104,11 +104,11 @@ public final class XMLUtil
     final StringMap ret = new StringMap ();
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {
-      final String sName = eChild.getAttribute (sNodeKeyName);
+      final String sName = eChild.getAttributeValue (sNodeKeyName);
       if (sName == null)
         throw new OpenAS2Exception (eChild.getTagName () + " does not have key attribute: " + sNodeKeyName);
 
-      final String sValue = eChild.getAttribute (sNodeValueName);
+      final String sValue = eChild.getAttributeValue (sNodeValueName);
       if (sValue == null)
         throw new OpenAS2Exception (eChild.getTagName () + " does not have value attribute: " + sNodeValueName);
 
@@ -142,7 +142,7 @@ public final class XMLUtil
     ValueEnforcer.notNull (aSession, "Session");
 
     // Read 'classname' attribute
-    final String sClassName = aElement.getAttribute ("classname");
+    final String sClassName = aElement.getAttributeValue ("classname");
     if (sClassName == null)
       throw new OpenAS2Exception ("Missing 'classname' attribute");
 
