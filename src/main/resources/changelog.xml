@@ -35,6 +35,17 @@
 -->
 <changelog xmlns="http://www.phloc.com/ns/changelog/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.phloc.com/ns/changelog/1.0 schemas/changelog-1.0.xsd" version="1.0" component="as2-lib">
+  <release date="2014-11-03" version="1.0.4" />
+  <entry date="2014-10-30" category="tech" action="update">
+    <change>
+      <text locale="en">Updated to ph-commons 5.2.0</text>
+    </change>
+  </entry>
+  <entry date="2014-10-28" category="tech" action="update">
+    <change>
+      <text locale="en">Allowing incoming message to use the contained certificate for validation</text>
+    </change>
+  </entry>
   <release date="2014-10-28" version="1.0.3" />
   <entry date="2014-10-09" category="tech" action="update">
     <change>
