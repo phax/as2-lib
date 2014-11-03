@@ -225,7 +225,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     // Make sure the data is encrypted
     if (!isEncrypted (aPart))
-      throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted");
+      throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
 
     // Parse the MIME body into an SMIME envelope object
     final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
@@ -321,7 +321,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     // Make sure the data is signed
     if (!isSigned (aPart))
-      throw new GeneralSecurityException ("Content-Type indicates data isn't signed");
+      throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().build (),
