@@ -332,8 +332,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
     if (!aContainedCerts.isEmpty ())
     {
-      // I didn't stumble across this case so far - that's why the certificate
-      // is explicitly passed in
+      // For PEPPOL the certificate is passed in
       if (aContainedCerts.size () > 1)
         s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
