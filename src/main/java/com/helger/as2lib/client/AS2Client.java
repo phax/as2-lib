@@ -97,11 +97,18 @@ public class AS2Client
 
   @Nonnull
   @OverrideOnDemand
+  protected AS2Message createAS2MessageObj ()
+  {
+    return new AS2Message ();
+  }
+
+  @Nonnull
+  @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
   protected AS2Message createMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
                                                                                                                         OpenAS2Exception
   {
-    final AS2Message aMsg = new AS2Message ();
+    final AS2Message aMsg = createAS2MessageObj ();
     aMsg.setContentType (aRequest.getContentType ());
     aMsg.setSubject (aRequest.getSubject ());
     aMsg.setPartnership (aPartnership);
