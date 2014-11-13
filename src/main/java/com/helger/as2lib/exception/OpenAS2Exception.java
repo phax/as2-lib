@@ -44,6 +44,11 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
 
+/**
+ * Base class for all AS2 related exceptions used in this project.
+ * 
+ * @author Philip Helger
+ */
 public class OpenAS2Exception extends Exception
 {
   public static final String SOURCE_MESSAGE = "message";
@@ -103,7 +108,7 @@ public class OpenAS2Exception extends Exception
    */
   protected void log (final boolean bTerminated)
   {
-    s_aLogger.info ("OpenASException " +
+    s_aLogger.info ("OpenAS2Exception " +
                     (bTerminated ? "terminated" : "caught") +
                     ": " +
                     getMessage () +
