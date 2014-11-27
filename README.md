@@ -23,6 +23,29 @@ Add the following to your pom.xml to use this artifact:
 </dependency>
 ```
 
+#Package structure
+This library manages the package `com.helger.as2lib` and all sub-packages:
+
+  * com.helger.as2lib.cert - contains the certificate factory
+  * com.helger.as2lib.client - contains the AS2 client for sending messages
+  * com.helger.as2lib.crypto - contains the BouncyCastle crypto code for signing, verification, encryption and decryption of messages
+  * com.helger.as2lib.disposition - contains code to handle content disposition
+  * com.helger.as2lib.exception - contains basic exception classes
+  * com.helger.as2lib.message - contains the main message and MDN classes
+  * com.helger.as2lib.params - generic code that allows for parameterization of certain message related configuration items
+  * com.helger.as2lib.partner - contains the partner, partnership and factory code
+  * com.helger.as2lib.processor - contains the basic building blocks for processing of messages
+  * com.helger.as2lib.processor.module - contains the basic classes for "active" modules (modules that can be started and stopped)
+  * com.helger.as2lib.processor.receiver - module for receiving messages
+  * com.helger.as2lib.processor.receiver.net - module for receiving messages from Sockets
+  * com.helger.as2lib.processor.resender - module for re-sending messages
+  * com.helger.as2lib.processor.sender - module for sending messages
+  * com.helger.as2lib.processor.storage - module for storing messages
+  * com.helger.as2lib.util - contains utility classes used in several places in this library or in derived projects
+  * com.helger.as2lib.util.cert - utility classes for certificate handling
+  * com.helger.as2lib.util.http - utility classes for HTTP connection handling
+  * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
+
 ---
 
 On Twitter: <a href="https://twitter.com/philiphelger">Follow @philiphelger</a>
