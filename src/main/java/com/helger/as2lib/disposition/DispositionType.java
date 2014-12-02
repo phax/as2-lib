@@ -44,6 +44,11 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * Contains the disposition type for creating the MDN.
+ * 
+ * @author Philip Helger
+ */
 public final class DispositionType
 {
   public static final String ACTION_AUTOMATIC_ACTION = "automatic-action";

@@ -63,6 +63,7 @@ import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
+import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
@@ -179,7 +180,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       try
       {
-        final IMessageMDN aMdn = AS2Util.createMDN (m_aReceiverModule.getSession (), aMsg, aDisposition, sText);
+        final IAS2Session aSession = m_aReceiverModule.getSession ();
+        final IMessageMDN aMdn = AS2Util.createMDN (aSession, aMsg, aDisposition, sText);
 
         if (aMsg.isRequestingAsynchMDN ())
         {
@@ -198,7 +200,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                           aMsg.getLoggingText ());
 
           // trigger explicit sending
-          m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
+          aSession.getMessageProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
         }
         else
         {
@@ -216,9 +218,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
           // Save sent MDN for later examination
           try
           {
-            m_aReceiverModule.getSession ()
-                             .getMessageProcessor ()
-                             .handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+            aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
           }
           catch (final ComponentNotFoundException ex)
           {

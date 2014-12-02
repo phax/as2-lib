@@ -38,12 +38,17 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public final class DispositionOptions
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DispositionOptions.class);
+
   private String m_sMICAlg;
   private String m_sMICAlgImportance;
   private String m_sProtocol;
@@ -52,44 +57,99 @@ public final class DispositionOptions
   public DispositionOptions ()
   {}
 
+  /**
+   * Check if the passed importance value is a standard one (<code>null</code>,
+   * "optional" or "required").
+   *
+   * @param sImportance
+   *        The value to be checked.
+   */
+  private static void _checkImportance (@Nullable final String sImportance)
+  {
+    if (sImportance != null && !sImportance.equals ("required") && !sImportance.equals ("optional"))
+      s_aLogger.warn ("Non-standard importance value '" + sImportance + "' used!");
+  }
+
+  /**
+   * Set the MIC algorithm
+   *
+   * @param sMICAlg
+   *        The MIC algorithm. May be <code>null</code>.
+   */
   public void setMICAlg (@Nullable final String sMICAlg)
   {
     m_sMICAlg = sMICAlg;
   }
 
+  /**
+   * @return The MIC algorithm. May be <code>null</code>.
+   */
   @Nullable
   public String getMICAlg ()
   {
     return m_sMICAlg;
   }
 
+  /**
+   * Set the MIC algorithm importance
+   *
+   * @param sMICAlgImportance
+   *        The importance. May be <code>null</code>.
+   */
   public void setMICAlgImportance (@Nullable final String sMICAlgImportance)
   {
+    _checkImportance (sMICAlgImportance);
     m_sMICAlgImportance = sMICAlgImportance;
   }
 
+  /**
+   * @return the MIC algorithm importance (<code>null</code> or "required" or
+   *         "optional").
+   */
   @Nullable
   public String getMICAlgImportance ()
   {
     return m_sMICAlgImportance;
   }
 
+  /**
+   * Set the protocol
+   *
+   * @param sProtocol
+   *        The protocol name (e.g. "pkcs7-signature"). May be <code>null</code>
+   *        .
+   */
   public void setProtocol (@Nullable final String sProtocol)
   {
     m_sProtocol = sProtocol;
   }
 
+  /**
+   * @return The protocol. Currently only "pkcs7-signature" or <code>null</code>
+   *         is supported.
+   */
   @Nullable
   public String getProtocol ()
   {
     return m_sProtocol;
   }
 
+  /**
+   * Set the protocol importance.
+   *
+   * @param sProtocolImportance
+   *        The importance to set. May be <code>null</code>.
+   */
   public void setProtocolImportance (@Nullable final String sProtocolImportance)
   {
+    _checkImportance (sProtocolImportance);
     m_sProtocolImportance = sProtocolImportance;
   }
 
+  /**
+   * @return the protocol importance (<code>null</code> or "required" or
+   *         "optional"). May be <code>null</code>.
+   */
   @Nullable
   public String getProtocolImportance ()
   {
@@ -140,22 +200,51 @@ public final class DispositionOptions
   public static DispositionOptions createFromString (@Nullable final String sOptions) throws OpenAS2Exception
   {
     final DispositionOptions ret = new DispositionOptions ();
-    if (StringHelper.hasText (sOptions))
+    if (StringHelper.hasTextAfterTrim (sOptions))
     {
       try
       {
-        final StringTokenizer aOptionTokens = new StringTokenizer (sOptions, "=,;", false);
-        if (aOptionTokens.countTokens () > 5)
+        // Split options into parameters by ";"
+        for (final String sParameter : StringHelper.getExplodedArray (';', sOptions.trim ()))
         {
-          // Skip "signed-receipt-protocol"
-          aOptionTokens.nextToken ();
-          ret.setProtocolImportance (aOptionTokens.nextToken ().trim ());
-          ret.setProtocol (aOptionTokens.nextToken ().trim ());
-
-          // Skip "signed-receipt-micalg"
-          aOptionTokens.nextToken ();
-          ret.setMICAlgImportance (aOptionTokens.nextToken ().trim ());
-          ret.setMICAlg (aOptionTokens.nextToken ().trim ());
+          // Split parameter into name and value by "="
+          final String [] aParts = StringHelper.getExplodedArray ('=', sParameter.trim (), 2);
+          if (aParts.length == 2)
+          {
+            final String sAttribute = aParts[0].trim ();
+            // Split the value into importance and the main values by ","
+            final String [] aValues = StringHelper.getExplodedArray (',', aParts[1].trim ());
+            if (aValues.length >= 2)
+            {
+              if (sAttribute.equalsIgnoreCase ("signed-receipt-protocol"))
+              {
+                ret.setProtocolImportance (aValues[0].trim ());
+                ret.setProtocol (aValues[1].trim ());
+              }
+              else
+                if (sAttribute.equalsIgnoreCase ("signed-receipt-micalg"))
+                {
+                  ret.setMICAlgImportance (aValues[0].trim ());
+                  ret.setMICAlg (aValues[1].trim ());
+                }
+                else
+                  s_aLogger.warn ("Unsupported disposition attribute '" +
+                                  sAttribute +
+                                  "' with value '" +
+                                  aParts[1].trim () +
+                                  "' found!");
+            }
+            else
+              s_aLogger.warn ("Failed to split disposition options parameter '" +
+                              sParameter +
+                              "' value '" +
+                              aParts[1].trim () +
+                              "' into importance and values");
+          }
+          else
+            s_aLogger.warn ("Failed to split disposition options parameter '" +
+                            sParameter +
+                            "' into attribute and values");
         }
       }
       catch (final NoSuchElementException ex)
