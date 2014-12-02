@@ -45,8 +45,16 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * Parser and domain object for disposition options.
+ * 
+ * @author Philip Helger
+ */
 public final class DispositionOptions
 {
+  public static final String SIGNED_RECEIPT_PROTOCOL = "signed-receipt-protocol";
+  public static final String SIGNED_RECEIPT_MICALG = "signed-receipt-micalg";
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (DispositionOptions.class);
 
   private String m_sMICAlg;
@@ -164,11 +172,14 @@ public final class DispositionOptions
       return "";
     }
 
-    return "signed-receipt-protocol=" +
+    return SIGNED_RECEIPT_PROTOCOL +
+           "=" +
            m_sProtocolImportance +
            ", " +
            m_sProtocol +
-           "; signed-receipt-micalg=" +
+           "; " +
+           SIGNED_RECEIPT_MICALG +
+           "=" +
            m_sMICAlgImportance +
            ", " +
            m_sMICAlg;
@@ -216,13 +227,13 @@ public final class DispositionOptions
             final String [] aValues = StringHelper.getExplodedArray (',', aParts[1].trim ());
             if (aValues.length >= 2)
             {
-              if (sAttribute.equalsIgnoreCase ("signed-receipt-protocol"))
+              if (sAttribute.equalsIgnoreCase (SIGNED_RECEIPT_PROTOCOL))
               {
                 ret.setProtocolImportance (aValues[0].trim ());
                 ret.setProtocol (aValues[1].trim ());
               }
               else
-                if (sAttribute.equalsIgnoreCase ("signed-receipt-micalg"))
+                if (sAttribute.equalsIgnoreCase (SIGNED_RECEIPT_MICALG))
                 {
                   ret.setMICAlgImportance (aValues[0].trim ());
                   ret.setMICAlg (aValues[1].trim ());
