@@ -104,6 +104,9 @@
             <Export-Package>
               com.helger.as2lib.*
             </Export-Package>
+            <Import-Package>
+              !javax.annotation.*,*
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
