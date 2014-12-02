@@ -37,23 +37,36 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.as2lib.crypto.ECryptoAlgorithmMode;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.IHasStringRepresentation;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Parser and domain object for disposition options.
- * 
+ *
  * @author Philip Helger
  */
-public final class DispositionOptions
+@NotThreadSafe
+public class DispositionOptions implements IHasStringRepresentation
 {
+  /** Protocol attribute */
   public static final String SIGNED_RECEIPT_PROTOCOL = "signed-receipt-protocol";
+  /** MicAlg attribute */
   public static final String SIGNED_RECEIPT_MICALG = "signed-receipt-micalg";
+
+  public static final String IMPORTANCE_REQUIRED = "required";
+  public static final String IMPORTANCE_OPTIONAL = "optional";
+
+  /** Default protocol value */
+  public static final String PROTOCOL_PKCS7_SIGNATURE = "pkcs7-signature";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (DispositionOptions.class);
 
@@ -74,7 +87,7 @@ public final class DispositionOptions
    */
   private static void _checkImportance (@Nullable final String sImportance)
   {
-    if (sImportance != null && !sImportance.equals ("required") && !sImportance.equals ("optional"))
+    if (sImportance != null && !sImportance.equals (IMPORTANCE_REQUIRED) && !sImportance.equals (IMPORTANCE_OPTIONAL))
       s_aLogger.warn ("Non-standard importance value '" + sImportance + "' used!");
   }
 
@@ -83,10 +96,28 @@ public final class DispositionOptions
    *
    * @param sMICAlg
    *        The MIC algorithm. May be <code>null</code>.
+   * @return this
    */
-  public void setMICAlg (@Nullable final String sMICAlg)
+  @Nonnull
+  public DispositionOptions setMICAlg (@Nullable final String sMICAlg)
   {
     m_sMICAlg = sMICAlg;
+    return this;
+  }
+
+  /**
+   * Set the MIC algorithm
+   *
+   * @param eMICAlg
+   *        The digesting MIC algorithm. May be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public DispositionOptions setMICAlg (@Nullable final ECryptoAlgorithm eMICAlg)
+  {
+    if (eMICAlg != null && eMICAlg.getCryptAlgorithmMode () != ECryptoAlgorithmMode.DIGEST)
+      throw new IllegalArgumentException ("Only digesting algorithms can be used here. " + eMICAlg + " is invalid!");
+    return setMICAlg (eMICAlg == null ? null : eMICAlg.getID ());
   }
 
   /**
@@ -103,11 +134,14 @@ public final class DispositionOptions
    *
    * @param sMICAlgImportance
    *        The importance. May be <code>null</code>.
+   * @return this
    */
-  public void setMICAlgImportance (@Nullable final String sMICAlgImportance)
+  @Nonnull
+  public DispositionOptions setMICAlgImportance (@Nullable final String sMICAlgImportance)
   {
     _checkImportance (sMICAlgImportance);
     m_sMICAlgImportance = sMICAlgImportance;
+    return this;
   }
 
   /**
@@ -126,10 +160,13 @@ public final class DispositionOptions
    * @param sProtocol
    *        The protocol name (e.g. "pkcs7-signature"). May be <code>null</code>
    *        .
+   * @return this
    */
-  public void setProtocol (@Nullable final String sProtocol)
+  @Nonnull
+  public DispositionOptions setProtocol (@Nullable final String sProtocol)
   {
     m_sProtocol = sProtocol;
+    return this;
   }
 
   /**
@@ -147,11 +184,14 @@ public final class DispositionOptions
    *
    * @param sProtocolImportance
    *        The importance to set. May be <code>null</code>.
+   * @return this
    */
-  public void setProtocolImportance (@Nullable final String sProtocolImportance)
+  @Nonnull
+  public DispositionOptions setProtocolImportance (@Nullable final String sProtocolImportance)
   {
     _checkImportance (sProtocolImportance);
     m_sProtocolImportance = sProtocolImportance;
+    return this;
   }
 
   /**

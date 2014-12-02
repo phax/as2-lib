@@ -40,14 +40,14 @@ import com.helger.commons.annotations.OverrideOnDemand;
 
 /**
  * A special {@link XMLPartnershipFactory} that adds a new partnership if it is
- * not yet exsting.
+ * not yet existing.
  *
  * @author Philip Helger
  */
 public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
 {
   /**
-   * Callback method that is invoked everytime a new partnership is
+   * Callback method that is invoked every time a new partnership is
    * automatically added. This method is called BEFORE the main add-process is
    * started.
    *

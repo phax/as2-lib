@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.crypto.ECryptoAlgorithm;
 import com.helger.as2lib.crypto.ECryptoAlgorithmMode;
+import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
 
 /**
@@ -51,7 +52,11 @@ import com.helger.commons.ValueEnforcer;
  */
 public class AS2ClientSettings
 {
-  public static final String DEFAULT_MDN_OPTIONS = "signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1";
+  public static final String DEFAULT_MDN_OPTIONS = new DispositionOptions ().setProtocolImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
+                                                                            .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                                            .setMICAlgImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
+                                                                            .setMICAlg (ECryptoAlgorithm.DIGEST_SHA1)
+                                                                            .getAsString ();
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
                                                          "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
@@ -85,74 +90,97 @@ public class AS2ClientSettings
    * @param sPassword
    *        The password used to open the key store. May not be
    *        <code>null</code>.
+   * @return this
    */
-  public void setKeyStore (@Nonnull final File aFile, @Nonnull final String sPassword)
+  @Nonnull
+  public AS2ClientSettings setKeyStore (@Nonnull final File aFile, @Nonnull final String sPassword)
   {
     m_aKeyStoreFile = ValueEnforcer.notNull (aFile, "File");
     m_sKeyStorePassword = ValueEnforcer.notNull (sPassword, "Password");
+    return this;
   }
 
+  /**
+   * @return The key store file. May be <code>null</code> if not yet set.
+   */
+  @Nullable
   public File getKeyStoreFile ()
   {
     return m_aKeyStoreFile;
   }
 
+  /**
+   * @return The key store password. May be <code>null</code> if not yet set.
+   */
+  @Nullable
   public String getKeyStorePassword ()
   {
     return m_sKeyStorePassword;
   }
 
-  public void setSenderData (@Nonnull final String sAS2ID,
-                             @Nonnull final String sEmailAddress,
-                             @Nonnull final String sKeyAlias)
+  @Nonnull
+  public AS2ClientSettings setSenderData (@Nonnull final String sAS2ID,
+                                          @Nonnull final String sEmailAddress,
+                                          @Nonnull final String sKeyAlias)
   {
     m_sSenderAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
     m_sEenderEmailAddress = ValueEnforcer.notNull (sEmailAddress, "EmailAddress");
     m_sSenderKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
+    return this;
   }
 
+  @Nullable
   public String getSenderAS2ID ()
   {
     return m_sSenderAS2ID;
   }
 
+  @Nullable
   public String getSenderEmailAddress ()
   {
     return m_sEenderEmailAddress;
   }
 
+  @Nullable
   public String getSenderKeyAlias ()
   {
     return m_sSenderKeyAlias;
   }
 
-  public void setReceiverData (@Nonnull final String sAS2ID,
-                               @Nonnull final String sKeyAlias,
-                               @Nonnull final String sAS2URL)
+  @Nonnull
+  public AS2ClientSettings setReceiverData (@Nonnull final String sAS2ID,
+                                            @Nonnull final String sKeyAlias,
+                                            @Nonnull final String sAS2URL)
   {
     m_sReceiverAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
     m_sReceiverKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
     m_sDestinationAS2URL = ValueEnforcer.notNull (sAS2URL, "AS2URL");
+    return this;
   }
 
+  @Nullable
   public String getReceiverAS2ID ()
   {
     return m_sReceiverAS2ID;
   }
 
+  @Nullable
   public String getReceiverKeyAlias ()
   {
     return m_sReceiverKeyAlias;
   }
 
+  @Nullable
   public String getDestinationAS2URL ()
   {
     return m_sDestinationAS2URL;
   }
 
-  public void setReceiverCertificate (@Nullable final X509Certificate aReceiverCertificate)
+  @Nonnull
+  public AS2ClientSettings setReceiverCertificate (@Nullable final X509Certificate aReceiverCertificate)
   {
     m_aReceiverCert = aReceiverCertificate;
+    return this;
   }
 
   /**
@@ -166,7 +194,9 @@ public class AS2ClientSettings
     return m_aReceiverCert;
   }
 
-  public void setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo, @Nullable final ECryptoAlgorithm eSignAlgo)
+  @Nonnull
+  public AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo,
+                                              @Nullable final ECryptoAlgorithm eSignAlgo)
   {
     if (eCryptAlgo != null && eCryptAlgo.getCryptAlgorithmMode () != ECryptoAlgorithmMode.CRYPT)
       throw new IllegalArgumentException ("The provided crypt algorithm is not possible for crypting.");
@@ -174,6 +204,7 @@ public class AS2ClientSettings
       throw new IllegalArgumentException ("The provided sign algorithm is not possible for digesting.");
     m_eCryptAlgo = eCryptAlgo;
     m_eSignAlgo = eSignAlgo;
+    return this;
   }
 
   @Nullable
@@ -200,31 +231,47 @@ public class AS2ClientSettings
     return m_eSignAlgo == null ? null : m_eSignAlgo.getID ();
   }
 
-  public void setPartnershipName (@Nonnull final String sPartnershipName)
+  @Nonnull
+  public AS2ClientSettings setPartnershipName (@Nonnull final String sPartnershipName)
   {
     m_sPartnershipName = ValueEnforcer.notNull (sPartnershipName, "PartnershipName");
+    return this;
   }
 
+  @Nullable
   public String getPartnershipName ()
   {
     return m_sPartnershipName;
   }
 
-  public void setMDNOptions (@Nonnull final String sMDNOptions)
+  @Nonnull
+  public AS2ClientSettings setMDNOptions (@Nonnull final String sMDNOptions)
   {
     m_sMDNOptions = ValueEnforcer.notNull (sMDNOptions, "MDNOptions");
+    return this;
   }
 
+  @Nonnull
+  public AS2ClientSettings setMDNOptions (@Nonnull final DispositionOptions aDispositionOptions)
+  {
+    ValueEnforcer.notNull (aDispositionOptions, "DispositionOptions");
+    return setMDNOptions (aDispositionOptions.getAsString ());
+  }
+
+  @Nullable
   public String getMDNOptions ()
   {
     return m_sMDNOptions;
   }
 
-  public void setMessageIDFormat (@Nonnull final String sMessageIDFormat)
+  @Nonnull
+  public AS2ClientSettings setMessageIDFormat (@Nonnull final String sMessageIDFormat)
   {
     m_sMessageIDFormat = ValueEnforcer.notNull (sMessageIDFormat, "MessageIDFormat");
+    return this;
   }
 
+  @Nullable
   public String getMessageIDFormat ()
   {
     return m_sMessageIDFormat;
