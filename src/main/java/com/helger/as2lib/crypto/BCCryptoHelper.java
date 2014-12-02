@@ -93,6 +93,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.io.file.FileUtils;
@@ -115,11 +116,16 @@ public final class BCCryptoHelper implements ICryptoHelper
     Security.addProvider (new BouncyCastleProvider ());
 
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_signature");
-    aCommandMap.addMailcap ("application/pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.pkcs7_mime");
-    aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_signature");
-    aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.x_pkcs7_mime");
-    aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=org.bouncycastle.mail.smime.handlers.multipart_signed");
+    aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.pkcs7_signature.class.getName ());
+    aCommandMap.addMailcap ("application/pkcs7-mime;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.pkcs7_mime.class.getName ());
+    aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.x_pkcs7_signature.class.getName ());
+    aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.x_pkcs7_mime.class.getName ());
+    aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.multipart_signed.class.getName ());
     AccessControllerHelper.run (new PrivilegedAction <Object> ()
     {
       public Object run ()
@@ -130,8 +136,39 @@ public final class BCCryptoHelper implements ICryptoHelper
     });
   }
 
+  @Nonnull
+  public KeyStore createNewKeyStore () throws KeyStoreException, NoSuchProviderException
+  {
+    return KeyStore.getInstance ("PKCS12", BouncyCastleProvider.PROVIDER_NAME);
+  }
+
+  @Nonnull
+  public KeyStore loadKeyStore (@Nullable final InputStream aIS, @Nonnull final char [] aPassword) throws Exception
+  {
+    final KeyStore aKeyStore = createNewKeyStore ();
+    if (aIS != null)
+      aKeyStore.load (aIS, aPassword);
+    return aKeyStore;
+  }
+
+  @Nonnull
+  public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
+  {
+    final InputStream aIS = FileUtils.getInputStream (sFilename);
+    try
+    {
+      return loadKeyStore (aIS, aPassword);
+    }
+    finally
+    {
+      StreamUtils.close (aIS);
+    }
+  }
+
   public boolean isEncrypted (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
+    ValueEnforcer.notNull (aPart, "Part");
+
     // Content-Type is sthg like:
     // application/pkcs7-mime; name=smime.p7m; smime-type=enveloped-data
     final ContentType aContentType = new ContentType (aPart.getContentType ());
@@ -145,11 +182,21 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   public boolean isSigned (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
+    ValueEnforcer.notNull (aPart, "Part");
+
     final ContentType aContentType = new ContentType (aPart.getContentType ());
     final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
     return sBaseType.equals ("multipart/signed");
   }
 
+  /**
+   * Remove all leading "\r\n" combinations.
+   *
+   * @param aData
+   *        Byte array to work on.
+   * @return An input stream to read from. The leading "\r\n"'s have been
+   *         skipped.
+   */
   @Nonnull
   private static NonBlockingByteArrayInputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
   {
@@ -157,7 +204,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     int nScanPos = 0;
     final int nLen = aData.length;
-    while (nScanPos < (nLen - 1))
+    while (nScanPos < nLen - 1)
     {
       if (aData[nScanPos] != '\r' || aData[nScanPos + 1] != '\n')
         break;
@@ -179,6 +226,8 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                             IOException
   {
     final ASN1ObjectIdentifier aMICAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sDigestAlgorithm);
+    if (aMICAlg == null)
+      throw new IllegalArgumentException ("Unsupported digest algorithm '" + sDigestAlgorithm + "' provided!");
 
     final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (),
                                                                     BouncyCastleProvider.PROVIDER_NAME);
@@ -198,6 +247,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     final byte [] aData = aBAOS.toByteArray ();
     aBAOS.close ();
 
+    // Cut all leading "\r\n"
     final NonBlockingByteArrayInputStream aIS = _trimCRLFPrefix (aData);
 
     // calculate the hash of the data and mime header
@@ -207,10 +257,13 @@ public final class BCCryptoHelper implements ICryptoHelper
     {}
     aDigIS.close ();
 
-    // Build result
+    // Build result digest array
     final byte [] aMIC = aDigIS.getMessageDigest ().digest ();
+
+    // Perform Base64 encoding
     final String sMICString = Base64.encodeBytes (aMIC);
 
+    // Concatenate
     return sMICString + ", " + sDigestAlgorithm;
   }
 
@@ -327,7 +380,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().build (),
                                                                    aMainPart);
 
-    // gte all certificates contained
+    // get all certificates contained
     X509Certificate aRealX509Cert = aX509Cert;
     final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
     if (!aContainedCerts.isEmpty ())
@@ -359,34 +412,5 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
 
     return aSignedParser.getContent ();
-  }
-
-  @Nonnull
-  public KeyStore createNewKeyStore () throws KeyStoreException, NoSuchProviderException
-  {
-    return KeyStore.getInstance ("PKCS12", BouncyCastleProvider.PROVIDER_NAME);
-  }
-
-  @Nonnull
-  public KeyStore loadKeyStore (@Nullable final InputStream aIS, @Nonnull final char [] aPassword) throws Exception
-  {
-    final KeyStore aKeyStore = createNewKeyStore ();
-    if (aIS != null)
-      aKeyStore.load (aIS, aPassword);
-    return aKeyStore;
-  }
-
-  @Nonnull
-  public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
-  {
-    final InputStream aIS = FileUtils.getInputStream (sFilename);
-    try
-    {
-      return loadKeyStore (aIS, aPassword);
-    }
-    finally
-    {
-      StreamUtils.close (aIS);
-    }
   }
 }

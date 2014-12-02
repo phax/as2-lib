@@ -41,23 +41,94 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
+/**
+ * Base interface for all crypto related methods in this project.
+ *
+ * @author Philip Helger
+ */
 public interface ICryptoHelper
 {
-  boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
-
+  /**
+   * @return A new key store. The default implementation creates a PKCS12 key
+   *         store.
+   * @throws Exception
+   *         In case something goes wrong.
+   */
   @Nonnull
   KeyStore createNewKeyStore () throws Exception;
 
+  /**
+   * Load a key store from the specified input stream.
+   *
+   * @param aIS
+   *        The input stream to load the key store from. May not be
+   *        <code>null</code>.
+   * @param aPassword
+   *        The password to be used for loading. May not be <code>null</code>.
+   * @return The loaded key store and never <code>null</code>.
+   * @throws Exception
+   *         In case loading fails.
+   */
   @Nonnull
   KeyStore loadKeyStore (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws Exception;
 
+  /**
+   * Load a key store from the specified file.
+   *
+   * @param sFilename
+   *        The filename to load the key store from. May not be
+   *        <code>null</code>.
+   * @param aPassword
+   *        The password to be used for loading. May not be <code>null</code>.
+   * @return The loaded key store and never <code>null</code>.
+   * @throws Exception
+   *         In case loading fails.
+   */
   @Nonnull
   KeyStore loadKeyStore (@Nonnull String sFilename, @Nonnull char [] aPassword) throws Exception;
 
+  /**
+   * Check if the passed MIME body part is encrypted. The default implementation
+   * checks if the base type of the content type is "application/pkcs7-mime" and
+   * if the parameter "smime-type" has the value "enveloped-data".
+   *
+   * @param aPart
+   *        The part to be checked.
+   * @return <code>true</code> if it is encrypted, <code>false</code> otherwise.
+   * @throws Exception
+   *         In case something goes wrong.
+   */
+  boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
+
+  /**
+   * Check if the passed MIME body part is signed. The default implementation
+   * checks if the base type of the content type is "multipart/signed".
+   *
+   * @param aPart
+   *        The part to be checked.
+   * @return <code>true</code> if it is signed, <code>false</code> otherwise.
+   * @throws Exception
+   *         In case something goes wrong.
+   */
   boolean isSigned (@Nonnull MimeBodyPart aPart) throws Exception;
 
+  /**
+   * Calculate the MIC
+   *
+   * @param aPart
+   *        MIME part to calculate the MIC from. May not be <code>null</code>.
+   * @param sDigestAlgorithm
+   *        The digest algorithm to be used. May not be <code>null</code>.
+   * @param bIncludeHeaders
+   *        <code>true</code> if the MIME headers should be included,
+   *        <code>false</code> if only the content should be used.
+   * @return The calculated MIC and never <code>null</code>. This is the
+   *         Base64-encoded message digest of the specified algorithm.
+   * @throws Exception
+   *         In case something goes wrong.
+   */
   @Nonnull
-  String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull String sDigest, boolean bIncludeHeaders) throws Exception;
+  String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull String sDigestAlgorithm, boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull PrivateKey aKey) throws Exception;
@@ -65,10 +136,26 @@ public interface ICryptoHelper
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull String sAlgorithm) throws Exception;
 
+  /**
+   * Sign a MIME body part.
+   *
+   * @param aPart
+   *        MIME body part to be signed. May not be <code>null</code>.
+   * @param aCert
+   *        The certificate that should be added to the signed information. May
+   *        not be <code>null</code>.
+   * @param aKey
+   *        Private key to be used for signing. May not be <code>null</code>.
+   * @param sAlgorithm
+   *        The algorithm to be used for signing. May not be <code>null</code>.
+   * @return The signed MIME body part. Never <code>null</code>.
+   * @throws Exception
+   *         In case something goes wrong.
+   */
   @Nonnull
   MimeBodyPart sign (@Nonnull MimeBodyPart aPart,
                      @Nonnull X509Certificate aCert,
-                     @Nonnull PrivateKey key,
+                     @Nonnull PrivateKey aKey,
                      @Nonnull String sAlgorithm) throws Exception;
 
   /**
@@ -79,8 +166,9 @@ public interface ICryptoHelper
    * @param aCert
    *        Certificate to check against or <code>null</code> if the certificate
    *        provided in the message should be used.
-   * @return The signed content
+   * @return The signed content. Never <code>null</code>.
    * @throws Exception
+   *         In case something goes wrong.
    */
   @Nonnull
   MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nullable X509Certificate aCert) throws Exception;
