@@ -157,7 +157,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
           s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
         final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg, ECertificatePartnershipType.SENDER);
-        aMsg.setData (aCryptoHelper.verify (aMsg.getData (), aSenderCert));
+        final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (), aSenderCert);
+        aMsg.setData (aVerifiedData);
       }
     }
     catch (final Exception ex)
@@ -259,6 +260,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
     // -> use message-id for filename?
     try
     {
+      final IAS2Session aSession = m_aReceiverModule.getSession ();
+
       // Put received data in a MIME body part
       try
       {
@@ -293,7 +296,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, sAS2To);
 
         // Fill all partnership attributes etc.
-        m_aReceiverModule.getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
+        aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
       }
       catch (final OpenAS2Exception ex)
       {
@@ -307,15 +310,39 @@ public class AS2ReceiverHandler implements INetModuleHandler
       decrypt (aMsg);
       verify (aMsg);
 
-      // Process the received message
+      // Validate the received message before storing
       try
       {
-        m_aReceiverModule.getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
+        aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_BEFORE_STORE, aMsg, null);
+      }
+      catch (final OpenAS2Exception ex)
+      {
+        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+                                        AbstractNetModule.DISP_VALIDATION_FAILED,
+                                        ex);
+      }
+
+      // Store the received message
+      try
+      {
+        aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
       }
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractNetModule.DISP_STORAGE_FAILED,
+                                        ex);
+      }
+
+      // Validate the received message after storing
+      try
+      {
+        aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_AFTER_STORE, aMsg, null);
+      }
+      catch (final OpenAS2Exception ex)
+      {
+        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+                                        AbstractNetModule.DISP_VALIDATION_FAILED,
                                         ex);
       }
 

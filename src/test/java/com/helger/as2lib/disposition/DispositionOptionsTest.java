@@ -34,6 +34,7 @@ package com.helger.as2lib.disposition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -47,24 +48,52 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public final class DispositionOptionsTest
 {
   @Test
-  public void testRfc4130 () throws OpenAS2Exception
+  public void testParsing () throws OpenAS2Exception
   {
-    final DispositionOptions aDO = DispositionOptions.createFromString ("signed-receipt-protocol=optional,pkcs7-signature; signed-receipt-micalg=optional,sha1,md5");
+    DispositionOptions aDO = DispositionOptions.createFromString ("signed-receipt-protocol=optional,pkcs7-signature; signed-receipt-micalg=optional,sha1,md5");
     assertNotNull (aDO);
     assertEquals ("optional", aDO.getProtocolImportance ());
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("optional", aDO.getMICAlgImportance ());
     assertEquals ("sha1", aDO.getMICAlg ());
-  }
+    assertEquals ("signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1",
+                  aDO.getAsString ());
 
-  @Test
-  public void testReceived () throws OpenAS2Exception
-  {
-    final DispositionOptions aDO = DispositionOptions.createFromString ("signed-receipt-protocol=required,pkcs7-signature; signed-receipt-micalg=required,sha1");
+    aDO = DispositionOptions.createFromString ("signed-receipt-protocol=required,pkcs7-signature; signed-receipt-micalg=required,sha1");
     assertNotNull (aDO);
     assertEquals ("required", aDO.getProtocolImportance ());
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
     assertEquals ("sha1", aDO.getMICAlg ());
+    assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1",
+                  aDO.getAsString ());
+
+    // With additional whitespaces
+    aDO = DispositionOptions.createFromString ("   signed-receipt-protocol   =   required   ,   pkcs7-signature   ;   signed-receipt-micalg   =   required   ,   sha1");
+    assertNotNull (aDO);
+    assertEquals ("required", aDO.getProtocolImportance ());
+    assertEquals ("pkcs7-signature", aDO.getProtocol ());
+    assertEquals ("required", aDO.getMICAlgImportance ());
+    assertEquals ("sha1", aDO.getMICAlg ());
+    assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1",
+                  aDO.getAsString ());
+
+    // Only protocol
+    aDO = DispositionOptions.createFromString ("signed-receipt-protocol=required,pkcs7-signature");
+    assertNotNull (aDO);
+    assertEquals ("required", aDO.getProtocolImportance ());
+    assertEquals ("pkcs7-signature", aDO.getProtocol ());
+    assertNull (aDO.getMICAlgImportance ());
+    assertNull (aDO.getMICAlg ());
+    assertEquals ("signed-receipt-protocol=required, pkcs7-signature", aDO.getAsString ());
+
+    // Only micalg
+    aDO = DispositionOptions.createFromString ("signed-receipt-micalg=required, sha1, md5");
+    assertNotNull (aDO);
+    assertNull (aDO.getProtocolImportance ());
+    assertNull (aDO.getProtocol ());
+    assertEquals ("required", aDO.getMICAlgImportance ());
+    assertEquals ("sha1", aDO.getMICAlg ());
+    assertEquals ("signed-receipt-micalg=required, sha1", aDO.getAsString ());
   }
 }

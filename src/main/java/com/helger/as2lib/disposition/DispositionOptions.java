@@ -207,22 +207,23 @@ public class DispositionOptions implements IHasStringRepresentation
   @Nonnull
   public String getAsString ()
   {
-    if (m_sProtocolImportance == null && m_sProtocol == null && m_sMICAlgImportance == null && m_sMICAlg == null)
+    final StringBuilder aSB = new StringBuilder ();
+    if (StringHelper.hasText (m_sProtocolImportance) && StringHelper.hasText (m_sProtocol))
     {
-      return "";
+      aSB.append (SIGNED_RECEIPT_PROTOCOL)
+         .append ('=')
+         .append (m_sProtocolImportance)
+         .append (", ")
+         .append (m_sProtocol);
+    }
+    if (StringHelper.hasText (m_sMICAlgImportance) && StringHelper.hasText (m_sMICAlg))
+    {
+      if (aSB.length () > 0)
+        aSB.append ("; ");
+      aSB.append (SIGNED_RECEIPT_MICALG).append ('=').append (m_sMICAlgImportance).append (", ").append (m_sMICAlg);
     }
 
-    return SIGNED_RECEIPT_PROTOCOL +
-           "=" +
-           m_sProtocolImportance +
-           ", " +
-           m_sProtocol +
-           "; " +
-           SIGNED_RECEIPT_MICALG +
-           "=" +
-           m_sMICAlgImportance +
-           ", " +
-           m_sMICAlg;
+    return aSB.toString ();
   }
 
   @Override

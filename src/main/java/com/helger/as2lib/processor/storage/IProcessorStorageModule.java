@@ -36,6 +36,23 @@ import com.helger.as2lib.processor.module.IProcessorModule;
 
 public interface IProcessorStorageModule extends IProcessorModule
 {
+  /**
+   * Special validation before message storage (not MDN!)
+   */
+  String DO_VALIDATE_BEFORE_STORE = "validate-before-store";
+
+  /**
+   * Message storage
+   */
   String DO_STORE = "store";
+
+  /**
+   * Special validation after message storage (not MDN!)
+   */
+  String DO_VALIDATE_AFTER_STORE = "validate-after-store";
+
+  /**
+   * MDN storage
+   */
   String DO_STOREMDN = "storemdn";
 }

@@ -109,6 +109,8 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   public static final String DISP_DECRYPTION_ERROR = DP_HEADER + "but an error occured decrypting the content.";
   public static final String DISP_VERIFY_SIGNATURE_FAILED = DP_DECRYPTED +
                                                             "Authentication of the originator of the message failed.";
+  public static final String DISP_VALIDATION_FAILED = DP_VERIFIED +
+                                                      " An error occured while validating the received data.";
   public static final String DISP_STORAGE_FAILED = DP_VERIFIED +
                                                    " An error occured while storing the data to the file system.";
   public static final String DISP_SUCCESS = DP_VERIFIED +
