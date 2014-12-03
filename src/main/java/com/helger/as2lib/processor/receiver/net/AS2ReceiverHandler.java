@@ -76,6 +76,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.lang.StackTraceHelper;
 import com.helger.commons.timing.StopWatch;
 
 public class AS2ReceiverHandler implements INetModuleHandler
@@ -318,7 +319,9 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_VALIDATION_FAILED,
+                                        AbstractNetModule.DISP_VALIDATION_FAILED +
+                                            "\n" +
+                                            StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 
@@ -330,7 +333,9 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_STORAGE_FAILED,
+                                        AbstractNetModule.DISP_STORAGE_FAILED +
+                                            "\n" +
+                                            StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 
@@ -342,7 +347,9 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_VALIDATION_FAILED,
+                                        AbstractNetModule.DISP_VALIDATION_FAILED +
+                                            "\n" +
+                                            StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 
