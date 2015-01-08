@@ -160,27 +160,27 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     try
     {
       // Create a MessageMDN and copy HTTP headers
-      final IMessageMDN aMdn = new AS2MessageMDN (aMsg);
+      final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
       // copy headers from msg to MDN from msg
-      aMdn.setHeaders (aMsg.getHeaders ());
-      final MimeBodyPart part = new MimeBodyPart (aMdn.getHeaders (), aData);
+      aMDN.setHeaders (aMsg.getHeaders ());
+      final MimeBodyPart part = new MimeBodyPart (aMDN.getHeaders (), aData);
       aMsg.getMDN ().setData (part);
 
       // get the MDN partnership info
-      aMdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
-      aMdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
-      getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMdn, false);
+      aMDN.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMDN.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
       AS2Util.parseMDN (aMsg, aSenderCert);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
       // the 3 msg attributes have to be reset before calling MDNFileModule
-      aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_TO));
-      aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMdn.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
       aMsg.setMessageID (aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
       getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
@@ -306,36 +306,36 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     return true;
   }
 
-  public void reparse (final AS2Message msg, final HttpURLConnection conn)
+  public void reparse (final AS2Message aMsg, final HttpURLConnection aConn)
   {
     // Create a MessageMDN and copy HTTP headers
-    final IMessageMDN mdn = new AS2MessageMDN (msg);
-    HTTPUtil.copyHttpHeaders (conn, mdn.getHeaders ());
+    final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
+    HTTPUtil.copyHttpHeaders (aConn, aMDN.getHeaders ());
 
     // Receive the MDN data
-    NonBlockingByteArrayOutputStream mdnStream = null;
+    NonBlockingByteArrayOutputStream aMDNStream = null;
     try
     {
-      final InputStream connIn = conn.getInputStream ();
-      mdnStream = new NonBlockingByteArrayOutputStream ();
+      final InputStream aIS = aConn.getInputStream ();
+      aMDNStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
-      final long nContentLength = StringParser.parseLong (mdn.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
+      final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
-        StreamUtils.copyInputStreamToOutputStreamWithLimit (connIn, mdnStream, nContentLength);
+        StreamUtils.copyInputStreamToOutputStreamWithLimit (aIS, aMDNStream, nContentLength);
       else
-        StreamUtils.copyInputStreamToOutputStream (connIn, mdnStream);
+        StreamUtils.copyInputStreamToOutputStream (aIS, aMDNStream);
     }
     catch (final IOException ioe)
     {
       s_aLogger.error (ioe.getMessage (), ioe);
     }
 
-    MimeBodyPart part = null;
-    if (mdnStream != null)
+    MimeBodyPart aPart = null;
+    if (aMDNStream != null)
       try
       {
-        part = new MimeBodyPart (mdn.getHeaders (), mdnStream.toByteArray ());
+        aPart = new MimeBodyPart (aMDN.getHeaders (), aMDNStream.toByteArray ());
       }
       catch (final MessagingException e)
       {
@@ -343,11 +343,10 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
         e.printStackTrace ();
       }
 
-    msg.getMDN ().setData (part);
+    aMsg.getMDN ().setData (aPart);
 
     // get the MDN partnership info
-    mdn.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, mdn.getHeader (CAS2Header.HEADER_AS2_FROM));
-    mdn.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, mdn.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+    aMDN.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
   }
-
 }

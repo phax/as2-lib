@@ -57,8 +57,8 @@ public class AS2MessageMDN extends AbstractMessageMDN
   {
     super (aMsg);
     // Swap from and to
-    setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getHeader (CAS2Header.HEADER_AS2_FROM));
-    setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
+    setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getAS2From ());
+    setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getAS2To ());
   }
 
   @Override

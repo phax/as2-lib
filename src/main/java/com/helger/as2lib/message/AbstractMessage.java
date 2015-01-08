@@ -58,6 +58,18 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   public AbstractMessage ()
   {}
 
+  @Nullable
+  public String getAS2From ()
+  {
+    return getHeader (CAS2Header.HEADER_AS2_FROM);
+  }
+
+  @Nullable
+  public String getAS2To ()
+  {
+    return getHeader (CAS2Header.HEADER_AS2_TO);
+  }
+
   public void setContentType (@Nullable final String sContentType)
   {
     setHeader (CAS2Header.HEADER_CONTENT_TYPE, sContentType);

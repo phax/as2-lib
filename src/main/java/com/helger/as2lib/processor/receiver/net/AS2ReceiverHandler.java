@@ -290,10 +290,10 @@ public class AS2ReceiverHandler implements INetModuleHandler
       // update the message
       try
       {
-        final String sAS2From = aMsg.getHeader (CAS2Header.HEADER_AS2_FROM);
+        final String sAS2From = aMsg.getAS2From ();
         aMsg.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, sAS2From);
 
-        final String sAS2To = aMsg.getHeader (CAS2Header.HEADER_AS2_TO);
+        final String sAS2To = aMsg.getAS2To ();
         aMsg.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, sAS2To);
 
         // Fill all partnership attributes etc.

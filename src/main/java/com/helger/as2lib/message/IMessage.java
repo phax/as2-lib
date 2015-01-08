@@ -41,6 +41,22 @@ import com.helger.commons.annotations.Nonempty;
 
 public interface IMessage extends IBaseMessage
 {
+  /**
+   * Shortcut for <code>getHeader (CAS2Header.HEADER_AS2_FROM)</code>
+   *
+   * @return Sender ID
+   */
+  @Nullable
+  String getAS2From ();
+
+  /**
+   * Shortcut for <code>getHeader (CAS2Header.HEADER_AS2_TO)</code>
+   *
+   * @return Receiver ID
+   */
+  @Nullable
+  String getAS2To ();
+
   @Nullable
   String getContentType ();
 
