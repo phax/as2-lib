@@ -178,8 +178,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
                           @Nonnull final DispositionType aDisposition,
                           @Nonnull final String sText)
   {
-    final boolean bMdnBlocked = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN) != null;
-    if (!bMdnBlocked)
+    final boolean bMDNBlocked = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN) != null;
+    if (!bMDNBlocked)
     {
       try
       {
@@ -338,9 +338,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_STORAGE_FAILED +
-                                            "\n" +
-                                            StackTraceHelper.getStackAsString (ex),
+                                        AbstractNetModule.DISP_STORAGE_FAILED + "\n" + ex.getMessage (),
                                         ex);
       }
 

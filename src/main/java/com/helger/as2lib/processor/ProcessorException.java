@@ -41,7 +41,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.lang.CGStringHelper;
-import com.helger.commons.lang.StackTraceHelper;
 
 public class ProcessorException extends OpenAS2Exception
 {
@@ -53,7 +52,7 @@ public class ProcessorException extends OpenAS2Exception
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
-      aSB.append ('\n').append (StackTraceHelper.getStackAsString (aCause));
+      aSB.append ('\n').append (aCause.getMessage ());
     return aSB.toString ();
   }
 
