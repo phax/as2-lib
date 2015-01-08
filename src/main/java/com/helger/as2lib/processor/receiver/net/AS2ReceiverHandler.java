@@ -58,6 +58,7 @@ import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.partner.CPartnershipIDs;
+import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -316,6 +317,10 @@ public class AS2ReceiverHandler implements INetModuleHandler
       {
         aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_BEFORE_STORE, aMsg, null);
       }
+      catch (final NoModuleException ex)
+      {
+        // No module installed - ignore
+      }
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
@@ -343,6 +348,10 @@ public class AS2ReceiverHandler implements INetModuleHandler
       try
       {
         aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_AFTER_STORE, aMsg, null);
+      }
+      catch (final NoModuleException ex)
+      {
+        // No module installed - ignore
       }
       catch (final OpenAS2Exception ex)
       {
