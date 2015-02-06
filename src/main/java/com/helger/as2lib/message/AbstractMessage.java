@@ -215,7 +215,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
                                        .toString ();
   }
 
-  @SuppressWarnings ("unchecked")
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     baseReadObject (aOIS);
