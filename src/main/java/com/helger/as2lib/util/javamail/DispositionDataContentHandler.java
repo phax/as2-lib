@@ -51,12 +51,12 @@ import com.helger.commons.io.streams.StreamUtils;
 public class DispositionDataContentHandler implements DataContentHandler
 {
   private static final ActivationDataFlavor ADF1;
-  private static final DataFlavor [] ADFs;
+  private static final DataFlavor [] ADFS;
 
   static
   {
     ADF1 = new ActivationDataFlavor (MimeBodyPart.class, "message/disposition-notification", "Disposition Notification");
-    ADFs = new DataFlavor [] { ADF1 };
+    ADFS = new DataFlavor [] { ADF1 };
   }
 
   public DispositionDataContentHandler ()
@@ -78,7 +78,7 @@ public class DispositionDataContentHandler implements DataContentHandler
 
   public DataFlavor [] getTransferDataFlavors ()
   {
-    return ArrayHelper.getCopy (ADFs);
+    return ArrayHelper.getCopy (ADFS);
   }
 
   public void writeTo (final Object obj, final String mimeType, final OutputStream os) throws IOException
