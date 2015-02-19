@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSAlgorithm;
@@ -48,6 +49,9 @@ public enum ECryptoAlgorithm implements IHasID <String>
 {
   DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, ECryptoAlgorithmMode.DIGEST),
   DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, ECryptoAlgorithmMode.DIGEST),
+  DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256, ECryptoAlgorithmMode.DIGEST),
+  DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384, ECryptoAlgorithmMode.DIGEST),
+  DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512, ECryptoAlgorithmMode.DIGEST),
   CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC, ECryptoAlgorithmMode.CRYPT),
   CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC, ECryptoAlgorithmMode.CRYPT),
   CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC, ECryptoAlgorithmMode.CRYPT),

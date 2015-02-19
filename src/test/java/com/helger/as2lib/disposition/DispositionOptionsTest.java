@@ -95,5 +95,23 @@ public final class DispositionOptionsTest
     assertEquals ("required", aDO.getMICAlgImportance ());
     assertEquals ("sha1", aDO.getMICAlg ());
     assertEquals ("signed-receipt-micalg=required, sha1", aDO.getAsString ());
+
+    // Only micalg
+    aDO = DispositionOptions.createFromString ("signed-receipt-micalg=required, sha512");
+    assertNotNull (aDO);
+    assertNull (aDO.getProtocolImportance ());
+    assertNull (aDO.getProtocol ());
+    assertEquals ("required", aDO.getMICAlgImportance ());
+    assertEquals ("sha512", aDO.getMICAlg ());
+    assertEquals ("signed-receipt-micalg=required, sha512", aDO.getAsString ());
+
+    // Only micalg
+    aDO = DispositionOptions.createFromString ("signed-receipt-micalg=required, bla");
+    assertNotNull (aDO);
+    assertNull (aDO.getProtocolImportance ());
+    assertNull (aDO.getProtocol ());
+    assertEquals ("required", aDO.getMICAlgImportance ());
+    assertEquals ("bla", aDO.getMICAlg ());
+    assertEquals ("signed-receipt-micalg=required, bla", aDO.getAsString ());
   }
 }
