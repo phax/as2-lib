@@ -35,6 +35,12 @@
 -->
 <changelog xmlns="http://www.phloc.com/ns/changelog/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.phloc.com/ns/changelog/1.0 schemas/changelog-1.0.xsd" version="1.0" component="as2-lib">
+  <release date="2015-02-20" version="1.0.6" />
+  <entry date="2015-02-19" category="tech" action="add">
+    <change>
+      <text locale="en">Added support for hash algorithms SHA-256, SHA-384 and SHA-512</text>
+    </change>
+  </entry>
   <release date="2015-01-30" version="1.0.5" />
   <release date="2014-11-03" version="1.0.4" />
   <entry date="2014-10-30" category="tech" action="update">
