@@ -42,11 +42,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 
 /**
  * Base class for all AS2 related exceptions used in this project.
- * 
+ *
  * @author Philip Helger
  */
 public class OpenAS2Exception extends Exception
@@ -81,7 +81,7 @@ public class OpenAS2Exception extends Exception
   @ReturnsMutableCopy
   public final Map <String, Object> getSources ()
   {
-    return ContainerHelper.newMap (m_aSources);
+    return CollectionHelper.newMap (m_aSources);
   }
 
   @Nullable

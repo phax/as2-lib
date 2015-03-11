@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.lang.CGStringHelper;
 
 public class ProcessorException extends OpenAS2Exception
@@ -67,7 +67,7 @@ public class ProcessorException extends OpenAS2Exception
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
     m_aProcessor = aProcessor;
-    m_aCauses = ContainerHelper.newList (aCauses);
+    m_aCauses = CollectionHelper.newList (aCauses);
   }
 
   @Nonnull
@@ -80,6 +80,6 @@ public class ProcessorException extends OpenAS2Exception
   @Nonempty
   public final List <Throwable> getCauses ()
   {
-    return ContainerHelper.newList (m_aCauses);
+    return CollectionHelper.newList (m_aCauses);
   }
 }

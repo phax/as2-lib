@@ -66,7 +66,7 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.streams.StreamUtils;
@@ -334,7 +334,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     try
     {
       // Make a copy to be sure
-      for (final String sAlias : ContainerHelper.newList (aKeyStore.aliases ()))
+      for (final String sAlias : CollectionHelper.newList (aKeyStore.aliases ()))
         aKeyStore.deleteEntry (sAlias);
       save (getFilename (), getPassword ());
     }

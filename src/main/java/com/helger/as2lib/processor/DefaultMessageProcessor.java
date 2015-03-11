@@ -47,7 +47,7 @@ import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.state.EChange;
 
 @NotThreadSafe
@@ -79,7 +79,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
   @ReturnsMutableCopy
   public List <IProcessorModule> getAllModules ()
   {
-    return ContainerHelper.newList (m_aModules);
+    return CollectionHelper.newList (m_aModules);
   }
 
   @Nullable

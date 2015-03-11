@@ -50,7 +50,7 @@ import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.OverrideOnDemand;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.collections.attrs.AbstractGenericReadonlyAttributeContainer;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
@@ -80,7 +80,7 @@ public class StringMap implements IStringMap, Serializable
   public StringMap (@Nonnull final Map <String, String> aMap)
   {
     ValueEnforcer.notNull (aMap, "Map");
-    m_aAttrs = ContainerHelper.newOrderedMap (aMap);
+    m_aAttrs = CollectionHelper.newOrderedMap (aMap);
   }
 
   public StringMap (@Nonnull final IStringMap aCont)
@@ -100,7 +100,7 @@ public class StringMap implements IStringMap, Serializable
   @ReturnsMutableCopy
   public Map <String, String> getAllAttributes ()
   {
-    return ContainerHelper.newOrderedMap (m_aAttrs);
+    return CollectionHelper.newOrderedMap (m_aAttrs);
   }
 
   @Nullable
@@ -288,21 +288,21 @@ public class StringMap implements IStringMap, Serializable
   public Enumeration <String> getAttributeNames ()
   {
     // Build an enumerator on top of the set
-    return ContainerHelper.getEnumeration (m_aAttrs.keySet ());
+    return CollectionHelper.getEnumeration (m_aAttrs.keySet ());
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public Set <String> getAllAttributeNames ()
   {
-    return ContainerHelper.newOrderedSet (m_aAttrs.keySet ());
+    return CollectionHelper.newOrderedSet (m_aAttrs.keySet ());
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public Collection <String> getAllAttributeValues ()
   {
-    return ContainerHelper.newList (m_aAttrs.values ());
+    return CollectionHelper.newList (m_aAttrs.values ());
   }
 
   @Nonnegative

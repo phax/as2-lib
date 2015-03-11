@@ -88,14 +88,13 @@ import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.util.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
@@ -326,7 +325,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // in the signature
     final List <X509Certificate> aCertList = new ArrayList <X509Certificate> ();
     aCertList.add (aX509Cert);
-    final Store aCertStore = new JcaCertStore (aCertList);
+    final JcaCertStore aCertStore = new JcaCertStore (aCertList);
 
     // create some smime capabilities in case someone wants to respond
     final ASN1EncodableVector aSignedAttrs = new ASN1EncodableVector ();
@@ -389,7 +388,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       if (aContainedCerts.size () > 1)
         s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
-      final X509CertificateHolder aCertHolder = ((X509CertificateHolder) ContainerHelper.getFirstElement (aContainedCerts));
+      final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
       final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                       .getCertificate (aCertHolder);
       if (aX509Cert != null && !aX509Cert.equals (aCert))

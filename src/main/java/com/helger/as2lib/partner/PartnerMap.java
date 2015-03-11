@@ -45,7 +45,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.state.EChange;
 
 @NotThreadSafe
@@ -86,13 +86,13 @@ public final class PartnerMap implements IPartnerMap
   @ReturnsMutableCopy
   public Set <String> getAllPartnerNames ()
   {
-    return ContainerHelper.newOrderedSet (m_aMap.keySet ());
+    return CollectionHelper.newOrderedSet (m_aMap.keySet ());
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public List <StringMap> getAllPartners ()
   {
-    return ContainerHelper.newList (m_aMap.values ());
+    return CollectionHelper.newList (m_aMap.values ());
   }
 }

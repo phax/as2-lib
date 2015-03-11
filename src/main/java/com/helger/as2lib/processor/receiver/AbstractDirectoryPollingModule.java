@@ -63,7 +63,7 @@ import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.annotations.ReturnsMutableObject;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.mime.CMimeType;
@@ -169,7 +169,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     final Map <String, Long> aTrackedFiles = getTrackedFiles ();
 
     // We need to operate on a copy
-    for (final Entry <String, Long> aFileEntry : ContainerHelper.newMap (aTrackedFiles).entrySet ())
+    for (final Entry <String, Long> aFileEntry : CollectionHelper.newMap (aTrackedFiles).entrySet ())
     {
       // get the file and it's stored length
       final File aFile = new File (aFileEntry.getKey ());

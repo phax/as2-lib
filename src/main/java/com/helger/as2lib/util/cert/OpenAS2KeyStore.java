@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 
 public class OpenAS2KeyStore implements ICertificateStore
 {
@@ -68,7 +68,7 @@ public class OpenAS2KeyStore implements ICertificateStore
   {
     try
     {
-      return ContainerHelper.newList (getKeyStore ().aliases ());
+      return CollectionHelper.newList (getKeyStore ().aliases ());
     }
     catch (final KeyStoreException kse)
     {
