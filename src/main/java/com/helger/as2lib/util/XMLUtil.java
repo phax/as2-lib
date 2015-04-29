@@ -47,6 +47,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.microdom.IMicroElement;
+import com.helger.commons.microdom.IMicroQName;
 
 @Immutable
 public final class XMLUtil
@@ -70,10 +71,10 @@ public final class XMLUtil
     ValueEnforcer.notNull (aElement, "Element");
 
     final StringMap ret = new StringMap ();
-    final Map <String, String> aAttrs = aElement.getAllAttributes ();
+    final Map <IMicroQName, String> aAttrs = aElement.getAllQAttributes ();
     if (aAttrs != null)
-      for (final Map.Entry <String, String> aEntry : aAttrs.entrySet ())
-        ret.setAttribute (aEntry.getKey ().toLowerCase (Locale.US), aEntry.getValue ());
+      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
+        ret.setAttribute (aEntry.getKey ().getName ().toLowerCase (Locale.US), aEntry.getValue ());
     return ret;
   }
 

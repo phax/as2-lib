@@ -46,7 +46,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Contains the disposition type for creating the MDN.
- * 
+ *
  * @author Philip Helger
  */
 public final class DispositionType
@@ -103,7 +103,7 @@ public final class DispositionType
 
   public boolean isWarning ()
   {
-    return EqualsUtils.nullSafeEqualsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
+    return EqualsUtils.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
   }
 
   public void validate () throws DispositionException
