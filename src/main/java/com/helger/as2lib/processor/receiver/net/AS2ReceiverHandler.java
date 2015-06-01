@@ -65,6 +65,7 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
+import com.helger.as2lib.util.AS2Settings;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
@@ -159,7 +160,9 @@ public class AS2ReceiverHandler implements INetModuleHandler
           s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
         final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg, ECertificatePartnershipType.SENDER);
-        final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (), aSenderCert);
+        final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
+                                                                 aSenderCert,
+                                                                 AS2Settings.isCryptoVerifyUseCertificateInBodyPart ());
         aMsg.setData (aVerifiedData);
       }
     }

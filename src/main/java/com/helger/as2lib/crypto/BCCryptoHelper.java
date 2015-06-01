@@ -364,12 +364,14 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart, @Nullable final X509Certificate aX509Cert) throws GeneralSecurityException,
-                                                                                                           IOException,
-                                                                                                           MessagingException,
-                                                                                                           CMSException,
-                                                                                                           OperatorCreationException,
-                                                                                                           SMIMEException
+  public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
+                              @Nullable final X509Certificate aX509Cert,
+                              final boolean bAllowCertificateInBodyPart) throws GeneralSecurityException,
+                                                                        IOException,
+                                                                        MessagingException,
+                                                                        CMSException,
+                                                                        OperatorCreationException,
+                                                                        SMIMEException
   {
     // Make sure the data is signed
     if (!isSigned (aPart))
@@ -379,25 +381,30 @@ public final class BCCryptoHelper implements ICryptoHelper
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().build (),
                                                                    aMainPart);
 
-    // get all certificates contained
     X509Certificate aRealX509Cert = aX509Cert;
-    final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
-    if (!aContainedCerts.isEmpty ())
+    if (bAllowCertificateInBodyPart)
     {
-      // For PEPPOL the certificate is passed in
-      if (aContainedCerts.size () > 1)
-        s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
+      // get all certificates contained in the body part
+      final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
+      if (!aContainedCerts.isEmpty ())
+      {
+        // For PEPPOL the certificate is passed in
+        if (aContainedCerts.size () > 1)
+          s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
-      final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
-      final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
-                                                                      .getCertificate (aCertHolder);
-      if (aX509Cert != null && !aX509Cert.equals (aCert))
-        s_aLogger.warn ("Provided certificate " + aX509Cert + " differs from retrieved certficate: " + aCert);
+        final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
+        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                        .getCertificate (aCertHolder);
+        if (aX509Cert != null && !aX509Cert.equals (aCert))
+          s_aLogger.warn ("Provided certificate " + aX509Cert + " differs from retrieved certficate: " + aCert);
 
-      aRealX509Cert = aCert;
+        aRealX509Cert = aCert;
+      }
     }
     if (aRealX509Cert == null)
-      throw new GeneralSecurityException ("No certificate provided and none found in the message!");
+      throw new GeneralSecurityException ("No certificate provided" +
+                                          (bAllowCertificateInBodyPart ? " and none found in the message" : "") +
+                                          "!");
 
     // Verify certificate
     final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)

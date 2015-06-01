@@ -274,7 +274,7 @@ public final class AS2Util
 
     if (aCryptoHelper.isSigned (aMainPart))
     {
-      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert);
+      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, AS2Settings.isCryptoVerifyUseCertificateInBodyPart ());
     }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
