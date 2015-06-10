@@ -64,6 +64,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AsynchMDNSenderModule.class);
 
+  public AsynchMDNSenderModule ()
+  {}
+
   public boolean canHandle (@Nonnull final String sAction,
                             @Nonnull final IMessage aMsg,
                             @Nullable final Map <String, Object> aOptions)
@@ -92,7 +95,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       // Create a HTTP connection
       final String sUrl = aMsg.getAsyncMDNurl ();
-      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
+      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST", getSession ().getHttpProxy ());
 
       try
       {

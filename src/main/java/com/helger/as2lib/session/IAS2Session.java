@@ -32,9 +32,11 @@
  */
 package com.helger.as2lib.session;
 
+import java.net.Proxy;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
@@ -125,4 +127,22 @@ public interface IAS2Session
    */
   @Nonnull
   IMessageProcessor getMessageProcessor () throws ComponentNotFoundException;
+
+  /**
+   * Get the optional HTTP/HTTPS proxy settings to be used for sending AS2
+   * messages and asynchronous MDNs.
+   *
+   * @return The HTTP/HTTPS proxy object to be used. May be <code>null</code>.
+   */
+  @Nullable
+  Proxy getHttpProxy ();
+
+  /**
+   * Set the optional HTTP/HTTPS proxy settings to be used for sending AS2
+   * messages and asynchronous MDNs.
+   *
+   * @param aHttpProxy
+   *        The HTTP/HTTPS proxy object to be used. May be <code>null</code>.
+   */
+  void setHttpProxy (@Nullable Proxy aHttpProxy);
 }

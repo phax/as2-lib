@@ -34,10 +34,12 @@ package com.helger.as2lib.processor.sender;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -46,6 +48,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.DoNothingTrustManager;
 import com.helger.as2lib.util.http.HostnameVerifierAlwaysTrue;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.random.VerySecureRandom;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
@@ -54,16 +57,18 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
 
   @Nonnull
-  public HttpURLConnection getConnection (final String sUrl,
+  public HttpURLConnection getConnection (@Nonnull @Nonempty final String sUrl,
                                           final boolean bOutput,
                                           final boolean bInput,
                                           final boolean bUseCaches,
-                                          final String sRequestMethod) throws OpenAS2Exception
+                                          @Nonnull @Nonempty final String sRequestMethod,
+                                          @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
     try
     {
       final URL aUrlObj = new URL (sUrl);
-      final HttpURLConnection aConn = (HttpURLConnection) aUrlObj.openConnection ();
+      final HttpURLConnection aConn = (HttpURLConnection) (aProxy == null ? aUrlObj.openConnection ()
+                                                                         : aUrlObj.openConnection (aProxy));
       aConn.setDoOutput (bOutput);
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);

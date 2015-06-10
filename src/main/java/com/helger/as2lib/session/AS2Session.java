@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.session;
 
+import java.net.Proxy;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,7 @@ import java.util.Map;
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
@@ -59,6 +61,7 @@ public class AS2Session implements IAS2Session
   public static final String COMPONENT_ID_MESSAGE_PROCESSOR = "message-processor";
 
   private final Map <String, IDynamicComponent> m_aComponents = new HashMap <String, IDynamicComponent> ();
+  private Proxy m_aHttpProxy;
 
   /**
    * Constructor
@@ -141,6 +144,17 @@ public class AS2Session implements IAS2Session
   public final IMessageProcessor getMessageProcessor () throws ComponentNotFoundException
   {
     return (IMessageProcessor) getComponent (COMPONENT_ID_MESSAGE_PROCESSOR);
+  }
+
+  @Nullable
+  public Proxy getHttpProxy ()
+  {
+    return m_aHttpProxy;
+  }
+
+  public void setHttpProxy (@Nullable final Proxy aHttpProxy)
+  {
+    m_aHttpProxy = aHttpProxy;
   }
 
   @Override

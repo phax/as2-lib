@@ -84,6 +84,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
 
+  public AS2SenderModule ()
+  {}
+
   public boolean canHandle (@Nonnull final String sAction,
                             @Nonnull final IMessage aMsg,
                             @Nullable final Map <String, Object> aOptions)
@@ -141,7 +144,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Create the HTTP connection and set up headers
       final String sUrl = aRealMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_URL);
 
-      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST");
+      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST", getSession ().getHttpProxy ());
       try
       {
         updateHttpHeaders (aConn, aRealMsg);
