@@ -80,7 +80,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   public final IAS2Session getSession ()
   {
     if (m_aSession == null)
-      throw new IllegalStateException ("No session present so far!");
+      throw new IllegalStateException ("No AS2 session present so far!");
     return m_aSession;
   }
 
