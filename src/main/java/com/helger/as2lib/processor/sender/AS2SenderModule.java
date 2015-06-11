@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
+import com.helger.as2lib.crypto.ECryptoAlgorithm;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.disposition.DispositionType;
@@ -159,7 +160,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         final boolean bIncludeHeadersInMIC = aRealMsg.getHistory ().getItemCount () > 1;
 
         final String sMIC = AS2Util.getCryptoHelper ().calculateMIC (aRealMsg.getData (),
-                                                                     aDispositionOptions.getMICAlg (),
+                                                                     aDispositionOptions.getFirstMICAlg (),
                                                                      bIncludeHeadersInMIC);
 
         if (aRealMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
@@ -405,8 +406,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
         final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
+        final ECryptoAlgorithm eAlgorithm = ECryptoAlgorithm.getFromIDOrNull (sAlgorithm);
 
-        aDataBP = AS2Util.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, sAlgorithm);
+        aDataBP = AS2Util.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eAlgorithm);
 
         // Asynch MDN 2007-03-12
         final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
@@ -420,10 +422,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Encrypt the data if requested
       if (bEncrypt)
       {
-        final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
-
         final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
-        aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, sAlgorithm);
+        final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
+        final ECryptoAlgorithm eAlgorithm = ECryptoAlgorithm.getFromIDOrNull (sAlgorithm);
+
+        aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eAlgorithm);
 
         // Asynch MDN 2007-03-12
         final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());

@@ -53,6 +53,7 @@ import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.cert.KeyNotFoundException;
 import com.helger.as2lib.crypto.BCCryptoHelper;
+import com.helger.as2lib.crypto.ECryptoAlgorithm;
 import com.helger.as2lib.crypto.ICryptoHelper;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.disposition.DispositionType;
@@ -95,13 +96,13 @@ public final class AS2Util
 
   public static void createMDNData (@Nonnull final IAS2Session aSession,
                                     @Nonnull final IMessageMDN aMdn,
-                                    @Nonnull final String sMicAlg,
+                                    @Nonnull final ECryptoAlgorithm eMICAlg,
                                     @Nullable final String sSignatureProtocol) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMdn, "MDN");
     if (sSignatureProtocol != null)
-      ValueEnforcer.notNull (sMicAlg, "sMicAlg");
+      ValueEnforcer.notNull (eMICAlg, "MICAlg");
 
     // Create the report and sub-body parts
     final MimeMultipart aReportParts = new MimeMultipart ();
@@ -149,7 +150,7 @@ public final class AS2Util
       {
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMdn, aSenderCert);
-        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport, aSenderCert, aSenderKey, sMicAlg);
+        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport, aSenderCert, aSenderKey, eMICAlg);
         aMdn.setData (aSignedReport);
       }
       catch (final CertificateNotFoundException ex)
@@ -247,15 +248,15 @@ public final class AS2Util
     final String sDispositionOptions = aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
     String sMIC = null;
-    if (aDispositionOptions.getMICAlg () != null)
+    if (aDispositionOptions.getMICAlgCount () > 0)
     {
       sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                              aDispositionOptions.getMICAlg (),
+                                              aDispositionOptions.getFirstMICAlg (),
                                               aMsg.getHistory ().getItemCount () > 1);
     }
 
     aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
-    createMDNData (aSession, aMDN, aDispositionOptions.getMICAlg (), aDispositionOptions.getProtocol ());
+    createMDNData (aSession, aMDN, aDispositionOptions.getFirstMICAlg (), aDispositionOptions.getProtocol ());
 
     aMDN.updateMessageID ();
 

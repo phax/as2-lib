@@ -89,6 +89,16 @@ public enum ECryptoAlgorithm implements IHasID <String>
     return m_eMode;
   }
 
+  public boolean isDigesting ()
+  {
+    return m_eMode.isDigesting ();
+  }
+
+  public boolean isEncrypting ()
+  {
+    return m_eMode.isEncrypting ();
+  }
+
   @Nullable
   public static ECryptoAlgorithm getFromIDOrNull (@Nullable final String sID)
   {
@@ -96,6 +106,7 @@ public enum ECryptoAlgorithm implements IHasID <String>
   }
 
   @Nullable
+  @Deprecated
   public static ASN1ObjectIdentifier getASN1OIDFromIDOrNull (@Nullable final String sID)
   {
     final ECryptoAlgorithm e = getFromIDOrNull (sID);

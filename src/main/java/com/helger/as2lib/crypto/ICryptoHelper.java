@@ -117,7 +117,7 @@ public interface ICryptoHelper
    *
    * @param aPart
    *        MIME part to calculate the MIC from. May not be <code>null</code>.
-   * @param sDigestAlgorithm
+   * @param eDigestAlgorithm
    *        The digest algorithm to be used. May not be <code>null</code>.
    * @param bIncludeHeaders
    *        <code>true</code> if the MIME headers should be included,
@@ -128,13 +128,15 @@ public interface ICryptoHelper
    *         In case something goes wrong.
    */
   @Nonnull
-  String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull String sDigestAlgorithm, boolean bIncludeHeaders) throws Exception;
+  String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull ECryptoAlgorithm eDigestAlgorithm, boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull PrivateKey aKey) throws Exception;
 
   @Nonnull
-  MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull String sAlgorithm) throws Exception;
+  MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,
+                        @Nonnull X509Certificate aCert,
+                        @Nonnull ECryptoAlgorithm eAlgorithm) throws Exception;
 
   /**
    * Sign a MIME body part.
@@ -146,7 +148,7 @@ public interface ICryptoHelper
    *        not be <code>null</code>.
    * @param aKey
    *        Private key to be used for signing. May not be <code>null</code>.
-   * @param sAlgorithm
+   * @param eAlgorithm
    *        The algorithm to be used for signing. May not be <code>null</code>.
    * @return The signed MIME body part. Never <code>null</code>.
    * @throws Exception
@@ -156,7 +158,7 @@ public interface ICryptoHelper
   MimeBodyPart sign (@Nonnull MimeBodyPart aPart,
                      @Nonnull X509Certificate aCert,
                      @Nonnull PrivateKey aKey,
-                     @Nonnull String sAlgorithm) throws Exception;
+                     @Nonnull ECryptoAlgorithm eAlgorithm) throws Exception;
 
   /**
    * Verify the specified Mime Body part against the part certificate

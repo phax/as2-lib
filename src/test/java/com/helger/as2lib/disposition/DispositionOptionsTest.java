@@ -55,8 +55,8 @@ public final class DispositionOptionsTest
     assertEquals ("optional", aDO.getProtocolImportance ());
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("optional", aDO.getMICAlgImportance ());
-    assertEquals ("sha1", aDO.getMICAlg ());
-    assertEquals ("signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1",
+    assertEquals ("sha1, md5", aDO.getMICAlgAsString ());
+    assertEquals ("signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1, md5",
                   aDO.getAsString ());
 
     aDO = DispositionOptions.createFromString ("signed-receipt-protocol=required,pkcs7-signature; signed-receipt-micalg=required,sha1");
@@ -64,7 +64,7 @@ public final class DispositionOptionsTest
     assertEquals ("required", aDO.getProtocolImportance ());
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
-    assertEquals ("sha1", aDO.getMICAlg ());
+    assertEquals ("sha1", aDO.getMICAlgAsString ());
     assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1",
                   aDO.getAsString ());
 
@@ -74,7 +74,7 @@ public final class DispositionOptionsTest
     assertEquals ("required", aDO.getProtocolImportance ());
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
-    assertEquals ("sha1", aDO.getMICAlg ());
+    assertEquals ("sha1", aDO.getMICAlgAsString ());
     assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1",
                   aDO.getAsString ());
 
@@ -84,7 +84,7 @@ public final class DispositionOptionsTest
     assertEquals ("required", aDO.getProtocolImportance ());
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertNull (aDO.getMICAlgImportance ());
-    assertNull (aDO.getMICAlg ());
+    assertNull (aDO.getMICAlgAsString ());
     assertEquals ("signed-receipt-protocol=required, pkcs7-signature", aDO.getAsString ());
 
     // Only micalg
@@ -93,8 +93,8 @@ public final class DispositionOptionsTest
     assertNull (aDO.getProtocolImportance ());
     assertNull (aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
-    assertEquals ("sha1", aDO.getMICAlg ());
-    assertEquals ("signed-receipt-micalg=required, sha1", aDO.getAsString ());
+    assertEquals ("sha1, md5", aDO.getMICAlgAsString ());
+    assertEquals ("signed-receipt-micalg=required, sha1, md5", aDO.getAsString ());
 
     // Only micalg
     aDO = DispositionOptions.createFromString ("signed-receipt-micalg=required, sha512");
@@ -102,16 +102,25 @@ public final class DispositionOptionsTest
     assertNull (aDO.getProtocolImportance ());
     assertNull (aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
-    assertEquals ("sha512", aDO.getMICAlg ());
+    assertEquals ("sha512", aDO.getMICAlgAsString ());
     assertEquals ("signed-receipt-micalg=required, sha512", aDO.getAsString ());
 
-    // Only micalg
+    // Invalid + valid micalg
+    aDO = DispositionOptions.createFromString ("signed-receipt-micalg=required, foo, bla, sha512, zuzu, ,, , , lol, md5, md4, 9876");
+    assertNotNull (aDO);
+    assertNull (aDO.getProtocolImportance ());
+    assertNull (aDO.getProtocol ());
+    assertEquals ("required", aDO.getMICAlgImportance ());
+    assertEquals ("sha512, md5", aDO.getMICAlgAsString ());
+    assertEquals ("signed-receipt-micalg=required, sha512, md5", aDO.getAsString ());
+
+    // Invalid micalg
     aDO = DispositionOptions.createFromString ("signed-receipt-micalg=required, bla");
     assertNotNull (aDO);
     assertNull (aDO.getProtocolImportance ());
     assertNull (aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
-    assertEquals ("bla", aDO.getMICAlg ());
-    assertEquals ("signed-receipt-micalg=required, bla", aDO.getAsString ());
+    assertNull (aDO.getMICAlgAsString ());
+    assertEquals ("", aDO.getAsString ());
   }
 }

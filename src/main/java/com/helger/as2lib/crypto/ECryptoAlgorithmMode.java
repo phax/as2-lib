@@ -32,9 +32,24 @@
  */
 package com.helger.as2lib.crypto;
 
-
+/**
+ * This enum differentiates between message digesting algorithms and crypto
+ * algorithms.
+ * 
+ * @author Philip Helger
+ */
 public enum ECryptoAlgorithmMode
 {
   DIGEST,
   CRYPT;
+
+  public boolean isDigesting ()
+  {
+    return this == DIGEST;
+  }
+
+  public boolean isEncrypting ()
+  {
+    return this == CRYPT;
+  }
 }

@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.crypto.ECryptoAlgorithm;
-import com.helger.as2lib.crypto.ECryptoAlgorithmMode;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
 
@@ -198,10 +197,14 @@ public class AS2ClientSettings
   public AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo,
                                               @Nullable final ECryptoAlgorithm eSignAlgo)
   {
-    if (eCryptAlgo != null && eCryptAlgo.getCryptAlgorithmMode () != ECryptoAlgorithmMode.CRYPT)
-      throw new IllegalArgumentException ("The provided crypt algorithm is not possible for crypting.");
-    if (eSignAlgo != null && eSignAlgo.getCryptAlgorithmMode () != ECryptoAlgorithmMode.DIGEST)
-      throw new IllegalArgumentException ("The provided sign algorithm is not possible for digesting.");
+    if (eCryptAlgo != null && !eCryptAlgo.isEncrypting ())
+      throw new IllegalArgumentException ("The provided crypt algorithm " +
+                                          eCryptAlgo +
+                                          " is not possible for crypting.");
+    if (eSignAlgo != null && !eSignAlgo.isDigesting ())
+      throw new IllegalArgumentException ("The provided sign algorithm " +
+                                          eSignAlgo +
+                                          " is not possible for digesting.");
     m_eCryptAlgo = eCryptAlgo;
     m_eSignAlgo = eSignAlgo;
     return this;

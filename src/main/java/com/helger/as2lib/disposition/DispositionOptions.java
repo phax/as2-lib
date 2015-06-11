@@ -32,9 +32,13 @@
  */
 package com.helger.as2lib.disposition;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -43,9 +47,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.crypto.ECryptoAlgorithm;
-import com.helger.as2lib.crypto.ECryptoAlgorithmMode;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.IHasStringRepresentation;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -70,10 +75,10 @@ public class DispositionOptions implements IHasStringRepresentation
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (DispositionOptions.class);
 
-  private String m_sMICAlg;
-  private String m_sMICAlgImportance;
-  private String m_sProtocol;
   private String m_sProtocolImportance;
+  private String m_sProtocol;
+  private String m_sMICAlgImportance;
+  private final List <ECryptoAlgorithm> m_aMICAlgs = new ArrayList <ECryptoAlgorithm> ();
 
   public DispositionOptions ()
   {}
@@ -92,66 +97,28 @@ public class DispositionOptions implements IHasStringRepresentation
   }
 
   /**
-   * Set the MIC algorithm
+   * Set the protocol importance.
    *
-   * @param sMICAlg
-   *        The MIC algorithm. May be <code>null</code>.
+   * @param sProtocolImportance
+   *        The importance to set. May be <code>null</code>.
    * @return this
    */
   @Nonnull
-  public DispositionOptions setMICAlg (@Nullable final String sMICAlg)
+  public DispositionOptions setProtocolImportance (@Nullable final String sProtocolImportance)
   {
-    m_sMICAlg = sMICAlg;
+    _checkImportance (sProtocolImportance);
+    m_sProtocolImportance = sProtocolImportance;
     return this;
   }
 
   /**
-   * Set the MIC algorithm
-   *
-   * @param eMICAlg
-   *        The digesting MIC algorithm. May be <code>null</code>.
-   * @return this
-   */
-  @Nonnull
-  public DispositionOptions setMICAlg (@Nullable final ECryptoAlgorithm eMICAlg)
-  {
-    if (eMICAlg != null && eMICAlg.getCryptAlgorithmMode () != ECryptoAlgorithmMode.DIGEST)
-      throw new IllegalArgumentException ("Only digesting algorithms can be used here. " + eMICAlg + " is invalid!");
-    return setMICAlg (eMICAlg == null ? null : eMICAlg.getID ());
-  }
-
-  /**
-   * @return The MIC algorithm. May be <code>null</code>.
+   * @return the protocol importance (<code>null</code> or "required" or
+   *         "optional"). May be <code>null</code>.
    */
   @Nullable
-  public String getMICAlg ()
+  public String getProtocolImportance ()
   {
-    return m_sMICAlg;
-  }
-
-  /**
-   * Set the MIC algorithm importance
-   *
-   * @param sMICAlgImportance
-   *        The importance. May be <code>null</code>.
-   * @return this
-   */
-  @Nonnull
-  public DispositionOptions setMICAlgImportance (@Nullable final String sMICAlgImportance)
-  {
-    _checkImportance (sMICAlgImportance);
-    m_sMICAlgImportance = sMICAlgImportance;
-    return this;
-  }
-
-  /**
-   * @return the MIC algorithm importance (<code>null</code> or "required" or
-   *         "optional").
-   */
-  @Nullable
-  public String getMICAlgImportance ()
-  {
-    return m_sMICAlgImportance;
+    return m_sProtocolImportance;
   }
 
   /**
@@ -180,28 +147,167 @@ public class DispositionOptions implements IHasStringRepresentation
   }
 
   /**
-   * Set the protocol importance.
+   * Set the MIC algorithm importance
    *
-   * @param sProtocolImportance
-   *        The importance to set. May be <code>null</code>.
+   * @param sMICAlgImportance
+   *        The importance. May be <code>null</code>.
    * @return this
    */
   @Nonnull
-  public DispositionOptions setProtocolImportance (@Nullable final String sProtocolImportance)
+  public DispositionOptions setMICAlgImportance (@Nullable final String sMICAlgImportance)
   {
-    _checkImportance (sProtocolImportance);
-    m_sProtocolImportance = sProtocolImportance;
+    _checkImportance (sMICAlgImportance);
+    m_sMICAlgImportance = sMICAlgImportance;
     return this;
   }
 
   /**
-   * @return the protocol importance (<code>null</code> or "required" or
-   *         "optional"). May be <code>null</code>.
+   * @return the MIC algorithm importance (<code>null</code> or "required" or
+   *         "optional").
    */
   @Nullable
-  public String getProtocolImportance ()
+  public String getMICAlgImportance ()
   {
-    return m_sProtocolImportance;
+    return m_sMICAlgImportance;
+  }
+
+  private static void _checkMICAlgorithm (@Nullable final ECryptoAlgorithm eMICAlg)
+  {
+    if (!eMICAlg.isDigesting ())
+      throw new IllegalArgumentException ("Only digesting algorithms can be used here. " +
+                                          eMICAlg +
+                                          " is not a digesting algorithm!");
+  }
+
+  /**
+   * Set the MIC algorithm(s) to use. The passed string is parsed as a comma
+   * separated list. This overwrites all existing MIC algorithms. If any of the
+   * contained MIC algorithms is not supported by this library, a log message is
+   * emitted but no Exception is thrown.
+   *
+   * @param sMICAlgs
+   *        The MIC algorithm(s). May be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public DispositionOptions setMICAlg (@Nullable final String sMICAlgs)
+  {
+    m_aMICAlgs.clear ();
+    if (StringHelper.hasText (sMICAlgs))
+    {
+      final List <String> aMICAlgs = StringHelper.getExploded (',', sMICAlgs.trim ());
+      for (final String sMICAlg : aMICAlgs)
+      {
+        // trim and lowercase
+        final String sRealMICAlg = sMICAlg.trim ().toLowerCase (Locale.US);
+
+        final ECryptoAlgorithm eMICAlg = ECryptoAlgorithm.getFromIDOrNull (sRealMICAlg);
+        if (eMICAlg == null)
+        {
+          // Ignore all unsupported MIC algorithms and continue
+          s_aLogger.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
+        }
+        else
+        {
+          // Ensure it is a digesting algorithm
+          _checkMICAlgorithm (eMICAlg);
+          m_aMICAlgs.add (eMICAlg);
+        }
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Set the MIC algorithm to use. This overwrites all existing MIC algorithms.
+   *
+   * @param aMICAlgs
+   *        The digesting MIC algorithm(s). May be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public DispositionOptions setMICAlg (@Nullable final ECryptoAlgorithm... aMICAlgs)
+  {
+    m_aMICAlgs.clear ();
+    if (aMICAlgs != null)
+      for (final ECryptoAlgorithm eMICAlg : aMICAlgs)
+        if (eMICAlg != null)
+        {
+          _checkMICAlgorithm (eMICAlg);
+          m_aMICAlgs.add (eMICAlg);
+        }
+    return this;
+  }
+
+  /**
+   * Set the MIC algorithm to use. This overwrites all existing MIC algorithms.
+   *
+   * @param aMICAlgs
+   *        The digesting MIC algorithm(s). May be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public DispositionOptions setMICAlg (@Nullable final Iterable <? extends ECryptoAlgorithm> aMICAlgs)
+  {
+    m_aMICAlgs.clear ();
+    if (aMICAlgs != null)
+      for (final ECryptoAlgorithm eMICAlg : aMICAlgs)
+        if (eMICAlg != null)
+        {
+          _checkMICAlgorithm (eMICAlg);
+          m_aMICAlgs.add (eMICAlg);
+        }
+    return this;
+  }
+
+  /**
+   * @return All MIC algorithms contained. Never <code>null</code> but maybe
+   *         empty.
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public List <ECryptoAlgorithm> getAllMICAlgs ()
+  {
+    return CollectionHelper.newList (m_aMICAlgs);
+  }
+
+  /**
+   * @return The first MIC algorithm contained in the list. May be
+   *         <code>null</code> of no MIC algorithm is set.
+   */
+  @Nullable
+  public ECryptoAlgorithm getFirstMICAlg ()
+  {
+    return CollectionHelper.getFirstElement (m_aMICAlgs);
+  }
+
+  /**
+   * @return The number of contained MIC algorithms. Always &ge; 0.
+   */
+  @Nonnegative
+  public int getMICAlgCount ()
+  {
+    return m_aMICAlgs.size ();
+  }
+
+  /**
+   * @return The MIC algorithm(s) as a comma delimited string. May be
+   *         <code>null</code>.
+   */
+  @Nullable
+  public String getMICAlgAsString ()
+  {
+    if (m_aMICAlgs.isEmpty ())
+      return null;
+
+    final StringBuilder aSB = new StringBuilder ();
+    for (final ECryptoAlgorithm eMICAlg : m_aMICAlgs)
+    {
+      if (aSB.length () > 0)
+        aSB.append (", ");
+      aSB.append (eMICAlg.getID ());
+    }
+    return aSB.toString ();
   }
 
   @Nonnull
@@ -216,11 +322,15 @@ public class DispositionOptions implements IHasStringRepresentation
          .append (", ")
          .append (m_sProtocol);
     }
-    if (StringHelper.hasText (m_sMICAlgImportance) && StringHelper.hasText (m_sMICAlg))
+    if (StringHelper.hasText (m_sMICAlgImportance) && !m_aMICAlgs.isEmpty ())
     {
       if (aSB.length () > 0)
         aSB.append ("; ");
-      aSB.append (SIGNED_RECEIPT_MICALG).append ('=').append (m_sMICAlgImportance).append (", ").append (m_sMICAlg);
+      aSB.append (SIGNED_RECEIPT_MICALG)
+         .append ('=')
+         .append (m_sMICAlgImportance)
+         .append (", ")
+         .append (getMICAlgAsString ());
     }
 
     return aSB.toString ();
@@ -229,10 +339,10 @@ public class DispositionOptions implements IHasStringRepresentation
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("protocolImportance", m_sProtocolImportance)
-                                       .append ("protocol", m_sProtocol)
+    return new ToStringGenerator (this).append ("ProtocolImportance", m_sProtocolImportance)
+                                       .append ("Protocol", m_sProtocol)
                                        .append ("MICAlgImportance", m_sMICAlgImportance)
-                                       .append ("MICAlg", m_sMICAlg)
+                                       .append ("MICAlgs", m_aMICAlgs)
                                        .toString ();
   }
 
@@ -264,9 +374,10 @@ public class DispositionOptions implements IHasStringRepresentation
           if (aParts.length == 2)
           {
             final String sAttribute = aParts[0].trim ();
+
             // Split the value into importance and the main values by ","
-            final String [] aValues = StringHelper.getExplodedArray (',', aParts[1].trim ());
-            if (aValues.length >= 2)
+            final String [] aValues = StringHelper.getExplodedArray (',', aParts[1].trim (), 2);
+            if (aValues.length == 2)
             {
               if (sAttribute.equalsIgnoreCase (SIGNED_RECEIPT_PROTOCOL))
               {

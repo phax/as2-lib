@@ -219,14 +219,16 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   @Nonnull
   public String calculateMIC (@Nonnull final MimeBodyPart aPart,
-                              @Nonnull final String sDigestAlgorithm,
+                              @Nonnull final ECryptoAlgorithm eDigestAlgorithm,
                               final boolean bIncludeHeaders) throws GeneralSecurityException,
                                                             MessagingException,
                                                             IOException
   {
-    final ASN1ObjectIdentifier aMICAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sDigestAlgorithm);
-    if (aMICAlg == null)
-      throw new IllegalArgumentException ("Unsupported digest algorithm '" + sDigestAlgorithm + "' provided!");
+    ValueEnforcer.notNull (aPart, "MimeBodyPart");
+    ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
+    ValueEnforcer.isTrue (eDigestAlgorithm.isDigesting (), "The passed algorithm is not usable for signing");
+
+    final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
     final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (),
                                                                     BouncyCastleProvider.PROVIDER_NAME);
@@ -263,18 +265,22 @@ public final class BCCryptoHelper implements ICryptoHelper
     final String sMICString = Base64.encodeBytes (aMIC);
 
     // Concatenate
-    return sMICString + ", " + sDigestAlgorithm;
+    return sMICString + ", " + eDigestAlgorithm.getID ();
   }
 
   @Nonnull
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final PrivateKey aKey) throws GeneralSecurityException,
-                                                              MessagingException,
-                                                              CMSException,
-                                                              IOException,
-                                                              SMIMEException
+                               @Nonnull final PrivateKey aPrivateKey) throws GeneralSecurityException,
+                                                                     MessagingException,
+                                                                     CMSException,
+                                                                     IOException,
+                                                                     SMIMEException
   {
+    ValueEnforcer.notNull (aPart, "MimeBodyPart");
+    ValueEnforcer.notNull (aX509Cert, "X509Cert");
+    ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
+
     // Make sure the data is encrypted
     if (!isEncrypted (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
@@ -290,18 +296,23 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aKey).setProvider (BouncyCastleProvider.PROVIDER_NAME));
+    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (BouncyCastleProvider.PROVIDER_NAME));
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final String sAlgorithm) throws GeneralSecurityException,
-                                                                SMIMEException,
-                                                                CMSException
+                               @Nonnull final ECryptoAlgorithm eAlgorithm) throws GeneralSecurityException,
+                                                                          SMIMEException,
+                                                                          CMSException
   {
-    final ASN1ObjectIdentifier aEncAlg = ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm);
+    ValueEnforcer.notNull (aPart, "MimeBodyPart");
+    ValueEnforcer.notNull (aX509Cert, "X509Cert");
+    ValueEnforcer.notNull (eAlgorithm, "Algorithm");
+    ValueEnforcer.isTrue (eAlgorithm.isEncrypting (), "The passed algorithm is not usable for encrypting");
+
+    final ASN1ObjectIdentifier aEncAlg = eAlgorithm.getOID ();
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
     aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (BouncyCastleProvider.PROVIDER_NAME));
@@ -315,12 +326,18 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart sign (@Nonnull final MimeBodyPart aPart,
                             @Nonnull final X509Certificate aX509Cert,
-                            @Nonnull final PrivateKey aPrivKey,
-                            @Nonnull final String sAlgorithm) throws GeneralSecurityException,
-                                                             SMIMEException,
-                                                             MessagingException,
-                                                             OperatorCreationException
+                            @Nonnull final PrivateKey aPrivateKey,
+                            @Nonnull final ECryptoAlgorithm eAlgorithm) throws GeneralSecurityException,
+                                                                       SMIMEException,
+                                                                       MessagingException,
+                                                                       OperatorCreationException
   {
+    ValueEnforcer.notNull (aPart, "MimeBodyPart");
+    ValueEnforcer.notNull (aX509Cert, "X509Cert");
+    ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
+    ValueEnforcer.notNull (eAlgorithm, "Algorithm");
+    ValueEnforcer.isTrue (eAlgorithm.isDigesting (), "The passed algorithm is not usable for signing");
+
     // create a CertStore containing the certificates we want carried
     // in the signature
     final List <X509Certificate> aCertList = new ArrayList <X509Certificate> ();
@@ -330,7 +347,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // create some smime capabilities in case someone wants to respond
     final ASN1EncodableVector aSignedAttrs = new ASN1EncodableVector ();
     final SMIMECapabilityVector aCapabilities = new SMIMECapabilityVector ();
-    aCapabilities.addCapability (ECryptoAlgorithm.getASN1OIDFromIDOrNull (sAlgorithm));
+    aCapabilities.addCapability (eAlgorithm.getOID ());
     aSignedAttrs.add (new SMIMECapabilitiesAttribute (aCapabilities));
 
     // add an encryption key preference for encrypted responses -
@@ -350,7 +367,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     // used is taken from the key - in this RSA with PKCS1Padding
     aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
-                                                                            .build ("SHA1withRSA", aPrivKey, aX509Cert));
+                                                                            .build ("SHA1withRSA",
+                                                                                    aPrivateKey,
+                                                                                    aX509Cert));
 
     // add our pool of certs and cerls (if any) to go with the signature
     aSGen.addCertificates (aCertStore);
