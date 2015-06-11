@@ -219,14 +219,13 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   @Nonnull
   public String calculateMIC (@Nonnull final MimeBodyPart aPart,
-                              @Nonnull final ECryptoAlgorithm eDigestAlgorithm,
+                              @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
                               final boolean bIncludeHeaders) throws GeneralSecurityException,
                                                             MessagingException,
                                                             IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
-    ValueEnforcer.isTrue (eDigestAlgorithm.isDigesting (), "The passed algorithm is not usable for signing");
 
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
@@ -303,14 +302,13 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final ECryptoAlgorithm eAlgorithm) throws GeneralSecurityException,
-                                                                          SMIMEException,
-                                                                          CMSException
+                               @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException,
+                                                                               SMIMEException,
+                                                                               CMSException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
-    ValueEnforcer.isTrue (eAlgorithm.isEncrypting (), "The passed algorithm is not usable for encrypting");
 
     final ASN1ObjectIdentifier aEncAlg = eAlgorithm.getOID ();
 
@@ -327,16 +325,15 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart sign (@Nonnull final MimeBodyPart aPart,
                             @Nonnull final X509Certificate aX509Cert,
                             @Nonnull final PrivateKey aPrivateKey,
-                            @Nonnull final ECryptoAlgorithm eAlgorithm) throws GeneralSecurityException,
-                                                                       SMIMEException,
-                                                                       MessagingException,
-                                                                       OperatorCreationException
+                            @Nonnull final ECryptoAlgorithmSign eAlgorithm) throws GeneralSecurityException,
+                                                                           SMIMEException,
+                                                                           MessagingException,
+                                                                           OperatorCreationException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
-    ValueEnforcer.isTrue (eAlgorithm.isDigesting (), "The passed algorithm is not usable for signing");
 
     // create a CertStore containing the certificates we want carried
     // in the signature

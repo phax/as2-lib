@@ -46,7 +46,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.IHasStringRepresentation;
 import com.helger.commons.annotations.ReturnsMutableCopy;
@@ -78,7 +78,7 @@ public class DispositionOptions implements IHasStringRepresentation
   private String m_sProtocolImportance;
   private String m_sProtocol;
   private String m_sMICAlgImportance;
-  private final List <ECryptoAlgorithm> m_aMICAlgs = new ArrayList <ECryptoAlgorithm> ();
+  private final List <ECryptoAlgorithmSign> m_aMICAlgs = new ArrayList <ECryptoAlgorithmSign> ();
 
   public DispositionOptions ()
   {}
@@ -171,14 +171,6 @@ public class DispositionOptions implements IHasStringRepresentation
     return m_sMICAlgImportance;
   }
 
-  private static void _checkMICAlgorithm (@Nullable final ECryptoAlgorithm eMICAlg)
-  {
-    if (!eMICAlg.isDigesting ())
-      throw new IllegalArgumentException ("Only digesting algorithms can be used here. " +
-                                          eMICAlg +
-                                          " is not a digesting algorithm!");
-  }
-
   /**
    * Set the MIC algorithm(s) to use. The passed string is parsed as a comma
    * separated list. This overwrites all existing MIC algorithms. If any of the
@@ -201,7 +193,7 @@ public class DispositionOptions implements IHasStringRepresentation
         // trim and lowercase
         final String sRealMICAlg = sMICAlg.trim ().toLowerCase (Locale.US);
 
-        final ECryptoAlgorithm eMICAlg = ECryptoAlgorithm.getFromIDOrNull (sRealMICAlg);
+        final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.getFromIDOrNull (sRealMICAlg);
         if (eMICAlg == null)
         {
           // Ignore all unsupported MIC algorithms and continue
@@ -209,8 +201,6 @@ public class DispositionOptions implements IHasStringRepresentation
         }
         else
         {
-          // Ensure it is a digesting algorithm
-          _checkMICAlgorithm (eMICAlg);
           m_aMICAlgs.add (eMICAlg);
         }
       }
@@ -226,16 +216,13 @@ public class DispositionOptions implements IHasStringRepresentation
    * @return this
    */
   @Nonnull
-  public DispositionOptions setMICAlg (@Nullable final ECryptoAlgorithm... aMICAlgs)
+  public DispositionOptions setMICAlg (@Nullable final ECryptoAlgorithmSign... aMICAlgs)
   {
     m_aMICAlgs.clear ();
     if (aMICAlgs != null)
-      for (final ECryptoAlgorithm eMICAlg : aMICAlgs)
+      for (final ECryptoAlgorithmSign eMICAlg : aMICAlgs)
         if (eMICAlg != null)
-        {
-          _checkMICAlgorithm (eMICAlg);
           m_aMICAlgs.add (eMICAlg);
-        }
     return this;
   }
 
@@ -247,16 +234,13 @@ public class DispositionOptions implements IHasStringRepresentation
    * @return this
    */
   @Nonnull
-  public DispositionOptions setMICAlg (@Nullable final Iterable <? extends ECryptoAlgorithm> aMICAlgs)
+  public DispositionOptions setMICAlg (@Nullable final Iterable <? extends ECryptoAlgorithmSign> aMICAlgs)
   {
     m_aMICAlgs.clear ();
     if (aMICAlgs != null)
-      for (final ECryptoAlgorithm eMICAlg : aMICAlgs)
+      for (final ECryptoAlgorithmSign eMICAlg : aMICAlgs)
         if (eMICAlg != null)
-        {
-          _checkMICAlgorithm (eMICAlg);
           m_aMICAlgs.add (eMICAlg);
-        }
     return this;
   }
 
@@ -266,7 +250,7 @@ public class DispositionOptions implements IHasStringRepresentation
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <ECryptoAlgorithm> getAllMICAlgs ()
+  public List <ECryptoAlgorithmSign> getAllMICAlgs ()
   {
     return CollectionHelper.newList (m_aMICAlgs);
   }
@@ -276,7 +260,7 @@ public class DispositionOptions implements IHasStringRepresentation
    *         <code>null</code> of no MIC algorithm is set.
    */
   @Nullable
-  public ECryptoAlgorithm getFirstMICAlg ()
+  public ECryptoAlgorithmSign getFirstMICAlg ()
   {
     return CollectionHelper.getFirstElement (m_aMICAlgs);
   }
@@ -301,7 +285,7 @@ public class DispositionOptions implements IHasStringRepresentation
       return null;
 
     final StringBuilder aSB = new StringBuilder ();
-    for (final ECryptoAlgorithm eMICAlg : m_aMICAlgs)
+    for (final ECryptoAlgorithmSign eMICAlg : m_aMICAlgs)
     {
       if (aSB.length () > 0)
         aSB.append (", ");

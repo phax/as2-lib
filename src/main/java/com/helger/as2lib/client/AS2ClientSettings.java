@@ -39,7 +39,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
+import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.commons.ValueEnforcer;
 
@@ -54,7 +55,7 @@ public class AS2ClientSettings
   public static final String DEFAULT_MDN_OPTIONS = new DispositionOptions ().setProtocolImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
                                                                             .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                                             .setMICAlgImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
-                                                                            .setMICAlg (ECryptoAlgorithm.DIGEST_SHA1)
+                                                                            .setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA1)
                                                                             .getAsString ();
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
                                                          "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
@@ -72,8 +73,8 @@ public class AS2ClientSettings
   public X509Certificate m_aReceiverCert;
 
   private String m_sPartnershipName;
-  private ECryptoAlgorithm m_eCryptAlgo;
-  private ECryptoAlgorithm m_eSignAlgo;
+  private ECryptoAlgorithmCrypt m_eCryptAlgo;
+  private ECryptoAlgorithmSign m_eSignAlgo;
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
 
@@ -194,24 +195,16 @@ public class AS2ClientSettings
   }
 
   @Nonnull
-  public AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithm eCryptAlgo,
-                                              @Nullable final ECryptoAlgorithm eSignAlgo)
+  public AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithmCrypt eCryptAlgo,
+                                              @Nullable final ECryptoAlgorithmSign eSignAlgo)
   {
-    if (eCryptAlgo != null && !eCryptAlgo.isEncrypting ())
-      throw new IllegalArgumentException ("The provided crypt algorithm " +
-                                          eCryptAlgo +
-                                          " is not possible for crypting.");
-    if (eSignAlgo != null && !eSignAlgo.isDigesting ())
-      throw new IllegalArgumentException ("The provided sign algorithm " +
-                                          eSignAlgo +
-                                          " is not possible for digesting.");
     m_eCryptAlgo = eCryptAlgo;
     m_eSignAlgo = eSignAlgo;
     return this;
   }
 
   @Nullable
-  public ECryptoAlgorithm getCryptAlgo ()
+  public ECryptoAlgorithmCrypt getCryptAlgo ()
   {
     return m_eCryptAlgo;
   }
@@ -223,7 +216,7 @@ public class AS2ClientSettings
   }
 
   @Nullable
-  public ECryptoAlgorithm getSignAlgo ()
+  public ECryptoAlgorithmSign getSignAlgo ()
   {
     return m_eSignAlgo;
   }

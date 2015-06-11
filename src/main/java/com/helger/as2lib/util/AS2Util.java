@@ -53,7 +53,7 @@ import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.cert.KeyNotFoundException;
 import com.helger.as2lib.crypto.BCCryptoHelper;
-import com.helger.as2lib.crypto.ECryptoAlgorithm;
+import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.crypto.ICryptoHelper;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.disposition.DispositionType;
@@ -96,7 +96,7 @@ public final class AS2Util
 
   public static void createMDNData (@Nonnull final IAS2Session aSession,
                                     @Nonnull final IMessageMDN aMdn,
-                                    @Nonnull final ECryptoAlgorithm eMICAlg,
+                                    @Nonnull final ECryptoAlgorithmSign eMICAlg,
                                     @Nullable final String sSignatureProtocol) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");

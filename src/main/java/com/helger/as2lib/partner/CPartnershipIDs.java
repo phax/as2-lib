@@ -75,12 +75,12 @@ public final class CPartnershipIDs
 
   /**
    * Set this to the algorithm to use for encryption, check
-   * {@link com.helger.as2lib.crypto.ECryptoAlgorithm} constants for values
+   * {@link com.helger.as2lib.crypto.ECryptoAlgorithmCrypt} constants for values
    */
   public static final String PA_ENCRYPT = "encrypt";
   /**
    * Set this to the signature digest algorithm to sign sent messages, check
-   * {@link com.helger.as2lib.crypto.ECryptoAlgorithm} constants for values
+   * {@link com.helger.as2lib.crypto.ECryptoAlgorithmSign} constants for values
    */
   public static final String PA_SIGN = "sign";
   /** AS1 or AS2 */

@@ -128,7 +128,9 @@ public interface ICryptoHelper
    *         In case something goes wrong.
    */
   @Nonnull
-  String calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull ECryptoAlgorithm eDigestAlgorithm, boolean bIncludeHeaders) throws Exception;
+  String calculateMIC (@Nonnull MimeBodyPart aPart,
+                       @Nonnull ECryptoAlgorithmSign eDigestAlgorithm,
+                       boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull PrivateKey aKey) throws Exception;
@@ -136,7 +138,7 @@ public interface ICryptoHelper
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,
                         @Nonnull X509Certificate aCert,
-                        @Nonnull ECryptoAlgorithm eAlgorithm) throws Exception;
+                        @Nonnull ECryptoAlgorithmCrypt eAlgorithm) throws Exception;
 
   /**
    * Sign a MIME body part.
@@ -158,7 +160,7 @@ public interface ICryptoHelper
   MimeBodyPart sign (@Nonnull MimeBodyPart aPart,
                      @Nonnull X509Certificate aCert,
                      @Nonnull PrivateKey aKey,
-                     @Nonnull ECryptoAlgorithm eAlgorithm) throws Exception;
+                     @Nonnull ECryptoAlgorithmSign eAlgorithm) throws Exception;
 
   /**
    * Verify the specified Mime Body part against the part certificate
