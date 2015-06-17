@@ -308,7 +308,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      AS2Util.parseMDN (aMsg, aSenderCert);
+      AS2Util.parseMDN (aMsg, aSenderCert, getSession ().isCryptoVerifyUseCertificateInBodyPart ());
 
       try
       {

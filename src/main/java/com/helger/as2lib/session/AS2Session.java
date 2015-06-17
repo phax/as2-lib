@@ -41,6 +41,7 @@ import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
@@ -54,6 +55,12 @@ import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.priviledged.AccessControllerHelper;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * Default implementation of {@link IAS2Session}
+ *
+ * @author Philip Helger
+ */
+@NotThreadSafe
 public class AS2Session implements IAS2Session
 {
   public static final String COMPONENT_ID_CERTIFICATE_FACTORY = "certificatefactory";
@@ -61,6 +68,7 @@ public class AS2Session implements IAS2Session
   public static final String COMPONENT_ID_MESSAGE_PROCESSOR = "message-processor";
 
   private final Map <String, IDynamicComponent> m_aComponents = new HashMap <String, IDynamicComponent> ();
+  private boolean m_bCryptoVerifyUseCertificateInBodyPart = true;
   private Proxy m_aHttpProxy;
 
   /**
@@ -144,6 +152,16 @@ public class AS2Session implements IAS2Session
   public final IMessageProcessor getMessageProcessor () throws ComponentNotFoundException
   {
     return (IMessageProcessor) getComponent (COMPONENT_ID_MESSAGE_PROCESSOR);
+  }
+
+  public boolean isCryptoVerifyUseCertificateInBodyPart ()
+  {
+    return m_bCryptoVerifyUseCertificateInBodyPart;
+  }
+
+  public void setCryptoVerifyUseCertificateInBodyPart (final boolean bCryptoVerifyUseCertificateInBodyPart)
+  {
+    m_bCryptoVerifyUseCertificateInBodyPart = bCryptoVerifyUseCertificateInBodyPart;
   }
 
   @Nullable

@@ -267,7 +267,9 @@ public final class AS2Util
     return aMDN;
   }
 
-  public static void parseMDN (@Nonnull final IMessage aMsg, @Nonnull final X509Certificate aReceiverCert) throws Exception
+  public static void parseMDN (@Nonnull final IMessage aMsg,
+                               @Nonnull final X509Certificate aReceiverCert,
+                               final boolean bAllowCertificateInBodyPart) throws Exception
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
     MimeBodyPart aMainPart = aMdn.getData ();
@@ -275,7 +277,7 @@ public final class AS2Util
 
     if (aCryptoHelper.isSigned (aMainPart))
     {
-      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, AS2Settings.isCryptoVerifyUseCertificateInBodyPart ());
+      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart);
     }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());

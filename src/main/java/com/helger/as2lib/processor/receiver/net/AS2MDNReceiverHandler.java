@@ -174,7 +174,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      AS2Util.parseMDN (aMsg, aSenderCert);
+      AS2Util.parseMDN (aMsg, aSenderCert, getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ());
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,

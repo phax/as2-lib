@@ -129,10 +129,30 @@ public interface IAS2Session
   IMessageProcessor getMessageProcessor () throws ComponentNotFoundException;
 
   /**
+   * @return <code>true</code> if any certificate passed in a message body is
+   *         used for certificate verification or <code>false</code> if only the
+   *         certificate present in the partnership factory is to be used.
+   *         Defaults to <code>true</code>.
+   */
+  boolean isCryptoVerifyUseCertificateInBodyPart ();
+
+  /**
+   * Settings flag, whether a contained certificate is used for message
+   * verification.
+   * 
+   * @param bCryptoVerifyUseCertificateInBodyPart
+   *        <code>true</code> if any certificate passed in a message body is
+   *        used for certificate verification or <code>false</code> if only the
+   *        certificate present in the partnership factory is to be used.
+   */
+  void setCryptoVerifyUseCertificateInBodyPart (boolean bCryptoVerifyUseCertificateInBodyPart);
+
+  /**
    * Get the optional HTTP/HTTPS proxy settings to be used for sending AS2
    * messages and asynchronous MDNs.
    *
    * @return The HTTP/HTTPS proxy object to be used. May be <code>null</code>.
+   * @see #setHttpProxy(Proxy)
    */
   @Nullable
   Proxy getHttpProxy ();
@@ -143,6 +163,7 @@ public interface IAS2Session
    *
    * @param aHttpProxy
    *        The HTTP/HTTPS proxy object to be used. May be <code>null</code>.
+   * @see #getHttpProxy()
    */
   void setHttpProxy (@Nullable Proxy aHttpProxy);
 }
