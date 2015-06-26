@@ -33,8 +33,23 @@
     official policies, either expressed or implied, of the FreeBSD Project.
 
 -->
-<changelog xmlns="http://www.phloc.com/ns/changelog/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.phloc.com/ns/changelog/1.0 schemas/changelog-1.0.xsd" version="1.0" component="as2-lib">
+<changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <entry date="2015-06-17" category="tech" action="change" incompatible="true">
+    <change>
+      <text locale="en">Integrated AS2Settings into IAS2Session for improved customizability</text>
+    </change>
+  </entry>
+  <release date="2015-06-12" version="1.1.0" />
+  <entry date="2015-06-12" category="tech" action="change" incompatible="true">
+    <change>
+      <text locale="en">Splitted enums for crypt and sign algorithms</text>
+    </change>
+  </entry>
+  <entry date="2015-06-01" category="tech" action="change">
+    <change>
+      <text locale="en">Improved settings</text>
+    </change>
+  </entry>
   <release date="2015-04-30" version="1.0.8" />
   <release date="2015-03-11" version="1.0.7" />
   <release date="2015-02-20" version="1.0.6" />
