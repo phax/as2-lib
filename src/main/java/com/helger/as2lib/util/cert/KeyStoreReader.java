@@ -32,14 +32,14 @@
  */
 package com.helger.as2lib.util.cert;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.crypto.ICryptoHelper;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.StreamHelper;
 
 public final class KeyStoreReader
 {
@@ -47,27 +47,19 @@ public final class KeyStoreReader
   {}
 
   @Nonnull
-  public static OpenAS2KeyStore read (@Nonnull final InputStream in,
-                                      @Nonnull final char [] password,
+  public static OpenAS2KeyStore read (@Nonnull final String sFilename,
+                                      @Nonnull final char [] aPassword,
                                       @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
   {
-    final KeyStore ks = aCryptoHelper.loadKeyStore (in, password);
-    return new OpenAS2KeyStore (ks);
-  }
-
-  @Nonnull
-  public static OpenAS2KeyStore read (@Nonnull final String filename,
-                                      @Nonnull final char [] password,
-                                      @Nonnull final ICryptoHelper cryptoHelper) throws Exception
-  {
-    final FileInputStream in = new FileInputStream (filename);
+    final InputStream aIS = FileHelper.getInputStream (sFilename);
     try
     {
-      return read (in, password, cryptoHelper);
+      final KeyStore aKeyStore = aCryptoHelper.loadKeyStore (aIS, aPassword);
+      return new OpenAS2KeyStore (aKeyStore);
     }
     finally
     {
-      StreamUtils.close (in);
+      StreamHelper.close (aIS);
     }
   }
 }

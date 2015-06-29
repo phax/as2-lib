@@ -38,9 +38,10 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.lang.ClassHelper;
 
 public class ProcessorException extends OpenAS2Exception
 {
@@ -59,10 +60,7 @@ public class ProcessorException extends OpenAS2Exception
   public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
                              @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super ("Processor '" +
-           CGStringHelper.getClassLocalName (aProcessor) +
-           " threw exception(s):" +
-           _getMessage (aCauses));
+    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + " threw exception(s):" + _getMessage (aCauses));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
@@ -78,6 +76,7 @@ public class ProcessorException extends OpenAS2Exception
 
   @Nonnull
   @Nonempty
+  @ReturnsMutableCopy
   public final List <Throwable> getCauses ()
   {
     return CollectionHelper.newList (m_aCauses);

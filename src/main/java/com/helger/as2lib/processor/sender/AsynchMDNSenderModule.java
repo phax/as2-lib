@@ -118,7 +118,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
         // Transfer the data
         final InputStream aMessageIS = aMdn.getData ().getInputStream ();
-        final StopWatch aSW = new StopWatch (true);
+        final StopWatch aSW = StopWatch.createdStarted ();
         final long nBytes = IOUtil.copy (aMessageIS, aMessageOS);
         aSW.stop ();
         s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());

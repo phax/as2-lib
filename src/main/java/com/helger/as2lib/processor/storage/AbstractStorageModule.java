@@ -50,9 +50,9 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.stream.StreamHelper;
 
 public abstract class AbstractStorageModule extends AbstractProcessorModule implements IProcessorStorageModule
 {
@@ -138,7 +138,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   private void _writeStream (@Nonnull @WillClose final InputStream aIS, @Nonnull final File aDestination) throws IOException
   {
     final FileOutputStream aOS = new FileOutputStream (aDestination);
-    if (StreamUtils.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
+    if (StreamHelper.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
       throw new IOException ("Failed to write content to " + aDestination.getAbsolutePath ());
   }
 }

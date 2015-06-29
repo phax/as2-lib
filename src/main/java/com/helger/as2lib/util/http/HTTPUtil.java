@@ -48,8 +48,8 @@ import javax.mail.internet.InternetHeaders;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public final class HTTPUtil
 {

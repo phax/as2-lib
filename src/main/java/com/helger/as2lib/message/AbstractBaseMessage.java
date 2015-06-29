@@ -50,9 +50,9 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.annotations.ReturnsMutableObject;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -157,7 +157,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nonnull
-  @ReturnsMutableObject (reason = "design")
+  @ReturnsMutableObject ("design")
   public final InternetHeaders getHeaders ()
   {
     return m_aHeaders;
@@ -205,7 +205,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nonnull
-  @ReturnsMutableObject (reason = "design")
+  @ReturnsMutableObject ("design")
   public final Partnership getPartnership ()
   {
     return m_aPartnership;

@@ -51,10 +51,10 @@ import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.XMLUtil;
-import com.helger.commons.io.file.FileUtils;
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
-import com.helger.commons.microdom.impl.MicroDocument;
+import com.helger.commons.microdom.MicroDocument;
 import com.helger.commons.microdom.serialize.MicroReader;
 import com.helger.commons.microdom.serialize.MicroWriter;
 import com.helger.commons.string.StringHelper;
@@ -94,7 +94,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
   {
     try
     {
-      load (FileUtils.getInputStream (getFilename ()));
+      load (FileHelper.getInputStream (getFilename ()));
     }
     catch (final Exception ex)
     {

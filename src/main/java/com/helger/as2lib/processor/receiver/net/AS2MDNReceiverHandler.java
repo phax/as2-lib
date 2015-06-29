@@ -70,9 +70,9 @@ import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPUtil;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
 
 public class AS2MDNReceiverHandler implements INetModuleHandler
@@ -322,13 +322,17 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       // Retrieve the message content
       final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
-        StreamUtils.copyInputStreamToOutputStreamWithLimit (aIS, aMDNStream, nContentLength);
+        StreamHelper.copyInputStreamToOutputStreamWithLimit (aIS, aMDNStream, nContentLength);
       else
-        StreamUtils.copyInputStreamToOutputStream (aIS, aMDNStream);
+        StreamHelper.copyInputStreamToOutputStream (aIS, aMDNStream);
     }
     catch (final IOException ioe)
     {
       s_aLogger.error (ioe.getMessage (), ioe);
+    }
+    finally
+    {
+      StreamHelper.close (aMDNStream);
     }
 
     MimeBodyPart aPart = null;

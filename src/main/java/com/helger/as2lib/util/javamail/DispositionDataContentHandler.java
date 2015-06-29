@@ -45,8 +45,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
-import com.helger.commons.collections.ArrayHelper;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.collection.ArrayHelper;
+import com.helger.commons.io.stream.StreamHelper;
 
 public class DispositionDataContentHandler implements DataContentHandler
 {
@@ -63,9 +63,9 @@ public class DispositionDataContentHandler implements DataContentHandler
   {}
 
   @Nullable
-  public byte [] getContent (@Nonnull final DataSource ds) throws IOException
+  public byte [] getContent (@Nonnull final DataSource aDS) throws IOException
   {
-    return StreamUtils.getAllBytes (StreamUtils.getBuffered (ds.getInputStream ()));
+    return StreamHelper.getAllBytes (StreamHelper.getBuffered (aDS.getInputStream ()));
   }
 
   @Nullable

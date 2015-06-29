@@ -62,8 +62,8 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
-import com.helger.commons.annotations.ReturnsMutableObject;
-import com.helger.commons.collections.CollectionHelper;
+import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.mime.CMimeType;
@@ -319,7 +319,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
     try
     {
-      final byte [] aData = SimpleFileIO.readFileBytes (aFile);
+      final byte [] aData = SimpleFileIO.getAllFileBytes (aFile);
       String sContentType = getAttributeAsString (ATTR_MIMETYPE);
       if (sContentType == null)
       {
@@ -378,7 +378,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   }
 
   @Nonnull
-  @ReturnsMutableObject (reason = "speed")
+  @ReturnsMutableObject ("speed")
   public Map <String, Long> getTrackedFiles ()
   {
     if (m_aTrackedFiles == null)

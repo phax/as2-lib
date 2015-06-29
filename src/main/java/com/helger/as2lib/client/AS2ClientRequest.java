@@ -42,9 +42,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.file.FileUtils;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 
 /**
@@ -98,14 +98,14 @@ public class AS2ClientRequest
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final File aFile)
   {
-    return setData (FileUtils.getInputStream (aFile));
+    return setData (FileHelper.getInputStream (aFile));
   }
 
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final InputStream aIS)
   {
     ValueEnforcer.notNull (aIS, "InputStream");
-    return setData (StreamUtils.getAllBytes (aIS));
+    return setData (StreamHelper.getAllBytes (aIS));
   }
 
   @Nonnull

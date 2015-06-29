@@ -38,7 +38,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.mail.internet.InternetHeaders;
 
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public interface IAS2HttpResponseHandler
 {

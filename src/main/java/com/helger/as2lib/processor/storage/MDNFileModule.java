@@ -53,7 +53,7 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageMDNParameters;
-import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
  * Store an MDN to a file

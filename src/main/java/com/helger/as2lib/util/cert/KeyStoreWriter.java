@@ -32,39 +32,33 @@
  */
 package com.helger.as2lib.util.cert;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
 import javax.annotation.Nonnull;
 
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.EAppend;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.StreamHelper;
 
-public class KeyStoreWriter
+public final class KeyStoreWriter
 {
   private KeyStoreWriter ()
   {}
 
-  public static void write (@Nonnull final OpenAS2KeyStore ks,
-                            @Nonnull final String filename,
-                            @Nonnull final char [] password) throws GeneralSecurityException, IOException
+  public static void write (@Nonnull final OpenAS2KeyStore aKeyStore,
+                            @Nonnull final String sFilename,
+                            @Nonnull final char [] aPassword) throws GeneralSecurityException, IOException
   {
-    final FileOutputStream fOut = new FileOutputStream (filename, false);
+    final OutputStream aOS = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
     try
     {
-      write (ks, fOut, password);
+      aKeyStore.getKeyStore ().store (aOS, aPassword);
     }
     finally
     {
-      StreamUtils.close (fOut);
+      StreamHelper.close (aOS);
     }
-  }
-
-  public static void write (@Nonnull final OpenAS2KeyStore ks,
-                            @Nonnull final OutputStream out,
-                            @Nonnull final char [] password) throws GeneralSecurityException, IOException
-  {
-    ks.getKeyStore ().store (out, password);
   }
 }

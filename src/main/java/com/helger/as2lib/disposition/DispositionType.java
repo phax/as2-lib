@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -103,7 +103,7 @@ public final class DispositionType
 
   public boolean isWarning ()
   {
-    return EqualsUtils.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
+    return EqualsHelper.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
   }
 
   public void validate () throws DispositionException

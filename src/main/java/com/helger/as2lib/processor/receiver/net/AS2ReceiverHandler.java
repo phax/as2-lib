@@ -74,9 +74,9 @@ import com.helger.as2lib.util.http.HTTPUtil;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
 import com.helger.commons.timing.StopWatch;
 
@@ -215,8 +215,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
           // Get data and therefore content length for sync MDN
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           final MimeBodyPart aPart = aMdn.getData ();
-          StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-          aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.size ()));
+          StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
+          aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.getSize ()));
 
           // start HTTP response
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.getHeaders (), aData);
@@ -409,7 +409,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
 
     // Time the transmission
-    final StopWatch aSW = new StopWatch (true);
+    final StopWatch aSW = StopWatch.createdStarted ();
 
     // Read in the message request, headers, and data
     try

@@ -42,9 +42,9 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 
 public final class PartnershipMap implements IPartnershipMap
@@ -99,7 +99,7 @@ public final class PartnershipMap implements IPartnershipMap
     {
       final String sSearchValue = aSearchEntry.getValue ();
       final String sPartnerValue = aPartnerIds.getAttributeObject (aSearchEntry.getKey ());
-      if (!EqualsUtils.equals (sSearchValue, sPartnerValue))
+      if (!EqualsHelper.equals (sSearchValue, sPartnerValue))
         return false;
     }
     return true;

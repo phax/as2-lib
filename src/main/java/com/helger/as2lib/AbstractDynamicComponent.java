@@ -45,7 +45,7 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
@@ -56,7 +56,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   @Nonnull
   public String getName ()
   {
-    return CGStringHelper.getClassLocalName (this);
+    return ClassHelper.getClassLocalName (this);
   }
 
   @Nonnull

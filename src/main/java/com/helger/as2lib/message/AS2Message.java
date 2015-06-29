@@ -45,7 +45,7 @@ import com.helger.as2lib.params.RandomParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 
 public class AS2Message extends AbstractMessage
 {

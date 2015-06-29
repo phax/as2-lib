@@ -41,10 +41,10 @@ import javax.mail.internet.InternetHeaders;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
-import com.helger.commons.IHasStringRepresentation;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.annotations.ReturnsMutableObject;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.lang.IHasStringRepresentation;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -71,7 +71,7 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
   String getHeader (@Nonnull String sKey, @Nullable String sDelimiter);
 
   @Nonnull
-  @ReturnsMutableObject (reason = "design")
+  @ReturnsMutableObject ("design")
   InternetHeaders getHeaders ();
 
   @Nonnull
@@ -125,7 +125,7 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
   void updateMessageID ();
 
   @Nonnull
-  @ReturnsMutableObject (reason = "Design")
+  @ReturnsMutableObject ("Design")
   Partnership getPartnership ();
 
   void setPartnership (@Nonnull Partnership aPartnership);

@@ -94,12 +94,12 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.io.file.FileUtils;
-import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.streams.StreamUtils;
-import com.helger.commons.priviledged.AccessControllerHelper;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.lang.priviledged.AccessControllerHelper;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle
@@ -153,14 +153,14 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
   {
-    final InputStream aIS = FileUtils.getInputStream (sFilename);
+    final InputStream aIS = FileHelper.getInputStream (sFilename);
     try
     {
       return loadKeyStore (aIS, aPassword);
     }
     finally
     {
-      StreamUtils.close (aIS);
+      StreamHelper.close (aIS);
     }
   }
 
@@ -241,7 +241,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     else
     {
       // Only the "content" of the part
-      StreamUtils.copyInputStreamToOutputStream (aPart.getInputStream (), aBAOS);
+      StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aBAOS);
     }
 
     final byte [] aData = aBAOS.toByteArray ();

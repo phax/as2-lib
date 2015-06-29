@@ -38,7 +38,8 @@ import java.net.Socket;
 
 import javax.annotation.Nonnull;
 
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.stream.StreamHelper;
 
 public final class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
 {
@@ -46,11 +47,13 @@ public final class AS2InputStreamProviderSocket implements IAS2InputStreamProvid
 
   public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket)
   {
+    ValueEnforcer.notNull (aSocket, "Socket");
     m_aSocket = aSocket;
   }
 
+  @Nonnull
   public InputStream getInputStream () throws IOException
   {
-    return StreamUtils.getBuffered (m_aSocket.getInputStream ());
+    return StreamHelper.getBuffered (m_aSocket.getInputStream ());
   }
 }

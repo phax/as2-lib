@@ -41,8 +41,8 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
@@ -175,7 +175,7 @@ public class Partnership implements Serializable
     {
       final String sCurrentValue = aEntry.getValue ();
       final String sCompareValue = aCompareTo.getAttributeObject (aEntry.getKey ());
-      if (!EqualsUtils.equals (sCurrentValue, sCompareValue))
+      if (!EqualsHelper.equals (sCurrentValue, sCompareValue))
         return false;
     }
     return true;

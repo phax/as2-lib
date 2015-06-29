@@ -64,12 +64,12 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Util;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.CollectionHelper;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.EAppend;
-import com.helger.commons.io.file.FileUtils;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.StreamHelper;
 
 public class PKCS12CertificateFactory extends AbstractCertificateFactory implements IAliasedCertificateFactory, IKeyStoreCertificateFactory, IStorableCertificateFactory
 {
@@ -346,7 +346,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
-    final InputStream aFIS = FileUtils.getInputStream (sFilename);
+    final InputStream aFIS = FileHelper.getInputStream (sFilename);
     load (aFIS, aPassword);
   }
 
@@ -370,7 +370,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     finally
     {
-      StreamUtils.close (aIS);
+      StreamHelper.close (aIS);
     }
   }
 
@@ -421,7 +421,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void save (final String sFilename, final char [] aPassword) throws OpenAS2Exception
   {
-    final OutputStream fOut = FileUtils.getOutputStream (sFilename, EAppend.TRUNCATE);
+    final OutputStream fOut = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
     save (fOut, aPassword);
   }
 
@@ -445,7 +445,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     }
     finally
     {
-      StreamUtils.close (aOS);
+      StreamHelper.close (aOS);
     }
   }
 }

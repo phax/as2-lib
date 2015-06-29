@@ -74,9 +74,9 @@ import com.helger.as2lib.util.DateUtil;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.http.HTTPUtil;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.io.file.FileUtils;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
 
@@ -182,7 +182,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // Transfer the data
         final InputStream aMsgIS = aSecuredData.getInputStream ();
 
-        final StopWatch aSW = new StopWatch (true);
+        final StopWatch aSW = StopWatch.createdStarted ();
         final long nBytes = IOUtil.copy (aMsgIS, aMsgOS);
         aSW.stop ();
         s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aRealMsg.getLoggingText ());
@@ -283,13 +283,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Receive the MDN data
       final InputStream aConnIS = aConn.getInputStream ();
       final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ();
-
-      // Retrieve the whole MDN content
-      final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
-      if (nContentLength >= 0)
-        StreamUtils.copyInputStreamToOutputStreamWithLimit (aConnIS, aMDNStream, nContentLength);
-      else
-        StreamUtils.copyInputStreamToOutputStream (aConnIS, aMDNStream);
+      try
+      {
+        // Retrieve the whole MDN content
+        final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
+        if (nContentLength >= 0)
+          StreamHelper.copyInputStreamToOutputStreamWithLimit (aConnIS, aMDNStream, nContentLength);
+        else
+          StreamHelper.copyInputStreamToOutputStream (aConnIS, aMDNStream);
+      }
+      finally
+      {
+        StreamHelper.close (aMDNStream);
+      }
 
       if (false)
       {
@@ -498,9 +504,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       final String pendingFolder = getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDNINFO);
 
-      aFOS = FileUtils.getOutputStream (pendingFolder +
-                                        "/" +
-                                        aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1));
+      aFOS = FileHelper.getOutputStream (pendingFolder +
+                                         "/" +
+                                         aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1));
       aFOS.write ((sMIC + "\n").getBytes ());
 
       if (s_aLogger.isDebugEnabled ())
@@ -528,7 +534,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     finally
     {
-      StreamUtils.close (aFOS);
+      StreamHelper.close (aFOS);
     }
   }
 }

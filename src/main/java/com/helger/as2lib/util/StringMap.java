@@ -48,12 +48,12 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.OverrideOnDemand;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.collections.attrs.AbstractGenericReadonlyAttributeContainer;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.attr.AbstractReadOnlyAttributeContainer;
+import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.state.EChange;
 import com.helger.commons.state.EContinue;
 import com.helger.commons.string.ToStringGenerator;
@@ -131,7 +131,7 @@ public class StringMap implements IStringMap, Serializable
   public final int getAttributeAsInt (@Nullable final String sName, final int nDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractGenericReadonlyAttributeContainer.getAsInt (sName, sValue, nDefault);
+    return AbstractReadOnlyAttributeContainer.getAsInt (sName, sValue, nDefault);
   }
 
   public final long getAttributeAsLong (@Nullable final String sName)
@@ -142,7 +142,7 @@ public class StringMap implements IStringMap, Serializable
   public final long getAttributeAsLong (@Nullable final String sName, final long nDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractGenericReadonlyAttributeContainer.getAsLong (sName, sValue, nDefault);
+    return AbstractReadOnlyAttributeContainer.getAsLong (sName, sValue, nDefault);
   }
 
   public final double getAttributeAsDouble (@Nullable final String sName)
@@ -153,7 +153,7 @@ public class StringMap implements IStringMap, Serializable
   public final double getAttributeAsDouble (@Nullable final String sName, final double dDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractGenericReadonlyAttributeContainer.getAsDouble (sName, sValue, dDefault);
+    return AbstractReadOnlyAttributeContainer.getAsDouble (sName, sValue, dDefault);
   }
 
   public final boolean getAttributeAsBoolean (@Nullable final String sName)
@@ -164,7 +164,7 @@ public class StringMap implements IStringMap, Serializable
   public final boolean getAttributeAsBoolean (@Nullable final String sName, final boolean bDefault)
   {
     final String sValue = getAttributeObject (sName);
-    return AbstractGenericReadonlyAttributeContainer.getAsBoolean (sName, sValue, bDefault);
+    return AbstractReadOnlyAttributeContainer.getAsBoolean (sName, sValue, bDefault);
   }
 
   /**
@@ -198,7 +198,7 @@ public class StringMap implements IStringMap, Serializable
       return EChange.UNCHANGED;
 
     final String aOldValue = m_aAttrs.put (sName, aValue);
-    return EChange.valueOf (!EqualsUtils.equals (aValue, aOldValue));
+    return EChange.valueOf (!EqualsHelper.equals (aValue, aOldValue));
   }
 
   @Nonnull

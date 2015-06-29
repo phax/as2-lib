@@ -58,10 +58,10 @@ import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
-import com.helger.commons.io.file.FileUtils;
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.streams.StreamUtils;
-import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.lang.ClassHelper;
 
 public abstract class AbstractNetModule extends AbstractReceiverModule
 {
@@ -174,7 +174,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       final File aMsgErrorFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sErrorDirectory),
                                                        FilenameHelper.getAsSecureValidFilename (sErrorFilename));
 
-      final OutputStream aFOS = FileUtils.getOutputStream (aMsgErrorFile);
+      final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
       try
       {
         final String sMsgText = aMsg.getAsString ();
@@ -182,11 +182,11 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
         // Enable this line, to also store the body of the source message
         if (false)
-          StreamUtils.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
+          StreamHelper.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
       }
       finally
       {
-        StreamUtils.close (aFOS);
+        StreamHelper.close (aFOS);
       }
 
       // make sure an error of this event is logged
@@ -211,7 +211,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
     public ConnectionThread (@Nonnull final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
     {
-      super ("AS2ConnectionThread-" + CGStringHelper.getClassLocalName (aOwner));
+      super ("AS2ConnectionThread-" + ClassHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aSocket = aSocket;
     }
@@ -251,7 +251,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
                        @Nullable final String sAddress,
                        @Nonnegative final int nPort) throws IOException
     {
-      super ("AS2MainThread-" + CGStringHelper.getClassLocalName (aOwner));
+      super ("AS2MainThread-" + ClassHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aSocket = new ServerSocket ();
       final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)

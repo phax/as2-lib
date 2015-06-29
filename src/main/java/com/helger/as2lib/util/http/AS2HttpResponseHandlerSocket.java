@@ -42,8 +42,8 @@ import javax.annotation.Nonnull;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 
 public final class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
 {
@@ -57,7 +57,7 @@ public final class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandl
   @Nonnull
   public OutputStream createOutputStream () throws IOException
   {
-    return StreamUtils.getBuffered (m_aSocket.getOutputStream ());
+    return StreamHelper.getBuffered (m_aSocket.getOutputStream ());
   }
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,

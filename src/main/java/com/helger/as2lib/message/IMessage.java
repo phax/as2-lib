@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 
 public interface IMessage extends IBaseMessage
 {

@@ -48,7 +48,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.DoNothingTrustManager;
 import com.helger.as2lib.util.http.HostnameVerifierAlwaysTrue;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.random.VerySecureRandom;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule

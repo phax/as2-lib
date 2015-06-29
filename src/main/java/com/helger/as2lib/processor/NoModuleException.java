@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 
 public class NoModuleException extends OpenAS2Exception
 {

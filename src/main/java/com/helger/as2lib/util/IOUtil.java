@@ -47,12 +47,12 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.receiver.InvalidMessageException;
 import com.helger.commons.CGlobal;
-import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.LoggingFileOperationCallback;
-import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableLong;
 import com.helger.commons.timing.StopWatch;
 
@@ -74,7 +74,7 @@ public final class IOUtil
   public static long copy (@WillClose final InputStream aIS, @WillNotClose final OutputStream aOS)
   {
     final MutableLong aML = new MutableLong ();
-    StreamUtils.copyInputStreamToOutputStream (aIS, aOS, aML);
+    StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aML);
     return aML.longValue ();
   }
 

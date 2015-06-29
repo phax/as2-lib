@@ -55,7 +55,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
-import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
  * Store message content and optionally message headers and attributes to a file
