@@ -41,7 +41,12 @@ import org.junit.Test;
 
 import com.helger.as2lib.message.AS2Message;
 
-public class CompositeParametersTest
+/**
+ * Test class for class {@link CompositeParameters}.
+ * 
+ * @author Philip Helger
+ */
+public final class CompositeParametersTest
 {
   @Test
   public void testBasic () throws InvalidParameterException
