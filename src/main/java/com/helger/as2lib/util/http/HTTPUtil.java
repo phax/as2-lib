@@ -206,11 +206,14 @@ public final class HTTPUtil
     byte [] aData = null;
     if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
     {
+      // No "Content-Length" header present
       final String sTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_TRANSFER_ENCODING);
       if (sTransferEncoding != null)
       {
+        // Remove all whitespaces in the value
         if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
         {
+          // chunked encoding
           int nLength = 0;
           for (;;)
           {
@@ -252,18 +255,21 @@ public final class HTTPUtil
         }
         else
         {
+          // No "Content-Length" and unsupported "Transfer-Encoding"
           sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
           throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
       }
       else
       {
+        // No "Content-Length" and not "Transfer-Encoding"
         sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
         throw new IOException ("Content-Length missing");
       }
     }
     else
     {
+      // "Content-Length" is present
       // Receive the transmission's data
       final int nContentSize = Integer.parseInt (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH));
       aData = new byte [nContentSize];
@@ -348,7 +354,10 @@ public final class HTTPUtil
   {
     final InternetHeaders aHeaders = new InternetHeaders ();
     final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
-    aData.write ((Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + "\r\n").getBytes ());
+    aData.write ((Integer.toString (nResponseCode) +
+                  " " +
+                  getHTTPResponseMessage (nResponseCode) +
+                  "\r\n").getBytes ());
     aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
   }
 
@@ -356,9 +365,9 @@ public final class HTTPUtil
    * Copy headers from an Http connection to an InternetHeaders object
    *
    * @param aConn
-   *        Connection
+   *        Connection - source. May not be <code>null</code>.
    * @param aHeaders
-   *        Headers
+   *        Headers - destination. May not be <code>null</code>.
    */
   public static void copyHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final InternetHeaders aHeaders)
   {

@@ -42,6 +42,11 @@ import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 
+/**
+ * KeyStore writing helper class
+ * 
+ * @author Philip Helger
+ */
 public final class KeyStoreWriter
 {
   private KeyStoreWriter ()
@@ -52,6 +57,9 @@ public final class KeyStoreWriter
                             @Nonnull final char [] aPassword) throws GeneralSecurityException, IOException
   {
     final OutputStream aOS = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
+    if (aOS == null)
+      throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for writing");
+
     try
     {
       aKeyStore.getKeyStore ().store (aOS, aPassword);

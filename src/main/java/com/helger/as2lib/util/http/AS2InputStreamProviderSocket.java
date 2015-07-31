@@ -41,7 +41,13 @@ import javax.annotation.Nonnull;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.StreamHelper;
 
-public final class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
+/**
+ * Implementation of {@link IAS2InputStreamProvider} based on a {@link Socket}
+ * {@link InputStream}.
+ *
+ * @author Philip Helger
+ */
+public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
 {
   private final Socket m_aSocket;
 

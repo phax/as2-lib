@@ -36,21 +36,36 @@ import java.security.Key;
 import java.security.cert.Certificate;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.commons.annotation.ReturnsMutableCopy;
+
+/**
+ * Base interface for a certificate store handling.
+ *
+ * @author Philip Helger
+ */
 public interface ICertificateStore
 {
+  @Nonnull
+  @ReturnsMutableCopy
   List <String> getAliases () throws CertificateException;
 
-  Certificate getCertificate (String alias) throws CertificateException;
+  @Nullable
+  Certificate getCertificate (@Nullable String sAlias) throws CertificateException;
 
-  void setCertificate (String alias, Certificate cert) throws CertificateException;
+  void setCertificate (@Nonnull String sAlias, @Nonnull Certificate aCert) throws CertificateException;
 
-  String getAlias (Certificate cert) throws CertificateException;
+  @Nullable
+  String getAlias (@Nullable Certificate aCert) throws CertificateException;
 
-  void removeCertificate (String alias) throws CertificateException;
+  void removeCertificate (@Nullable String sAlias) throws CertificateException;
 
   void clearCertificates () throws CertificateException;
 
-  Key getKey (String alias, char [] password) throws CertificateException;
+  @Nullable
+  Key getKey (@Nullable String sAlias, char [] aPassword) throws CertificateException;
 
-  void setKey (String alias, Key key, char [] password) throws CertificateException;
+  void setKey (@Nonnull String sAlias, @Nonnull Key aKey, char [] aPassword) throws CertificateException;
 }

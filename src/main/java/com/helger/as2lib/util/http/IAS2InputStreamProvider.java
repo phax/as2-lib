@@ -37,6 +37,11 @@ import java.io.InputStream;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Provider interface to retrieve an AS2 {@link InputStream}.
+ * 
+ * @author Philip Helger
+ */
 public interface IAS2InputStreamProvider
 {
   /**

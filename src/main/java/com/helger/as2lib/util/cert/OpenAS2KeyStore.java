@@ -77,8 +77,11 @@ public class OpenAS2KeyStore implements ICertificateStore
   }
 
   @Nullable
-  public Certificate getCertificate (final String sAlias) throws CertificateException
+  public Certificate getCertificate (@Nullable final String sAlias) throws CertificateException
   {
+    if (sAlias == null)
+      return null;
+
     try
     {
       return getKeyStore ().getCertificate (sAlias);
@@ -89,8 +92,12 @@ public class OpenAS2KeyStore implements ICertificateStore
     }
   }
 
-  public void setCertificate (final String sAlias, final Certificate aCert) throws CertificateException
+  public void setCertificate (@Nonnull final String sAlias,
+                              @Nonnull final Certificate aCert) throws CertificateException
   {
+    ValueEnforcer.notNull (sAlias, "Alias");
+    ValueEnforcer.notNull (aCert, "Certificate");
+
     try
     {
       getKeyStore ().setCertificateEntry (sAlias, aCert);
@@ -102,8 +109,11 @@ public class OpenAS2KeyStore implements ICertificateStore
   }
 
   @Nullable
-  public String getAlias (@Nonnull final Certificate aCert) throws CertificateException
+  public String getAlias (@Nullable final Certificate aCert) throws CertificateException
   {
+    if (aCert == null)
+      return null;
+
     try
     {
       return getKeyStore ().getCertificateAlias (aCert);
@@ -114,27 +124,28 @@ public class OpenAS2KeyStore implements ICertificateStore
     }
   }
 
-  public void removeCertificate (final String sAlias) throws CertificateException
+  public void removeCertificate (@Nullable final String sAlias) throws CertificateException
   {
-    try
-    {
-      getKeyStore ().deleteEntry (sAlias);
-    }
-    catch (final KeyStoreException kse)
-    {
-      throw new CertificateException ("Error while removing certificate: " + sAlias, kse);
-    }
+    if (sAlias != null)
+      try
+      {
+        getKeyStore ().deleteEntry (sAlias);
+      }
+      catch (final KeyStoreException kse)
+      {
+        throw new CertificateException ("Error while removing certificate: " + sAlias, kse);
+      }
   }
 
   public void clearCertificates () throws CertificateException
   {
     try
     {
-      final KeyStore ks = getKeyStore ();
-      final Enumeration <String> aliases = ks.aliases ();
-      while (aliases.hasMoreElements ())
+      final KeyStore aKeyStore = getKeyStore ();
+      final Enumeration <String> aAliases = aKeyStore.aliases ();
+      while (aAliases.hasMoreElements ())
       {
-        ks.deleteEntry (aliases.nextElement ());
+        aKeyStore.deleteEntry (aAliases.nextElement ());
       }
     }
     catch (final KeyStoreException kse)
@@ -144,8 +155,11 @@ public class OpenAS2KeyStore implements ICertificateStore
   }
 
   @Nullable
-  public Key getKey (final String sAlias, final char [] aPassword) throws CertificateException
+  public Key getKey (@Nullable final String sAlias, @Nullable final char [] aPassword) throws CertificateException
   {
+    if (sAlias == null)
+      return null;
+
     try
     {
       return getKeyStore ().getKey (sAlias, aPassword);
@@ -156,13 +170,18 @@ public class OpenAS2KeyStore implements ICertificateStore
     }
   }
 
-  public void setKey (final String sAlias, final Key aKey, final char [] aPassword) throws CertificateException
+  public void setKey (@Nonnull final String sAlias,
+                      @Nonnull final Key aKey,
+                      @Nullable final char [] aPassword) throws CertificateException
   {
-    final KeyStore ks = getKeyStore ();
+    ValueEnforcer.notNull (sAlias, "Alias");
+    ValueEnforcer.notNull (aKey, "Key");
+
     try
     {
-      final Certificate [] certChain = ks.getCertificateChain (sAlias);
-      ks.setKeyEntry (sAlias, aKey, aPassword, certChain);
+      final KeyStore aKeyStore = getKeyStore ();
+      final Certificate [] aCertChain = aKeyStore.getCertificateChain (sAlias);
+      aKeyStore.setKeyEntry (sAlias, aKey, aPassword, aCertChain);
     }
     catch (final KeyStoreException kse)
     {

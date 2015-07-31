@@ -41,6 +41,11 @@ import com.helger.as2lib.crypto.ICryptoHelper;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 
+/**
+ * KeyStore reader helper class
+ *
+ * @author Philip Helger
+ */
 public final class KeyStoreReader
 {
   private KeyStoreReader ()
@@ -52,6 +57,9 @@ public final class KeyStoreReader
                                       @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
   {
     final InputStream aIS = FileHelper.getInputStream (sFilename);
+    if (aIS == null)
+      throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
+
     try
     {
       final KeyStore aKeyStore = aCryptoHelper.loadKeyStore (aIS, aPassword);

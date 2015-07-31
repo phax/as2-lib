@@ -42,16 +42,23 @@ import javax.annotation.Nonnull;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
-public final class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
+/**
+ * An implementation of {@link IAS2HttpResponseHandler} that writes an HTTP 1.1
+ * response directly to a {@link Socket}.
+ *
+ * @author Philip Helger
+ */
+public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
 {
   private final Socket m_aSocket;
 
   public AS2HttpResponseHandlerSocket (@Nonnull final Socket aSocket)
   {
-    m_aSocket = aSocket;
+    m_aSocket = ValueEnforcer.notNull (aSocket, "Socket");
   }
 
   @Nonnull
@@ -70,21 +77,27 @@ public final class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandl
 
     final OutputStream aOS = createOutputStream ();
 
-    // Send HTTP version and response code
-    final String sMsg = Integer.toString (nHttpResponseCode) +
-                        " " +
-                        HTTPUtil.getHTTPResponseMessage (nHttpResponseCode) +
-                        "\r\n";
-    aOS.write (("HTTP/1.1 " + sMsg).getBytes ());
+    // End of line MUST be \r and \n
+    final String sEOL = "\r\n";
 
-    // Add headers
+    // Send HTTP version and response code
+    final String sHttpVersion = "HTTP/1.1 " +
+                                Integer.toString (nHttpResponseCode) +
+                                " " +
+                                HTTPUtil.getHTTPResponseMessage (nHttpResponseCode) +
+                                sEOL;
+    aOS.write (sHttpVersion.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+
+    // Add response headers
     final Enumeration <?> aHeaderLines = aHeaders.getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
-      final String sHeader = (String) aHeaderLines.nextElement () + "\r\n";
-      aOS.write (sHeader.getBytes ());
+      final String sHeader = (String) aHeaderLines.nextElement () + sEOL;
+      aOS.write (sHeader.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
     }
-    aOS.write ("\r\n".getBytes ());
+
+    // Empty line as separator
+    aOS.write (sEOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
 
     // Write body
     aData.writeTo (aOS);

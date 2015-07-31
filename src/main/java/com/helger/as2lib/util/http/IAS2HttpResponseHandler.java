@@ -40,6 +40,12 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
+/**
+ * Abstract HTTP response handler. This abstraction layer may be used to either
+ * write to a socket directly or to e.g. send an HTTP response via a servlet.
+ * 
+ * @author Philip Helger
+ */
 public interface IAS2HttpResponseHandler
 {
   /**

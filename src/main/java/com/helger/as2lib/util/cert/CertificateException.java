@@ -34,6 +34,11 @@ package com.helger.as2lib.util.cert;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * Exceptions for certificate handling
+ * 
+ * @author Philip Helger
+ */
 public class CertificateException extends OpenAS2Exception
 {
   public CertificateException ()
