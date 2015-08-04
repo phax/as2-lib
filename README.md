@@ -11,6 +11,9 @@ This project is used in my following other projects:
   * **[as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet)** - integration into the Servlet specifications and for use with the [PEPPOL](www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling.
   * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](www.peppol.eu) AS2 messages.
 
+Versions <= 1.1.0 are compatible with ph-commons < 6.0.
+Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
+
 This project is licensed under the FreeBSD License.
 
 #Maven usage
@@ -19,7 +22,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>1.1.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 

@@ -34,6 +34,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <release date="2015-08-04" version="2.0.0" />
+  <entry date="2015-07-02" category="tech" action="update">
+    <change>
+      <text locale="en">Updated to ph-commons 6.0.0</text>
+    </change>
+  </entry>
   <entry date="2015-06-17" category="tech" action="change" incompatible="true">
     <change>
       <text locale="en">Integrated AS2Settings into IAS2Session for improved customizability</text>
