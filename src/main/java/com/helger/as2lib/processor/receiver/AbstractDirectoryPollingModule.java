@@ -295,10 +295,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
           // Delete the file if a sent directory isn't set
           throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile);
         }
+        s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
-
-      s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
-
     }
     catch (final OpenAS2Exception ex)
     {
@@ -384,9 +382,15 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       throw WrappedOpenAS2Exception.wrap (ex);
     }
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Updating partnership for AS2 message " + aMsg.getMessageID ());
+
     // update the message's partnership with any stored information
     getSession ().getPartnershipFactory ().updatePartnership (aMsg, true);
     aMsg.updateMessageID ();
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Finished updating partnership for AS2 message " + aMsg.getMessageID ());
   }
 
   @Nonnull
