@@ -33,6 +33,7 @@
 package com.helger.as2lib.params;
 
 import java.security.SecureRandom;
+import java.util.Random;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,14 +63,20 @@ public class RandomParameters extends AbstractParameterParser
 
     final int nWanted = sKey.length ();
     final int nMax = (int) Math.pow (10, nWanted);
+    if (false)
+    {
+      // On certain Linux versions with certain Java versions, this takes
+      // forever! That's why using SecureRandom is disabled.
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Init SecureRandom");
-    // This may take some time on some Linux derivates!
-    final SecureRandom aRandom = VerySecureRandom.getInstance ();
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Finished init SecureRandom");
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Init SecureRandom");
+      // This may take some time on some Linux derivates!
+      final SecureRandom aRandom = VerySecureRandom.getInstance ();
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Finished init SecureRandom");
+      return StringHelper.getLeadingZero (aRandom.nextInt (nMax), nWanted);
+    }
 
-    return StringHelper.getLeadingZero (aRandom.nextInt (nMax), nWanted);
+    return StringHelper.getLeadingZero (new Random ().nextInt (nMax), nWanted);
   }
 }
