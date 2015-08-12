@@ -41,6 +41,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
@@ -53,6 +56,8 @@ import com.helger.commons.state.EChange;
 @NotThreadSafe
 public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultMessageProcessor.class);
+
   private final List <IProcessorModule> m_aModules = new ArrayList <IProcessorModule> ();
 
   public void addModule (@Nonnull final IProcessorModule aModule)
@@ -119,6 +124,9 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("DefaultMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
+
     final List <Throwable> aCauses = new ArrayList <Throwable> ();
     boolean bModuleFound = false;
 
@@ -127,6 +135,9 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
       {
         try
         {
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("  handling with module " + aModule);
+
           bModuleFound = true;
           aModule.handle (sAction, aMsg, aOptions);
         }

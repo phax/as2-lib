@@ -85,7 +85,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   private Map <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -219,6 +220,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
      */
     aMsg.setAttribute (CFileAttribute.MA_PENDINGFILE, aFile.getName ());
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("AS2Message was created");
+
     try
     {
       updateMessage (aMsg, aFile);
@@ -229,6 +233,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
       // Transmit the message
       getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("AS2Message was successfully handled my the MessageProcessor");
 
       /*
        * asynch mdn logic 2007-03-12 If the return status is pending in msg's
@@ -279,11 +286,16 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
         }
       }
       else
+      {
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Trying to delete file " + aFile.getAbsolutePath ());
+
         if (!aFile.delete ())
         {
           // Delete the file if a sent directory isn't set
           throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile);
         }
+      }
 
       s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
 
