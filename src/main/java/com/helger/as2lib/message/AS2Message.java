@@ -36,7 +36,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
@@ -65,9 +64,9 @@ public class AS2Message extends AbstractMessage
   @Nonempty
   public String generateMessageID ()
   {
-    final CompositeParameters params = new CompositeParameters (false).add ("date", new DateParameters ())
-                                                                      .add ("msg", new MessageParameters (this))
-                                                                      .add ("rand", new RandomParameters ());
+    final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
+                                                                       .add ("msg", new MessageParameters (this))
+                                                                       .add ("rand", new RandomParameters ());
 
     final String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, DEFAULT_ID_FORMAT);
 
@@ -75,7 +74,7 @@ public class AS2Message extends AbstractMessage
     aSB.append ('<');
     try
     {
-      aSB.append (AbstractParameterParser.parse (sIDFormat, params));
+      aSB.append (aParams.format (sIDFormat));
     }
     catch (final InvalidParameterException ex)
     {
@@ -106,14 +105,16 @@ public class AS2Message extends AbstractMessage
     // Requesting by partnership?
     final Partnership aPartnership = getPartnership ();
     // Same as regular MDN + PA_AS2_RECEIPT_OPTION
-    final boolean bRequesting = (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null || aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null) &&
+    final boolean bRequesting = (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null ||
+                                 aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null) &&
                                 aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null;
     if (bRequesting)
       return true;
 
     // Requesting by request?
     // Same as regular MDN + HEADER_RECEIPT_DELIVERY_OPTION
-    final boolean bRequested = (getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO) != null || getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
+    final boolean bRequested = (getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO) != null ||
+                                getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
                                getHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION) != null;
     return bRequested;
   }

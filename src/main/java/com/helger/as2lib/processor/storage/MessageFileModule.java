@@ -49,7 +49,6 @@ import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
@@ -115,7 +114,7 @@ public class MessageFileModule extends AbstractStorageModule
   {
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("msg", new MessageParameters (aMsg));
-    return AbstractParameterParser.parse (sFileParam, aCompParams);
+    return aCompParams.format (sFileParam);
   }
 
   @Nonnull

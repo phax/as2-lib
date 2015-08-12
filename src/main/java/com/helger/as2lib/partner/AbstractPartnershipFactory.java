@@ -40,11 +40,13 @@ import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
@@ -57,6 +59,8 @@ import com.helger.commons.state.EChange;
 @ThreadSafe
 public abstract class AbstractPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractPartnershipFactory.class);
+
   private final PartnerMap m_aPartners = new PartnerMap ();
   private final PartnershipMap m_aPartnerships = new PartnershipMap ();
 
@@ -311,6 +315,9 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMsg.getPartnership ());
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Updating partnership " + aPartnership);
+
     // Update partnership data of message with the stored ones
     aMsg.getPartnership ().copyFrom (aPartnership);
 
@@ -320,12 +327,13 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
       final String sSubject = aPartnership.getAttribute (CPartnershipIDs.PA_SUBJECT);
       if (sSubject != null)
       {
-        aMsg.setSubject (AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
+        aMsg.setSubject (new MessageParameters (aMsg).format (sSubject));
       }
     }
   }
 
-  public final void updatePartnership (@Nonnull final IMessageMDN aMdn, final boolean bOverwrite) throws OpenAS2Exception
+  public final void updatePartnership (@Nonnull final IMessageMDN aMdn,
+                                       final boolean bOverwrite) throws OpenAS2Exception
   {
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMdn.getPartnership ());

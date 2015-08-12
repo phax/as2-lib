@@ -52,7 +52,6 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.CFileAttribute;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
@@ -339,7 +338,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       {
         try
         {
-          sContentType = AbstractParameterParser.parse (sContentType, aParams);
+          final String sFormat1 = sContentType;
+          sContentType = aParams.format (sFormat1);
         }
         catch (final InvalidParameterException ex)
         {
@@ -387,10 +387,14 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
     // update the message's partnership with any stored information
     getSession ().getPartnershipFactory ().updatePartnership (aMsg, true);
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Finished updating partnership for AS2 message");
+
     aMsg.updateMessageID ();
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Finished updating partnership for AS2 message " + aMsg.getMessageID ());
+      s_aLogger.debug ("Updated message ID to " + aMsg.getMessageID ());
   }
 
   @Nonnull

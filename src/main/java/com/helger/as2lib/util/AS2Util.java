@@ -62,7 +62,6 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.params.AbstractParameterParser;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.session.IAS2Session;
@@ -226,13 +225,13 @@ public final class AS2Util
     final String sSubject = aMDN.getPartnership ().getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
     if (sSubject != null)
     {
-      aMDN.setHeader (CAS2Header.HEADER_SUBJECT, AbstractParameterParser.parse (sSubject, new MessageParameters (aMsg)));
+      aMDN.setHeader (CAS2Header.HEADER_SUBJECT, new MessageParameters (aMsg).format (sSubject));
     }
     else
     {
       aMDN.setHeader (CAS2Header.HEADER_SUBJECT, "Your Requested MDN Response");
     }
-    aMDN.setText (AbstractParameterParser.parse (sText, new MessageParameters (aMsg)));
+    aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
                        CAS2Info.NAME_VERSION +
                            "@" +

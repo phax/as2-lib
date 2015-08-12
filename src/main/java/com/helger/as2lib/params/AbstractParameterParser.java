@@ -38,12 +38,17 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractParameterParser
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractParameterParser.class);
+
   public abstract void setParameter (@Nonnull String sKey, @Nonnull String sValue) throws InvalidParameterException;
 
   @Nullable
@@ -113,7 +118,9 @@ public abstract class AbstractParameterParser
    * @throws InvalidParameterException
    *         In case the string is incorrect
    */
-  public static String parse (@Nonnull final String sFormat, @Nonnull final AbstractParameterParser aParser) throws InvalidParameterException
+  @Deprecated
+  public static String parse (@Nonnull final String sFormat,
+                              @Nonnull final AbstractParameterParser aParser) throws InvalidParameterException
   {
     return aParser.format (sFormat);
   }
@@ -130,6 +137,9 @@ public abstract class AbstractParameterParser
   @Nonnull
   public String format (@Nonnull final String sFormat) throws InvalidParameterException
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Formatting '" + sFormat + "'");
+
     final StringBuilder aSB = new StringBuilder ();
     for (int nNext = 0; nNext < sFormat.length (); ++nNext)
     {
@@ -159,6 +169,9 @@ public abstract class AbstractParameterParser
       else
         aSB.append (getParameter (sFormat.substring (nPrev, nNext)));
     }
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Formatted value is now '" + aSB.toString () + "'");
 
     return aSB.toString ();
   }
