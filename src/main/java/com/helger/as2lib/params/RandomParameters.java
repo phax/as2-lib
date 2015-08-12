@@ -32,14 +32,21 @@
  */
 package com.helger.as2lib.params;
 
+import java.security.SecureRandom;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringHelper;
 
 public class RandomParameters extends AbstractParameterParser
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (RandomParameters.class);
+
   @Override
   public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
   {
@@ -55,6 +62,14 @@ public class RandomParameters extends AbstractParameterParser
 
     final int nWanted = sKey.length ();
     final int nMax = (int) Math.pow (10, nWanted);
-    return StringHelper.getLeadingZero (VerySecureRandom.getInstance ().nextInt (nMax), nWanted);
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Init SecureRandom");
+    // This may take some time on some Linux derivates!
+    final SecureRandom aRandom = VerySecureRandom.getInstance ();
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Finished init SecureRandom");
+
+    return StringHelper.getLeadingZero (aRandom.nextInt (nMax), nWanted);
   }
 }

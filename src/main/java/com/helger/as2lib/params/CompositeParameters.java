@@ -39,8 +39,15 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.lang.ClassHelper;
+
 public class CompositeParameters extends AbstractParameterParser
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (CompositeParameters.class);
+
   private Map <String, AbstractParameterParser> m_aParameterParsers;
   private boolean m_bIgnoreMissingParsers;
 
@@ -99,8 +106,8 @@ public class CompositeParameters extends AbstractParameterParser
   {
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
-    final String aParserID = aKeyParts.nextToken ();
-    final AbstractParameterParser aParser = getParameterParsers ().get (aParserID);
+    final String sParserID = aKeyParts.nextToken ();
+    final AbstractParameterParser aParser = getParameterParsers ().get (sParserID);
     if (aParser != null)
     {
       if (!aKeyParts.hasMoreTokens ())
@@ -109,6 +116,14 @@ public class CompositeParameters extends AbstractParameterParser
       final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
       while (aKeyParts.hasMoreTokens ())
         aKeyBuf.append ('.').append (aKeyParts.nextToken ());
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Nested getParameter: " +
+                         ClassHelper.getClassLocalName (aParser) +
+                         " with '" +
+                         aKeyBuf.toString () +
+                         "'");
+
       return aParser.getParameter (aKeyBuf.toString ());
     }
     if (!getIgnoreMissingParsers ())
