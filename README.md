@@ -22,7 +22,7 @@ Add the following to your pom.xml to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
@@ -48,6 +48,9 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.util.cert - utility classes for certificate handling
   * com.helger.as2lib.util.http - utility classes for HTTP connection handling
   * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
+
+#Building
+This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `target` directory.
 
 ---
 
