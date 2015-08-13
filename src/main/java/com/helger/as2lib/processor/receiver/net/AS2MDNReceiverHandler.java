@@ -150,12 +150,23 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   // Asynch MDN 2007-03-12
   /**
-   * method for receiving & processing Async MDN sent from receiver.
+   * method for receiving and processing Async MDN sent from receiver.
+   *
+   * @param aMsg
+   *        The MDN message
+   * @param aData
+   *        The MDN content
+   * @param aResponseHandler
+   *        The HTTP response handler for setting the correct HTTP response code
+   * @throws OpenAS2Exception
+   *         In case of error
+   * @throws IOException
+   *         In case of IO error
    */
   protected final void receiveMDN (final AS2Message aMsg,
                                    final byte [] aData,
                                    @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws OpenAS2Exception,
-                                                                                           IOException
+                                                                                            IOException
   {
     try
     {

@@ -269,6 +269,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        URLConnection
    * @param sOriginalMIC
    *        mic value from original msg
+   * @throws OpenAS2Exception
+   *         in case of an error
+   * @throws IOException
+   *         in case of an IO error
    */
   protected void receiveMDN (@Nonnull final AS2Message aMsg,
                              @Nonnull final HttpURLConnection aConn,
@@ -382,7 +386,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
-  private void _resend (@Nonnull final IMessage aMsg, final OpenAS2Exception aCause, final int nTries) throws OpenAS2Exception
+  private void _resend (@Nonnull final IMessage aMsg,
+                        final OpenAS2Exception aCause,
+                        final int nTries) throws OpenAS2Exception
   {
     if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, aCause, nTries))
     {
@@ -490,12 +496,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   // Asynch MDN 2007-03-12
   /**
-   * for storing original mic & outgoing file into pending information file
+   * for storing original mic and outgoing file into pending information file
    *
    * @param aMsg
    *        AS2Message
    * @param sMIC
+   *        MIC value
    * @throws OpenAS2Exception
+   *         In case of an error
    */
   protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws OpenAS2Exception
   {

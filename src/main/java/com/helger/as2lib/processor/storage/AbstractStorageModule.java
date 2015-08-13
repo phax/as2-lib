@@ -81,7 +81,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   @Override
-  public final void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public final void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                          @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_FILENAME);
@@ -90,14 +91,19 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   /**
    * @since 2007-06-01
    * @param aMsg
+   *        The source message
    * @param sFileParam
+   *        The parameter name including the filename
    * @param sAction
-   * @return File
+   *        Action name
+   * @return File The {@link File} to be used
    * @throws IOException
+   *         In case of IO error
    * @throws OpenAS2Exception
+   *         In case of error
    */
   protected File getFile (final IMessage aMsg, final String sFileParam, final String sAction) throws IOException,
-                                                                                             OpenAS2Exception
+                                                                                              OpenAS2Exception
   {
     final String sFilename = getFilename (aMsg, sFileParam, sAction);
 
@@ -108,7 +114,9 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     return IOUtil.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
-  protected abstract String getFilename (IMessage aMsg, String sFileParam, String sAction) throws InvalidParameterException;
+  protected abstract String getFilename (IMessage aMsg,
+                                         String sFileParam,
+                                         String sAction) throws InvalidParameterException;
 
   protected void store (@Nonnull final File aMsgFile, @Nonnull @WillClose final InputStream aIS) throws IOException
   {
@@ -135,7 +143,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     }
   }
 
-  private void _writeStream (@Nonnull @WillClose final InputStream aIS, @Nonnull final File aDestination) throws IOException
+  private void _writeStream (@Nonnull @WillClose final InputStream aIS,
+                             @Nonnull final File aDestination) throws IOException
   {
     final FileOutputStream aOS = new FileOutputStream (aDestination);
     if (StreamHelper.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
