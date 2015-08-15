@@ -117,8 +117,8 @@ public class CompositeParameters extends AbstractParameterParser
       while (aKeyParts.hasMoreTokens ())
         aKeyBuf.append ('.').append (aKeyParts.nextToken ());
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Nested getParameter: " +
+      if (s_aLogger.isTraceEnabled ())
+        s_aLogger.trace ("Nested getParameter: " +
                          ClassHelper.getClassLocalName (aParser) +
                          " with '" +
                          aKeyBuf.toString () +

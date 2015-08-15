@@ -137,8 +137,8 @@ public abstract class AbstractParameterParser
   @Nonnull
   public String format (@Nonnull final String sFormat) throws InvalidParameterException
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Formatting '" + sFormat + "'");
+    if (s_aLogger.isTraceEnabled ())
+      s_aLogger.trace ("Formatting '" + sFormat + "'");
 
     final StringBuilder aSB = new StringBuilder ();
     for (int nNext = 0; nNext < sFormat.length (); ++nNext)
@@ -170,8 +170,8 @@ public abstract class AbstractParameterParser
         aSB.append (getParameter (sFormat.substring (nPrev, nNext)));
     }
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Formatted value is now '" + aSB.toString () + "'");
+    if (s_aLogger.isTraceEnabled ())
+      s_aLogger.trace ("Formatted value is now '" + aSB.toString () + "'");
 
     return aSB.toString ();
   }
