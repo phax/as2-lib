@@ -157,6 +157,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         final String sDispositionOptions = aConn.getRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
         final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("DispositionOptions=" + aDispositionOptions);
+
         // Calculate and get the original mic
         final boolean bIncludeHeadersInMIC = aRealMsg.getHistory ().getItemCount () > 1;
 
@@ -172,6 +175,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
           storePendingInfo (aRealMsg, sMIC);
         }
+
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Calculated MIC: '" + sMIC + "'");
 
         s_aLogger.info ("connecting to " + sUrl + aRealMsg.getLoggingText ());
 
@@ -344,10 +350,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // don't know it needs or needs not to be resent ? it's depended on
         // what!
         // anyway, just log the warning message here.
-        s_aLogger.info ("mic is not matched, original mic: " +
+        s_aLogger.info ("mic is not matched, original mic: '" +
                         sOriginalMIC +
-                        " return mic: " +
+                        "' return mic: '" +
                         sReturnMIC +
+                        "'" +
                         aMsg.getLoggingText ());
       }
       else
