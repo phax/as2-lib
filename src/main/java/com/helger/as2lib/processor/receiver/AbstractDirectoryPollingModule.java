@@ -65,6 +65,7 @@ import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
@@ -138,16 +139,20 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   {
     if (aFile.exists () && aFile.isFile ())
     {
+      FileOutputStream aFOS = null;
       try
       {
         // check for a write-lock on file, will skip file if it's write locked
-        final FileOutputStream aFOS = new FileOutputStream (aFile, true);
-        aFOS.close ();
+        aFOS = new FileOutputStream (aFile, true);
         return true;
       }
       catch (final IOException ioe)
       {
         // a sharing violation occurred, ignore the file for now
+      }
+      finally
+      {
+        StreamHelper.close (aFOS);
       }
     }
     return false;

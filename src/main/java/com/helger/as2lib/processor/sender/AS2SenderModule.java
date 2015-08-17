@@ -141,6 +141,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // encrypt and/or sign the message if needed
       final MimeBodyPart aSecuredData = secure (aRealMsg);
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
+
       aRealMsg.setContentType (aSecuredData.getContentType ());
 
       // Create the HTTP connection and set up headers
