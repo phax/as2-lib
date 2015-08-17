@@ -45,6 +45,9 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
@@ -63,6 +66,8 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public abstract class AbstractBaseMessage implements IBaseMessage
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractBaseMessage.class);
+
   private StringMap m_aAttributes = new StringMap ();
   private InternetHeaders m_aHeaders = new InternetHeaders ();
   private Partnership m_aPartnership = new Partnership ();
@@ -70,8 +75,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public AbstractBaseMessage ()
   {}
 
-  protected final void baseReadObject (@Nonnull final ObjectInputStream aOIS) throws IOException,
-                                                                             ClassNotFoundException
+  protected final void baseReadObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     // read in attributes
     m_aAttributes = (StringMap) aOIS.readObject ();
@@ -110,6 +114,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Setting message attribute: '" + sKey + "' = '" + sValue + "'");
     m_aAttributes.setAttribute (sKey, sValue);
   }
 
@@ -121,6 +127,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void setAttributes (@Nullable final IStringMap aAttributes)
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Setting message attributes: " + aAttributes);
     m_aAttributes.setAttributes (aAttributes != null ? aAttributes.getAllAttributes () : null);
   }
 
@@ -133,6 +141,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void setHeader (@Nonnull final String sKey, @Nullable final String sValue)
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Setting message header: '" + sKey + "' = '" + sValue + "'");
     m_aHeaders.setHeader (sKey, sValue);
   }
 
@@ -179,6 +189,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void addHeader (@Nonnull final String sKey, @Nullable final String sValue)
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Adding message header: '" + sKey + "' = '" + sValue + "'");
     m_aHeaders.addHeader (sKey, sValue);
   }
 
