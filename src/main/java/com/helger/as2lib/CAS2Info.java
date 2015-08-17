@@ -43,7 +43,7 @@ public final class CAS2Info
   /** The version of this AS2 client. May not contain blanks. */
   public static final String VERSION = "v1.0";
 
-  /** Combintation of {@link #NAME} and {@link #VERSION} separated by a blank. */
+  /** Combination of {@link #NAME} and {@link #VERSION} separated by a blank. */
   public static final String NAME_VERSION = NAME + " " + VERSION;
 
   private CAS2Info ()
