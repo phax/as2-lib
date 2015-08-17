@@ -54,13 +54,15 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5),
  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1),
+ DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256),
+ DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384),
+ DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512),
  /*
-  * Identifiers as used in Mendelson. Up to (and incl.) as2-lib 2.0.1 this was
-  * "sha256" etc.
+  * Identifiers as used in Mendelson.
   */
- DIGEST_SHA256 ("sha-256", NISTObjectIdentifiers.id_sha256),
- DIGEST_SHA384 ("sha-384", NISTObjectIdentifiers.id_sha384),
- DIGEST_SHA512 ("sha-512", NISTObjectIdentifiers.id_sha512);
+ DIGEST_SHA256_ALTERNATIVE ("sha-256", NISTObjectIdentifiers.id_sha256),
+ DIGEST_SHA384_ALTERNATIVE ("sha-384", NISTObjectIdentifiers.id_sha384),
+ DIGEST_SHA512_ALTERNATIVE ("sha-512", NISTObjectIdentifiers.id_sha512);
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
