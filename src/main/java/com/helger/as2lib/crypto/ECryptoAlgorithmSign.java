@@ -60,9 +60,9 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
  /*
   * Identifiers as used in Mendelson.
   */
- DIGEST_SHA256_ALTERNATIVE ("sha-256", NISTObjectIdentifiers.id_sha256),
- DIGEST_SHA384_ALTERNATIVE ("sha-384", NISTObjectIdentifiers.id_sha384),
- DIGEST_SHA512_ALTERNATIVE ("sha-512", NISTObjectIdentifiers.id_sha512);
+ DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256),
+ DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384),
+ DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512);
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;

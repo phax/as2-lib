@@ -34,10 +34,16 @@ package com.helger.as2lib.util.cert;
 
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.crypto.ICryptoHelper;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 
@@ -64,6 +70,25 @@ public final class KeyStoreReader
     {
       final KeyStore aKeyStore = aCryptoHelper.loadKeyStore (aIS, aPassword);
       return new OpenAS2KeyStore (aKeyStore);
+    }
+    finally
+    {
+      StreamHelper.close (aIS);
+    }
+  }
+
+  @Nonnull
+  public static X509Certificate readX509Certificate (@Nonnull final String sFilename) throws CertificateException
+  {
+    final InputStream aIS = FileHelper.getInputStream (sFilename);
+    if (aIS == null)
+      throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
+
+    try
+    {
+      final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
+      final Collection <? extends Certificate> c = cf.generateCertificates (aIS);
+      return (X509Certificate) CollectionHelper.getFirstElement (c);
     }
     finally
     {
