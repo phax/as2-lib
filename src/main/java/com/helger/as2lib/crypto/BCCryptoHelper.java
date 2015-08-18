@@ -91,6 +91,8 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
@@ -168,7 +170,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     ValueEnforcer.notNull (aPart, "Part");
 
-    // Content-Type is sthg like:
+    // Content-Type is sthg like this if encrypted:
     // application/pkcs7-mime; name=smime.p7m; smime-type=enveloped-data
     final ContentType aContentType = new ContentType (aPart.getContentType ());
     final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
@@ -186,6 +188,25 @@ public final class BCCryptoHelper implements ICryptoHelper
     final ContentType aContentType = new ContentType (aPart.getContentType ());
     final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
     return sBaseType.equals ("multipart/signed");
+  }
+
+  public boolean isCompressed (@Nonnull final String sContentType) throws OpenAS2Exception
+  {
+    ValueEnforcer.notNull (sContentType, "ContentType");
+
+    try
+    {
+      // Content-Type is sthg like this if compressed:
+      // application/pkcs7-mime; smime-type=compressed-data; name=smime.p7z
+      final ContentType aContentType = new ContentType (sContentType);
+
+      final String sSmimeType = aContentType.getParameter ("smime-type");
+      return sSmimeType != null && sSmimeType.equalsIgnoreCase ("compressed-data");
+    }
+    catch (final MessagingException ex)
+    {
+      throw WrappedOpenAS2Exception.wrap (ex);
+    }
   }
 
   /**

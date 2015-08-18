@@ -113,9 +113,12 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   public void setData (@Nullable final MimeBodyPart aData, @Nullable final DataHistoryItem aHistoryItem)
   {
+    // Remember data
     m_aData = aData;
+
     if (aData != null)
     {
+      // Set content type from data
       try
       {
         setContentType (aData.getContentType ());
@@ -125,6 +128,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
         setContentType (null);
       }
 
+      // Set content disposition from data
       try
       {
         setContentDisposition (aData.getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, null));
@@ -135,6 +139,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       }
     }
 
+    // Add to history (if any)
     if (aHistoryItem != null)
       m_aHistory.addItem (aHistoryItem);
   }

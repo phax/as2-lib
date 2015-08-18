@@ -107,6 +107,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   public static final String DISP_PARSING_MIME_FAILED = DP_HEADER +
                                                         "but an error occured while parsing the MIME content.";
   public static final String DISP_DECRYPTION_ERROR = DP_HEADER + "but an error occured decrypting the content.";
+  public static final String DISP_DECOMPRESSION_ERROR = DP_HEADER + "but an error occured decompressing the content.";
   public static final String DISP_VERIFY_SIGNATURE_FAILED = DP_DECRYPTED +
                                                             "Authentication of the originator of the message failed.";
   public static final String DISP_VALIDATION_FAILED = DP_VERIFIED +
@@ -148,7 +149,8 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 
@@ -255,7 +257,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       m_aOwner = aOwner;
       m_aSocket = new ServerSocket ();
       final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)
-                                                      : new InetSocketAddress (sAddress, nPort);
+                                                       : new InetSocketAddress (sAddress, nPort);
       m_aSocket.bind (aAddr);
       s_aLogger.info ("Inited " + getName () + " at " + aAddr);
     }

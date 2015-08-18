@@ -53,6 +53,8 @@ import com.helger.commons.lang.IHasStringRepresentation;
  */
 public interface IBaseMessage extends IHasStringRepresentation, Serializable
 {
+  boolean containsAttribute (@Nullable String sKey);
+
   @Nullable
   String getAttribute (@Nullable String sKey);
 

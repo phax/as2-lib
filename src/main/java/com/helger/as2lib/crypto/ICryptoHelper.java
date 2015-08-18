@@ -41,6 +41,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.exception.OpenAS2Exception;
+
 /**
  * Base interface for all crypto related methods in this project.
  *
@@ -113,6 +115,20 @@ public interface ICryptoHelper
   boolean isSigned (@Nonnull MimeBodyPart aPart) throws Exception;
 
   /**
+   * Check if the passed content type indicates compression. The default
+   * implementation checks if the parameter "smime-type" has the value
+   * "compressed-data".
+   *
+   * @param sContentType
+   *        The content type to be checked. May not be <code>null</code>.
+   * @return <code>true</code> if it is compressed, <code>false</code>
+   *         otherwise.
+   * @throws OpenAS2Exception
+   *         In case something goes wrong.
+   */
+  boolean isCompressed (@Nonnull String sContentType) throws OpenAS2Exception;
+
+  /**
    * Calculate the MIC
    *
    * @param aPart
@@ -133,7 +149,9 @@ public interface ICryptoHelper
                        boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
-  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart, @Nonnull X509Certificate aCert, @Nonnull PrivateKey aKey) throws Exception;
+  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
+                        @Nonnull X509Certificate aCert,
+                        @Nonnull PrivateKey aKey) throws Exception;
 
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,
@@ -179,5 +197,7 @@ public interface ICryptoHelper
    *         In case something goes wrong.
    */
   @Nonnull
-  MimeBodyPart verify (@Nonnull MimeBodyPart aPart, @Nullable X509Certificate aCert, boolean bAllowCertificateInBodyPart) throws Exception;
+  MimeBodyPart verify (@Nonnull MimeBodyPart aPart,
+                       @Nullable X509Certificate aCert,
+                       boolean bAllowCertificateInBodyPart) throws Exception;
 }

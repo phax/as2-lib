@@ -112,11 +112,9 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     aOOS.writeObject (m_aPartnership);
   }
 
-  public final void setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
+  public final boolean containsAttribute (@Nullable final String sKey)
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Setting message attribute: '" + sKey + "' = '" + sValue + "'");
-    m_aAttributes.setAttribute (sKey, sValue);
+    return m_aAttributes.containsAttribute (sKey);
   }
 
   @Nullable
@@ -125,18 +123,25 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     return m_aAttributes.getAttributeAsString (sKey);
   }
 
-  public final void setAttributes (@Nullable final IStringMap aAttributes)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Setting message attributes: " + aAttributes);
-    m_aAttributes.setAttributes (aAttributes != null ? aAttributes.getAllAttributes () : null);
-  }
-
   @Nonnull
   @ReturnsMutableCopy
   public final StringMap getAllAttributes ()
   {
     return m_aAttributes.getClone ();
+  }
+
+  public final void setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
+  {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Setting message attribute: '" + sKey + "' = '" + sValue + "'");
+    m_aAttributes.setAttribute (sKey, sValue);
+  }
+
+  public final void setAttributes (@Nullable final IStringMap aAttributes)
+  {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Setting message attributes: " + aAttributes);
+    m_aAttributes.setAttributes (aAttributes != null ? aAttributes.getAllAttributes () : null);
   }
 
   public final void setHeader (@Nonnull final String sKey, @Nullable final String sValue)

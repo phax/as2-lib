@@ -39,10 +39,14 @@ import java.security.cert.X509Certificate;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
+import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
+import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
+import org.bouncycastle.mail.smime.SMIMECompressed;
+import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +117,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     aMsg.setAttribute (CNetAttribute.MA_SOURCE_PORT, Integer.toString (aSocket.getPort ()));
     aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aSocket.getLocalAddress ().toString ());
     aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aSocket.getLocalPort ()));
+    aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED, Boolean.TRUE.toString ());
     return aMsg;
   }
 
@@ -133,8 +138,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
         final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
         final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (), aReceiverCert, aReceiverKey);
         aMsg.setData (aDecryptedData);
-        // Ensure a valid content type
-        new ContentType (aMsg.getData ().getContentType ());
+        // Remember that message was encrypted
+        aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
       }
     }
     catch (final Exception ex)
@@ -158,12 +163,15 @@ public class AS2ReceiverHandler implements INetModuleHandler
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
-        final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg, ECertificatePartnershipType.SENDER);
+        final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
+                                                                               ECertificatePartnershipType.SENDER);
         final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
                                                                  aSenderCert,
                                                                  m_aReceiverModule.getSession ()
                                                                                   .isCryptoVerifyUseCertificateInBodyPart ());
         aMsg.setData (aVerifiedData);
+        // Remember that message was signed
+        aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
       }
     }
     catch (final Exception ex)
@@ -171,6 +179,30 @@ public class AS2ReceiverHandler implements INetModuleHandler
       s_aLogger.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (DispositionType.createError ("integrity-check-failed"),
                                       AbstractNetModule.DISP_VERIFY_SIGNATURE_FAILED,
+                                      ex);
+    }
+  }
+
+  protected void decompress (@Nonnull final IMessage aMsg) throws DispositionException
+  {
+    try
+    {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Decompressing a compressed AS2 message");
+
+      final SMIMECompressed aCompressed = new SMIMECompressed (aMsg.getData ());
+      // decompression step MimeBodyPart
+      final MimeBodyPart aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressed.getContent (new ZlibExpanderProvider ()));
+      // Update the message object
+      aMsg.setData (aDecompressedPart);
+      // Remember that message was decompressed
+      aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, Boolean.TRUE.toString ());
+    }
+    catch (final Exception ex)
+    {
+      s_aLogger.error ("Error decompressing received message", ex);
+      throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+                                      AbstractNetModule.DISP_DECOMPRESSION_ERROR,
                                       ex);
     }
   }
@@ -310,10 +342,61 @@ public class AS2ReceiverHandler implements INetModuleHandler
                                         ex);
       }
 
+      // Per RFC5402 compression is always before encryption but can be before
+      // or after signing of message but only in one place
+      final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
+      boolean bIsDecompressed = false;
+
       // Decrypt and verify signature of the data, and attach data to the
       // message
       decrypt (aMsg);
+
+      if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
+      {
+        if (s_aLogger.isTraceEnabled ())
+          s_aLogger.trace ("Decompressing received message before checking signature...");
+        decompress (aMsg);
+        bIsDecompressed = true;
+      }
+
       verify (aMsg);
+
+      if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
+      {
+        // Per RFC5402 compression is always before encryption but can be before
+        // or after signing of message but only in one place
+        if (bIsDecompressed)
+        {
+          throw new DispositionException (DispositionType.createError ("decompression-failed"),
+                                          AbstractNetModule.DISP_DECOMPRESSION_ERROR,
+                                          new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
+        }
+
+        if (s_aLogger.isTraceEnabled ())
+          if (aMsg.containsAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED))
+            s_aLogger.trace ("Decompressing received message after verifying signature...");
+          else
+            s_aLogger.trace ("Decompressing received message after decryption...");
+        decompress (aMsg);
+        bIsDecompressed = true;
+      }
+
+      if (s_aLogger.isTraceEnabled ())
+        try
+        {
+          s_aLogger.trace ("SMIME Decrypted Content-Disposition: " +
+                           aMsg.getContentDisposition () +
+                           "\n      Content-Type received: " +
+                           aMsg.getContentType () +
+                           "\n      HEADERS after decryption: " +
+                           aMsg.getData ().getAllHeaders () +
+                           "\n      Content-Disposition in MSG detData() MIMEPART after decryption: " +
+                           aMsg.getData ().getContentType ());
+        }
+        catch (final MessagingException ex)
+        {
+          s_aLogger.error ("Failed to trace message: " + aMsg, ex);
+        }
 
       // Validate the received message before storing
       try
@@ -328,8 +411,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractNetModule.DISP_VALIDATION_FAILED +
-                                            "\n" +
-                                            StackTraceHelper.getStackAsString (ex),
+                                                                                                     "\n" +
+                                                                                                     StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 
@@ -358,8 +441,8 @@ public class AS2ReceiverHandler implements INetModuleHandler
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractNetModule.DISP_VALIDATION_FAILED +
-                                            "\n" +
-                                            StackTraceHelper.getStackAsString (ex),
+                                                                                                     "\n" +
+                                                                                                     StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 

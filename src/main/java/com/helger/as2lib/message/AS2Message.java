@@ -48,6 +48,12 @@ import com.helger.commons.annotation.Nonempty;
 
 public class AS2Message extends AbstractMessage
 {
+  /** Indicator whether the message was received (or created) */
+  public static final String ATTRIBUTE_RECEIVED = "as2msg.received";
+  public static final String ATTRIBUTE_RECEIVED_ENCRYPTED = "as2msg.received.encrypted";
+  public static final String ATTRIBUTE_RECEIVED_SIGNED = "as2msg.received.signed";
+  public static final String ATTRIBUTE_RECEIVED_COMPRESSED = "as2msg.received.compressed";
+
   public static final String PROTOCOL_AS2 = "as2";
   public static final String DEFAULT_ID_FORMAT = CAS2Info.NAME +
                                                  "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
