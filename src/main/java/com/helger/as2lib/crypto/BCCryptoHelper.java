@@ -221,8 +221,8 @@ public final class BCCryptoHelper implements ICryptoHelper
   public String calculateMIC (@Nonnull final MimeBodyPart aPart,
                               @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
                               final boolean bIncludeHeaders) throws GeneralSecurityException,
-                                                            MessagingException,
-                                                            IOException
+                                                             MessagingException,
+                                                             IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
@@ -271,10 +271,10 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final PrivateKey aPrivateKey) throws GeneralSecurityException,
-                                                                     MessagingException,
-                                                                     CMSException,
-                                                                     IOException,
-                                                                     SMIMEException
+                                                                      MessagingException,
+                                                                      CMSException,
+                                                                      IOException,
+                                                                      SMIMEException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -303,8 +303,8 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException,
-                                                                               SMIMEException,
-                                                                               CMSException
+                                                                                SMIMEException,
+                                                                                CMSException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -326,9 +326,9 @@ public final class BCCryptoHelper implements ICryptoHelper
                             @Nonnull final X509Certificate aX509Cert,
                             @Nonnull final PrivateKey aPrivateKey,
                             @Nonnull final ECryptoAlgorithmSign eAlgorithm) throws GeneralSecurityException,
-                                                                           SMIMEException,
-                                                                           MessagingException,
-                                                                           OperatorCreationException
+                                                                            SMIMEException,
+                                                                            MessagingException,
+                                                                            OperatorCreationException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -364,7 +364,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // used is taken from the key - in this RSA with PKCS1Padding
     aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
-                                                                            .build ("SHA1withRSA",
+                                                                            .build (eAlgorithm.getBCAlgorithmName (),
                                                                                     aPrivateKey,
                                                                                     aX509Cert));
 
@@ -383,11 +383,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
                               final boolean bAllowCertificateInBodyPart) throws GeneralSecurityException,
-                                                                        IOException,
-                                                                        MessagingException,
-                                                                        CMSException,
-                                                                        OperatorCreationException,
-                                                                        SMIMEException
+                                                                         IOException,
+                                                                         MessagingException,
+                                                                         CMSException,
+                                                                         OperatorCreationException,
+                                                                         SMIMEException
   {
     // Make sure the data is signed
     if (!isSigned (aPart))

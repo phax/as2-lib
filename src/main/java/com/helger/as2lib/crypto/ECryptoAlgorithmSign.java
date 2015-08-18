@@ -52,25 +52,29 @@ import com.helger.commons.lang.EnumHelper;
  */
 public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
- DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5),
- DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1),
- DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256),
- DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384),
- DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512),
+ DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
+ DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+ DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+ DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+ DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
  /*
   * Identifiers as used in Mendelson.
   */
- DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256),
- DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384),
- DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512);
+ DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+ DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+ DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA");
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
+  private final String m_sBCAlgorithmName;
 
-  private ECryptoAlgorithmSign (@Nonnull @Nonempty final String sID, @Nonnull final ASN1ObjectIdentifier aOID)
+  private ECryptoAlgorithmSign (@Nonnull @Nonempty final String sID,
+                                @Nonnull final ASN1ObjectIdentifier aOID,
+                                @Nonnull @Nonempty final String sBCAlgorithmName)
   {
     m_sID = sID;
     m_aOID = aOID;
+    m_sBCAlgorithmName = sBCAlgorithmName;
   }
 
   @Nonnull
@@ -84,6 +88,17 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   public ASN1ObjectIdentifier getOID ()
   {
     return m_aOID;
+  }
+
+  /**
+   * @return The algorithm name to be used for BouncyCastle to do the SMIME
+   *         packaging.
+   */
+  @Nonnull
+  @Nonempty
+  public String getBCAlgorithmName ()
+  {
+    return m_sBCAlgorithmName;
   }
 
   @Nullable
