@@ -38,6 +38,7 @@ import java.nio.charset.Charset;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
@@ -65,6 +66,7 @@ public class AS2ClientRequest
   private byte [] m_aData;
   private String m_sText;
   private Charset m_aCharset;
+  private String m_sFilename;
 
   /**
    * @param sSubject
@@ -75,19 +77,10 @@ public class AS2ClientRequest
     m_sSubject = ValueEnforcer.notEmpty (sSubject, "Subject");
   }
 
-  public AS2ClientRequest setContentType (@Nonnull @Nonempty final String sContentType)
-  {
-    m_sContentType = ValueEnforcer.notEmpty (sContentType, "ContentType");
-    return this;
-  }
-
-  @Nonnull
-  @Nonempty
-  public String getContentType ()
-  {
-    return m_sContentType;
-  }
-
+  /**
+   * @return The subject as provided in the constructor. May neither be
+   *         <code>null</code> nor empty.
+   */
   @Nonnull
   @Nonempty
   public String getSubject ()
@@ -95,17 +88,109 @@ public class AS2ClientRequest
     return m_sSubject;
   }
 
+  /**
+   * Set the content type to be used.
+   *
+   * @param sContentType
+   *        The content type. May neither be <code>null</code> nor empty.
+   * @return this
+   */
+  @Nonnull
+  public AS2ClientRequest setContentType (@Nonnull @Nonempty final String sContentType)
+  {
+    m_sContentType = ValueEnforcer.notEmpty (sContentType, "ContentType");
+    return this;
+  }
+
+  /**
+   * @return The content type to be used. Defaults to
+   *         {@link #DEFAULT_CONTENT_TYPE}.
+   */
+  @Nonnull
+  @Nonempty
+  public String getContentType ()
+  {
+    return m_sContentType;
+  }
+
+  /**
+   * Set the content of the {@link File} as a payload. No charset is applied and
+   * therefore no content type starting with "text/" may be used. The name of
+   * the file is used as the payload file name.
+   *
+   * @param aFile
+   *        {@link File} to read the content from. Never <code>null</code>.
+   * @return this
+   */
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final File aFile)
   {
-    return setData (FileHelper.getInputStream (aFile));
+    return setData (aFile, (Charset) null);
   }
 
+  /**
+   * Set the content of the {@link File} as a payload. If no charset is applied
+   * ( <code>null</code>) no content type starting with "text/" may be used. The
+   * name of the file is used as the payload file name.
+   *
+   * @param aFile
+   *        {@link File} to read the content from. Never <code>null</code>.
+   * @param aCharset
+   *        Charset to use. If it is <code>null</code> the content is set as a
+   *        byte array, if not <code>null</code> the content is set as a String.
+   * @return this
+   */
   @Nonnull
-  public AS2ClientRequest setData (@Nonnull final InputStream aIS)
+  public AS2ClientRequest setData (@Nonnull final File aFile, @Nullable final Charset aCharset)
+  {
+    ValueEnforcer.notNull (aFile, "File");
+    setData (FileHelper.getInputStream (aFile), aCharset);
+
+    // Set filename by default
+    setFilename (aFile.getName ());
+    return this;
+  }
+
+  /**
+   * Set the content of the {@link InputStream} as a payload. No charset is
+   * applied and therefore no content type starting with "text/" may be used.
+   *
+   * @param aIS
+   *        {@link InputStream} to read the content from. Never
+   *        <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public AS2ClientRequest setData (@Nonnull @WillClose final InputStream aIS)
+  {
+    return setData (aIS, (Charset) null);
+  }
+
+  /**
+   * Set the content of the {@link InputStream} as a payload. No charset is
+   * applied and therefore no content type starting with "text/" may be used.
+   *
+   * @param aIS
+   *        {@link InputStream} to read the content from. Never
+   *        <code>null</code>.
+   * @param aCharset
+   *        Charset to use. If it is <code>null</code> the content is set as a
+   *        byte array, if not <code>null</code> the content is set as a String.
+   * @return this
+   */
+  @Nonnull
+  public AS2ClientRequest setData (@Nonnull @WillClose final InputStream aIS, @Nullable final Charset aCharset)
   {
     ValueEnforcer.notNull (aIS, "InputStream");
-    return setData (StreamHelper.getAllBytes (aIS));
+    final byte [] aBytes = StreamHelper.getAllBytes (aIS);
+    if (aCharset == null)
+    {
+      // Set pure byte array
+      return setData (aBytes);
+    }
+
+    // Convert to String and remember charset
+    return setData (new String (aBytes, aCharset), aCharset);
   }
 
   @Nonnull
@@ -126,7 +211,24 @@ public class AS2ClientRequest
     return this;
   }
 
-  public void applyDataOntoMimeBodyPart (final MimeBodyPart aPart) throws MessagingException
+  /**
+   * Set the filename to be used to name the content. This will add a
+   * <code>Content-Disposition: attachment; filename=...</code> header to the
+   * MIME part
+   *
+   * @param sFilename
+   *        Filename to use. May be <code>null</code> to indicate none (also the
+   *        default)
+   * @return this
+   */
+  @Nonnull
+  public AS2ClientRequest setFilename (@Nullable final String sFilename)
+  {
+    m_sFilename = sFilename;
+    return this;
+  }
+
+  public void applyDataOntoMimeBodyPart (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
     if (m_aData != null)
     {
@@ -137,9 +239,14 @@ public class AS2ClientRequest
       if (m_sText != null)
       {
         // Set text with an optional charset
+        // Sets the "text/plain" content-type internally!
         aPart.setText (m_sText, m_aCharset == null ? null : m_aCharset.name ());
       }
       else
         throw new IllegalStateException ("No data specified in AS2 client request!");
+
+    // Set as filename as well
+    if (m_sFilename != null)
+      aPart.setFileName (m_sFilename);
   }
 }

@@ -32,6 +32,7 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.cert.KeyStoreReader;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.mime.CMimeType;
 import com.helger.commons.system.SystemProperties;
 
 /**
@@ -49,8 +50,11 @@ public final class MainSendToMendelsonTest
     if (false)
       GlobalDebug.setDebugModeDirect (false);
 
-    SystemProperties.setPropertyValue ("http.proxyHost", "172.30.9.12");
-    SystemProperties.setPropertyValue ("http.proxyPort", "8080");
+    if (true)
+    {
+      SystemProperties.setPropertyValue ("http.proxyHost", "172.30.9.12");
+      SystemProperties.setPropertyValue ("http.proxyPort", "8080");
+    }
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
@@ -66,7 +70,7 @@ public final class MainSendToMendelsonTest
     final X509Certificate aReceiverCertificate = KeyStoreReader.readX509Certificate ("src/test/resources/mendelson/key2.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
-    // AS2 stuff - no need to change anything in this block
+    // AS2 stuff
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
     aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
@@ -76,11 +80,13 @@ public final class MainSendToMendelsonTest
     aSettings.setEncryptAndSign (ECryptoAlgorithmCrypt.CRYPT_3DES, eSignAlgo);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
 
-    // Build message
-
-    // 4. send message
+    // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    aRequest.setData ("This is a simple test message\nCheck out http://github.com/phax/as2-lib".getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+    aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"),
+                      CCharset.CHARSET_ISO_8859_1_OBJ);
+    aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
+
+    // Send message
     final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
     if (aResponse.hasException ())
       s_aLogger.info (aResponse.getAsString ());

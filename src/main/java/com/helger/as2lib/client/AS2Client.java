@@ -105,8 +105,9 @@ public class AS2Client
   @Nonnull
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
-  protected AS2Message createMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
-                                                                                                                        OpenAS2Exception
+  protected AS2Message createMessage (@Nonnull final Partnership aPartnership,
+                                      @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
+                                                                                OpenAS2Exception
   {
     final AS2Message aMsg = createAS2MessageObj ();
     aMsg.setContentType (aRequest.getContentType ());
@@ -127,7 +128,8 @@ public class AS2Client
   }
 
   @OverrideOnDemand
-  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession) throws OpenAS2Exception
+  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
+                                         @Nonnull final AS2Session aSession) throws OpenAS2Exception
   {
     // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
@@ -200,8 +202,8 @@ public class AS2Client
       aMsg = createMessage (aPartnership, aRequest);
       aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
-      if (false)
-        s_aLogger.info ("msgId to send: " + aMsg.getMessageID ());
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("MessageID to send: " + aMsg.getMessageID ());
 
       // Start a new session
       final AS2Session aSession = createSession ();
@@ -209,6 +211,7 @@ public class AS2Client
       initCertificateFactory (aSettings, aSession);
       initPartnershipFactory (aSession);
 
+      // Invoke callback
       beforeSend (aSettings, aSession, aMsg);
 
       // And create a sender module that directly sends the message
@@ -219,7 +222,7 @@ public class AS2Client
     }
     catch (final Throwable t)
     {
-      s_aLogger.error ("Error sending message", t);
+      s_aLogger.error ("Error sending AS2 message", t);
       aResponse.setException (t);
     }
     finally
@@ -231,8 +234,8 @@ public class AS2Client
       }
     }
 
-    if (false)
-      s_aLogger.info (aResponse.getAsString ());
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Response retrieved: " + aResponse.getAsString ());
 
     return aResponse;
   }
