@@ -46,6 +46,7 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -186,6 +187,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   }
 
   @Nonnull
+  @ReturnsMutableObject ("design")
   public final DataHistory getHistory ()
   {
     return m_aHistory;

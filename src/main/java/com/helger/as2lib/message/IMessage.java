@@ -38,6 +38,7 @@ import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableObject;
 
 public interface IMessage extends IBaseMessage
 {
@@ -90,6 +91,7 @@ public interface IMessage extends IBaseMessage
   String getLoggingText ();
 
   @Nonnull
+  @ReturnsMutableObject ("design")
   DataHistory getHistory ();
 
   String getProtocol ();

@@ -42,8 +42,12 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
+import org.bouncycastle.mail.smime.SMIMEException;
+import org.bouncycastle.operator.OutputCompressor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,14 +180,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           // if yes : PA_AS2_RECEIPT_OPTION != null
           // then keep the original mic & message id.
           // then wait for the another HTTP call by receivers
-
           storePendingInfo (aRealMsg, sMIC);
         }
 
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Calculated MIC: '" + sMIC + "'");
 
-        s_aLogger.info ("connecting to " + sUrl + aRealMsg.getLoggingText ());
+        s_aLogger.info ("Connecting to " + sUrl + aRealMsg.getLoggingText ());
 
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
@@ -406,6 +409,36 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Oh dear, we've run out of retries, do something interesting.
       // TODO create a fake failure MDN
       s_aLogger.error ("Message abandoned" + aMsg.getLoggingText ());
+    }
+  }
+
+  protected void compress (@Nonnull final IMessage aMsg,
+                           @Nonnull final OutputCompressor aOutputCompressor) throws SMIMEException, OpenAS2Exception
+  {
+    final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
+    String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
+    if (sEncodeType == null)
+      sEncodeType = "8bit";
+    aCompressedGenerator.setContentTransferEncoding (sEncodeType);
+    final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aMsg.getData (), aOutputCompressor);
+    aMsg.addHeader ("Content-Transfer-Encoding", sEncodeType);
+    aMsg.setData (aCompressedBodyPart);
+
+    if (s_aLogger.isTraceEnabled ())
+    {
+      try
+      {
+        s_aLogger.trace ("Compressed MIME msg AFTER COMPRESSION Content-Type:" + aCompressedBodyPart.getContentType ());
+        s_aLogger.trace ("Compressed MIME msg AFTER COMPRESSION Content-Type Header:" +
+                         aCompressedBodyPart.getHeader ("Content-Type"));
+        s_aLogger.trace ("Compressed MIME msg AFTER COMPRESSION Content-Disposition:" +
+                         aCompressedBodyPart.getDisposition ());
+      }
+      catch (final MessagingException e)
+      {
+        // ignore
+      }
+      s_aLogger.trace ("Msg AFTER COMPRESSION Content-Type:" + aMsg.getContentType ());
     }
   }
 

@@ -385,7 +385,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // used is taken from the key - in this RSA with PKCS1Padding
     aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
-                                                                            .build (eAlgorithm.getBCAlgorithmName (),
+                                                                            .build (eAlgorithm.getSignAlgorithmName (),
                                                                                     aPrivateKey,
                                                                                     aX509Cert));
 

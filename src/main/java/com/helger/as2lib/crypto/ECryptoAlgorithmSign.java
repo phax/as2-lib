@@ -96,7 +96,7 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   @Nonnull
   @Nonempty
-  public String getBCAlgorithmName ()
+  public String getSignAlgorithmName ()
   {
     return m_sBCAlgorithmName;
   }

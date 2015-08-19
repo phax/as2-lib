@@ -44,10 +44,10 @@ import com.helger.commons.lang.EnumHelper;
 
 public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
 {
-  CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC),
-  CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC),
-  CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC),
-  CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC);
+ CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC),
+ CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC),
+ CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC),
+ CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC);
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
