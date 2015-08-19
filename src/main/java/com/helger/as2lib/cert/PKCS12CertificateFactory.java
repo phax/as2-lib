@@ -58,7 +58,6 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.InvalidParameterException;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
@@ -83,7 +82,8 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   {}
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 
@@ -107,10 +107,10 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     switch (ePartnershipType)
     {
       case RECEIVER:
-        sAlias = aPartnership.getReceiverID (CPartnershipIDs.PID_X509_ALIAS);
+        sAlias = aPartnership.getReceiverX509Alias ();
         break;
       case SENDER:
-        sAlias = aPartnership.getSenderID (CPartnershipIDs.PID_X509_ALIAS);
+        sAlias = aPartnership.getSenderX509Alias ();
         break;
     }
 
@@ -269,13 +269,15 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   }
 
   @Nonnull
-  public PrivateKey getPrivateKey (@Nullable final IMessage aMsg, @Nullable final X509Certificate aCert) throws OpenAS2Exception
+  public PrivateKey getPrivateKey (@Nullable final IMessage aMsg,
+                                   @Nullable final X509Certificate aCert) throws OpenAS2Exception
   {
     return getPrivateKey (aCert);
   }
 
   @Nonnull
-  public PrivateKey getPrivateKey (@Nullable final IMessageMDN aMDN, @Nullable final X509Certificate aCert) throws OpenAS2Exception
+  public PrivateKey getPrivateKey (@Nullable final IMessageMDN aMDN,
+                                   @Nullable final X509Certificate aCert) throws OpenAS2Exception
   {
     return getPrivateKey (aCert);
   }

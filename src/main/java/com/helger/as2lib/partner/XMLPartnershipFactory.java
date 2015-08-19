@@ -83,7 +83,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session session, @Nullable final IStringMap parameters) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session session,
+                                    @Nullable final IStringMap parameters) throws OpenAS2Exception
   {
     super.initDynamicComponent (session, parameters);
 
@@ -124,7 +125,11 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
         else
           if (sNodeName.equals ("partnership"))
           {
-            final Partnership aNewPartnership = loadPartnership (eRootNode, aNewPartners, aNewPartnerships);
+            final Partnership aNewPartnership = loadPartnership (eRootNode, aNewPartners);
+            if (aNewPartnerships.getPartnershipByName (aNewPartnership.getName ()) != null)
+              throw new OpenAS2Exception ("Partnership with name '" +
+                                          aNewPartnership.getName () +
+                                          "' is defined more than once");
             aNewPartnerships.addPartnership (aNewPartnership);
           }
           else
@@ -136,40 +141,50 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
     setPartnerships (aNewPartnerships);
   }
 
-  protected void loadAttributes (final IMicroElement node, final Partnership partnership) throws OpenAS2Exception
+  protected void loadAttributes (@Nonnull final IMicroElement aNode,
+                                 @Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
-    final IStringMap aAttributes = XMLHelper.mapAttributeNodes (node, "attribute", "name", "value");
-    partnership.addAllAttributes (aAttributes);
+    final String sNodeName = "attribute";
+    final String sNodeKeyName = "name";
+    final String sNodeValueName = "value";
+    final IStringMap aAttributes = XMLHelper.mapAttributeNodes (aNode, sNodeName, sNodeKeyName, sNodeValueName);
+    aPartnership.addAllAttributes (aAttributes);
   }
 
   @Nonnull
-  public StringMap loadPartner (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
+  public StringMap loadPartner (@Nonnull final IMicroElement ePartner) throws OpenAS2Exception
   {
-    return XMLHelper.getAttrsWithLowercaseNameWithRequired (aElement, PARTNER_NAME);
+    // Name is required
+    return XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartner, PARTNER_NAME);
   }
 
-  protected void loadPartnerIDs (@Nonnull final IMicroElement aElement,
+  protected void loadPartnerIDs (@Nonnull final IMicroElement ePartnership,
                                  @Nonnull final IPartnerMap aAllPartners,
                                  @Nonnull final Partnership aPartnership,
                                  final boolean bIsSender) throws OpenAS2Exception
   {
     final String sPartnerType = bIsSender ? "sender" : "receiver";
-    final IMicroElement aPartnerNode = aElement.getFirstChildElement (sPartnerType);
-    if (aPartnerNode == null)
-      throw new OpenAS2Exception ("Partnership '" + aPartnership.getName () + "' is missing sender");
+    final IMicroElement ePartner = ePartnership.getFirstChildElement (sPartnerType);
+    if (ePartner == null)
+      throw new OpenAS2Exception ("Partnership '" +
+                                  aPartnership.getName () +
+                                  "' is missing '" +
+                                  sPartnerType +
+                                  "' child element");
 
-    final IStringMap aPartnerAttr = XMLHelper.getAttrsWithLowercaseName (aPartnerNode);
+    final IStringMap aPartnerAttrs = XMLHelper.getAllAttrsWithLowercaseName (ePartner);
 
     // check for a partner name, and look up in partners list if one is found
-    final String sPartnerName = aPartnerAttr.getAttributeAsString (PARTNER_NAME);
+    final String sPartnerName = aPartnerAttrs.getAttributeAsString (PARTNER_NAME);
     if (sPartnerName != null)
     {
+      // Resolve name from existing partners
       final IStringMap aPartner = aAllPartners.getPartnerOfName (sPartnerName);
       if (aPartner == null)
       {
         throw new OpenAS2Exception ("Partnership '" +
                                     aPartnership.getName () +
-                                    "' has an undefined " +
+                                    "' has a non-existing " +
                                     sPartnerType +
                                     ": '" +
                                     sPartnerName +
@@ -182,32 +197,30 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
         aPartnership.addReceiverIDs (aPartner.getAllAttributes ());
     }
 
-    // copy all other attributes to the partner id map
+    // copy all other attributes to the partner id map - overwrite the ones
+    // present in the partner element
     if (bIsSender)
-      aPartnership.addSenderIDs (aPartnerAttr.getAllAttributes ());
+      aPartnership.addSenderIDs (aPartnerAttrs.getAllAttributes ());
     else
-      aPartnership.addReceiverIDs (aPartnerAttr.getAllAttributes ());
+      aPartnership.addReceiverIDs (aPartnerAttrs.getAllAttributes ());
   }
 
   @Nonnull
-  public Partnership loadPartnership (@Nonnull final IMicroElement aElement,
-                                      @Nonnull final IPartnerMap aAllPartners,
-                                      @Nonnull final IPartnershipMap aAllPartnerships) throws OpenAS2Exception
+  public Partnership loadPartnership (@Nonnull final IMicroElement ePartnership,
+                                      @Nonnull final IPartnerMap aAllPartners) throws OpenAS2Exception
   {
-    final IStringMap aPartnershipAttrs = XMLHelper.getAttrsWithLowercaseNameWithRequired (aElement, PARTNER_NAME);
-    final String sPartnershipName = aPartnershipAttrs.getAttributeAsString (PARTNER_NAME);
+    // Name attribute is required
+    final IStringMap aPartnershipAttrs = XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
+                                                                                             PARTNER_NAME);
 
-    if (aAllPartnerships.getPartnershipByName (sPartnershipName) != null)
-      throw new OpenAS2Exception ("Partnership is defined more than once: " + sPartnershipName);
-
-    final Partnership aPartnership = new Partnership (sPartnershipName);
+    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAttributeAsString (PARTNER_NAME));
 
     // load the sender and receiver information
-    loadPartnerIDs (aElement, aAllPartners, aPartnership, true);
-    loadPartnerIDs (aElement, aAllPartners, aPartnership, false);
+    loadPartnerIDs (ePartnership, aAllPartners, aPartnership, true);
+    loadPartnerIDs (ePartnership, aAllPartners, aPartnership, false);
 
     // read in the partnership attributes
-    loadAttributes (aElement, aPartnership);
+    loadAttributes (ePartnership, aPartnership);
 
     return aPartnership;
   }

@@ -43,7 +43,7 @@ import com.helger.as2lib.message.AS2Message;
 
 /**
  * Test class for class {@link CompositeParameters}.
- * 
+ *
  * @author Philip Helger
  */
 public final class CompositeParametersTest
@@ -53,8 +53,8 @@ public final class CompositeParametersTest
   {
     final AS2Message aMsg = new AS2Message ();
     aMsg.addHeader ("message-id", "12345");
-    aMsg.getPartnership ().setSenderID ("as2_id", "s1");
-    aMsg.getPartnership ().setReceiverID ("as2_id", "r1");
+    aMsg.getPartnership ().setSenderAS2ID ("s1");
+    aMsg.getPartnership ().setReceiverAS2ID ("r1");
     final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                        .add ("msg", new MessageParameters (aMsg));
 

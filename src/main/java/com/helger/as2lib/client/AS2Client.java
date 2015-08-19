@@ -74,12 +74,12 @@ public class AS2Client
   {
     final Partnership aPartnership = new Partnership (aSettings.getPartnershipName ());
 
-    aPartnership.setReceiverID (CPartnershipIDs.PID_AS2, aSettings.getReceiverAS2ID ());
-    aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aSettings.getReceiverKeyAlias ());
+    aPartnership.setSenderAS2ID (aSettings.getSenderAS2ID ());
+    aPartnership.setSenderX509Alias (aSettings.getSenderKeyAlias ());
+    aPartnership.setSenderEmail (aSettings.getSenderEmailAddress ());
 
-    aPartnership.setSenderID (CPartnershipIDs.PID_AS2, aSettings.getSenderAS2ID ());
-    aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aSettings.getSenderKeyAlias ());
-    aPartnership.setSenderID (CPartnershipIDs.PID_EMAIL, aSettings.getSenderEmailAddress ());
+    aPartnership.setReceiverAS2ID (aSettings.getReceiverAS2ID ());
+    aPartnership.setReceiverX509Alias (aSettings.getReceiverKeyAlias ());
 
     aPartnership.setAttribute (CPartnershipIDs.PA_AS2_URL, aSettings.getDestinationAS2URL ());
     aPartnership.setAttribute (CPartnershipIDs.PA_ENCRYPT, aSettings.getCryptAlgoID ());
@@ -116,8 +116,8 @@ public class AS2Client
     aMsg.setMessageID (aMsg.generateMessageID ());
 
     aMsg.setAttribute (CPartnershipIDs.PA_AS2_URL, aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
-    aMsg.setAttribute (CPartnershipIDs.PID_AS2, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
-    aMsg.setAttribute (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
+    aMsg.setAttribute (CPartnershipIDs.PID_AS2, aPartnership.getReceiverAS2ID ());
+    aMsg.setAttribute (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderEmail ());
 
     // Build message content
     final MimeBodyPart aPart = new MimeBodyPart ();

@@ -51,8 +51,8 @@ public class Partnership implements Serializable
 
   private String m_sName;
   private final StringMap m_aAttributes = new StringMap ();
-  private final StringMap m_aReceiverIDs = new StringMap ();
   private final StringMap m_aSenderIDs = new StringMap ();
+  private final StringMap m_aReceiverIDs = new StringMap ();
 
   public Partnership ()
   {
@@ -104,37 +104,24 @@ public class Partnership implements Serializable
     m_aAttributes.addAttributes (aAttributes);
   }
 
-  public void setReceiverID (@Nullable final String sKey, final String sValue)
-  {
-    m_aReceiverIDs.setAttribute (sKey, sValue);
-  }
-
-  public void addReceiverIDs (@Nullable final Map <String, String> aMap)
-  {
-    m_aReceiverIDs.addAttributes (aMap);
-  }
-
-  @Nullable
-  public String getReceiverID (@Nullable final String sKey)
-  {
-    return m_aReceiverIDs.getAttributeAsString (sKey);
-  }
-
-  public boolean containsReceiverID (@Nullable final String sKey)
-  {
-    return m_aReceiverIDs.containsAttribute (sKey);
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public StringMap getAllReceiverIDs ()
-  {
-    return m_aReceiverIDs.getClone ();
-  }
-
   public void setSenderID (@Nonnull final String sKey, @Nullable final String sValue)
   {
     m_aSenderIDs.setAttribute (sKey, sValue);
+  }
+
+  public void setSenderAS2ID (@Nullable final String sValue)
+  {
+    setSenderID (CPartnershipIDs.PID_AS2, sValue);
+  }
+
+  public void setSenderX509Alias (@Nullable final String sValue)
+  {
+    setSenderID (CPartnershipIDs.PID_X509_ALIAS, sValue);
+  }
+
+  public void setSenderEmail (@Nullable final String sValue)
+  {
+    setSenderID (CPartnershipIDs.PID_EMAIL, sValue);
   }
 
   public void addSenderIDs (@Nullable final Map <String, String> aMap)
@@ -148,9 +135,32 @@ public class Partnership implements Serializable
     return m_aSenderIDs.getAttributeAsString (sKey);
   }
 
+  @Nullable
+  public String getSenderAS2ID ()
+  {
+    return getSenderID (CPartnershipIDs.PID_AS2);
+  }
+
+  @Nullable
+  public String getSenderX509Alias ()
+  {
+    return getSenderID (CPartnershipIDs.PID_X509_ALIAS);
+  }
+
+  @Nullable
+  public String getSenderEmail ()
+  {
+    return getSenderID (CPartnershipIDs.PID_EMAIL);
+  }
+
   public boolean containsSenderID (@Nullable final String sKey)
   {
     return m_aSenderIDs.containsAttribute (sKey);
+  }
+
+  public boolean containsSenderX509Alias ()
+  {
+    return containsSenderID (CPartnershipIDs.PID_X509_ALIAS);
   }
 
   @Nonnull
@@ -158,6 +168,67 @@ public class Partnership implements Serializable
   public StringMap getAllSenderIDs ()
   {
     return m_aSenderIDs.getClone ();
+  }
+
+  public void setReceiverID (@Nullable final String sKey, final String sValue)
+  {
+    m_aReceiverIDs.setAttribute (sKey, sValue);
+  }
+
+  public void setReceiverAS2ID (@Nullable final String sValue)
+  {
+    setReceiverID (CPartnershipIDs.PID_AS2, sValue);
+  }
+
+  public void setReceiverX509Alias (@Nullable final String sValue)
+  {
+    setReceiverID (CPartnershipIDs.PID_X509_ALIAS, sValue);
+  }
+
+  public void addReceiverIDs (@Nullable final Map <String, String> aMap)
+  {
+    m_aReceiverIDs.addAttributes (aMap);
+  }
+
+  @Nullable
+  public String getReceiverID (@Nullable final String sKey)
+  {
+    return m_aReceiverIDs.getAttributeAsString (sKey);
+  }
+
+  @Nullable
+  public String getReceiverAS2ID ()
+  {
+    return getReceiverID (CPartnershipIDs.PID_AS2);
+  }
+
+  @Nullable
+  public String getReceiverX509Alias ()
+  {
+    return getReceiverID (CPartnershipIDs.PID_X509_ALIAS);
+  }
+
+  @Nullable
+  public String getReceiverEmail ()
+  {
+    return getReceiverID (CPartnershipIDs.PID_EMAIL);
+  }
+
+  public boolean containsReceiverID (@Nullable final String sKey)
+  {
+    return m_aReceiverIDs.containsAttribute (sKey);
+  }
+
+  public boolean containsReceiverX509Alias ()
+  {
+    return containsReceiverID (CPartnershipIDs.PID_X509_ALIAS);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public StringMap getAllReceiverIDs ()
+  {
+    return m_aReceiverIDs.getClone ();
   }
 
   public boolean matches (@Nonnull final Partnership aPartnership)

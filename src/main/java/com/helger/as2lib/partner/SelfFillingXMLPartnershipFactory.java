@@ -61,10 +61,11 @@ public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
   protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     // Ensure the X509 key is contained for certificate store alias retrieval
-    if (!aPartnership.containsSenderID (CPartnershipIDs.PID_X509_ALIAS))
-      aPartnership.setSenderID (CPartnershipIDs.PID_X509_ALIAS, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
-    if (!aPartnership.containsReceiverID (CPartnershipIDs.PID_X509_ALIAS))
-      aPartnership.setReceiverID (CPartnershipIDs.PID_X509_ALIAS, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
+    if (!aPartnership.containsSenderX509Alias ())
+      aPartnership.setSenderX509Alias (aPartnership.getSenderAS2ID ());
+
+    if (!aPartnership.containsReceiverX509Alias ())
+      aPartnership.setReceiverX509Alias (aPartnership.getReceiverAS2ID ());
   }
 
   @Override

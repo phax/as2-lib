@@ -73,8 +73,8 @@ public class AS2MessageMDN extends AbstractMessageMDN
 
     // Message details
     final Partnership aPartnership = getMessage ().getPartnership ();
-    final String sReceiverID = aPartnership.getReceiverID (CPartnershipIDs.PID_AS2);
-    final String sSenderID = aPartnership.getSenderID (CPartnershipIDs.PID_AS2);
+    final String sReceiverID = aPartnership.getReceiverAS2ID ();
+    final String sSenderID = aPartnership.getSenderAS2ID ();
     aSB.append ('@').append (sReceiverID).append ('_').append (sSenderID);
 
     return aSB.append ('>').toString ();

@@ -213,15 +213,15 @@ public final class AS2Helper
     aMDN.setHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMDN.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
     aMDN.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aMDN.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
-    aMDN.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderID (CPartnershipIDs.PID_AS2));
+    aMDN.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverAS2ID ());
+    aMDN.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderAS2ID ());
 
     // get the MDN partnership info
-    aMDN.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-    aMDN.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+    aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
     aSession.getPartnershipFactory ().updatePartnership (aMDN, true);
 
-    aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_EMAIL));
+    aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverEmail ());
     final String sSubject = aMDN.getPartnership ().getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
     if (sSubject != null)
     {
@@ -234,13 +234,12 @@ public final class AS2Helper
     aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
                        CAS2Info.NAME_VERSION +
-                           "@" +
-                           aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
-                           ":" +
-                           aMsg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
+                                                        "@" +
+                                                        aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
+                                                        ":" +
+                                                        aMsg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
     aMDN.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
-    aMDN.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                       "rfc822; " + aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));
+    aMDN.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, "rfc822; " + aMsg.getPartnership ().getReceiverAS2ID ());
     aMDN.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
     aMDN.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 

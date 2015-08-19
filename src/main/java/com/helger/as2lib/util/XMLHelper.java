@@ -68,11 +68,11 @@ public final class XMLHelper
    * @param aElement
    *        The source element to extract the attributes from. May not be
    *        <code>null</code>.
-   * @return A new map and never <code>null</code>.
+   * @return A new map and never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static StringMap getAttrsWithLowercaseName (@Nonnull final IMicroElement aElement)
+  public static StringMap getAllAttrsWithLowercaseName (@Nonnull final IMicroElement aElement)
   {
     ValueEnforcer.notNull (aElement, "Element");
 
@@ -86,16 +86,31 @@ public final class XMLHelper
 
   @Nonnull
   @ReturnsMutableCopy
-  public static StringMap getAttrsWithLowercaseNameWithRequired (@Nonnull final IMicroElement aElement,
-                                                                 @Nonnull final String... aRequiredAttributes) throws OpenAS2Exception
+  public static StringMap getAllAttrsWithLowercaseNameWithRequired (@Nonnull final IMicroElement aElement,
+                                                                    @Nonnull final String... aRequiredAttributes) throws OpenAS2Exception
   {
-    final StringMap aAttributes = getAttrsWithLowercaseName (aElement);
+    final StringMap aAttributes = getAllAttrsWithLowercaseName (aElement);
     for (final String sRequiredAttribute : aRequiredAttributes)
       if (!aAttributes.containsAttribute (sRequiredAttribute))
-        throw new OpenAS2Exception (aElement.getTagName () + " is missing required attribute: " + sRequiredAttribute);
+        throw new OpenAS2Exception (aElement.getTagName () +
+                                    " is missing required attribute '" +
+                                    sRequiredAttribute +
+                                    "'");
     return aAttributes;
   }
 
+  /**
+   * @param aNode
+   *        Start node. May not be <code>null</code>.
+   * @param sNodeName
+   *        The element name to be queried relative to the start node.
+   * @param sNodeKeyName
+   *        The attribute name of the key.
+   * @param sNodeValueName
+   *        The attribute name of the value.
+   * @return The non-<code>null</code> {@link IStringMap}.
+   * @throws OpenAS2Exception
+   */
   @Nonnull
   @ReturnsMutableCopy
   public static IStringMap mapAttributeNodes (@Nonnull final IMicroElement aNode,
@@ -109,17 +124,24 @@ public final class XMLHelper
     ValueEnforcer.notNull (sNodeValueName, "NodeValueName");
 
     final StringMap ret = new StringMap ();
+    int nIndex = 0;
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {
       final String sName = eChild.getAttributeValue (sNodeKeyName);
       if (sName == null)
-        throw new OpenAS2Exception (eChild.getTagName () + " does not have key attribute: " + sNodeKeyName);
+        throw new OpenAS2Exception (sNodeName + "[" + nIndex + "] does not have key attribute '" + sNodeKeyName + "'");
 
       final String sValue = eChild.getAttributeValue (sNodeValueName);
       if (sValue == null)
-        throw new OpenAS2Exception (eChild.getTagName () + " does not have value attribute: " + sNodeValueName);
+        throw new OpenAS2Exception (sNodeName +
+                                    "[" +
+                                    nIndex +
+                                    "] does not have value attribute '" +
+                                    sNodeValueName +
+                                    "'");
 
       ret.setAttribute (sName, sValue);
+      ++nIndex;
     }
     return ret;
   }
@@ -134,7 +156,8 @@ public final class XMLHelper
       {
         if (sBaseDirectory == null)
           throw new OpenAS2Exception ("Base directory isn't set");
-        aAttributes.setAttribute (attrEntry.getKey (), sBaseDirectory + sValue.substring (DOLLAR_HOME_DOLLAR.length ()));
+        aAttributes.setAttribute (attrEntry.getKey (),
+                                  sBaseDirectory + sValue.substring (DOLLAR_HOME_DOLLAR.length ()));
       }
     }
   }
@@ -165,7 +188,7 @@ public final class XMLHelper
         throw new OpenAS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
 
       // Read all parameters
-      final StringMap aParameters = XMLHelper.getAttrsWithLowercaseName (aElement);
+      final StringMap aParameters = XMLHelper.getAllAttrsWithLowercaseName (aElement);
       if (sBaseDirectory != null)
       {
         // Replace %home% with session base directory

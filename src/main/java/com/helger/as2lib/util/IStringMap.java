@@ -34,9 +34,7 @@ package com.helger.as2lib.util;
 
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nonnegative;
@@ -95,9 +93,4 @@ public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry
   int getAttributeCount ();
 
   boolean containsNoAttribute ();
-
-  boolean getAndSetAttributeFlag (String sName);
-
-  @Nonnull
-  Iterator <Entry <String, String>> iterator ();
 }

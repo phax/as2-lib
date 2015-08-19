@@ -113,14 +113,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                             aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
       InvalidParameterException.checkValue (aMsg,
                                             "Receiver: " + CPartnershipIDs.PID_AS2,
-                                            aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
-      InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + CPartnershipIDs.PID_AS2,
-                                            aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
+                                            aPartnership.getReceiverAS2ID ());
+      InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
       InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
       InvalidParameterException.checkValue (aMsg,
                                             "Sender: " + CPartnershipIDs.PID_EMAIL,
-                                            aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
+                                            aPartnership.getSenderEmail ());
       InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
     catch (final InvalidParameterException ex)
@@ -325,8 +323,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMDN.getPartnership ().setSenderID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-      aMDN.getPartnership ().setReceiverID (CPartnershipIDs.PID_AS2, aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
       getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
@@ -511,10 +509,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
     aConn.setRequestProperty (CAS2Header.HEADER_RECIPIENT_ADDRESS,
                               aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverID (CPartnershipIDs.PID_AS2));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_AS2));
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderAS2ID ());
+    aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverAS2ID ());
     aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
-    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderID (CPartnershipIDs.PID_EMAIL));
+    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderEmail ());
 
     // Determine where to send the MDN to
     final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
