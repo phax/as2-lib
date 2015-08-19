@@ -34,6 +34,8 @@ package com.helger.as2lib.partner;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.helger.as2lib.crypto.ECompressionType;
+
 /**
  * Partnership IDs and attribute names. The IDs (starting with PID_) are using
  * for setSenderID/setReceiverID where as the attributes (starting with PA_) are
@@ -91,7 +93,10 @@ public final class CPartnershipIDs
   public static final String PA_SUBJECT = "subject";
   /** optional content transfer encoding value */
   public static final String PA_CONTENT_TRANSFER_ENCODING = "content_transfer_encoding";
-  /** Optional compression type */
+  /**
+   * Optional compression type. Check {@link ECompressionType} constants for
+   * values (using the value of the <code>getID()</code> method)
+   */
   public static final String PA_COMPRESSION_TYPE = "compression_type";
   /** Optional compression mode */
   public static final String PA_COMPRESSION_MODE = "compression_mode";

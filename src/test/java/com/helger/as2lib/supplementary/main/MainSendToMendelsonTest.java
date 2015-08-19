@@ -96,7 +96,7 @@ public final class MainSendToMendelsonTest
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_384;
     aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
                                                       .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                       .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)

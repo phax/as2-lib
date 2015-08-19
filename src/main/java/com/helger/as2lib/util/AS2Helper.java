@@ -93,14 +93,28 @@ public final class AS2Helper
     return SingletonHolder.s_aInstance;
   }
 
+  /**
+   * Create and fill the Mdn parameter
+   *
+   * @param aSession
+   *        Session to retrieve the certificate factory for signing
+   * @param aMdn
+   *        The MDN object to be filled
+   * @param bSignMDN
+   *        <code>true</code> to sign the MDN
+   * @param eMICAlg
+   *        The MIC algorithm to be used. Must be present if bSignMDN is
+   *        <code>true</code>.
+   * @throws Exception
+   */
   public static void createMDNData (@Nonnull final IAS2Session aSession,
                                     @Nonnull final IMessageMDN aMdn,
-                                    @Nonnull final ECryptoAlgorithmSign eMICAlg,
-                                    @Nullable final String sSignatureProtocol) throws Exception
+                                    final boolean bSignMDN,
+                                    @Nullable final ECryptoAlgorithmSign eMICAlg) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMdn, "MDN");
-    if (sSignatureProtocol != null)
+    if (bSignMDN)
       ValueEnforcer.notNull (eMICAlg, "MICAlg");
 
     // Create the report and sub-body parts
@@ -142,7 +156,7 @@ public final class AS2Helper
     aReport.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aReportParts.getContentType ());
 
     // Sign the MDN data if needed
-    if (sSignatureProtocol != null)
+    if (bSignMDN)
     {
       final ICertificateFactory aCertFactory = aSession.getCertificateFactory ();
       try
@@ -248,13 +262,22 @@ public final class AS2Helper
     String sMIC = null;
     if (aDispositionOptions.getMICAlgCount () > 0)
     {
+      // If the source message was signed or encrypted, include the headers -
+      // see message sending for details
+      final boolean bIncludeHeadersInMIC = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_SIGN) != null ||
+                                           aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_ENCRYPT) != null ||
+                                           aMsg.getPartnership ()
+                                               .getAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE) != null;
+
       sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
                                               aDispositionOptions.getFirstMICAlg (),
-                                              aMsg.getHistory ().getItemCount () > 1);
+                                              bIncludeHeadersInMIC);
     }
 
     aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
-    createMDNData (aSession, aMDN, aDispositionOptions.getFirstMICAlg (), aDispositionOptions.getProtocol ());
+
+    final boolean bSignMDN = aDispositionOptions.getProtocol () != null;
+    createMDNData (aSession, aMDN, bSignMDN, aDispositionOptions.getFirstMICAlg ());
 
     aMDN.updateMessageID ();
 
