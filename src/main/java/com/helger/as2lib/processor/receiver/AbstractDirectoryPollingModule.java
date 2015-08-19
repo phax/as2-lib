@@ -159,7 +159,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
   protected void trackFile (@Nonnull final File aFile)
   {
-    final Map <String, Long> aTrackedFiles = getTrackedFiles ();
+    final Map <String, Long> aTrackedFiles = getAllTrackedFiles ();
     final String sFilePath = aFile.getAbsolutePath ();
     if (!aTrackedFiles.containsKey (sFilePath))
       aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
@@ -170,7 +170,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     // clone the trackedFiles map, iterator through the clone and modify the
     // original to avoid iterator exceptions
     // is there a better way to do this?
-    final Map <String, Long> aTrackedFiles = getTrackedFiles ();
+    final Map <String, Long> aTrackedFiles = getAllTrackedFiles ();
 
     // We need to operate on a copy
     for (final Entry <String, Long> aFileEntry : CollectionHelper.newMap (aTrackedFiles).entrySet ())
@@ -336,18 +336,19 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       String sContentType = getAttributeAsString (ATTR_MIMETYPE);
       if (sContentType == null)
       {
+        // Default to application/octet-stream
         sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
       }
       else
       {
         try
         {
-          final String sFormat1 = sContentType;
-          sContentType = aParams.format (sFormat1);
+          sContentType = aParams.format (sContentType);
         }
         catch (final InvalidParameterException ex)
         {
-          s_aLogger.error ("Bad content-type" + sContentType + aMsg.getLoggingText ());
+          s_aLogger.error ("Bad content-type '" + sContentType + "'" + aMsg.getLoggingText ());
+          // Default to application/octet-stream
           sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
         }
       }
@@ -402,8 +403,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
   }
 
   @Nonnull
-  @ReturnsMutableObject ("speed")
-  public Map <String, Long> getTrackedFiles ()
+  @ReturnsMutableObject ("design")
+  public Map <String, Long> getAllTrackedFiles ()
   {
     if (m_aTrackedFiles == null)
       m_aTrackedFiles = new HashMap <String, Long> ();
