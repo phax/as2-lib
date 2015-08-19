@@ -222,7 +222,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    */
   @Nonnull
   @Nonempty
-  protected String calculateMIC (@Nonnull final AS2Message aMsg) throws Exception
+  protected String calculateAndStoreMIC (@Nonnull final AS2Message aMsg) throws Exception
   {
     final Partnership aPartnership = aMsg.getPartnership ();
     final String sDispositionOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
@@ -578,9 +578,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // compress and/or sign and/or encrypt the message if needed
       final MimeBodyPart aSecuredData = secure (aMsg);
 
-      // Calculate MIC after compress/sign/crypt was handled, since headers
-      // might be added
-      final String sMIC = calculateMIC (aMsg);
+      // Calculate MIC after compress/sign/crypt was handled, because the
+      // message data might change if compression before signing is active.
+      final String sMIC = calculateAndStoreMIC (aMsg);
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
