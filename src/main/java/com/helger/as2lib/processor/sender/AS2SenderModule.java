@@ -76,7 +76,7 @@ import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
-import com.helger.as2lib.util.http.HTTPUtil;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
@@ -296,7 +296,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-      HTTPUtil.copyHttpHeaders (aConn, aMDN.getHeaders ());
+      HTTPHelper.copyHttpHeaders (aConn, aMDN.getHeaders ());
 
       // Receive the MDN data
       final InputStream aConnIS = aConn.getInputStream ();
@@ -417,11 +417,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                            @Nonnull final OutputCompressor aOutputCompressor) throws SMIMEException, OpenAS2Exception
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
+
     String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
     if (sEncodeType == null)
       sEncodeType = CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING;
-
     aCompressedGenerator.setContentTransferEncoding (sEncodeType);
+
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aMsg.getData (), aOutputCompressor);
     aMsg.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
     aMsg.setData (aCompressedBodyPart);

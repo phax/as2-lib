@@ -74,7 +74,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
-import com.helger.as2lib.util.http.HTTPUtil;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
@@ -460,7 +460,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         else
         {
           // Just send a HTTP OK
-          HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
+          HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
           s_aLogger.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
         }
       }
@@ -498,7 +498,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     try
     {
       // Read HTTP request incl. headers
-      aMsgData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aMsgData = HTTPHelper.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
     }
     catch (final Exception ex)
     {

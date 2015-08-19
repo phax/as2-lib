@@ -67,7 +67,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
-import com.helger.as2lib.util.http.HTTPUtil;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
@@ -118,7 +118,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = HTTPUtil.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aData = HTTPHelper.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
@@ -201,9 +201,9 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
       // check if the mic (message integrity check) is correct
       if (checkAsyncMDN (aMsg))
-        HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
+        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
       else
-        HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_NOT_FOUND);
+        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_NOT_FOUND);
 
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
       try
@@ -226,12 +226,12 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     }
     catch (final IOException ex)
     {
-      HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
+      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
       throw ex;
     }
     catch (final Exception ex)
     {
-      HTTPUtil.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
+      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
 
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
@@ -332,7 +332,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-    HTTPUtil.copyHttpHeaders (aConn, aMDN.getHeaders ());
+    HTTPHelper.copyHttpHeaders (aConn, aMDN.getHeaders ());
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream aMDNStream = null;

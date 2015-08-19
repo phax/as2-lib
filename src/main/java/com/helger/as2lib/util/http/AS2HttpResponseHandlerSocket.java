@@ -84,7 +84,7 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
     final String sHttpVersion = "HTTP/1.1 " +
                                 Integer.toString (nHttpResponseCode) +
                                 " " +
-                                HTTPUtil.getHTTPResponseMessage (nHttpResponseCode) +
+                                HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
                                 sEOL;
     aOS.write (sHttpVersion.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
 

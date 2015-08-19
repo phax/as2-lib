@@ -33,28 +33,57 @@
 package com.helger.as2lib.util.cert;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Collection;
 
 import javax.annotation.Nonnull;
 
+import com.helger.as2lib.crypto.ICryptoHelper;
+import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 
 /**
- * KeyStore writing helper class
- * 
+ * KeyStore reader and write class
+ *
  * @author Philip Helger
  */
-public final class KeyStoreWriter
+public final class KeyStoreHelper
 {
-  private KeyStoreWriter ()
+  private KeyStoreHelper ()
   {}
 
-  public static void write (@Nonnull final OpenAS2KeyStore aKeyStore,
-                            @Nonnull final String sFilename,
-                            @Nonnull final char [] aPassword) throws GeneralSecurityException, IOException
+  @Nonnull
+  public static OpenAS2KeyStore readKeyStore (@Nonnull final String sFilename,
+                                              @Nonnull final char [] aPassword,
+                                              @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
+  {
+    final InputStream aIS = FileHelper.getInputStream (sFilename);
+    if (aIS == null)
+      throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
+
+    try
+    {
+      final KeyStore aKeyStore = aCryptoHelper.loadKeyStore (aIS, aPassword);
+      return new OpenAS2KeyStore (aKeyStore);
+    }
+    finally
+    {
+      StreamHelper.close (aIS);
+    }
+  }
+
+  public static void writeKeyStore (@Nonnull final OpenAS2KeyStore aKeyStore,
+                                    @Nonnull final String sFilename,
+                                    @Nonnull final char [] aPassword) throws GeneralSecurityException, IOException
   {
     final OutputStream aOS = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
     if (aOS == null)
@@ -67,6 +96,25 @@ public final class KeyStoreWriter
     finally
     {
       StreamHelper.close (aOS);
+    }
+  }
+
+  @Nonnull
+  public static X509Certificate readX509Certificate (@Nonnull final String sFilename) throws CertificateException
+  {
+    final InputStream aIS = FileHelper.getInputStream (sFilename);
+    if (aIS == null)
+      throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
+
+    try
+    {
+      final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
+      final Collection <? extends Certificate> c = cf.generateCertificates (aIS);
+      return (X509Certificate) CollectionHelper.getFirstElement (c);
+    }
+    finally
+    {
+      StreamHelper.close (aIS);
     }
   }
 }

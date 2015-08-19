@@ -51,13 +51,13 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
-public final class HTTPUtil
+public final class HTTPHelper
 {
   public static final String MA_HTTP_REQ_TYPE = "HTTP_REQUEST_TYPE";
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
 
-  private HTTPUtil ()
+  private HTTPHelper ()
   {}
 
   @Nonnull
