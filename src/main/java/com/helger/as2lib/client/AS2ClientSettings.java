@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.CAS2Info;
+import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
@@ -75,6 +76,8 @@ public class AS2ClientSettings
   private String m_sPartnershipName;
   private ECryptoAlgorithmCrypt m_eCryptAlgo;
   private ECryptoAlgorithmSign m_eSignAlgo;
+  private ECompressionType m_eCompressionType;
+  private boolean m_bCompressBeforeSigning = true;
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
 
@@ -225,6 +228,26 @@ public class AS2ClientSettings
   public String getSignAlgoID ()
   {
     return m_eSignAlgo == null ? null : m_eSignAlgo.getID ();
+  }
+
+  @Nonnull
+  public AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
+                                        final boolean bCompressBeforeSigning)
+  {
+    m_eCompressionType = eCompressionType;
+    m_bCompressBeforeSigning = bCompressBeforeSigning;
+    return this;
+  }
+
+  @Nullable
+  public ECompressionType getCompressionType ()
+  {
+    return m_eCompressionType;
+  }
+
+  public boolean isCompressBeforeSigning ()
+  {
+    return m_bCompressBeforeSigning;
   }
 
   @Nonnull

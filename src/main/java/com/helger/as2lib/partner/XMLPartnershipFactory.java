@@ -247,8 +247,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
 
       s_aLogger.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
-      final File fr = new File (sFilename);
-      IOHelper.getFileOperationManager ().renameFile (fr, aBackupFile);
+      final File aSourceFile = new File (sFilename);
+      IOHelper.getFileOperationManager ().renameFile (aSourceFile, aBackupFile);
     }
 
     final IMicroDocument aDoc = new MicroDocument ();

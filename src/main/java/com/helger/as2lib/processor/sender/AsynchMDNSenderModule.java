@@ -95,7 +95,15 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       // Create a HTTP connection
       final String sUrl = aMsg.getAsyncMDNurl ();
-      final HttpURLConnection aConn = getConnection (sUrl, true, true, false, "POST", getSession ().getHttpProxy ());
+      final boolean bOutput = true;
+      final boolean bInput = true;
+      final boolean bUseCaches = false;
+      final HttpURLConnection aConn = getConnection (sUrl,
+                                                     bOutput,
+                                                     bInput,
+                                                     bUseCaches,
+                                                     "POST",
+                                                     getSession ().getHttpProxy ());
 
       try
       {

@@ -91,6 +91,14 @@ public final class CPartnershipIDs
   public static final String PA_SUBJECT = "subject";
   /** optional content transfer encoding value */
   public static final String PA_CONTENT_TRANSFER_ENCODING = "content_transfer_encoding";
+  /** Optional compression type */
+  public static final String PA_COMPRESSION_TYPE = "compression_type";
+  /** Optional compression mode */
+  public static final String PA_COMPRESSION_MODE = "compression_mode";
+  /** Value for {@link #PA_COMPRESSION_MODE}: compress before sign */
+  public static final String COMPRESS_BEFORE_SIGNING = "compress-before-signing";
+  /** Value for {@link #PA_COMPRESSION_MODE}: compress after sign */
+  public static final String COMPRESS_AFTER_SIGNING = "compress-after-signing";
 
   private CPartnershipIDs ()
   {}

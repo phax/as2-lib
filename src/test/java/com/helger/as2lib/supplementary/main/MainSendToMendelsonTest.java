@@ -33,6 +33,8 @@
 package com.helger.as2lib.supplementary.main;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.security.cert.X509Certificate;
 
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import com.helger.as2lib.client.AS2Client;
 import com.helger.as2lib.client.AS2ClientRequest;
 import com.helger.as2lib.client.AS2ClientResponse;
 import com.helger.as2lib.client.AS2ClientSettings;
+import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
@@ -49,7 +52,6 @@ import com.helger.as2lib.util.cert.KeyStoreHelper;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
-import com.helger.commons.system.SystemProperties;
 
 /**
  * Test class to send an AS2 messages to the Mendelson test server.
@@ -58,6 +60,12 @@ import com.helger.commons.system.SystemProperties;
  */
 public final class MainSendToMendelsonTest
 {
+  static
+  {
+    if (false)
+      System.setProperty ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+  }
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainSendToMendelsonTest.class);
 
   public static void main (final String [] args) throws Exception
@@ -66,11 +74,9 @@ public final class MainSendToMendelsonTest
     if (false)
       GlobalDebug.setDebugModeDirect (false);
 
+    Proxy aHttpProxy = null;
     if (true)
-    {
-      SystemProperties.setPropertyValue ("http.proxyHost", "172.30.9.12");
-      SystemProperties.setPropertyValue ("http.proxyPort", "8080");
-    }
+      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.12", 8080));
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
@@ -88,15 +94,15 @@ public final class MainSendToMendelsonTest
 
     // AS2 stuff
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
-    // When a signed message is used, the algorihm for MIC and message must be
+    // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
     aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
                                                       .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                       .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                       .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    // Message signed with different algorihtm
     aSettings.setEncryptAndSign (ECryptoAlgorithmCrypt.CRYPT_3DES, eSignAlgo);
+    aSettings.setCompress (ECompressionType.ZLIB, false);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
 
     // Build client request
@@ -106,7 +112,8 @@ public final class MainSendToMendelsonTest
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message
-    final AS2ClientResponse aResponse = new AS2Client ().sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings,
+                                                                                                    aRequest);
     if (aResponse.hasException ())
       s_aLogger.info (aResponse.getAsString ());
 

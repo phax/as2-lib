@@ -30,48 +30,59 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.sender;
+package com.helger.as2lib.crypto;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.processor.module.AbstractProcessorModule;
-import com.helger.as2lib.processor.resender.IProcessorResenderModule;
+import org.bouncycastle.cms.jcajce.ZlibCompressor;
+import org.bouncycastle.operator.OutputCompressor;
 
-public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
+
+/**
+ * Define the supported SMIME compression types for as2-lib.
+ *
+ * @author Philip Helger
+ */
+public enum ECompressionType implements IHasID <String>
 {
-  // How many times should this message be sent?
-  protected final int getRetryCount (@Nullable final Map <String, Object> aOptions)
-  {
-    String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
-    if (sLeft == null)
-    {
-      sLeft = getAttributeAsString (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
-      if (sLeft == null)
-        return IProcessorSenderModule.DEFAULT_RETRIES;
-    }
+ ZLIB ("zlib")
+ {
+   @Override
+   @Nonnull
+   public ZlibCompressor createOutputCompressor ()
+   {
+     return new ZlibCompressor ();
+   }
+ };
 
-    return Integer.parseInt (sLeft);
+  private final String m_sID;
+
+  private ECompressionType (@Nonnull @Nonempty final String sID)
+  {
+    m_sID = sID;
   }
 
-  protected final boolean doResend (final String sHow,
-                                    final IMessage aMsg,
-                                    final OpenAS2Exception aCause,
-                                    final int nTries) throws OpenAS2Exception
+  @Nonnull
+  @Nonempty
+  public String getID ()
   {
-    if (nTries <= 0)
-      return false;
+    return m_sID;
+  }
 
-    final Map <String, Object> aOptions = new HashMap <String, Object> ();
-    aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
-    aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    aOptions.put (IProcessorResenderModule.OPTION_RESEND_METHOD, sHow);
-    aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
-    getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
-    return true;
+  /**
+   * @return The {@link OutputCompressor} instance suitable for this compression
+   *         type.
+   */
+  @Nonnull
+  public abstract OutputCompressor createOutputCompressor ();
+
+  @Nullable
+  public static ECompressionType getFromIDCaseInsensitiveOrNull (@Nullable final String sID)
+  {
+    return EnumHelper.getFromIDCaseInsensitiveOrNull (ECompressionType.class, sID);
   }
 }

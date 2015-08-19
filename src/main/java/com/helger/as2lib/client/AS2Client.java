@@ -113,13 +113,24 @@ public class AS2Client
     aPartnership.setAttribute (CPartnershipIDs.PA_ENCRYPT, aSettings.getCryptAlgoID ());
     aPartnership.setAttribute (CPartnershipIDs.PA_SIGN, aSettings.getSignAlgoID ());
     aPartnership.setAttribute (CPartnershipIDs.PA_PROTOCOL, AS2Message.PROTOCOL_AS2);
+    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, aSettings.getMessageIDFormat ());
+
     // We want a sync MDN:
     aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, aSettings.getMDNOptions ());
     if (false)
       aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_TO, "http://localhost:10080");
+
     // We don't want an async MDN:
     aPartnership.setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION, null);
-    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, aSettings.getMessageIDFormat ());
+
+    if (aSettings.getCompressionType () != null)
+    {
+      aPartnership.setAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE, aSettings.getCompressionType ().getID ());
+      aPartnership.setAttribute (CPartnershipIDs.PA_COMPRESSION_MODE,
+                                 aSettings.isCompressBeforeSigning () ? CPartnershipIDs.COMPRESS_BEFORE_SIGNING
+                                                                      : CPartnershipIDs.COMPRESS_AFTER_SIGNING);
+    }
+
     return aPartnership;
   }
 
