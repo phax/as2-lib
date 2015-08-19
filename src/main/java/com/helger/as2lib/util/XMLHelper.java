@@ -39,6 +39,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
@@ -52,6 +55,9 @@ import com.helger.commons.microdom.IMicroQName;
 @Immutable
 public final class XMLHelper
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (XMLHelper.class);
+  private static final String DOLLAR_HOME_DOLLAR = "%home%";
+
   private XMLHelper ()
   {}
 
@@ -118,16 +124,17 @@ public final class XMLHelper
     return ret;
   }
 
-  private static void _updateDirectories (@Nonnull final StringMap aAttributes, @Nullable final String sBaseDirectory) throws OpenAS2Exception
+  private static void _updateDirectories (@Nonnull final StringMap aAttributes,
+                                          @Nullable final String sBaseDirectory) throws OpenAS2Exception
   {
     for (final Map.Entry <String, String> attrEntry : aAttributes)
     {
-      final String value = attrEntry.getValue ();
-      if (value.startsWith ("%home%"))
+      final String sValue = attrEntry.getValue ();
+      if (sValue.startsWith (DOLLAR_HOME_DOLLAR))
       {
         if (sBaseDirectory == null)
           throw new OpenAS2Exception ("Base directory isn't set");
-        aAttributes.setAttribute (attrEntry.getKey (), sBaseDirectory + value.substring (6));
+        aAttributes.setAttribute (attrEntry.getKey (), sBaseDirectory + sValue.substring (DOLLAR_HOME_DOLLAR.length ()));
       }
     }
   }
@@ -149,6 +156,9 @@ public final class XMLHelper
 
     try
     {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Trying to instantiate '" + sClassName + "' as a " + aClass);
+
       // Instantiate class
       final T aObj = GenericReflection.newInstance (sClassName, aClass);
       if (aObj == null)
@@ -164,6 +174,9 @@ public final class XMLHelper
 
       // Init component
       aObj.initDynamicComponent (aSession, aParameters);
+
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Finished initializing " + aObj);
 
       return aObj;
     }

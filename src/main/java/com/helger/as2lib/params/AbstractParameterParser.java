@@ -108,24 +108,6 @@ public abstract class AbstractParameterParser
   }
 
   /**
-   * Static way (why?) of getting at format method.
-   *
-   * @param sFormat
-   *        the format to fill in
-   * @param aParser
-   *        the place to get the parsed info
-   * @return the filled in format
-   * @throws InvalidParameterException
-   *         In case the string is incorrect
-   */
-  @Deprecated
-  public static String parse (@Nonnull final String sFormat,
-                              @Nonnull final AbstractParameterParser aParser) throws InvalidParameterException
-  {
-    return aParser.format (sFormat);
-  }
-
-  /**
    * Fill in a format string with information from a ParameterParser
    *
    * @param sFormat

@@ -64,6 +64,7 @@ import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPUtil;
@@ -260,7 +261,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
                                                   .getMessageProcessor ()
                                                   .getAttributeAsString (ATTR_PENDINGMDNINFO) +
                                       "/" +
-                                      sOrigMessageID.substring (1, sOrigMessageID.length () - 1);
+                                      IOHelper.getFilenameFromMessageID (sOrigMessageID);
       final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile));
 
       String sOriginalMIC;
