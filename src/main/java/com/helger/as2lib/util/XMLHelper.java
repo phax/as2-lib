@@ -50,9 +50,9 @@ import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroQName;
 
 @Immutable
-public final class XMLUtil
+public final class XMLHelper
 {
-  private XMLUtil ()
+  private XMLHelper ()
   {}
 
   /**
@@ -155,7 +155,7 @@ public final class XMLUtil
         throw new OpenAS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
 
       // Read all parameters
-      final StringMap aParameters = XMLUtil.getAttrsWithLowercaseName (aElement);
+      final StringMap aParameters = XMLHelper.getAttrsWithLowercaseName (aElement);
       if (sBaseDirectory != null)
       {
         // Replace %home% with session base directory

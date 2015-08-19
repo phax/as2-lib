@@ -40,9 +40,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class DateUtil
+public final class DateHelper
 {
-  private DateUtil ()
+  private DateHelper ()
   {}
 
   @Nonnull

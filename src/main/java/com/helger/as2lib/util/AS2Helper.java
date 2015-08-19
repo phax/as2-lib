@@ -69,9 +69,9 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.mime.CMimeType;
 
 @Immutable
-public final class AS2Util
+public final class AS2Helper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Util.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Helper.class);
   private static final String HEADER_RECEIVED_CONTENT_MIC = "Received-Content-MIC";
   private static final String HEADER_DISPOSITION = "Disposition";
   private static final String HEADER_ORIGINAL_MESSAGE_ID = "Original-Message-ID";
@@ -84,7 +84,7 @@ public final class AS2Util
     static final BCCryptoHelper s_aInstance = new BCCryptoHelper ();
   }
 
-  private AS2Util ()
+  private AS2Helper ()
   {}
 
   @Nonnull
@@ -210,7 +210,7 @@ public final class AS2Util
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
     aMDN.setHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
     // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
-    aMDN.setHeader (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aMDN.setHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMDN.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
     aMDN.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aMDN.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverID (CPartnershipIDs.PID_AS2));

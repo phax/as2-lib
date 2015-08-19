@@ -69,9 +69,9 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.AS2Util;
+import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPUtil;
@@ -124,7 +124,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
   protected void decrypt (@Nonnull final IMessage aMsg) throws OpenAS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
-    final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
+    final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
 
     try
     {
@@ -154,7 +154,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
   protected void verify (@Nonnull final IMessage aMsg) throws OpenAS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
-    final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
+    final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
 
     try
     {
@@ -219,7 +219,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       try
       {
         final IAS2Session aSession = m_aReceiverModule.getSession ();
-        final IMessageMDN aMdn = AS2Util.createMDN (aSession, aMsg, aDisposition, sText);
+        final IMessageMDN aMdn = AS2Helper.createMDN (aSession, aMsg, aDisposition, sText);
 
         if (aMsg.isRequestingAsynchMDN ())
         {
@@ -344,7 +344,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
       // Per RFC5402 compression is always before encryption but can be before
       // or after signing of message but only in one place
-      final ICryptoHelper aCryptoHelper = AS2Util.getCryptoHelper ();
+      final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
       boolean bIsDecompressed = false;
 
       // Decrypt and verify signature of the data, and attach data to the
@@ -511,7 +511,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     if (aMsgData != null)
     {
       s_aLogger.info ("received " +
-                      IOUtil.getTransferRate (aMsgData.length, aSW) +
+                      IOHelper.getTransferRate (aMsgData.length, aSW) +
                       " from " +
                       sClientInfo +
                       aMsg.getLoggingText ());

@@ -57,8 +57,8 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.DateUtil;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.DateHelper;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -93,8 +93,8 @@ public class DirectoryResenderModule extends AbstractResenderModule
   {
     try
     {
-      final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
-      final File aResendFile = IOUtil.getUniqueFile (aResendDir, getFilename ());
+      final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
+      final File aResendFile = IOHelper.getUniqueFile (aResendDir, getFilename ());
       final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
       String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
       if (sMethod == null)
@@ -152,7 +152,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
       nResendDelayMS = getAttributeAsIntRequired (ATTR_RESEND_DELAY_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
 
     final long nResendTime = new Date ().getTime () + nResendDelayMS;
-    return DateUtil.formatDate (DATE_FORMAT, new Date (nResendTime));
+    return DateHelper.formatDate (DATE_FORMAT, new Date (nResendTime));
   }
 
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
@@ -160,7 +160,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
     try
     {
       final StringTokenizer aFileTokens = new StringTokenizer (aCurrentFile.getName (), ".", false);
-      final Date aTimestamp = DateUtil.parseDate (DATE_FORMAT, aFileTokens.nextToken ());
+      final Date aTimestamp = DateHelper.parseDate (DATE_FORMAT, aFileTokens.nextToken ());
       return aTimestamp.before (new Date ());
     }
     catch (final Exception ex)
@@ -201,7 +201,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
         aOptions.put (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES, sRetries);
         getSession ().getMessageProcessor ().handle (sMethod, aMsg, aOptions);
 
-        if (IOUtil.getFileOperationManager ().deleteFile (aFile).isFailure ())
+        if (IOHelper.getFileOperationManager ().deleteFile (aFile).isFailure ())
         {
           // Delete the file, sender will re-queue if the transmission fails
           // again
@@ -224,7 +224,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOUtil.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }
 
@@ -232,7 +232,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
   @ReturnsMutableCopy
   protected List <File> scanDirectory () throws OpenAS2Exception
   {
-    final File aResendDir = IOUtil.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
+    final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
 
     final File [] aFiles = aResendDir.listFiles ();
     if (aFiles == null)

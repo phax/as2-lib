@@ -183,7 +183,8 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   @Nonempty
   public String getLoggingText ()
   {
-    return " [" + getMessageID () + "]";
+    final String sMsgID = getMessageID ();
+    return " [" + (sMsgID == null ? "no message ID set" : sMsgID) + "]";
   }
 
   @Nonnull

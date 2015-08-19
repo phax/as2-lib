@@ -57,11 +57,11 @@ import com.helger.commons.mutable.MutableLong;
 import com.helger.commons.timing.StopWatch;
 
 @Immutable
-public final class IOUtil
+public final class IOHelper
 {
   private static final FileOperationManager s_aFOM = new FileOperationManager (new LoggingFileOperationCallback ());
 
-  private IOUtil ()
+  private IOHelper ()
   {}
 
   @Nonnull
@@ -148,9 +148,8 @@ public final class IOUtil
     int nCounter = -1;
     while (true)
     {
-      final File aTest = new File (aDir, nCounter == -1 ? sBaseFilename : sBaseFilename +
-                                                                          "." +
-                                                                          Integer.toString (nCounter));
+      final File aTest = new File (aDir,
+                                   nCounter == -1 ? sBaseFilename : sBaseFilename + "." + Integer.toString (nCounter));
       if (!aTest.exists ())
         return aTest;
 
@@ -159,7 +158,8 @@ public final class IOUtil
   }
 
   // move the file to an error directory
-  public static void handleError (@Nonnull final File aFile, @Nonnull final String sErrorDirectory) throws OpenAS2Exception
+  public static void handleError (@Nonnull final File aFile,
+                                  @Nonnull final String sErrorDirectory) throws OpenAS2Exception
   {
     File aDestFile = null;
 
@@ -216,5 +216,13 @@ public final class IOUtil
       throw new IOException ("Move failed, unable to delete " + aSrc + ": " + aIOErr.toString ());
     }
     return aRealDestFile;
+  }
+
+  @Nonnull
+  public static String getFilenameFromMessageID (@Nonnull final String sMessageID)
+  {
+    // Remove angle brackets manually
+    final String s = sMessageID.replace ("<", "").replace (">", "");
+    return FilenameHelper.getAsSecureValidASCIIFilename (s);
   }
 }

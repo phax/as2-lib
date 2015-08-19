@@ -72,13 +72,14 @@ import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
-import com.helger.as2lib.util.AS2Util;
+import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.DateUtil;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.DateHelper;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.HTTPUtil;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
@@ -171,9 +172,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // Calculate and get the original mic
         final boolean bIncludeHeadersInMIC = aRealMsg.getHistory ().getItemCount () > 1;
 
-        final String sMIC = AS2Util.getCryptoHelper ().calculateMIC (aRealMsg.getData (),
-                                                                     aDispositionOptions.getFirstMICAlg (),
-                                                                     bIncludeHeadersInMIC);
+        final String sMIC = AS2Helper.getCryptoHelper ().calculateMIC (aRealMsg.getData (),
+                                                                       aDispositionOptions.getFirstMICAlg (),
+                                                                       bIncludeHeadersInMIC);
 
         if (aRealMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
         {
@@ -196,9 +197,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         final InputStream aMsgIS = aSecuredData.getInputStream ();
 
         final StopWatch aSW = StopWatch.createdStarted ();
-        final long nBytes = IOUtil.copy (aMsgIS, aMsgOS);
+        final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
         aSW.stop ();
-        s_aLogger.info ("transferred " + IOUtil.getTransferRate (nBytes, aSW) + aRealMsg.getLoggingText ());
+        s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aRealMsg.getLoggingText ());
 
         // Check the HTTP Response code
         final int nResponseCode = aConn.getResponseCode ();
@@ -331,7 +332,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      AS2Util.parseMDN (aMsg, aSenderCert, getSession ().isCryptoVerifyUseCertificateInBodyPart ());
+      AS2Helper.parseMDN (aMsg, aSenderCert, getSession ().isCryptoVerifyUseCertificateInBodyPart ());
 
       try
       {
@@ -451,48 +452,43 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final Partnership aPartnership = aMsg.getPartnership ();
     final boolean bEncrypt = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT) != null;
     final boolean bSign = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN) != null;
+    final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
 
-    // Encrypt and/or sign the data if requested
-    if (bEncrypt || bSign)
+    // Sign the data if requested
+    if (bSign)
     {
-      final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
+      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
+      final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
+      final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
+      final ECryptoAlgorithmSign eAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sAlgorithm);
 
-      // Sign the data if requested
-      if (bSign)
-      {
-        final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
-        final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
-        final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
-        final ECryptoAlgorithmSign eAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sAlgorithm);
+      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eAlgorithm);
 
-        aDataBP = AS2Util.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eAlgorithm);
+      // Asynch MDN 2007-03-12
+      final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
+      // *** add one more item to msg history
+      aMsg.getHistory ().addItem (aHistoryItem);
 
-        // Asynch MDN 2007-03-12
-        final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
-        // *** add one more item to msg history
-        aMsg.getHistory ().addItem (aHistoryItem);
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Signed data with " + eAlgorithm + ":" + aMsg.getLoggingText ());
+    }
 
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Signed data with " + eAlgorithm + ":" + aMsg.getLoggingText ());
-      }
+    // Encrypt the data if requested
+    if (bEncrypt)
+    {
+      final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
+      final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
+      final ECryptoAlgorithmCrypt eAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sAlgorithm);
 
-      // Encrypt the data if requested
-      if (bEncrypt)
-      {
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
-        final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
-        final ECryptoAlgorithmCrypt eAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sAlgorithm);
+      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eAlgorithm);
 
-        aDataBP = AS2Util.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eAlgorithm);
+      // Asynch MDN 2007-03-12
+      final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
+      // *** add one more item to msg history
+      aMsg.getHistory ().addItem (aHistoryItem);
 
-        // Asynch MDN 2007-03-12
-        final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
-        // *** add one more item to msg history
-        aMsg.getHistory ().addItem (aHistoryItem);
-
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Encrypted data with " + eAlgorithm + ":" + aMsg.getLoggingText ());
-      }
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Encrypted data with " + eAlgorithm + ":" + aMsg.getLoggingText ());
     }
 
     return aDataBP;
@@ -505,7 +501,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setRequestProperty (CAS2Header.HEADER_DATE, DateUtil.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aConn.setRequestProperty (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aConn.setRequestProperty (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
     aConn.setRequestProperty (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
@@ -549,34 +545,36 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * @throws OpenAS2Exception
    *         In case of an error
    */
-  protected void storePendingInfo (final AS2Message aMsg, final String sMIC) throws OpenAS2Exception
+  protected void storePendingInfo (@Nonnull final AS2Message aMsg, final String sMIC) throws OpenAS2Exception
   {
     OutputStream aFOS = null;
     try
     {
-      final String pendingFolder = getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDNINFO);
-
-      aFOS = FileHelper.getOutputStream (pendingFolder +
-                                         "/" +
-                                         aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1));
-      aFOS.write ((sMIC + "\n").getBytes ());
-
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Original MIC is : " + sMIC + aMsg.getLoggingText ());
 
-      // input pending folder & original outgoing file name to get and
-      // unique file name
-      // in order to avoid file overwritting.
-      final String sPendingFile = getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDN) +
-                                  "/" +
-                                  aMsg.getMessageID ().substring (1, aMsg.getMessageID ().length () - 1);
+      final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
+                                                                                               .getAttributeAsString (ATTR_PENDINGMDNINFO));
+      final String sMsgFilename = IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
+      final String sPendingFilename = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
+                                                                                                 .getAttributeAsString (ATTR_PENDINGMDN)) +
+                                      "/" +
+                                      sMsgFilename;
 
-      s_aLogger.info ("Save Original mic & message id. information into folder : " +
-                      sPendingFile +
+      s_aLogger.info ("Save Original mic & message id information into folder '" +
+                      sPendingFolder +
+                      "'" +
                       aMsg.getLoggingText ());
-      aFOS.write (sPendingFile.getBytes ());
-      aMsg.setAttribute (CFileAttribute.MA_PENDINGFILE, sPendingFile);
-      aMsg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_PENDING);
+
+      // input pending folder & original outgoing file name to get and
+      // unique file name in order to avoid file overwriting.
+      aFOS = FileHelper.getOutputStream (sPendingFolder + "/" + sMsgFilename);
+      aFOS.write ((sMIC + "\n").getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aFOS.write (sPendingFilename.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+
+      // remember
+      aMsg.setAttribute (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
+      aMsg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
     }
     catch (final Exception ex)
     {

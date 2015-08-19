@@ -62,7 +62,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
-import com.helger.as2lib.util.AS2Util;
+import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
@@ -187,7 +187,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      AS2Util.parseMDN (aMsg, aSenderCert, getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ());
+      AS2Helper.parseMDN (aMsg, aSenderCert, getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ());
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,

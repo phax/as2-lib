@@ -39,10 +39,10 @@ public final class CFileAttribute
 {
   public static final String MA_FILEPATH = "filepath";
   public static final String MA_FILENAME = "filename";
-  public static final String MA_PENDING = "pending";
   public static final String MA_PENDINGINFO = "pendinginfo";
-  public static final String MA_PENDINGFILE = "pendingfilename";
+  public static final String MA_PENDING_FILENAME = "pendingfilename";
   public static final String MA_STATUS = "status";
+  public static final String MA_STATUS_PENDING = "pending";
 
   private CFileAttribute ()
   {}

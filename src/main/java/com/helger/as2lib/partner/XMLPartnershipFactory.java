@@ -47,10 +47,10 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
-import com.helger.as2lib.util.XMLUtil;
+import com.helger.as2lib.util.XMLHelper;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
@@ -138,14 +138,14 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
 
   protected void loadAttributes (final IMicroElement node, final Partnership partnership) throws OpenAS2Exception
   {
-    final IStringMap aAttributes = XMLUtil.mapAttributeNodes (node, "attribute", "name", "value");
+    final IStringMap aAttributes = XMLHelper.mapAttributeNodes (node, "attribute", "name", "value");
     partnership.addAllAttributes (aAttributes);
   }
 
   @Nonnull
   public StringMap loadPartner (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
   {
-    return XMLUtil.getAttrsWithLowercaseNameWithRequired (aElement, PARTNER_NAME);
+    return XMLHelper.getAttrsWithLowercaseNameWithRequired (aElement, PARTNER_NAME);
   }
 
   protected void loadPartnerIDs (@Nonnull final IMicroElement aElement,
@@ -158,7 +158,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
     if (aPartnerNode == null)
       throw new OpenAS2Exception ("Partnership '" + aPartnership.getName () + "' is missing sender");
 
-    final IStringMap aPartnerAttr = XMLUtil.getAttrsWithLowercaseName (aPartnerNode);
+    final IStringMap aPartnerAttr = XMLHelper.getAttrsWithLowercaseName (aPartnerNode);
 
     // check for a partner name, and look up in partners list if one is found
     final String sPartnerName = aPartnerAttr.getAttributeAsString (PARTNER_NAME);
@@ -194,7 +194,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
                                       @Nonnull final IPartnerMap aAllPartners,
                                       @Nonnull final IPartnershipMap aAllPartnerships) throws OpenAS2Exception
   {
-    final IStringMap aPartnershipAttrs = XMLUtil.getAttrsWithLowercaseNameWithRequired (aElement, PARTNER_NAME);
+    final IStringMap aPartnershipAttrs = XMLHelper.getAttrsWithLowercaseNameWithRequired (aElement, PARTNER_NAME);
     final String sPartnershipName = aPartnershipAttrs.getAttributeAsString (PARTNER_NAME);
 
     if (aAllPartnerships.getPartnershipByName (sPartnershipName) != null)
@@ -235,7 +235,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
       s_aLogger.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
       final File fr = new File (sFilename);
-      IOUtil.getFileOperationManager ().renameFile (fr, aBackupFile);
+      IOHelper.getFileOperationManager ().renameFile (fr, aBackupFile);
     }
 
     final IMicroDocument aDoc = new MicroDocument ();

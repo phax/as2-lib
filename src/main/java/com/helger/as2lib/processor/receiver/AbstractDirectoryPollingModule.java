@@ -58,7 +58,7 @@ import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.annotation.ReturnsMutableObject;
@@ -113,7 +113,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
 
   protected void scanDirectory (final String sDirectory) throws InvalidParameterException
   {
-    final File aDir = IOUtil.getDirectoryFile (sDirectory);
+    final File aDir = IOHelper.getDirectoryFile (sDirectory);
 
     // get a list of entries in the directory
     final File [] aFiles = aDir.listFiles ();
@@ -222,7 +222,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
      * asynch mdn logic 2007-03-12 save the file name into message object, it
      * will be stored into pending information file
      */
-    aMsg.setAttribute (CFileAttribute.MA_PENDINGFILE, aFile.getName ());
+    aMsg.setAttribute (CFileAttribute.MA_PENDING_FILENAME, aFile.getName ());
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("AS2Message was created");
@@ -246,11 +246,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
        * attribute "status" then copy the transmitted file to pending folder and
        * wait for the receiver to make another HTTP call to post AsyncMDN
        */
-      if (CFileAttribute.MA_PENDING.equals (aMsg.getAttribute (CFileAttribute.MA_STATUS)))
+      if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.getAttribute (CFileAttribute.MA_STATUS)))
       {
-        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_PENDING),
-                                            aMsg.getAttribute (CFileAttribute.MA_PENDINGFILE));
-        final FileIOError aIOErr = IOUtil.getFileOperationManager ().copyFile (aFile, aPendingFile);
+        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
+                                            aMsg.getAttribute (CFileAttribute.MA_PENDING_FILENAME));
+        final FileIOError aIOErr = IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
                                       aPendingFile +
@@ -271,9 +271,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOUtil.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
+          aSentFile = new File (IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
                                 aFile.getName ());
-          aSentFile = IOUtil.moveFile (aFile, aSentFile, false, true);
+          aSentFile = IOHelper.moveFile (aFile, aSentFile, false, true);
 
           s_aLogger.info ("moved " +
                           aFile.getAbsolutePath () +
@@ -308,7 +308,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOUtil.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }
 
@@ -388,7 +388,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
     }
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Updating partnership for AS2 message " + aMsg.getMessageID ());
+      s_aLogger.debug ("Updating partnership for AS2 message" + aMsg.getLoggingText ());
 
     // update the message's partnership with any stored information
     getSession ().getPartnershipFactory ().updatePartnership (aMsg, true);

@@ -57,7 +57,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.file.FileHelper;
@@ -175,7 +175,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
       final String sErrorFilename = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sErrorDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
-      final File aMsgErrorFile = IOUtil.getUniqueFile (IOUtil.getDirectoryFile (sErrorDirectory),
+      final File aMsgErrorFile = IOHelper.getUniqueFile (IOHelper.getDirectoryFile (sErrorDirectory),
                                                        FilenameHelper.getAsSecureValidFilename (sErrorFilename));
 
       final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);

@@ -47,7 +47,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IOUtil;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -109,9 +109,9 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
     // make sure the parent directories exist
     final File aFile = new File (sFilename);
-    IOUtil.getFileOperationManager ().createDirRecursiveIfNotExisting (aFile.getParentFile ());
+    IOHelper.getFileOperationManager ().createDirRecursiveIfNotExisting (aFile.getParentFile ());
     // don't overwrite existing files
-    return IOUtil.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
+    return IOHelper.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
   protected abstract String getFilename (IMessage aMsg,
@@ -124,12 +124,12 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     if (sTempDirname != null)
     {
       // write the data to a temporary directory first
-      final File aTempDir = IOUtil.getDirectoryFile (sTempDirname);
-      final File aTempFile = IOUtil.getUniqueFile (aTempDir, aMsgFile.getName ());
+      final File aTempDir = IOHelper.getDirectoryFile (sTempDirname);
+      final File aTempFile = IOHelper.getUniqueFile (aTempDir, aMsgFile.getName ());
       _writeStream (aIS, aTempFile);
 
       // copy the temp file over to the destination
-      if (IOUtil.getFileOperationManager ().renameFile (aTempFile, aMsgFile).isFailure ())
+      if (IOHelper.getFileOperationManager ().renameFile (aTempFile, aMsgFile).isFailure ())
         throw new IOException ("Rename from " +
                                aTempFile.getAbsolutePath () +
                                " to " +

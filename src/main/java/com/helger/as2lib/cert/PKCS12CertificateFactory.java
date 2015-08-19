@@ -61,7 +61,7 @@ import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.AS2Util;
+import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -89,7 +89,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
     try
     {
-      m_aKeyStore = AS2Util.getCryptoHelper ().createNewKeyStore ();
+      m_aKeyStore = AS2Helper.getCryptoHelper ().createNewKeyStore ();
     }
     catch (final Exception ex)
     {
