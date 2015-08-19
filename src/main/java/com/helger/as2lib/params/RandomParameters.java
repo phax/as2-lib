@@ -61,8 +61,8 @@ public class RandomParameters extends AbstractParameterParser
     if (sKey == null)
       throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
-    final int nWanted = sKey.length ();
-    final int nMax = (int) Math.pow (10, nWanted);
+    final int nWantedChars = sKey.length ();
+    final int nMax = (int) Math.pow (10, nWantedChars);
     if (false)
     {
       // On certain Linux versions with certain Java versions, this takes
@@ -74,9 +74,10 @@ public class RandomParameters extends AbstractParameterParser
       final SecureRandom aRandom = VerySecureRandom.getInstance ();
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Finished init SecureRandom");
-      return StringHelper.getLeadingZero (aRandom.nextInt (nMax), nWanted);
+      return StringHelper.getLeadingZero (aRandom.nextInt (nMax), nWantedChars);
     }
 
-    return StringHelper.getLeadingZero (new Random ().nextInt (nMax), nWanted);
+    // Use regular Random instead
+    return StringHelper.getLeadingZero (new Random ().nextInt (nMax), nWantedChars);
   }
 }
