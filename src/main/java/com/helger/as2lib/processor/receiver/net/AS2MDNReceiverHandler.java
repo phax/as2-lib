@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -70,7 +69,9 @@ import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPUtil;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
@@ -86,14 +87,15 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
+    ValueEnforcer.notNull (aModule, "Module");
     m_aModule = aModule;
   }
 
   @Nonnull
   @Nonempty
-  public String getClientInfo (@Nonnull final Socket aSockt)
+  public String getClientInfo (@Nonnull final Socket aSocket)
   {
-    return aSockt.getInetAddress ().getHostAddress () + " " + aSockt.getPort ();
+    return aSocket.getInetAddress ().getHostAddress () + " " + aSocket.getPort ();
   }
 
   @Nonnull
@@ -102,7 +104,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     return m_aModule;
   }
 
-  public void handle (final AbstractNetModule aOwner, final Socket aSocket)
+  public void handle (@Nonnull final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
   {
     s_aLogger.info ("incoming connection [" + getClientInfo (aSocket) + "]");
 
@@ -240,39 +242,47 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
   /**
    * verify if the mic is matched.
    *
-   * @param msg
+   * @param aMsg
    *        Message
    * @return true if mdn processed
    */
-  public boolean checkAsyncMDN (final AS2Message msg)
+  public boolean checkAsyncMDN (final AS2Message aMsg)
   {
     try
     {
       // get the returned mic from mdn object
-      final String returnmic = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_MIC);
+      final String sReturnMIC = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_MIC);
 
       // use original message id. to open the pending information file
       // from pendinginfo folder.
-      final String ORIG_MESSAGEID = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-      final String pendinginfofile = getModule ().getSession ()
-                                                 .getMessageProcessor ()
-                                                 .getAttributeAsString (ATTR_PENDINGMDNINFO) +
-                                     "/" +
-                                     ORIG_MESSAGEID.substring (1, ORIG_MESSAGEID.length () - 1);
-      final BufferedReader pendinginfo = new BufferedReader (new FileReader (pendinginfofile));
+      final String sOrigMessageID = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
+      final String sPendingInfoFile = getModule ().getSession ()
+                                                  .getMessageProcessor ()
+                                                  .getAttributeAsString (ATTR_PENDINGMDNINFO) +
+                                      "/" +
+                                      sOrigMessageID.substring (1, sOrigMessageID.length () - 1);
+      final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile));
 
-      // Get the original mic from the first line of pending information
-      // file
-      final String originalmic = pendinginfo.readLine ();
+      String sOriginalMIC;
+      File aPendingFile;
+      try
+      {
+        // Get the original mic from the first line of pending information
+        // file
+        sOriginalMIC = aPendingInfoReader.readLine ();
 
-      // Get the original pending file from the second line of pending
-      // information file
-      final File fpendingfile = new File (pendinginfo.readLine ());
-      pendinginfo.close ();
+        // Get the original pending file from the second line of pending
+        // information file
+        aPendingFile = new File (aPendingInfoReader.readLine ());
+      }
+      finally
+      {
+        StreamHelper.close (aPendingInfoReader);
+      }
 
-      final String disposition = msg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+      final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
 
-      s_aLogger.info ("received MDN [" + disposition + "]" + msg.getLoggingText ());
+      s_aLogger.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
       /*
        * original code just did string compare - returnmic.equals(originalmic).
        * Sadly this is not good enough as the mic fields are
@@ -281,37 +291,37 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
        * over the place. (not to mention comments!). Simple fix - delete all
        * spaces.
        */
-      if (originalmic == null || !returnmic.replaceAll ("\\s+", "").equals (originalmic.replaceAll ("\\s+", "")))
+      if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
       {
-        s_aLogger.info ("mic not matched, original mic: " +
-                        originalmic +
+        s_aLogger.info ("MIC IS NOT MATCHED, original mic: " +
+                        sOriginalMIC +
                         " return mic: " +
-                        returnmic +
-                        msg.getLoggingText ());
+                        sReturnMIC +
+                        aMsg.getLoggingText ());
         return false;
       }
 
       // delete the pendinginfo & pending file if mic is matched
-      s_aLogger.info ("mic is matched, mic: " + returnmic + msg.getLoggingText ());
-      final File fpendinginfofile = new File (pendinginfofile);
+      s_aLogger.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
+
+      final File aPendingInfoFile = new File (sPendingInfoFile);
       s_aLogger.info ("delete pendinginfo file : " +
-                      fpendinginfofile.getName () +
+                      aPendingInfoFile.getName () +
                       " from pending folder : " +
                       getModule ().getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDN) +
-                      msg.getLoggingText ());
-
-      fpendinginfofile.delete ();
+                      aMsg.getLoggingText ());
+      aPendingInfoFile.delete ();
 
       s_aLogger.info ("delete pending file : " +
-                      fpendingfile.getName () +
+                      aPendingFile.getName () +
                       " from pending folder : " +
-                      fpendingfile.getParent () +
-                      msg.getLoggingText ());
-      fpendingfile.delete ();
+                      aPendingFile.getParent () +
+                      aMsg.getLoggingText ());
+      aPendingFile.delete ();
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      s_aLogger.error (e.getMessage (), e);
+      s_aLogger.error ("Error checking async MDN", ex);
       return false;
     }
     return true;
@@ -337,9 +347,9 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       else
         StreamHelper.copyInputStreamToOutputStream (aIS, aMDNStream);
     }
-    catch (final IOException ioe)
+    catch (final IOException ex)
     {
-      s_aLogger.error (ioe.getMessage (), ioe);
+      s_aLogger.error ("Error reparsing", ex);
     }
     finally
     {
@@ -352,12 +362,10 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       {
         aPart = new MimeBodyPart (aMDN.getHeaders (), aMDNStream.toByteArray ());
       }
-      catch (final MessagingException e)
+      catch (final MessagingException ex)
       {
-        // TODO Auto-generated catch block
-        e.printStackTrace ();
+        s_aLogger.error ("Error creating MimeBodyPart", ex);
       }
-
     aMsg.getMDN ().setData (aPart);
 
     // get the MDN partnership info

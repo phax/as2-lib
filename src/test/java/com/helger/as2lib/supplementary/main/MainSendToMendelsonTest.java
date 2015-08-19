@@ -72,11 +72,14 @@ public final class MainSendToMendelsonTest
 
     // AS2 stuff
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
+    // When a signed message is used, the algorihm for MIC and message must be
+    // identical
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
     aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
                                                       .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                       .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                       .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+    // Message signed with different algorihtm
     aSettings.setEncryptAndSign (ECryptoAlgorithmCrypt.CRYPT_3DES, eSignAlgo);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
 

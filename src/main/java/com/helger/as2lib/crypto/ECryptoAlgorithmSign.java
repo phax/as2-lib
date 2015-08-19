@@ -54,9 +54,9 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
- DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
- DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
- DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+ @Deprecated DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+ @Deprecated DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+ @Deprecated DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
  /*
   * Identifiers as used in Mendelson.
   */

@@ -354,7 +354,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // don't know it needs or needs not to be resent ? it's depended on
         // what!
         // anyway, just log the warning message here.
-        s_aLogger.info ("mic is not matched, original mic: '" +
+        s_aLogger.info ("MIC IS NOT MATCHED, original mic: '" +
                         sOriginalMIC +
                         "' return mic: '" +
                         sReturnMIC +
@@ -490,9 +490,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     if (sDispTo != null)
       aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
 
-    final String sDispOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
-    if (sDispOptions != null)
-      aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispOptions);
+    final String sDispositionOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
+    if (sDispositionOptions != null)
+      aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionOptions);
 
     // Asynch MDN 2007-03-12
     final String sReceiptOption = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
@@ -500,9 +500,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aConn.setRequestProperty (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptOption);
 
     // As of 2007-06-01
-    final String sContentDisp = aMsg.getContentDisposition ();
-    if (sContentDisp != null)
-      aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisp);
+    final String sContententDisposition = aMsg.getContentDisposition ();
+    if (sContententDisposition != null)
+      aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_DISPOSITION, sContententDisposition);
   }
 
   // Asynch MDN 2007-03-12

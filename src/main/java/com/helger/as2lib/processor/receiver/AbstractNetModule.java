@@ -42,6 +42,7 @@ import java.net.Socket;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillClose;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
 import com.helger.as2lib.util.IStringMap;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
@@ -204,14 +206,14 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     }
   }
 
-  private static final class ConnectionThread extends Thread
+  protected static final class ConnectionThread extends Thread
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (ConnectionThread.class);
 
     private final AbstractNetModule m_aOwner;
     private final Socket m_aSocket;
 
-    public ConnectionThread (@Nonnull final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
+    public ConnectionThread (@Nonnull final AbstractNetModule aOwner, @Nonnull @WillClose final Socket aSocket)
     {
       super ("AS2ConnectionThread-" + ClassHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
@@ -222,13 +224,12 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     public void run ()
     {
       s_aLogger.info ("AS2ConnectionThread: run");
-      final Socket s = m_aSocket;
 
-      m_aOwner.createHandler ().handle (m_aOwner, s);
+      m_aOwner.createHandler ().handle (m_aOwner, m_aSocket);
 
       try
       {
-        s.close ();
+        m_aSocket.close ();
       }
       catch (final IOException ex)
       {
@@ -241,12 +242,12 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     }
   }
 
-  private static final class MainThread extends Thread
+  protected static final class MainThread extends Thread
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (MainThread.class);
 
     private final AbstractNetModule m_aOwner;
-    private final ServerSocket m_aSocket;
+    private final ServerSocket m_aServerSocket;
     private volatile boolean m_bTerminated;
 
     public MainThread (@Nonnull final AbstractNetModule aOwner,
@@ -255,11 +256,19 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
     {
       super ("AS2MainThread-" + ClassHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
-      m_aSocket = new ServerSocket ();
+      m_aServerSocket = new ServerSocket ();
       final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)
                                                        : new InetSocketAddress (sAddress, nPort);
-      m_aSocket.bind (aAddr);
+      m_aServerSocket.bind (aAddr);
       s_aLogger.info ("Inited " + getName () + " at " + aAddr);
+    }
+
+    @OverrideOnDemand
+    protected Socket createAcceptSocket () throws IOException
+    {
+      final Socket aSocket = m_aServerSocket.accept ();
+      aSocket.setSoLinger (true, 60);
+      return aSocket;
     }
 
     @Override
@@ -270,9 +279,8 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       {
         try
         {
-          final Socket aConn = m_aSocket.accept ();
-          aConn.setSoLinger (true, 60);
-          new ConnectionThread (m_aOwner, aConn).start ();
+          final Socket aSocket = createAcceptSocket ();
+          new ConnectionThread (m_aOwner, aSocket).start ();
         }
         catch (final Exception ex)
         {
@@ -289,10 +297,10 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
       if (!m_bTerminated)
       {
         m_bTerminated = true;
-        if (m_aSocket != null)
+        if (m_aServerSocket != null)
           try
           {
-            m_aSocket.close ();
+            m_aServerSocket.close ();
           }
           catch (final IOException ex)
           {
