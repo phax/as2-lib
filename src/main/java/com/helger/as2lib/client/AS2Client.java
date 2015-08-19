@@ -32,7 +32,10 @@
  */
 package com.helger.as2lib.client;
 
+import java.net.Proxy;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
@@ -64,8 +67,33 @@ public class AS2Client
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
 
+  private Proxy m_aHttpProxy;
+
   public AS2Client ()
   {}
+
+  /**
+   * @return The current HTTP proxy used. Defaults to <code>null</code>.
+   */
+  @Nullable
+  public Proxy getHttpProxy ()
+  {
+    return m_aHttpProxy;
+  }
+
+  /**
+   * Set the proxy server for transmission.
+   *
+   * @param aHttpProxy
+   *        The proxy to use. May be <code>null</code> to indicate no proxy.
+   * @return this
+   */
+  @Nonnull
+  public AS2Client setHttpProxy (@Nullable final Proxy aHttpProxy)
+  {
+    m_aHttpProxy = aHttpProxy;
+    return this;
+  }
 
   @Nonnull
   @OverrideOnDemand
@@ -172,7 +200,9 @@ public class AS2Client
   @OverrideOnDemand
   protected AS2Session createSession ()
   {
-    return new AS2Session ();
+    final AS2Session ret = new AS2Session ();
+    ret.setHttpProxy (m_aHttpProxy);
+    return ret;
   }
 
   /**
