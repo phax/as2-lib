@@ -44,6 +44,7 @@ import javax.mail.internet.ParseException;
 
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.ToStringGenerator;
 
 public class DataHistoryItem implements Serializable
 {
@@ -67,8 +68,8 @@ public class DataHistoryItem implements Serializable
   }
 
   private void readObject (@Nonnull final ObjectInputStream aOIS) throws ParseException,
-                                                                 IOException,
-                                                                 ClassNotFoundException
+                                                                  IOException,
+                                                                  ClassNotFoundException
   {
     m_aContentType = new ContentType (aOIS.readUTF ());
     m_aAttributes = (StringMap) aOIS.readObject ();
@@ -78,5 +79,13 @@ public class DataHistoryItem implements Serializable
   {
     aOOS.writeUTF (m_aContentType.toString ());
     aOOS.writeObject (m_aAttributes);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("ContentType", m_aContentType)
+                                       .append ("Attributes", m_aAttributes)
+                                       .toString ();
   }
 }

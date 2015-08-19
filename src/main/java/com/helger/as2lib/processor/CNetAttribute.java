@@ -30,20 +30,18 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.message;
+package com.helger.as2lib.processor;
 
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class CFileAttribute
+public final class CNetAttribute
 {
-  public static final String MA_FILEPATH = "filepath";
-  public static final String MA_FILENAME = "filename";
-  public static final String MA_PENDING = "pending";
-  public static final String MA_PENDINGINFO = "pendinginfo";
-  public static final String MA_PENDINGFILE = "pendingfilename";
-  public static final String MA_STATUS = "status";
+  public static final String MA_SOURCE_IP = "source_ip";
+  public static final String MA_SOURCE_PORT = "source_port";
+  public static final String MA_DESTINATION_IP = "destination_ip";
+  public static final String MA_DESTINATION_PORT = "destination_port";
 
-  private CFileAttribute ()
+  private CNetAttribute ()
   {}
 }

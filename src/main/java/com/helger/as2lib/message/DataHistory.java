@@ -39,6 +39,9 @@ import java.util.List;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.ToStringGenerator;
+
 public class DataHistory implements Serializable
 {
   private final List <DataHistoryItem> m_aItems = new ArrayList <DataHistoryItem> ();
@@ -51,9 +54,13 @@ public class DataHistory implements Serializable
 
   public void addItem (@Nonnull final DataHistoryItem aItem)
   {
-    if (aItem == null)
-      throw new NullPointerException ("Item");
-
+    ValueEnforcer.notNull (aItem, "Item");
     m_aItems.add (aItem);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Items", m_aItems).toString ();
   }
 }

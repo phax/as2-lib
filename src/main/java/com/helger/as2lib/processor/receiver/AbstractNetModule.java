@@ -49,12 +49,12 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
-import com.helger.as2lib.message.CNetAttribute;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
+import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOUtil;
