@@ -65,6 +65,7 @@ public final class CAS2Header
   public static final String DEFAULT_MIME_VERSION = "1.0";
   public static final String DEFAULT_AS2_VERSION = "1.1";
   public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
+  public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = EContentTransferEncoding._8BIT.getID ();
 
   private CAS2Header ()
   {}

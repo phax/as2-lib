@@ -419,10 +419,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
     String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
     if (sEncodeType == null)
-      sEncodeType = "8bit";
+      sEncodeType = CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING;
+
     aCompressedGenerator.setContentTransferEncoding (sEncodeType);
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aMsg.getData (), aOutputCompressor);
-    aMsg.addHeader ("Content-Transfer-Encoding", sEncodeType);
+    aMsg.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
     aMsg.setData (aCompressedBodyPart);
 
     if (s_aLogger.isTraceEnabled ())
@@ -443,15 +444,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
-  // Returns a MimeBodyPart or MimeMultipart object
+  @Nonnull
   protected MimeBodyPart secure (@Nonnull final IMessage aMsg) throws Exception
   {
     // Set up encrypt/sign variables
     MimeBodyPart aDataBP = aMsg.getData ();
 
     final Partnership aPartnership = aMsg.getPartnership ();
-    final boolean bEncrypt = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT) != null;
-    final boolean bSign = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN) != null;
+    final String sSignAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
+    final boolean bSign = sSignAlgorithm != null;
+    final String sCryptAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
+    final boolean bEncrypt = sCryptAlgorithm != null;
     final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
 
     // Sign the data if requested
@@ -459,10 +462,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
       final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
-      final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
-      final ECryptoAlgorithmSign eAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sAlgorithm);
+      final ECryptoAlgorithmSign eSignAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSignAlgorithm);
 
-      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eAlgorithm);
+      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm);
 
       // Asynch MDN 2007-03-12
       final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
@@ -470,17 +472,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.getHistory ().addItem (aHistoryItem);
 
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Signed data with " + eAlgorithm + ":" + aMsg.getLoggingText ());
+        s_aLogger.debug ("Signed data with " + eSignAlgorithm + ":" + aMsg.getLoggingText ());
     }
 
     // Encrypt the data if requested
     if (bEncrypt)
     {
       final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
-      final String sAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
-      final ECryptoAlgorithmCrypt eAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sAlgorithm);
+      final ECryptoAlgorithmCrypt eCryptAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sCryptAlgorithm);
 
-      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eAlgorithm);
+      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm);
 
       // Asynch MDN 2007-03-12
       final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
@@ -488,7 +489,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.getHistory ().addItem (aHistoryItem);
 
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Encrypted data with " + eAlgorithm + ":" + aMsg.getLoggingText ());
+        s_aLogger.debug ("Encrypted data with " + eCryptAlgorithm + ":" + aMsg.getLoggingText ());
     }
 
     return aDataBP;

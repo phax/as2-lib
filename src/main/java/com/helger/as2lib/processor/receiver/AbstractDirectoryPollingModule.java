@@ -70,7 +70,6 @@ import com.helger.commons.mime.CMimeType;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
 {
-  public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = "8bit";
   public static final String ATTR_OUTBOX_DIRECTORY = "outboxdir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   public static final String ATTR_SENT_DIRECTORY = "sentdir";
@@ -355,14 +354,14 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
       final ByteArrayDataSource aByteSource = new ByteArrayDataSource (aData, sContentType, null);
       final MimeBodyPart aBody = new MimeBodyPart ();
       aBody.setDataHandler (new DataHandler (aByteSource));
-      final String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
-      if (sEncodeType != null)
-        aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
-      else
+
+      String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
+      if (sEncodeType == null)
       {
         // default is 8bit
-        aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, DEFAULT_CONTENT_TRANSFER_ENCODING);
+        sEncodeType = CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING;
       }
+      aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
 
       // below statement is not filename related, just want to make it
       // consist with the parameter "mimetype="application/EDI-X12""
