@@ -30,41 +30,45 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.params;
+package com.helger.as2lib;
 
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.ThreadSafe;
 
-import com.helger.as2lib.AS2GlobalSettings;
-import com.helger.commons.random.VerySecureRandom;
-import com.helger.commons.string.StringHelper;
-
-public class RandomParameters extends AbstractParameterParser
+/**
+ * This class contains global configuration settings that are system dependent
+ * and don't fit in the session object.
+ *
+ * @author Philip Helger
+ */
+@ThreadSafe
+public final class AS2GlobalSettings
 {
-  @Override
-  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
+  public static final boolean DEFAULT_USE_SECURE_RANDOM = true;
+
+  private static AtomicBoolean s_aUseSecureRandom = new AtomicBoolean (DEFAULT_USE_SECURE_RANDOM);
+
+  private AS2GlobalSettings ()
+  {}
+
+  /**
+   * Change the usage of SecureRandom if not necessary.
+   *
+   * @param bUseSecureRandom
+   *        <code>true</code> to enable it, <code>false</code> to disable it.
+   */
+  public static void setUseSecureRandom (final boolean bUseSecureRandom)
   {
-    throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
+    s_aUseSecureRandom.set (bUseSecureRandom);
   }
 
-  @Override
-  @Nullable
-  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
+  /**
+   * @return <code>true</code> if SecureRandom is used where possible,
+   *         <code>false</code> to use Random or the like.
+   */
+  public static boolean isUseSecureRandom ()
   {
-    if (sKey == null)
-      throw new InvalidParameterException ("Invalid key", this, sKey, null);
-
-    final int nWantedChars = sKey.length ();
-    final int nMax = (int) Math.pow (10, nWantedChars);
-    if (AS2GlobalSettings.isUseSecureRandom ())
-    {
-      // This may take some time on some Linux derivates!
-      return StringHelper.getLeadingZero (VerySecureRandom.getInstance ().nextInt (nMax), nWantedChars);
-    }
-
-    // Use regular Random instead
-    return StringHelper.getLeadingZero (new Random ().nextInt (nMax), nWantedChars);
+    return s_aUseSecureRandom.get ();
   }
 }

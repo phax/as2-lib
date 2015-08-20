@@ -68,7 +68,8 @@ public interface IAS2Session
    * @throws ComponentDuplicateException
    *         In case a component with the same ID is already present
    */
-  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent) throws ComponentDuplicateException;
+  void addComponent (@Nonnull @Nonempty String sComponentID,
+                     @Nonnull IDynamicComponent aComponent) throws ComponentDuplicateException;
 
   /**
    * Gets the <code>Component</code> currently registered with an ID
@@ -139,7 +140,7 @@ public interface IAS2Session
   /**
    * Settings flag, whether a contained certificate is used for message
    * verification.
-   * 
+   *
    * @param bCryptoVerifyUseCertificateInBodyPart
    *        <code>true</code> if any certificate passed in a message body is
    *        used for certificate verification or <code>false</code> if only the

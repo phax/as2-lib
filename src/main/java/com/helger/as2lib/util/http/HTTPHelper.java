@@ -49,6 +49,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public final class HTTPHelper
@@ -357,7 +358,7 @@ public final class HTTPHelper
     aData.write ((Integer.toString (nResponseCode) +
                   " " +
                   getHTTPResponseMessage (nResponseCode) +
-                  "\r\n").getBytes ());
+                  "\r\n").getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
     aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
   }
 

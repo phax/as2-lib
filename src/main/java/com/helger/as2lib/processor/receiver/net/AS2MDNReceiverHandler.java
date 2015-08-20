@@ -327,7 +327,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     return true;
   }
 
-  public void reparse (final AS2Message aMsg, final HttpURLConnection aConn)
+  public void reparse (@Nonnull final AS2Message aMsg, final HttpURLConnection aConn)
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);

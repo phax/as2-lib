@@ -37,6 +37,7 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,6 +45,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.DoNothingTrustManager;
@@ -53,8 +55,10 @@ import com.helger.commons.random.VerySecureRandom;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
-  public static final String ATTR_READ_TIMEOUT = "readtimeout";
+  /** Connection timeout in milliseconds */
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
+  /** Read timeout in milliseconds */
+  public static final String ATTR_READ_TIMEOUT = "readtimeout";
 
   @Nonnull
   public HttpURLConnection getConnection (@Nonnull @Nonempty final String sUrl,
@@ -68,7 +72,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     {
       final URL aUrlObj = new URL (sUrl);
       final HttpURLConnection aConn = (HttpURLConnection) (aProxy == null ? aUrlObj.openConnection ()
-                                                                         : aUrlObj.openConnection (aProxy));
+                                                                          : aUrlObj.openConnection (aProxy));
       aConn.setDoOutput (bOutput);
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
@@ -83,7 +87,12 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 
         // Trust all server certificates
         final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
-        aSSLCtx.init (null, new TrustManager [] { new DoNothingTrustManager () }, VerySecureRandom.getInstance ());
+        SecureRandom aSecureRandom = null;
+        if (AS2GlobalSettings.isUseSecureRandom ())
+          aSecureRandom = VerySecureRandom.getInstance ();
+        // else aSecureRandom stays null what is also okay
+
+        aSSLCtx.init (null, new TrustManager [] { new DoNothingTrustManager () }, aSecureRandom);
         aConns.setSSLSocketFactory (aSSLCtx.getSocketFactory ());
 
         // Trust all host names

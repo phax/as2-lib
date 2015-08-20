@@ -77,6 +77,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
@@ -378,47 +379,46 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return aDataBP;
   }
 
-  protected void updateHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final IMessage aMsg)
+  protected void updateHttpHeaders (@Nonnull final IAS2HttpHeaderWrapper aConn, @Nonnull final IMessage aMsg)
   {
     final Partnership aPartnership = aMsg.getPartnership ();
 
-    aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-    aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+    aConn.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+    aConn.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setRequestProperty (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aConn.setRequestProperty (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
+    aConn.setHttpHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aConn.setHttpHeader (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    aConn.setRequestProperty (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getContentType ());
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aConn.setRequestProperty (CAS2Header.HEADER_RECIPIENT_ADDRESS,
-                              aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderAS2ID ());
-    aConn.setRequestProperty (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverAS2ID ());
-    aConn.setRequestProperty (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
-    aConn.setRequestProperty (CAS2Header.HEADER_FROM, aPartnership.getSenderEmail ());
+    aConn.setHttpHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getContentType ());
+    aConn.setHttpHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aConn.setHttpHeader (CAS2Header.HEADER_RECIPIENT_ADDRESS, aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+    aConn.setHttpHeader (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderAS2ID ());
+    aConn.setHttpHeader (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverAS2ID ());
+    aConn.setHttpHeader (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
+    aConn.setHttpHeader (CAS2Header.HEADER_FROM, aPartnership.getSenderEmail ());
     // Set when compression is enabled
-    aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
-                              aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
+    aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
+                         aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
 
     // Determine where to send the MDN to
     final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
     if (sDispTo != null)
-      aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
+      aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
 
     final String sDispositionOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
     if (sDispositionOptions != null)
-      aConn.setRequestProperty (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionOptions);
+      aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionOptions);
 
     // Asynch MDN 2007-03-12
     final String sReceiptOption = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
     if (sReceiptOption != null)
-      aConn.setRequestProperty (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptOption);
+      aConn.setHttpHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptOption);
 
     // As of 2007-06-01
     final String sContententDisposition = aMsg.getContentDisposition ();
     if (sContententDisposition != null)
-      aConn.setRequestProperty (CAS2Header.HEADER_CONTENT_DISPOSITION, sContententDisposition);
+      aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContententDisposition);
   }
   // Asynch MDN 2007-03-12
   // added originalmic
@@ -600,7 +600,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                      getSession ().getHttpProxy ());
       try
       {
-        updateHttpHeaders (aConn, aMsg);
+        final IAS2HttpHeaderWrapper aWrapper = new IAS2HttpHeaderWrapper ()
+        {
+          public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
+          {
+            aConn.setRequestProperty (sName, sValue);
+          }
+        };
+        updateHttpHeaders (aWrapper, aMsg);
 
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
         aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));

@@ -33,9 +33,11 @@
 package com.helger.as2lib.message;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 
 import javax.annotation.Nonnull;
 
+import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
@@ -69,7 +71,12 @@ public class AS2MessageMDN extends AbstractMessageMDN
     aSB.append ("<").append (CAS2Info.NAME).append ("-").append (DateHelper.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
-    aSB.append ('-').append (aRandomFormatter.format (VerySecureRandom.getInstance ().nextInt (10000)));
+    int nRandom;
+    if (AS2GlobalSettings.isUseSecureRandom ())
+      nRandom = VerySecureRandom.getInstance ().nextInt (10000);
+    else
+      nRandom = new Random ().nextInt (10000);
+    aSB.append ('-').append (aRandomFormatter.format (nRandom));
 
     // Message details
     final Partnership aPartnership = getMessage ().getPartnership ();
