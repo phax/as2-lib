@@ -53,7 +53,9 @@ public final class AS2GlobalSettings
   {}
 
   /**
-   * Change the usage of SecureRandom if not necessary.
+   * Change the usage of SecureRandom if not necessary. On certain Linux
+   * derivates the usage of (Very)SecureRandom can take minutes to initialize,
+   * because the calls to /dev/urandom are blocking.
    *
    * @param bUseSecureRandom
    *        <code>true</code> to enable it, <code>false</code> to disable it.

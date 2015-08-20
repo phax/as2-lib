@@ -58,13 +58,12 @@ public class RandomParameters extends AbstractParameterParser
 
     final int nWantedChars = sKey.length ();
     final int nMax = (int) Math.pow (10, nWantedChars);
+    int nRandom;
     if (AS2GlobalSettings.isUseSecureRandom ())
-    {
-      // This may take some time on some Linux derivates!
-      return StringHelper.getLeadingZero (VerySecureRandom.getInstance ().nextInt (nMax), nWantedChars);
-    }
+      nRandom = VerySecureRandom.getInstance ().nextInt (nMax);
+    else
+      nRandom = new Random ().nextInt (nMax);
 
-    // Use regular Random instead
-    return StringHelper.getLeadingZero (new Random ().nextInt (nMax), nWantedChars);
+    return StringHelper.getLeadingZero (nRandom, nWantedChars);
   }
 }
