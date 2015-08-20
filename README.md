@@ -19,7 +19,7 @@ This project is licensed under the FreeBSD License.
 
 #News and noteworthy
 
-  * 2015-08-19 Version 2.1.0 fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify.
+  * 2015-08-20 Version 2.1.0 fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify. Also compression according to RFC 5402 is now supported.
 
 #Maven usage
 Add the following to your pom.xml to use this artifact:

@@ -34,6 +34,17 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <release date="2015-08-20" version="2.1.0" />
+  <entry date="2015-08-19" category="tech" action="add">
+    <change>
+      <text locale="en">Added support for compression according to RFC 5402</text>
+    </change>
+  </entry>
+  <entry date="2015-08-18" category="tech" action="fix">
+    <change>
+      <text locale="en">Fixed hard coded signing with SHA-1 only.</text>
+    </change>
+  </entry>
   <release date="2015-08-13" version="2.0.1" />
   <entry date="2015-08-13" category="tech" action="fix">
     <change>
