@@ -110,6 +110,7 @@ public final class XMLHelper
    *        The attribute name of the value.
    * @return The non-<code>null</code> {@link IStringMap}.
    * @throws OpenAS2Exception
+   *         In case a node is missing a key or value attribute.
    */
   @Nonnull
   @ReturnsMutableCopy

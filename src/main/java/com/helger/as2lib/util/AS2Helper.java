@@ -106,6 +106,7 @@ public final class AS2Helper
    *        The MIC algorithm to be used. Must be present if bSignMDN is
    *        <code>true</code>.
    * @throws Exception
+   *         In case something internally goes wrong
    */
   public static void createMDNData (@Nonnull final IAS2Session aSession,
                                     @Nonnull final IMessageMDN aMdn,
