@@ -34,6 +34,11 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <entry date="2015-08-20" category="api" action="add">
+    <change>
+      <text locale="en">Added possibility to globally enable/disable the usage of SecureRandom in as2-lib</text>
+    </change>
+  </entry>
   <release date="2015-08-20" version="2.1.0" />
   <entry date="2015-08-19" category="tech" action="add">
     <change>
