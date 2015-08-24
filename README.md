@@ -61,7 +61,7 @@ This project is build with Apache Maven 3.x. Simply call `mvn clean install` and
 #System Properties
 The following system properties are available for global customization
 
-  * `AS2.useSecureRandom` - since 2.1.1 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it.
+  * `AS2.useSecureRandom` - since 2.1.1 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
  
 
 ---
