@@ -34,6 +34,7 @@ Add the following to your pom.xml to use this artifact:
 #Package structure
 This library manages the package `com.helger.as2lib` and all sub-packages:
 
+  * com.helger.as2lib - contains the global AS2 settings
   * com.helger.as2lib.cert - contains the certificate factory
   * com.helger.as2lib.client - contains the AS2 client for sending messages
   * com.helger.as2lib.crypto - contains the BouncyCastle crypto code for signing, verification, encryption and decryption of messages
@@ -56,6 +57,12 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
 
 #Building
 This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `target` directory.
+
+#System Properties
+The following system properties are available for global customization
+
+  * `AS2.useSecureRandom` - since 2.1.1 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it.
+ 
 
 ---
 
