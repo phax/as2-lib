@@ -36,6 +36,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.helger.commons.string.StringParser;
+import com.helger.commons.system.SystemProperties;
+
 /**
  * This class contains global configuration settings that are system dependent
  * and don't fit in the session object.
@@ -45,7 +48,11 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public final class AS2GlobalSettings
 {
-  public static final boolean DEFAULT_USE_SECURE_RANDOM = true;
+  /**
+   * The default value is defined by the "AS2.useSecureRandom" system property.
+   */
+  public static final boolean DEFAULT_USE_SECURE_RANDOM = StringParser.parseBool (SystemProperties.getPropertyValueOrNull ("AS2.useSecureRandom"),
+                                                                                  true);
 
   private static AtomicBoolean s_aUseSecureRandom = new AtomicBoolean (DEFAULT_USE_SECURE_RANDOM);
 
