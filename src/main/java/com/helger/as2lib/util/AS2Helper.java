@@ -277,7 +277,15 @@ public final class AS2Helper
 
     aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
 
-    final boolean bSignMDN = aDispositionOptions.getProtocol () != null;
+    boolean bSignMDN = false;
+    if (aDispositionOptions.getProtocol () != null)
+    {
+      if (aDispositionOptions.isProtocolRequired () || aDispositionOptions.hasMICAlg ())
+      {
+        // Sign if required or if optional and a MIC algorithm is present
+        bSignMDN = true;
+      }
+    }
     createMDNData (aSession, aMDN, bSignMDN, aDispositionOptions.getFirstMICAlg ());
 
     aMDN.updateMessageID ();

@@ -121,6 +121,16 @@ public class DispositionOptions implements IHasStringRepresentation
     return m_sProtocolImportance;
   }
 
+  public boolean isProtocolRequired ()
+  {
+    return IMPORTANCE_REQUIRED.equals (m_sProtocolImportance);
+  }
+
+  public boolean isProtocolOptional ()
+  {
+    return IMPORTANCE_OPTIONAL.equals (m_sProtocolImportance);
+  }
+
   /**
    * Set the protocol
    *
@@ -169,6 +179,16 @@ public class DispositionOptions implements IHasStringRepresentation
   public String getMICAlgImportance ()
   {
     return m_sMICAlgImportance;
+  }
+
+  public boolean isMICAlgRequired ()
+  {
+    return IMPORTANCE_REQUIRED.equals (m_sMICAlgImportance);
+  }
+
+  public boolean isMICAlgOptional ()
+  {
+    return IMPORTANCE_OPTIONAL.equals (m_sMICAlgImportance);
   }
 
   /**
@@ -272,6 +292,15 @@ public class DispositionOptions implements IHasStringRepresentation
   public int getMICAlgCount ()
   {
     return m_aMICAlgs.size ();
+  }
+
+  /**
+   * @return <code>true</code> if at least one MIC algorithm is present,
+   *         <code>false</code> if none is present.
+   */
+  public boolean hasMICAlg ()
+  {
+    return !m_aMICAlgs.isEmpty ();
   }
 
   /**
