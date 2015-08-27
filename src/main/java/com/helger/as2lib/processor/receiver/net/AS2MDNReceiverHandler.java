@@ -176,12 +176,17 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
       // copy headers from msg to MDN from msg
       aMDN.setHeaders (aMsg.getHeaders ());
-      final MimeBodyPart part = new MimeBodyPart (aMDN.getHeaders (), aData);
-      aMsg.getMDN ().setData (part);
+
+      final MimeBodyPart aPart = new MimeBodyPart (aMDN.getHeaders (), aData);
+      aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
       aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
       aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      // Set the appropriate keystore aliases
+      aMDN.getPartnership ().setSenderX509Alias (aMsg.getPartnership ().getReceiverX509Alias ());
+      aMDN.getPartnership ().setReceiverX509Alias (aMsg.getPartnership ().getSenderX509Alias ());
+      // Update the partnership
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();

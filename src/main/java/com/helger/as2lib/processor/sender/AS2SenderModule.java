@@ -474,6 +474,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // get the MDN partnership info
       aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
       aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      // Set the appropriate keystore aliases
+      aMDN.getPartnership ().setSenderX509Alias (aMsg.getPartnership ().getReceiverX509Alias ());
+      aMDN.getPartnership ().setReceiverX509Alias (aMsg.getPartnership ().getSenderX509Alias ());
+      // Update the partnership
       getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();

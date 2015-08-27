@@ -234,6 +234,10 @@ public final class AS2Helper
     // get the MDN partnership info
     aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
     aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+    // Set the appropriate keystore aliases
+    aMDN.getPartnership ().setSenderX509Alias (aMsg.getPartnership ().getReceiverX509Alias ());
+    aMDN.getPartnership ().setReceiverX509Alias (aMsg.getPartnership ().getSenderX509Alias ());
+    // Update the partnership
     aSession.getPartnershipFactory ().updatePartnership (aMDN, true);
 
     aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverEmail ());
