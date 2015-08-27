@@ -352,16 +352,14 @@ public abstract class AbstractDirectoryPollingModule extends AbstractPollingModu
           sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
         }
       }
+
       final ByteArrayDataSource aByteSource = new ByteArrayDataSource (aData, sContentType, null);
       final MimeBodyPart aBody = new MimeBodyPart ();
       aBody.setDataHandler (new DataHandler (aByteSource));
 
-      String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
-      if (sEncodeType == null)
-      {
-        // default is 8bit
-        sEncodeType = CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING;
-      }
+      // Headers must be set AFTER the DataHandler
+      final String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING,
+                                                                      CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING);
       aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
 
       // below statement is not filename related, just want to make it

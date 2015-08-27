@@ -312,7 +312,11 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
         final MimeBodyPart aReceivedPart = new MimeBodyPart ();
         aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aMsgData, sReceivedContentType, null)));
+
+        // Header must be set AFTER the DataHandler!
         aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
+        aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
+                                 aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
         aMsg.setData (aReceivedPart);
       }
       catch (final Exception ex)

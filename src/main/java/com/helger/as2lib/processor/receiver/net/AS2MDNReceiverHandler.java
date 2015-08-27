@@ -127,17 +127,18 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
                       "]" +
                       aMsg.getLoggingText ());
 
+      final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
+      final String sReceivedContentType = aReceivedContentType.toString ();
+
       final MimeBodyPart aReceivedPart = new MimeBodyPart (aMsg.getHeaders (), aData);
       aMsg.setData (aReceivedPart);
-      ContentType aReceivedContentType = new ContentType (aReceivedPart.getContentType ());
-
-      aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
 
       // MimeBodyPart receivedPart = new MimeBodyPart();
-      aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData,
-                                                                              aReceivedContentType.toString (),
-                                                                              null)));
-      aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aReceivedContentType.toString ());
+      aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null)));
+      // Must be set AFTER the DataHandler!
+      aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
+      aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
+                               aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
 
       aMsg.setData (aReceivedPart);
 
