@@ -7,9 +7,9 @@ and a [server part](https://github.com/phax/as2-server) which contains a stand a
 
 This project is used in my following other projects:
   * **[as2-server](https://github.com/phax/as2-server)** - a stand alone AS2 server operating on a socket layer.
-  * **[as2-peppol-client](https://github.com/phax/as2-peppol-client)** - a stand alone AS2 client that is capable of sending [PEPPOL](www.peppol.eu) compliant e-Procurement documents.
-  * **[as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet)** - integration into the Servlet specifications and for use with the [PEPPOL](www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling.
-  * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](www.peppol.eu) AS2 messages.
+  * **[as2-peppol-client](https://github.com/phax/as2-peppol-client)** - a stand alone AS2 client that is capable of sending [PEPPOL](http://www.peppol.eu) compliant e-Procurement documents.
+  * **[as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet)** - integration into the Servlet specifications and for use with the [PEPPOL](http://www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling.
+  * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](http://www.peppol.eu) AS2 messages.
 
 Versions <= 1.1.0 are compatible with ph-commons < 6.0.
 
