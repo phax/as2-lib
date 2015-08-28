@@ -46,6 +46,7 @@ import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.ToStringGenerator;
 
+@Deprecated
 public class DataHistoryItem implements Serializable
 {
   private ContentType m_aContentType;

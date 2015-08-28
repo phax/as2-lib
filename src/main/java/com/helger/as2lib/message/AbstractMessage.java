@@ -54,6 +54,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 {
   private MimeBodyPart m_aData;
   private IMessageMDN m_aMDN;
+  @Deprecated
   private DataHistory m_aHistory = new DataHistory ();
 
   public AbstractMessage ()
@@ -112,6 +113,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     return getHeader (CAS2Header.HEADER_SUBJECT);
   }
 
+  @Deprecated
   public void setData (@Nullable final MimeBodyPart aData, @Nullable final DataHistoryItem aHistoryItem)
   {
     // Remember data
@@ -189,6 +191,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   @Nonnull
   @ReturnsMutableObject ("design")
+  @Deprecated
   public final DataHistory getHistory ()
   {
     return m_aHistory;

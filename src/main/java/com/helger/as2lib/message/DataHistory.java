@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.ToStringGenerator;
 
+@Deprecated
 public class DataHistory implements Serializable
 {
   private final List <DataHistoryItem> m_aItems = new ArrayList <DataHistoryItem> ();

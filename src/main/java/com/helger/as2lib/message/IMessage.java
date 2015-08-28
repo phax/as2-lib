@@ -76,6 +76,7 @@ public interface IMessage extends IBaseMessage
   @Nullable
   MimeBodyPart getData ();
 
+  @Deprecated
   void setData (@Nullable MimeBodyPart aData, @Nullable DataHistoryItem aHistoryItem) throws OpenAS2Exception;
 
   @Nonnull
@@ -92,6 +93,7 @@ public interface IMessage extends IBaseMessage
 
   @Nonnull
   @ReturnsMutableObject ("design")
+  @Deprecated
   DataHistory getHistory ();
 
   String getProtocol ();
