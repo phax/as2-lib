@@ -55,7 +55,8 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Parser and domain object for disposition options.
+ * Parser and domain object for disposition options. This is usually used in the
+ * HTTP header "Disposition-Notification-Options".
  *
  * @author Philip Helger
  */

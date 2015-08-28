@@ -42,6 +42,11 @@ import org.bouncycastle.cms.CMSAlgorithm;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.lang.EnumHelper;
 
+/**
+ * Enumeration with all message encryption algorithms supported.
+ * 
+ * @author Philip Helger
+ */
 public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
 {
  CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC),

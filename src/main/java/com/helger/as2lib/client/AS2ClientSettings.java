@@ -53,18 +53,29 @@ import com.helger.commons.ValueEnforcer;
  */
 public class AS2ClientSettings
 {
+  /**
+   * The default MDN options to be used.
+   *
+   * @see #setMDNOptions(DispositionOptions)
+   */
   public static final String DEFAULT_MDN_OPTIONS = new DispositionOptions ().setProtocolImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
                                                                             .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                                             .setMICAlgImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
                                                                             .setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA1)
                                                                             .getAsString ();
+
+  /**
+   * The default message ID format to use.
+   *
+   * @see #setMessageIDFormat(String)
+   */
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
                                                          "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
 
-  private String m_sEenderEmailAddress;
+  private String m_sSenderEmailAddress;
   private String m_sSenderAS2ID;
   private String m_sSenderKeyAlias;
 
@@ -93,7 +104,7 @@ public class AS2ClientSettings
    * @param sPassword
    *        The password used to open the key store. May not be
    *        <code>null</code>.
-   * @return this
+   * @return this for chaining
    */
   @Nonnull
   public AS2ClientSettings setKeyStore (@Nonnull final File aFile, @Nonnull final String sPassword)
@@ -105,6 +116,7 @@ public class AS2ClientSettings
 
   /**
    * @return The key store file. May be <code>null</code> if not yet set.
+   * @see #setKeyStore(File, String)
    */
   @Nullable
   public File getKeyStoreFile ()
@@ -114,6 +126,7 @@ public class AS2ClientSettings
 
   /**
    * @return The key store password. May be <code>null</code> if not yet set.
+   * @see #setKeyStore(File, String)
    */
   @Nullable
   public String getKeyStorePassword ()
@@ -121,35 +134,74 @@ public class AS2ClientSettings
     return m_sKeyStorePassword;
   }
 
+  /**
+   * Set the sender data.
+   *
+   * @param sAS2ID
+   *        Sender AS2 ID. May not be <code>null</code>.
+   * @param sEmailAddress
+   *        Sender email address. May not be <code>null</code>.
+   * @param sKeyAlias
+   *        Alias into the keystore for identifying the sender's key. May not be
+   *        <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setSenderData (@Nonnull final String sAS2ID,
                                           @Nonnull final String sEmailAddress,
                                           @Nonnull final String sKeyAlias)
   {
     m_sSenderAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
-    m_sEenderEmailAddress = ValueEnforcer.notNull (sEmailAddress, "EmailAddress");
+    m_sSenderEmailAddress = ValueEnforcer.notNull (sEmailAddress, "EmailAddress");
     m_sSenderKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
     return this;
   }
 
+  /**
+   * @return The sender AS2 ID. May be <code>null</code> if not set.
+   * @see #setSenderData(String, String, String)
+   */
   @Nullable
   public String getSenderAS2ID ()
   {
     return m_sSenderAS2ID;
   }
 
+  /**
+   * @return The sender's email address. May be <code>null</code> if not set.
+   * @see #setSenderData(String, String, String)
+   */
   @Nullable
   public String getSenderEmailAddress ()
   {
-    return m_sEenderEmailAddress;
+    return m_sSenderEmailAddress;
   }
 
+  /**
+   * @return The senders key alias in the keystore. May be <code>null</code> if
+   *         not set.
+   * @see #setSenderData(String, String, String)
+   * @see #setKeyStore(File, String)
+   */
   @Nullable
   public String getSenderKeyAlias ()
   {
     return m_sSenderKeyAlias;
   }
 
+  /**
+   * Set the receiver data.
+   *
+   * @param sAS2ID
+   *        Receiver AS2 ID. May not be <code>null</code>.
+   * @param sKeyAlias
+   *        Alias into the keystore for identifying the receivers certificate.
+   *        May not be <code>null</code>.
+   * @param sAS2URL
+   *        Destination URL to send the request to. May not be <code>null</code>
+   *        .
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setReceiverData (@Nonnull final String sAS2ID,
                                             @Nonnull final String sKeyAlias,
@@ -161,24 +213,48 @@ public class AS2ClientSettings
     return this;
   }
 
+  /**
+   * @return The receiver AS2 ID. May be <code>null</code> if not set.
+   * @see #setReceiverData(String, String, String)
+   */
   @Nullable
   public String getReceiverAS2ID ()
   {
     return m_sReceiverAS2ID;
   }
 
+  /**
+   * @return The receivers key alias in the keystore. May be <code>null</code>
+   *         if not set.
+   * @see #setReceiverData(String, String, String)
+   * @see #setKeyStore(File, String)
+   */
   @Nullable
   public String getReceiverKeyAlias ()
   {
     return m_sReceiverKeyAlias;
   }
 
+  /**
+   * @return The destination URL to send the request to. May be
+   *         <code>null</code> if not set.
+   * @see #setReceiverData(String, String, String)
+   */
   @Nullable
   public String getDestinationAS2URL ()
   {
     return m_sDestinationAS2URL;
   }
 
+  /**
+   * Explicitly set the receiver certificate to be used. This might be used to
+   * dynamically add it to the certificate factory for dynamic partnership
+   * handling (like in PEPPOL).
+   *
+   * @param aReceiverCertificate
+   *        The receiver certificate. May be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setReceiverCertificate (@Nullable final X509Certificate aReceiverCertificate)
   {
@@ -189,7 +265,8 @@ public class AS2ClientSettings
   /**
    * @return The explicit certificate of the recipient. This might be used to
    *         dynamically add it to the certificate factory for dynamic
-   *         partnership handling (like in PEPPOL). Maybe <code>null</code>.
+   *         partnership handling (like in PEPPOL). May be <code>null</code>.
+   * @see #setReceiverCertificate(X509Certificate)
    */
   @Nullable
   public X509Certificate getReceiverCertificate ()
@@ -197,6 +274,17 @@ public class AS2ClientSettings
     return m_aReceiverCert;
   }
 
+  /**
+   * Set the encryption and signing algorithms to use.
+   *
+   * @param eCryptAlgo
+   *        The encryption algorithm. May be <code>null</code> to indicate that
+   *        the message should not be encrypted.
+   * @param eSignAlgo
+   *        The signing algorithm. May be <code>null</code> to indicate that the
+   *        message should not be signed.
+   * @return this for chaining.
+   */
   @Nonnull
   public AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithmCrypt eCryptAlgo,
                                               @Nullable final ECryptoAlgorithmSign eSignAlgo)
@@ -206,30 +294,62 @@ public class AS2ClientSettings
     return this;
   }
 
+  /**
+   * @return The algorithm used to encrypt the message. May be <code>null</code>
+   *         if not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
   @Nullable
   public ECryptoAlgorithmCrypt getCryptAlgo ()
   {
     return m_eCryptAlgo;
   }
 
+  /**
+   * @return The ID of the algorithm used to encrypt the message. May be
+   *         <code>null</code> if not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
   @Nullable
   public String getCryptAlgoID ()
   {
     return m_eCryptAlgo == null ? null : m_eCryptAlgo.getID ();
   }
 
+  /**
+   * @return The algorithm used to sign the message. May be <code>null</code> if
+   *         not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
   @Nullable
   public ECryptoAlgorithmSign getSignAlgo ()
   {
     return m_eSignAlgo;
   }
 
+  /**
+   * @return The ID of the algorithm used to sign the message. May be
+   *         <code>null</code> if not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
   @Nullable
   public String getSignAlgoID ()
   {
     return m_eSignAlgo == null ? null : m_eSignAlgo.getID ();
   }
 
+  /**
+   * Enable or disable the compression of the message. Note: compression
+   * requires the receiver to support AS2 version 1.1!
+   *
+   * @param eCompressionType
+   *        The compression type to use. Pass <code>null</code> to not compress
+   *        the message (that is also the default).
+   * @param bCompressBeforeSigning
+   *        <code>true</code> to compress the data before it is signed,
+   *        <code>false</code> to sign first and than compress the message.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
                                         final boolean bCompressBeforeSigning)
@@ -239,17 +359,37 @@ public class AS2ClientSettings
     return this;
   }
 
+  /**
+   * @return The compression type used to compress the message. May be
+   *         <code>null</code> to indicate no compression.
+   * @see #setCompress(ECompressionType, boolean)
+   */
   @Nullable
   public ECompressionType getCompressionType ()
   {
     return m_eCompressionType;
   }
 
+  /**
+   * Check if compress before sign or sign before compress is used. This flag is
+   * only evaluated if {@link #getCompressionType()} is not <code>null</code>.
+   *
+   * @return <code>true</code> to compress before signing, <code>false</code> to
+   *         sign before compressing
+   * @see #setCompress(ECompressionType, boolean)
+   */
   public boolean isCompressBeforeSigning ()
   {
     return m_bCompressBeforeSigning;
   }
 
+  /**
+   * Set the name of the partnership for lookup and dynamic creation.
+   *
+   * @param sPartnershipName
+   *        The partnership name. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setPartnershipName (@Nonnull final String sPartnershipName)
   {
@@ -257,12 +397,25 @@ public class AS2ClientSettings
     return this;
   }
 
+  /**
+   * @return The partnership name to be used. May be <code>null</code> if not
+   *         set.
+   * @see #setPartnershipName(String)
+   */
   @Nullable
   public String getPartnershipName ()
   {
     return m_sPartnershipName;
   }
 
+  /**
+   * Set the MDN options to be used.
+   *
+   * @param sMDNOptions
+   *        The <code>Disposition-Notification-Options</code> String to be used.
+   *        May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setMDNOptions (@Nonnull final String sMDNOptions)
   {
@@ -270,6 +423,14 @@ public class AS2ClientSettings
     return this;
   }
 
+  /**
+   * Set the MDN options to be used.
+   *
+   * @param aDispositionOptions
+   *        The <code>Disposition-Notification-Options</code> structured object
+   *        to be used. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setMDNOptions (@Nonnull final DispositionOptions aDispositionOptions)
   {
@@ -277,12 +438,27 @@ public class AS2ClientSettings
     return setMDNOptions (aDispositionOptions.getAsString ());
   }
 
-  @Nullable
+  /**
+   * @return The MDN options (<code>Disposition-Notification-Options</code>
+   *         header) to be used. Never <code>null</code>. The default is defined
+   *         in {@link #DEFAULT_MDN_OPTIONS}.
+   * @see #setMDNOptions(DispositionOptions)
+   * @see #setMDNOptions(String)
+   */
+  @Nonnull
   public String getMDNOptions ()
   {
     return m_sMDNOptions;
   }
 
+  /**
+   * Set the Message ID format. This string may contain placeholders as
+   * supported by the <code>com.helger.as2lib.params</code> parameters parsers.
+   *
+   * @param sMessageIDFormat
+   *        The message ID format to use. May not be <code>null</code>.
+   * @return this for chaining
+   */
   @Nonnull
   public AS2ClientSettings setMessageIDFormat (@Nonnull final String sMessageIDFormat)
   {
@@ -290,7 +466,13 @@ public class AS2ClientSettings
     return this;
   }
 
-  @Nullable
+  /**
+   * @return The message ID format to use. Never <code>null</code>. It defaults
+   *         to {@value #DEFAULT_MESSAGE_ID_FORMAT}.
+   * @see #DEFAULT_MESSAGE_ID_FORMAT
+   * @see #setMessageIDFormat(String)
+   */
+  @Nonnull
   public String getMessageIDFormat ()
   {
     return m_sMessageIDFormat;

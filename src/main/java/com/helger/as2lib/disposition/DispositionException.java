@@ -37,6 +37,12 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * Exception thrown in case a message disposition contains an error or a
+ * warning.
+ * 
+ * @author Philip Helger
+ */
 public class DispositionException extends OpenAS2Exception
 {
   private final DispositionType m_aDisposition;

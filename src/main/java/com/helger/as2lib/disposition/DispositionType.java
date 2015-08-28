@@ -173,12 +173,26 @@ public final class DispositionType
     }
   }
 
+  /**
+   * @return A success dispostion without additional information. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public static DispositionType createSuccess ()
   {
-    return new DispositionType (ACTION_AUTOMATIC_ACTION, MDNACTION_MDN_SENT_AUTOMATICALLY, STATUS_PROCESSED, null, null);
+    return new DispositionType (ACTION_AUTOMATIC_ACTION,
+                                MDNACTION_MDN_SENT_AUTOMATICALLY,
+                                STATUS_PROCESSED,
+                                null,
+                                null);
   }
 
+  /**
+   * @param sStatusDescription
+   *        The status description to be used. May not be <code>null</code>.
+   * @return An error disposition with the modifier
+   *         {@link #STATUS_MODIFIER_ERROR} and the provided status description.
+   */
   @Nonnull
   public static DispositionType createError (@Nonnull final String sStatusDescription)
   {

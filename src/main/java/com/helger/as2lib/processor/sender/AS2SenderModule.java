@@ -528,8 +528,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       catch (final DispositionException ex)
       {
         ex.setText (aMsg.getMDN ().getText ());
-
-        if (ex.getDisposition () != null && ex.getDisposition ().isWarning ())
+        if (ex.getDisposition ().isWarning ())
         {
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
