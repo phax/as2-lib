@@ -87,6 +87,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
 
+@SuppressWarnings ("deprecation")
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";

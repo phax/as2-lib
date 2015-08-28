@@ -36,6 +36,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
+/**
+ * Base interface for an AS2 MDN
+ * 
+ * @author Philip Helger
+ */
 public interface IMessageMDN extends IBaseMessage
 {
   @Nullable

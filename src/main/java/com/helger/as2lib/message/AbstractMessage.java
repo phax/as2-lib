@@ -147,6 +147,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       m_aHistory.addItem (aHistoryItem);
   }
 
+  @SuppressWarnings ("deprecation")
   @Nonnull
   public DataHistoryItem setData (@Nonnull final MimeBodyPart aData) throws OpenAS2Exception
   {
@@ -226,6 +227,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
                                        .toString ();
   }
 
+  @SuppressWarnings ("deprecation")
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     baseReadObject (aOIS);

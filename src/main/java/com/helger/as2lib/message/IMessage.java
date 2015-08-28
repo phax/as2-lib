@@ -40,6 +40,12 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableObject;
 
+/**
+ * Base interface for an AS2 Message
+ * 
+ * @author Philip Helger
+ */
+@SuppressWarnings ("deprecation")
 public interface IMessage extends IBaseMessage
 {
   /**
