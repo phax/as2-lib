@@ -71,7 +71,7 @@ public class AS2ClientSettings
   private String m_sReceiverAS2ID;
   private String m_sReceiverKeyAlias;
   private String m_sDestinationAS2URL;
-  public X509Certificate m_aReceiverCert;
+  private X509Certificate m_aReceiverCert;
 
   private String m_sPartnershipName;
   private ECryptoAlgorithmCrypt m_eCryptAlgo;
