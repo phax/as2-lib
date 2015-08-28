@@ -85,8 +85,10 @@ public interface ICryptoHelper
    * @return The loaded key store and never <code>null</code>.
    * @throws Exception
    *         In case loading fails.
+   * @deprecated Use the version with the InputStream - it is more generic
    */
   @Nonnull
+  @Deprecated
   KeyStore loadKeyStore (@Nonnull String sFilename, @Nonnull char [] aPassword) throws Exception;
 
   /**
@@ -149,14 +151,14 @@ public interface ICryptoHelper
                        boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
-  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
-                        @Nonnull X509Certificate aCert,
-                        @Nonnull PrivateKey aKey) throws Exception;
-
-  @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,
                         @Nonnull X509Certificate aCert,
                         @Nonnull ECryptoAlgorithmCrypt eAlgorithm) throws Exception;
+
+  @Nonnull
+  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
+                        @Nonnull X509Certificate aCert,
+                        @Nonnull PrivateKey aKey) throws Exception;
 
   /**
    * Sign a MIME body part.

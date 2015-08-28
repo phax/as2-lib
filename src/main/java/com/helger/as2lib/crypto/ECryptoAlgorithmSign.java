@@ -40,6 +40,7 @@ import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 
+import com.helger.commons.annotation.DevelopersNote;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.lang.EnumHelper;
 
@@ -54,9 +55,15 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
- @Deprecated DIGEST_SHA256 ("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
- @Deprecated DIGEST_SHA384 ("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
- @Deprecated DIGEST_SHA512 ("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+ @Deprecated
+  @DevelopersNote ("Use DIGEST_SHA_256 instead")
+  DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+ @Deprecated
+  @DevelopersNote ("Use DIGEST_SHA_384 instead")
+  DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+ @Deprecated
+  @DevelopersNote ("Use DIGEST_SHA_512 instead")
+  DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
  /*
   * Identifiers as used in Mendelson.
   */

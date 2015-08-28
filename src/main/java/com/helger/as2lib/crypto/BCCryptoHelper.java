@@ -104,7 +104,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 
 /**
- * Implementation of {@link ICryptoHelper} based on BouncyCastle
+ * Implementation of {@link ICryptoHelper} based on BouncyCastle.
  *
  * @author Philip Helger
  */
@@ -153,6 +153,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
+  @Deprecated
   public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
   {
     final InputStream aIS = FileHelper.getInputStream (sFilename);
