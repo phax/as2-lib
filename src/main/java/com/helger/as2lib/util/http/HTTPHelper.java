@@ -45,6 +45,9 @@ import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
@@ -60,6 +63,8 @@ public final class HTTPHelper
   public static final String MA_HTTP_REQ_TYPE = "HTTP_REQUEST_TYPE";
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
+
+  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
 
   private HTTPHelper ()
   {}
@@ -285,12 +290,16 @@ public final class HTTPHelper
     if (EContentTransferEncoding.BASE64.equals (eCTE))
     {
       // Decode Base64 data
+      s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
       aData = new RFC1522BCodec ().getDecoded (aData);
     }
     else
       if (EContentTransferEncoding.QUOTED_PRINTABLE.equals (eCTE))
       {
         // Decode quoted printable
+        s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
+                        sContentTransferEncoding +
+                        "' - decoding");
         aData = new RFC1522QCodec ().getDecoded (aData);
       }
       else
