@@ -47,9 +47,12 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
+import com.helger.commons.codec.RFC1522BCodec;
+import com.helger.commons.codec.RFC1522QCodec;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 
 public final class HTTPHelper
@@ -263,7 +266,7 @@ public final class HTTPHelper
       }
       else
       {
-        // No "Content-Length" and not "Transfer-Encoding"
+        // No "Content-Length" and no "Transfer-Encoding"
         sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
         throw new IOException ("Content-Length missing");
       }
@@ -276,6 +279,25 @@ public final class HTTPHelper
       aData = new byte [nContentSize];
       aDataIS.readFully (aData);
     }
+
+    final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING);
+    final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
+    if (EContentTransferEncoding.BASE64.equals (eCTE))
+    {
+      // Decode Base64 data
+      aData = new RFC1522BCodec ().getDecoded (aData);
+    }
+    else
+      if (EContentTransferEncoding.QUOTED_PRINTABLE.equals (eCTE))
+      {
+        // Decode quoted printable
+        aData = new RFC1522QCodec ().getDecoded (aData);
+      }
+      else
+      {
+        // Keep as is
+      }
+
     return aData;
   }
 

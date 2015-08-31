@@ -69,8 +69,8 @@ public enum EContentTransferEncoding implements IHasID <String>
   }
 
   @Nullable
-  public static EContentTransferEncoding getFromIDOrNull (@Nullable final String sID)
+  public static EContentTransferEncoding getFromIDCaseInsensitiveOrNull (@Nullable final String sID)
   {
-    return EnumHelper.getFromIDOrNull (EContentTransferEncoding.class, sID);
+    return EnumHelper.getFromIDCaseInsensitiveOrNull (EContentTransferEncoding.class, sID);
   }
 }
