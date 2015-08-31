@@ -185,6 +185,11 @@ public class Partnership implements Serializable
     setReceiverID (CPartnershipIDs.PID_X509_ALIAS, sValue);
   }
 
+  public void setReceiverEmail (@Nullable final String sValue)
+  {
+    setReceiverID (CPartnershipIDs.PID_EMAIL, sValue);
+  }
+
   public void addReceiverIDs (@Nullable final Map <String, String> aMap)
   {
     m_aReceiverIDs.addAttributes (aMap);
