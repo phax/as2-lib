@@ -57,12 +57,15 @@ import com.helger.commons.charset.CCharset;
 import com.helger.commons.codec.RFC1522BCodec;
 import com.helger.commons.codec.RFC1522QCodec;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.string.StringHelper;
 
 public final class HTTPHelper
 {
   public static final String MA_HTTP_REQ_TYPE = "HTTP_REQUEST_TYPE";
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
+  public static final String MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING = "HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING";
+  public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
 
@@ -209,11 +212,15 @@ public final class HTTPHelper
                                          @Nonnull final IMessage aMsg) throws IOException
   {
     ValueEnforcer.notNull (aIS, "InputStream");
+    ValueEnforcer.notNull (aResponseHandler, "ResponseHandler");
+    ValueEnforcer.notNull (aMsg, "Msg");
 
     final DataInputStream aDataIS = new DataInputStream (aIS);
+
     // Retrieve the message content
     byte [] aData = null;
-    if (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH) == null)
+    final String sContentLength = aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH);
+    if (sContentLength == null)
     {
       // No "Content-Length" header present
       final String sTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_TRANSFER_ENCODING);
@@ -280,32 +287,49 @@ public final class HTTPHelper
     {
       // "Content-Length" is present
       // Receive the transmission's data
-      final int nContentSize = Integer.parseInt (aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH));
+      // XX if a value > 2GB comes in, this will fail!!
+      final int nContentSize = Integer.parseInt (sContentLength);
       aData = new byte [nContentSize];
       aDataIS.readFully (aData);
     }
 
     final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING);
-    final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
-    if (EContentTransferEncoding.BASE64.equals (eCTE))
+    if (StringHelper.hasText (sContentTransferEncoding))
     {
-      // Decode Base64 data
-      s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
-      aData = new RFC1522BCodec ().getDecoded (aData);
-    }
-    else
-      if (EContentTransferEncoding.QUOTED_PRINTABLE.equals (eCTE))
-      {
-        // Decode quoted printable
-        s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
-                        sContentTransferEncoding +
-                        "' - decoding");
-        aData = new RFC1522QCodec ().getDecoded (aData);
-      }
+      final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
+      if (eCTE == null)
+        s_aLogger.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
       else
       {
-        // Keep as is
+        // Remember original length before continuing
+        final int nOriginalContentLength = aData.length;
+
+        if (EContentTransferEncoding.BASE64.equals (eCTE))
+        {
+          // Decode Base64 data
+          s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
+                          sContentTransferEncoding +
+                          "' - decoding");
+          aData = new RFC1522BCodec ().getDecoded (aData);
+        }
+        else
+          if (EContentTransferEncoding.QUOTED_PRINTABLE.equals (eCTE))
+          {
+            // Decode quoted printable
+            s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
+                            sContentTransferEncoding +
+                            "' - decoding");
+            aData = new RFC1522QCodec ().getDecoded (aData);
+          }
+          else
+          {
+            // Keep data as is
+          }
+        // Remember that we potentially did something
+        aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+        aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_LENGTH, Integer.toString (nOriginalContentLength));
       }
+    }
 
     return aData;
   }
@@ -334,7 +358,7 @@ public final class HTTPHelper
     }
     if (nByteBuf != -1)
     {
-      // read in the \n
+      // read in the \n following the "\r"
       aIS.read ();
     }
 
@@ -342,6 +366,7 @@ public final class HTTPHelper
     final int nTokenCount = aTokens.countTokens ();
     if (nTokenCount >= 3)
     {
+      // Return all tokens
       final String [] aRequestParts = new String [nTokenCount];
       for (int i = 0; i < nTokenCount; i++)
         aRequestParts[i] = aTokens.nextToken ();
@@ -350,6 +375,7 @@ public final class HTTPHelper
 
     if (nTokenCount == 2)
     {
+      // Default the request URL to "/"
       final String [] aRequestParts = new String [3];
       aRequestParts[0] = aTokens.nextToken ();
       aRequestParts[1] = "/";
