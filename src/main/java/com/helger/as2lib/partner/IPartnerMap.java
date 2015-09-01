@@ -41,6 +41,12 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 
+/**
+ * Read-only interface to manage the mapping from name to partner (represented
+ * by a {@link StringMap}).
+ * 
+ * @author Philip Helger
+ */
 public interface IPartnerMap
 {
   @Nullable

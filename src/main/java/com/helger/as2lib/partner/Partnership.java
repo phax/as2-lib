@@ -43,6 +43,7 @@ import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
@@ -50,9 +51,9 @@ public class Partnership implements Serializable
   public static final String DEFAULT_NAME = "auto-created-dummy";
 
   private String m_sName;
-  private final StringMap m_aAttributes = new StringMap ();
   private final StringMap m_aSenderIDs = new StringMap ();
   private final StringMap m_aReceiverIDs = new StringMap ();
+  private final StringMap m_aAttributes = new StringMap ();
 
   public Partnership ()
   {
@@ -61,118 +62,185 @@ public class Partnership implements Serializable
 
   public Partnership (@Nonnull final String sName)
   {
-    setName (sName);
+    m_sName = ValueEnforcer.notNull (sName, "Name");
   }
 
+  @Deprecated
   public void setName (@Nonnull final String sName)
   {
     m_sName = ValueEnforcer.notNull (sName, "Name");
   }
 
+  /**
+   * @return The partnership name. Never <code>null</code>.
+   */
   @Nonnull
   public String getName ()
   {
     return m_sName;
   }
 
-  public void setAttribute (final String sKey, final String sValue)
-  {
-    m_aAttributes.setAttribute (sKey, sValue);
-  }
-
-  @Nullable
-  public String getAttribute (@Nullable final String sKey)
-  {
-    return m_aAttributes.getAttributeAsString (sKey);
-  }
-
-  @Nullable
-  public String getAttribute (@Nullable final String sKey, @Nullable final String sDefault)
-  {
-    return m_aAttributes.getAttributeAsString (sKey, sDefault);
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public IStringMap getAllAttributes ()
-  {
-    return m_aAttributes.getClone ();
-  }
-
-  public void addAllAttributes (@Nullable final Map <String, String> aAttributes)
-  {
-    m_aAttributes.addAttributes (aAttributes);
-  }
-
+  /**
+   * Set an arbitrary sender ID.
+   *
+   * @param sKey
+   *        The name of the ID. May not be <code>null</code>.
+   * @param sValue
+   *        The value to be set. It may be <code>null</code> in which case the
+   *        attribute is removed.
+   */
   public void setSenderID (@Nonnull final String sKey, @Nullable final String sValue)
   {
     m_aSenderIDs.setAttribute (sKey, sValue);
   }
 
+  /**
+   * Set the senders AS2 ID.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @see #getSenderAS2ID()
+   * @see #containsSenderAS2ID()
+   */
   public void setSenderAS2ID (@Nullable final String sValue)
   {
     setSenderID (CPartnershipIDs.PID_AS2, sValue);
   }
 
+  /**
+   * Set the senders X509 alias.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @see #getSenderX509Alias()
+   * @see #containsSenderX509Alias()
+   */
   public void setSenderX509Alias (@Nullable final String sValue)
   {
     setSenderID (CPartnershipIDs.PID_X509_ALIAS, sValue);
   }
 
+  /**
+   * Set the senders email address.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @see #getSenderEmail()
+   * @see #containsSenderEmail()
+   */
   public void setSenderEmail (@Nullable final String sValue)
   {
     setSenderID (CPartnershipIDs.PID_EMAIL, sValue);
   }
 
+  /**
+   * Add all sender IDs provided in the passed map. Existing sender IDs are not
+   * altered.
+   *
+   * @param aMap
+   *        The map to use. May be <code>null</code>.
+   */
   public void addSenderIDs (@Nullable final Map <String, String> aMap)
   {
     m_aSenderIDs.addAttributes (aMap);
   }
 
+  /**
+   * Get the value of an arbitrary sender ID
+   *
+   * @param sKey
+   *        The name of the ID to query. May be <code>null</code>.
+   * @return The contained value if the name is not <code>null</code> and
+   *         contained in the sender IDs.
+   */
   @Nullable
   public String getSenderID (@Nullable final String sKey)
   {
     return m_aSenderIDs.getAttributeAsString (sKey);
   }
 
+  /**
+   * @return the sender's AS2 ID or <code>null</code> if it is not set
+   * @see #setSenderAS2ID(String)
+   * @see #containsSenderAS2ID()
+   */
   @Nullable
   public String getSenderAS2ID ()
   {
     return getSenderID (CPartnershipIDs.PID_AS2);
   }
 
+  /**
+   * @return the sender's X509 alias or <code>null</code> if it is not set
+   * @see #setSenderX509Alias(String)
+   * @see #containsSenderX509Alias()
+   */
   @Nullable
   public String getSenderX509Alias ()
   {
     return getSenderID (CPartnershipIDs.PID_X509_ALIAS);
   }
 
+  /**
+   * @return the sender's email address or <code>null</code> if it is not set.
+   * @see #setSenderEmail(String)
+   * @see #containsSenderEmail()
+   */
   @Nullable
   public String getSenderEmail ()
   {
     return getSenderID (CPartnershipIDs.PID_EMAIL);
   }
 
+  /**
+   * Check if an arbitrary sender ID is present.
+   *
+   * @param sKey
+   *        The name of the ID to query. May be <code>null</code>.
+   * @return <code>true</code> if the name is not <code>null</code> and
+   *         contained in the sender IDs.
+   */
   public boolean containsSenderID (@Nullable final String sKey)
   {
     return m_aSenderIDs.containsAttribute (sKey);
   }
 
+  /**
+   * @return <code>true</code> if the sender's AS2 ID is present,
+   *         <code>false</code> otherwise.
+   * @see #setSenderAS2ID(String)
+   * @see #getSenderAS2ID()
+   */
   public boolean containsSenderAS2ID ()
   {
     return containsSenderID (CPartnershipIDs.PID_AS2);
   }
 
+  /**
+   * @return <code>true</code> if the sender's X509 alias is present,
+   *         <code>false</code> otherwise.
+   * @see #setSenderX509Alias(String)
+   * @see #getSenderX509Alias()
+   */
   public boolean containsSenderX509Alias ()
   {
     return containsSenderID (CPartnershipIDs.PID_X509_ALIAS);
   }
 
+  /**
+   * @return <code>true</code> if the sender's email address is present,
+   *         <code>false</code> otherwise.
+   * @see #setSenderEmail(String)
+   * @see #getSenderEmail()
+   */
   public boolean containsSenderEmail ()
   {
     return containsSenderID (CPartnershipIDs.PID_EMAIL);
   }
 
+  /**
+   * @return All sender IDs. Never <code>null</code>.
+   */
   @Nonnull
   @ReturnsMutableCopy
   public IStringMap getAllSenderIDs ()
@@ -349,6 +417,92 @@ public class Partnership implements Serializable
   }
 
   /**
+   * Set an arbitrary partnership attribute.
+   *
+   * @param sKey
+   *        The key to be used. May not be <code>null</code>.
+   * @param sValue
+   *        The value to be used. If <code>null</code> an existing attribute
+   *        with the provided name will be removed.
+   * @return {@link EChange#CHANGED} if something changed. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public EChange setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
+  {
+    return m_aAttributes.setAttribute (sKey, sValue);
+  }
+
+  /**
+   * Get the value associated with the given attribute name.
+   *
+   * @param sKey
+   *        Attribute name to search. May be <code>null</code>.
+   * @return <code>null</code> if the attribute name was <code>null</code> or if
+   *         no such attribute is contained.
+   * @see #getAttribute(String, String)
+   */
+  @Nullable
+  public String getAttribute (@Nullable final String sKey)
+  {
+    return m_aAttributes.getAttributeAsString (sKey);
+  }
+
+  /**
+   * Get the value associated with the given attribute name or the default
+   * values.
+   *
+   * @param sKey
+   *        Attribute name to search. May be <code>null</code>.
+   * @param sDefault
+   *        Default value to be returned if no such attribute is present.
+   * @return The provided default value if the attribute name was
+   *         <code>null</code> or if no such attribute is contained.
+   * @see #getAttribute(String)
+   */
+  @Nullable
+  public String getAttribute (@Nullable final String sKey, @Nullable final String sDefault)
+  {
+    return m_aAttributes.getAttributeAsString (sKey, sDefault);
+  }
+
+  /**
+   * Check if a value for the provided attribute name is present.
+   *
+   * @param sKey
+   *        Attribute name to search. May be <code>null</code>.
+   * @return <code>true</code> if a value for the attribute is present,
+   *         <code>false</code> otherwise.
+   */
+  public boolean containsAttribute (@Nullable final String sKey)
+  {
+    return m_aAttributes.containsAttribute (sKey);
+  }
+
+  /**
+   * @return A copy of all contained attributes. Never <code>null</code>.
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public IStringMap getAllAttributes ()
+  {
+    return m_aAttributes.getClone ();
+  }
+
+  /**
+   * Add all provided attributes. existing attributes are not altered.
+   *
+   * @param aAttributes
+   *        The attributes to be added. May be <code>null</code>. If a
+   *        <code>null</code> value is contained in the map, the respective
+   *        attribute will be removed.
+   */
+  public void addAllAttributes (@Nullable final Map <String, String> aAttributes)
+  {
+    m_aAttributes.addAttributes (aAttributes);
+  }
+
+  /**
    * Check if sender and receiver IDs of this partnership match the ones of the
    * provided partnership.
    *
@@ -384,7 +538,7 @@ public class Partnership implements Serializable
     for (final Map.Entry <String, String> aEntry : aIDs)
     {
       final String sCurrentValue = aEntry.getValue ();
-      final String sCompareValue = aCompareTo.getAttributeObject (aEntry.getKey ());
+      final String sCompareValue = aCompareTo.getAttributeAsString (aEntry.getKey ());
       if (!EqualsHelper.equals (sCurrentValue, sCompareValue))
         return false;
     }

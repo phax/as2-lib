@@ -47,9 +47,17 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 
+/**
+ * The default implementation of {@link IPartnershipMap}.
+ * 
+ * @author Philip Helger
+ */
 public final class PartnershipMap implements IPartnershipMap
 {
   private final Map <String, Partnership> m_aMap = new LinkedHashMap <String, Partnership> ();
+
+  public PartnershipMap ()
+  {}
 
   public void setPartnerships (@Nonnull final PartnershipMap aPartnerships)
   {
@@ -82,15 +90,15 @@ public final class PartnershipMap implements IPartnershipMap
 
   /**
    * @param aSearchIDs
-   *        Search IDs
-   * @param aPartnerIds
-   *        Partner IDs.
+   *        Search IDs. May not be <code>null</code>.
+   * @param aPartnerIDs
+   *        Partner IDs. May not be <code>null</code>.
    * @return <code>true</code> if searchIds is not empty and if all values in
    *         searchIds match values in partnerIds. This means that partnerIds
    *         can contain more elements than searchIds
    */
   private static boolean _arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs,
-                                                @Nonnull final IStringMap aPartnerIds)
+                                                @Nonnull final IStringMap aPartnerIDs)
   {
     if (aSearchIDs.containsNoAttribute ())
       return false;
@@ -98,7 +106,7 @@ public final class PartnershipMap implements IPartnershipMap
     for (final Map.Entry <String, String> aSearchEntry : aSearchIDs)
     {
       final String sSearchValue = aSearchEntry.getValue ();
-      final String sPartnerValue = aPartnerIds.getAttributeObject (aSearchEntry.getKey ());
+      final String sPartnerValue = aPartnerIDs.getAttributeAsString (aSearchEntry.getKey ());
       if (!EqualsHelper.equals (sSearchValue, sPartnerValue))
         return false;
     }
