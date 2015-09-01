@@ -50,6 +50,7 @@ public final class AS2GlobalSettings
 {
   /**
    * The default value is defined by the "AS2.useSecureRandom" system property.
+   * If not present <code>true</code> is used.
    */
   public static final boolean DEFAULT_USE_SECURE_RANDOM = StringParser.parseBool (SystemProperties.getPropertyValueOrNull ("AS2.useSecureRandom"),
                                                                                   true);
