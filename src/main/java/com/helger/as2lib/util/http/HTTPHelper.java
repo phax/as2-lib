@@ -59,12 +59,25 @@ import com.helger.commons.codec.RFC1522QCodec;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 
+/**
+ * HTTP utility methods.
+ * 
+ * @author Philip Helger
+ */
 public final class HTTPHelper
 {
+  /** The request method used (POST or GET) */
   public static final String MA_HTTP_REQ_TYPE = "HTTP_REQUEST_TYPE";
+  /** The request URL used - defaults to "/" */
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
+  /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
+  /** The value of the Content-Transfer-Encoding header (if provided) */
   public static final String MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING = "HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING";
+  /**
+   * The original content length before any eventual decoding (only if
+   * Content-Transfer-Encoding is provided)
+   */
   public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
