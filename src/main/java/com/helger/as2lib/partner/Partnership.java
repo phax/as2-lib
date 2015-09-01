@@ -158,9 +158,19 @@ public class Partnership implements Serializable
     return m_aSenderIDs.containsAttribute (sKey);
   }
 
+  public boolean containsSenderAS2ID ()
+  {
+    return containsSenderID (CPartnershipIDs.PID_AS2);
+  }
+
   public boolean containsSenderX509Alias ()
   {
     return containsSenderID (CPartnershipIDs.PID_X509_ALIAS);
+  }
+
+  public boolean containsSenderEmail ()
+  {
+    return containsSenderID (CPartnershipIDs.PID_EMAIL);
   }
 
   @Nonnull
@@ -170,65 +180,167 @@ public class Partnership implements Serializable
     return m_aSenderIDs.getClone ();
   }
 
-  public void setReceiverID (@Nullable final String sKey, final String sValue)
+  /**
+   * Set an arbitrary receiver ID.
+   *
+   * @param sKey
+   *        The name of the ID. May not be <code>null</code>.
+   * @param sValue
+   *        The value to be set. It may be <code>null</code> in which case the
+   *        attribute is removed.
+   */
+  public void setReceiverID (@Nonnull final String sKey, @Nullable final String sValue)
   {
     m_aReceiverIDs.setAttribute (sKey, sValue);
   }
 
+  /**
+   * Set the receivers AS2 ID.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @see #getReceiverAS2ID()
+   * @see #containsReceiverAS2ID()
+   */
   public void setReceiverAS2ID (@Nullable final String sValue)
   {
     setReceiverID (CPartnershipIDs.PID_AS2, sValue);
   }
 
+  /**
+   * Set the receivers X509 alias.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @see #getReceiverX509Alias()
+   * @see #containsReceiverX509Alias()
+   */
   public void setReceiverX509Alias (@Nullable final String sValue)
   {
     setReceiverID (CPartnershipIDs.PID_X509_ALIAS, sValue);
   }
 
+  /**
+   * Set the receivers email address.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @see #getReceiverEmail()
+   * @see #containsReceiverEmail()
+   */
   public void setReceiverEmail (@Nullable final String sValue)
   {
     setReceiverID (CPartnershipIDs.PID_EMAIL, sValue);
   }
 
+  /**
+   * Add all receiver IDs provided in the passed map. Existing receiver IDs are
+   * not altered.
+   *
+   * @param aMap
+   *        The map to use. May be <code>null</code>.
+   */
   public void addReceiverIDs (@Nullable final Map <String, String> aMap)
   {
     m_aReceiverIDs.addAttributes (aMap);
   }
 
+  /**
+   * Get the value of an arbitrary receiver ID
+   *
+   * @param sKey
+   *        The name of the ID to query. May be <code>null</code>.
+   * @return The contained value if the name is not <code>null</code> and
+   *         contained in the receiver IDs.
+   */
   @Nullable
   public String getReceiverID (@Nullable final String sKey)
   {
     return m_aReceiverIDs.getAttributeAsString (sKey);
   }
 
+  /**
+   * @return the receiver's AS2 ID or <code>null</code> if it is not set
+   * @see #setReceiverAS2ID(String)
+   * @see #containsReceiverAS2ID()
+   */
   @Nullable
   public String getReceiverAS2ID ()
   {
     return getReceiverID (CPartnershipIDs.PID_AS2);
   }
 
+  /**
+   * @return the receiver's X509 alias or <code>null</code> if it is not set
+   * @see #setReceiverX509Alias(String)
+   * @see #containsReceiverX509Alias()
+   */
   @Nullable
   public String getReceiverX509Alias ()
   {
     return getReceiverID (CPartnershipIDs.PID_X509_ALIAS);
   }
 
+  /**
+   * @return the receiver's email address or <code>null</code> if it is not set.
+   * @see #setReceiverEmail(String)
+   * @see #containsReceiverEmail()
+   */
   @Nullable
   public String getReceiverEmail ()
   {
     return getReceiverID (CPartnershipIDs.PID_EMAIL);
   }
 
+  /**
+   * Check if an arbitrary receiver ID is present.
+   *
+   * @param sKey
+   *        The name of the ID to query. May be <code>null</code>.
+   * @return <code>true</code> if the name is not <code>null</code> and
+   *         contained in the receiver IDs.
+   */
   public boolean containsReceiverID (@Nullable final String sKey)
   {
     return m_aReceiverIDs.containsAttribute (sKey);
   }
 
+  /**
+   * @return <code>true</code> if the receiver's AS2 ID is present,
+   *         <code>false</code> otherwise.
+   * @see #setReceiverAS2ID(String)
+   * @see #getReceiverAS2ID()
+   */
+  public boolean containsReceiverAS2ID ()
+  {
+    return containsReceiverID (CPartnershipIDs.PID_AS2);
+  }
+
+  /**
+   * @return <code>true</code> if the receiver's X509 alias is present,
+   *         <code>false</code> otherwise.
+   * @see #setReceiverX509Alias(String)
+   * @see #getReceiverX509Alias()
+   */
   public boolean containsReceiverX509Alias ()
   {
     return containsReceiverID (CPartnershipIDs.PID_X509_ALIAS);
   }
 
+  /**
+   * @return <code>true</code> if the receiver's email address is present,
+   *         <code>false</code> otherwise.
+   * @see #setReceiverEmail(String)
+   * @see #getReceiverEmail()
+   */
+  public boolean containsReceiverEmail ()
+  {
+    return containsReceiverID (CPartnershipIDs.PID_EMAIL);
+  }
+
+  /**
+   * @return All receiver IDs. Never <code>null</code>.
+   */
   @Nonnull
   @ReturnsMutableCopy
   public IStringMap getAllReceiverIDs ()
@@ -236,12 +348,34 @@ public class Partnership implements Serializable
     return m_aReceiverIDs.getClone ();
   }
 
+  /**
+   * Check if sender and receiver IDs of this partnership match the ones of the
+   * provided partnership.
+   *
+   * @param aPartnership
+   *        The partnership to compare to. May not be <code>null</code>.
+   * @return <code>true</code> if sender and receiver IDs of this partnership
+   *         are present in the sender and receiver IDs of the provided
+   *         partnership.
+   */
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
+    ValueEnforcer.notNull (aPartnership, "Partnership");
     return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
            compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
   }
 
+  /**
+   * Check if all values from the left side are also present on the right side.
+   *
+   * @param aIDs
+   *        The source map which must be fully contained in the aCompareTo map
+   * @param aCompareTo
+   *        The map to compare to. May not be <code>null</code>. It may contain
+   *        more attributes than aIDs but must at least contain the same ones.
+   * @return <code>true</code> if aIDs is not empty and all values from aIDs are
+   *         also present in aCompareTo, <code>false</code> otherwise.
+   */
   protected boolean compareIDs (@Nonnull final IStringMap aIDs, @Nonnull final IStringMap aCompareTo)
   {
     if (aIDs.containsNoAttribute ())
@@ -259,7 +393,8 @@ public class Partnership implements Serializable
 
   /**
    * Set all fields of this partnership with the data from the provided
-   * partnership.
+   * partnership. Name, sender IDs, receiver IDs and attributes are fully
+   * overwritten!
    *
    * @param aPartnership
    *        The partnership to copy the data from. May not be <code>null</code>.

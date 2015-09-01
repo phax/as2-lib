@@ -312,6 +312,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
 
   public final void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
   {
+    ValueEnforcer.notNull (aMsg, "Message");
+
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMsg.getPartnership ());
 
@@ -335,6 +337,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   public final void updatePartnership (@Nonnull final IMessageMDN aMdn,
                                        final boolean bOverwrite) throws OpenAS2Exception
   {
+    ValueEnforcer.notNull (aMdn, "MessageMDN");
+
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMdn.getPartnership ());
     aMdn.getPartnership ().copyFrom (aPartnership);

@@ -69,7 +69,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
-  private static final String PARTNER_NAME = "name";
+  private static final String PARTNER_NAME = PartnerMap.PARTNER_NAME;
   private static final Logger s_aLogger = LoggerFactory.getLogger (XMLPartnershipFactory.class);
 
   public void setFilename (final String filename)
@@ -141,7 +141,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
     setPartnerships (aNewPartnerships);
   }
 
-  protected void loadAttributes (@Nonnull final IMicroElement aNode,
+  protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode,
                                  @Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     final String sNodeName = "attribute";
@@ -223,7 +223,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
     loadPartnerIDs (ePartnership, aAllPartners, aPartnership, false);
 
     // read in the partnership attributes
-    loadAttributes (ePartnership, aPartnership);
+    loadPartnershipAttributes (ePartnership, aPartnership);
 
     return aPartnership;
   }

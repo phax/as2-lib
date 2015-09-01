@@ -79,25 +79,18 @@ public interface IPartnershipFactory extends IDynamicComponent
   EChange removePartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
   /**
-   * looks up and fills in any header info for a specific msg's partnership.
-   *
-   * @param aMsg
-   *        The message in which the partnership should be updated. May not be
-   *        <code>null</code> and must already contain a partnership with at
-   *        least name or sender and receiver IDs.
-   * @param bOverwrite
-   *        <code>true</code> to also set the subject of the message
+   * Get the partnership identified by the provided stub partnership.
+   * 
+   * @param aPartnership
+   *        Stub partnership which must contain either a name or a set of sender
+   *        and receiver IDs.
+   * @return The Partnership as stored in this factory. Never <code>null</code>.
    * @throws OpenAS2Exception
-   *         In case of an error
+   *         If no partnership matching the provided stub partnership can be
+   *         found.
    */
-  void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
-
-  // looks up and fills in any header info for a specific msg's partnership
-  void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
-
-  // throws an exception if the partnership doesn't exist
   @Nonnull
-  Partnership getPartnership (Partnership aPartnership) throws OpenAS2Exception;
+  Partnership getPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
   @Nullable
   Partnership getPartnershipByName (@Nullable String sName);
@@ -115,4 +108,34 @@ public interface IPartnershipFactory extends IDynamicComponent
 
   @Nonnull
   IPartnershipMap getPartnershipMap ();
+
+  /**
+   * Looks up and fills in any header info for a specific msg's partnership.
+   *
+   * @param aMsg
+   *        The message in which the partnership should be updated. May not be
+   *        <code>null</code> and must already contain a partnership with at
+   *        least name or sender and receiver IDs.
+   * @param bOverwrite
+   *        <code>true</code> to also set the subject of the message
+   * @throws OpenAS2Exception
+   *         In case of an error
+   * @see #getPartnership(Partnership)
+   */
+  void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
+
+  /**
+   * Looks up and fills in any header info for a specific msg's partnership
+   *
+   * @param aMdn
+   *        The MDN of which the partnership information should be updated. May
+   *        not be <code>null</code> and must already contain a partnership with
+   *        at least name or sender and receiver IDs.
+   * @param bOverwrite
+   *        has no effect currently
+   * @throws OpenAS2Exception
+   *         In case of an error
+   * @see #getPartnership(Partnership)
+   */
+  void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
 }

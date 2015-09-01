@@ -39,7 +39,7 @@ import com.helger.as2lib.crypto.ECompressionType;
 /**
  * Partnership IDs and attribute names. The IDs (starting with PID_) are using
  * for setSenderID/setReceiverID where as the attributes (starting with PA_) are
- * used with setAttribute
+ * used with setAttribute.
  *
  * @author Philip Helger
  */

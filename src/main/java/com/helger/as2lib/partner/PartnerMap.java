@@ -48,15 +48,22 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.state.EChange;
 
+/**
+ * Defines a map with all known partners.
+ * 
+ * @author Philip Helger
+ */
 @NotThreadSafe
 public final class PartnerMap implements IPartnerMap
 {
-  private static final String PARTNER_NAME = "name";
+  public static final String PARTNER_NAME = "name";
+
   private final Map <String, StringMap> m_aMap = new LinkedHashMap <String, StringMap> ();
 
   public void addPartner (@Nonnull final StringMap aNewPartner) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aNewPartner, "NewPartner");
+
     final String sName = aNewPartner.getAttributeAsString (PARTNER_NAME);
     if (m_aMap.containsKey (sName))
       throw new OpenAS2Exception ("Partner is defined more than once: '" + sName + "'");
@@ -66,6 +73,7 @@ public final class PartnerMap implements IPartnerMap
 
   public void setPartners (@Nonnull final PartnerMap aPartners)
   {
+    ValueEnforcer.notNull (aPartners, "Partners");
     m_aMap.clear ();
     m_aMap.putAll (aPartners.m_aMap);
   }

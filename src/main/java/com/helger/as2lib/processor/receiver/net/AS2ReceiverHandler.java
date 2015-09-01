@@ -299,14 +299,9 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       final IAS2Session aSession = m_aReceiverModule.getSession ();
 
-      // Put received data in a MIME body part
       try
       {
-        /*
-         * receivedPart = new MimeBodyPart(msg.getHeaders(), data);
-         * msg.setData(receivedPart); receivedContentType = new
-         * ContentType(receivedPart.getContentType());
-         */
+        // Put received data in a MIME body part
         final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
         final String sReceivedContentType = aReceivedContentType.toString ();
 
