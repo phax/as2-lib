@@ -55,7 +55,7 @@ public final class AS2GlobalSettings
   public static final boolean DEFAULT_USE_SECURE_RANDOM = StringParser.parseBool (SystemProperties.getPropertyValueOrNull ("AS2.useSecureRandom"),
                                                                                   true);
 
-  private static AtomicBoolean s_aUseSecureRandom = new AtomicBoolean (DEFAULT_USE_SECURE_RANDOM);
+  private static final AtomicBoolean s_aUseSecureRandom = new AtomicBoolean (DEFAULT_USE_SECURE_RANDOM);
 
   private AS2GlobalSettings ()
   {}
