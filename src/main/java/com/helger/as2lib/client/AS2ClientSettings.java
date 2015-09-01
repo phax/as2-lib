@@ -71,6 +71,8 @@ public class AS2ClientSettings
    */
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
                                                          "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+  /** By default no retry happens. */
+  public static final int DEFAULT_RETRY_COUNT = 0;
 
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
@@ -91,6 +93,8 @@ public class AS2ClientSettings
   private boolean m_bCompressBeforeSigning = true;
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
+
+  private int m_nRetryCount = DEFAULT_RETRY_COUNT;
 
   public AS2ClientSettings ()
   {}
@@ -476,5 +480,31 @@ public class AS2ClientSettings
   public String getMessageIDFormat ()
   {
     return m_sMessageIDFormat;
+  }
+
+  /**
+   * Set the retry count for sending,
+   * 
+   * @param nRetryCount
+   *        Sending retry count. Values &le; 0 mean "no retry".
+   * @return this for chaining
+   * @see #getRetryCount()
+   */
+  @Nonnull
+  public AS2ClientSettings setRetryCount (final int nRetryCount)
+  {
+    m_nRetryCount = nRetryCount;
+    return this;
+  }
+
+  /**
+   * @return The number of retries to be performed. May be &le; 0 meaning that
+   *         no retry will happen. The default value is
+   *         {@link #DEFAULT_RETRY_COUNT}.
+   * @see #setRetryCount(int)
+   */
+  public int getRetryCount ()
+  {
+    return m_nRetryCount;
   }
 }

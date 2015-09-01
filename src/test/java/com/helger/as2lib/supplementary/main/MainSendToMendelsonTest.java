@@ -75,7 +75,7 @@ public final class MainSendToMendelsonTest
       GlobalDebug.setDebugModeDirect (false);
 
     Proxy aHttpProxy = null;
-    if (true)
+    if (false)
       aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.12", 8080));
 
     // Start client configuration
@@ -104,6 +104,7 @@ public final class MainSendToMendelsonTest
     aSettings.setEncryptAndSign (ECryptoAlgorithmCrypt.CRYPT_3DES, eSignAlgo);
     aSettings.setCompress (ECompressionType.ZLIB, false);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
+    aSettings.setRetryCount (1);
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");

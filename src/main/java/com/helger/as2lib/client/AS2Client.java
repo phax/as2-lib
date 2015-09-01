@@ -33,6 +33,8 @@
 package com.helger.as2lib.client;
 
 import java.net.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -255,11 +257,16 @@ public class AS2Client
       // Invoke callback
       beforeSend (aSettings, aSession, aMsg);
 
+      // Build options map for "handle"
+      final Map <String, Object> aHandleOptions = new HashMap <String, Object> ();
+      aHandleOptions.put (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES,
+                          Integer.toString (aSettings.getRetryCount ()));
+
       // And create a sender module that directly sends the message
       // No need for a message processor, as the sending is exactly one module
       final AS2SenderModule aSender = new AS2SenderModule ();
       aSender.initDynamicComponent (aSession, null);
-      aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, null);
+      aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);
     }
     catch (final Throwable t)
     {
