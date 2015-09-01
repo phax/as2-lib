@@ -53,6 +53,7 @@ public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry
   Map <String, String> getAllAttributes ();
 
   @Nullable
+  @Deprecated
   String getAttributeObject (@Nullable String sName);
 
   @Nullable

@@ -104,6 +104,7 @@ public class StringMap implements IStringMap, Serializable
   }
 
   @Nullable
+  @Deprecated
   public String getAttributeObject (@Nullable final String sName)
   {
     // ConcurrentHashMap cannot handle null keys
@@ -113,13 +114,14 @@ public class StringMap implements IStringMap, Serializable
   @Nullable
   public final String getAttributeAsString (@Nullable final String sName)
   {
-    return getAttributeObject (sName);
+    // ConcurrentHashMap cannot handle null keys
+    return sName == null ? null : m_aAttrs.get (sName);
   }
 
   @Nullable
   public final String getAttributeAsString (@Nullable final String sName, @Nullable final String sDefault)
   {
-    final String sValue = getAttributeObject (sName);
+    final String sValue = getAttributeAsString (sName);
     return sValue != null ? sValue : sDefault;
   }
 
@@ -130,7 +132,7 @@ public class StringMap implements IStringMap, Serializable
 
   public final int getAttributeAsInt (@Nullable final String sName, final int nDefault)
   {
-    final String sValue = getAttributeObject (sName);
+    final String sValue = getAttributeAsString (sName);
     return AbstractReadOnlyAttributeContainer.getAsInt (sName, sValue, nDefault);
   }
 
@@ -141,7 +143,7 @@ public class StringMap implements IStringMap, Serializable
 
   public final long getAttributeAsLong (@Nullable final String sName, final long nDefault)
   {
-    final String sValue = getAttributeObject (sName);
+    final String sValue = getAttributeAsString (sName);
     return AbstractReadOnlyAttributeContainer.getAsLong (sName, sValue, nDefault);
   }
 
@@ -152,7 +154,7 @@ public class StringMap implements IStringMap, Serializable
 
   public final double getAttributeAsDouble (@Nullable final String sName, final double dDefault)
   {
-    final String sValue = getAttributeObject (sName);
+    final String sValue = getAttributeAsString (sName);
     return AbstractReadOnlyAttributeContainer.getAsDouble (sName, sValue, dDefault);
   }
 
@@ -163,7 +165,7 @@ public class StringMap implements IStringMap, Serializable
 
   public final boolean getAttributeAsBoolean (@Nullable final String sName, final boolean bDefault)
   {
-    final String sValue = getAttributeObject (sName);
+    final String sValue = getAttributeAsString (sName);
     return AbstractReadOnlyAttributeContainer.getAsBoolean (sName, sValue, bDefault);
   }
 
@@ -318,7 +320,7 @@ public class StringMap implements IStringMap, Serializable
 
   public boolean getAndSetAttributeFlag (@Nonnull final String sName)
   {
-    final String aOldValue = getAttributeObject (sName);
+    final String aOldValue = getAttributeAsString (sName);
     if (aOldValue != null)
     {
       // Attribute flag is already present
