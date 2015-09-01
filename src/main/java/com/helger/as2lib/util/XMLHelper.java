@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.util;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -108,23 +109,23 @@ public final class XMLHelper
    *        The attribute name of the key.
    * @param sNodeValueName
    *        The attribute name of the value.
-   * @return The non-<code>null</code> {@link IStringMap}.
+   * @return The non-<code>null</code> {@link Map}.
    * @throws OpenAS2Exception
    *         In case a node is missing a key or value attribute.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static IStringMap mapAttributeNodes (@Nonnull final IMicroElement aNode,
-                                              @Nonnull final String sNodeName,
-                                              @Nonnull final String sNodeKeyName,
-                                              @Nonnull final String sNodeValueName) throws OpenAS2Exception
+  public static Map <String, String> mapAttributeNodes (@Nonnull final IMicroElement aNode,
+                                                        @Nonnull final String sNodeName,
+                                                        @Nonnull final String sNodeKeyName,
+                                                        @Nonnull final String sNodeValueName) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aNode, "Node");
     ValueEnforcer.notNull (sNodeName, "NodeName");
     ValueEnforcer.notNull (sNodeKeyName, "NodeKeyName");
     ValueEnforcer.notNull (sNodeValueName, "NodeValueName");
 
-    final StringMap ret = new StringMap ();
+    final Map <String, String> ret = new LinkedHashMap <String, String> ();
     int nIndex = 0;
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {
@@ -141,7 +142,7 @@ public final class XMLHelper
                                     sNodeValueName +
                                     "'");
 
-      ret.setAttribute (sName, sValue);
+      ret.put (sName, sValue);
       ++nIndex;
     }
     return ret;

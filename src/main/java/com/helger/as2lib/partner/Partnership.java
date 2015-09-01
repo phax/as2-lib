@@ -99,7 +99,7 @@ public class Partnership implements Serializable
     return m_aAttributes.getClone ();
   }
 
-  public void addAllAttributes (@Nullable final IStringMap aAttributes)
+  public void addAllAttributes (@Nullable final Map <String, String> aAttributes)
   {
     m_aAttributes.addAttributes (aAttributes);
   }

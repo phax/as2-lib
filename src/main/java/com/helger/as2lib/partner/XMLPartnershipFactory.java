@@ -147,7 +147,10 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
     final String sNodeName = "attribute";
     final String sNodeKeyName = "name";
     final String sNodeValueName = "value";
-    final IStringMap aAttributes = XMLHelper.mapAttributeNodes (aNode, sNodeName, sNodeKeyName, sNodeValueName);
+    final Map <String, String> aAttributes = XMLHelper.mapAttributeNodes (aNode,
+                                                                          sNodeName,
+                                                                          sNodeKeyName,
+                                                                          sNodeValueName);
     aPartnership.addAllAttributes (aAttributes);
   }
 
