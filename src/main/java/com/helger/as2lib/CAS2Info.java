@@ -34,6 +34,11 @@ package com.helger.as2lib;
 
 import javax.annotation.concurrent.Immutable;
 
+/**
+ * Global information constants.
+ *
+ * @author Philip Helger
+ */
 @Immutable
 public final class CAS2Info
 {
@@ -41,7 +46,7 @@ public final class CAS2Info
   public static final String NAME = "ph-OpenAS2";
 
   /** The version of this AS2 client. May not contain blanks. */
-  public static final String VERSION = "v1.0";
+  public static final String VERSION = "v2.1.1-SNAPSHOT";
 
   /** Combination of {@link #NAME} and {@link #VERSION} separated by a blank. */
   public static final String NAME_VERSION = NAME + " " + VERSION;
