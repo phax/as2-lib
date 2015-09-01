@@ -165,7 +165,7 @@ public class Partnership implements Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public StringMap getAllSenderIDs ()
+  public IStringMap getAllSenderIDs ()
   {
     return m_aSenderIDs.getClone ();
   }
@@ -231,7 +231,7 @@ public class Partnership implements Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public StringMap getAllReceiverIDs ()
+  public IStringMap getAllReceiverIDs ()
   {
     return m_aReceiverIDs.getClone ();
   }
