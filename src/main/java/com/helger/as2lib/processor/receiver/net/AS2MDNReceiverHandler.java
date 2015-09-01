@@ -137,8 +137,6 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
       aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null)));
       // Must be set AFTER the DataHandler!
       aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
-      aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
-                               aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
 
       aMsg.setData (aReceivedPart);
 

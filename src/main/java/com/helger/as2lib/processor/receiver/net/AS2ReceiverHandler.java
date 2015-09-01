@@ -315,8 +315,6 @@ public class AS2ReceiverHandler implements INetModuleHandler
 
         // Header must be set AFTER the DataHandler!
         aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
-        aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
-                                 aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
         aMsg.setData (aReceivedPart);
       }
       catch (final Exception ex)
