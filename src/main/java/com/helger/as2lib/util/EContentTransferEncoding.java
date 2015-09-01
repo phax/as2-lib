@@ -36,6 +36,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.codec.IDecoder;
+import com.helger.commons.codec.IdentityCodec;
+import com.helger.commons.codec.RFC1522BCodec;
+import com.helger.commons.codec.RFC1522QCodec;
 import com.helger.commons.id.IHasID;
 import com.helger.commons.lang.EnumHelper;
 
@@ -48,11 +52,49 @@ import com.helger.commons.lang.EnumHelper;
  */
 public enum EContentTransferEncoding implements IHasID <String>
 {
- _7BIT ("7bit"),
- _8BIT ("8bit"),
- BINARY ("binary"),
- QUOTED_PRINTABLE ("quoted-printable"),
- BASE64 ("base64");
+ _7BIT ("7bit")
+ {
+   @Override
+   public IdentityCodec <byte []> createDecoder ()
+   {
+     // Nothing to decode
+     return new IdentityCodec <byte []> ();
+   }
+ },
+ _8BIT ("8bit")
+ {
+   @Override
+   public IdentityCodec <byte []> createDecoder ()
+   {
+     // Nothing to decode
+     return new IdentityCodec <byte []> ();
+   }
+ },
+ BINARY ("binary")
+ {
+   @Override
+   public IdentityCodec <byte []> createDecoder ()
+   {
+     // Nothing to decode
+     return new IdentityCodec <byte []> ();
+   }
+ },
+ QUOTED_PRINTABLE ("quoted-printable")
+ {
+   @Override
+   public RFC1522QCodec createDecoder ()
+   {
+     return new RFC1522QCodec ();
+   }
+ },
+ BASE64 ("base64")
+ {
+   @Override
+   public RFC1522BCodec createDecoder ()
+   {
+     return new RFC1522BCodec ();
+   }
+ };
 
   private final String m_sID;
 
@@ -67,6 +109,13 @@ public enum EContentTransferEncoding implements IHasID <String>
   {
     return m_sID;
   }
+
+  /**
+   * @return A new decoder for this Content Transfer Encoding. May not be
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public abstract IDecoder <byte []> createDecoder ();
 
   @Nullable
   public static EContentTransferEncoding getFromIDCaseInsensitiveOrNull (@Nullable final String sID)

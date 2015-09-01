@@ -54,14 +54,14 @@ import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.codec.RFC1522BCodec;
-import com.helger.commons.codec.RFC1522QCodec;
+import com.helger.commons.codec.IDecoder;
+import com.helger.commons.codec.IdentityCodec;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 
 /**
  * HTTP utility methods.
- * 
+ *
  * @author Philip Helger
  */
 public final class HTTPHelper
@@ -314,33 +314,22 @@ public final class HTTPHelper
         s_aLogger.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
       else
       {
-        // Remember original length before continuing
-        final int nOriginalContentLength = aData.length;
-
-        if (EContentTransferEncoding.BASE64.equals (eCTE))
+        // Decode data if necessary
+        final IDecoder <byte []> aDecoder = eCTE.createDecoder ();
+        if (!(aDecoder instanceof IdentityCodec <?>))
         {
-          // Decode Base64 data
+          // Remember original length before continuing
+          final int nOriginalContentLength = aData.length;
+
           s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
                           sContentTransferEncoding +
                           "' - decoding");
-          aData = new RFC1522BCodec ().getDecoded (aData);
+          aData = aDecoder.getDecoded (aData);
+
+          // Remember that we potentially did something
+          aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+          aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_LENGTH, Integer.toString (nOriginalContentLength));
         }
-        else
-          if (EContentTransferEncoding.QUOTED_PRINTABLE.equals (eCTE))
-          {
-            // Decode quoted printable
-            s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
-                            sContentTransferEncoding +
-                            "' - decoding");
-            aData = new RFC1522QCodec ().getDecoded (aData);
-          }
-          else
-          {
-            // Keep data as is
-          }
-        // Remember that we potentially did something
-        aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
-        aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_LENGTH, Integer.toString (nOriginalContentLength));
       }
     }
 
