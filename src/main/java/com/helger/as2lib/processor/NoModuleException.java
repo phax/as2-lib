@@ -35,10 +35,12 @@ package com.helger.as2lib.processor;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableObject;
 
 public class NoModuleException extends OpenAS2Exception
 {
@@ -46,7 +48,9 @@ public class NoModuleException extends OpenAS2Exception
   private final IMessage m_aMsg;
   private final String m_sAction;
 
-  public NoModuleException (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  public NoModuleException (@Nullable final String sAction,
+                            @Nullable final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     super (getAsString (sAction, aMsg, aOptions));
     m_sAction = sAction;
@@ -54,16 +58,20 @@ public class NoModuleException extends OpenAS2Exception
     m_aOptions = aOptions;
   }
 
+  @Nullable
   public String getAction ()
   {
     return m_sAction;
   }
 
+  @Nullable
   public IMessage getMsg ()
   {
     return m_aMsg;
   }
 
+  @Nullable
+  @ReturnsMutableObject ("design")
   public Map <String, Object> getOptions ()
   {
     return m_aOptions;
@@ -77,8 +85,10 @@ public class NoModuleException extends OpenAS2Exception
 
   @Nonnull
   @Nonempty
-  protected static String getAsString (final String sAction, final IMessage aMsg, final Map <String, Object> aOptions)
+  protected static String getAsString (@Nullable final String sAction,
+                                       @Nullable final IMessage aMsg,
+                                       @Nullable final Map <String, Object> aOptions)
   {
-    return "NoModuleException: Requested action: " + sAction + " Message: " + aMsg + " Options: " + aOptions;
+    return "NoModuleException: Requested action: " + sAction + "; Message: " + aMsg + "; Options: " + aOptions;
   }
 }
