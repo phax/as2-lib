@@ -39,8 +39,11 @@ public interface IProcessorResenderModule extends IProcessorModule
   String DO_RESEND = "resend";
   String DO_RESENDMDN = "resendmdn";
 
+  /** An OpenAS2Exception representing the cause of the error */
   String OPTION_CAUSE = "cause";
+  /** The internal object representing the original sender */
   String OPTION_INITIAL_SENDER = "initial_sender";
+  /** The internal send action to be used for resending */
   String OPTION_RESEND_ACTION = "resend_method";
   /** Defines the option to be set to define the number of retries. */
   String OPTION_RETRIES = "retries";
