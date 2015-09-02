@@ -35,27 +35,60 @@ package com.helger.as2lib.processor.sender;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
-  // How many times should this message be sent?
-  protected final int getRetryCount (@Nullable final Map <String, Object> aOptions)
+  /**
+   * How many times should this message be sent?
+   *
+   * @param aPartnership
+   *        The partnership to retrieve the value from. If a retry count is
+   *        available in the partnership it takes precedence over the ones
+   *        defined in the options or attributes. May be <code>null</code>.
+   * @param aOptions
+   *        Options to choose from. May be <code>null</code>.
+   * @return 0 to indicate no retry.
+   */
+  @Nonnegative
+  protected final int getRetryCount (@Nullable final Partnership aPartnership,
+                                     @Nullable final Map <String, Object> aOptions)
   {
-    String sLeft = aOptions == null ? null : (String) aOptions.get (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
-    if (sLeft == null)
+    String sTriesLeft = null;
+
+    if (aPartnership != null)
     {
-      sLeft = getAttributeAsString (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
-      if (sLeft == null)
-        return IProcessorSenderModule.DEFAULT_RETRIES;
+      // Get from partnership
+      sTriesLeft = aPartnership.getAttribute (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
     }
 
-    return Integer.parseInt (sLeft);
+    if (sTriesLeft == null && aOptions != null)
+    {
+      // Provided in the options?
+      sTriesLeft = (String) aOptions.get (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
+    }
+
+    if (sTriesLeft == null)
+    {
+      // No. Provided as an attribute?
+      sTriesLeft = getAttributeAsString (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
+    }
+
+    if (sTriesLeft == null)
+    {
+      // Not provided. Use default.
+      return IProcessorSenderModule.DEFAULT_RETRIES;
+    }
+
+    // Avoid returning negative values
+    return Math.max (Integer.parseInt (sTriesLeft), 0);
   }
 
   protected final boolean doResend (final String sHow,

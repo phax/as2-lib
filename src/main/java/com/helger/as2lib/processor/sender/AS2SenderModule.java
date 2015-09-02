@@ -90,6 +90,27 @@ import com.helger.commons.timing.StopWatch;
 @SuppressWarnings ("deprecation")
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
+  /**
+   * Implementation of {@link IAS2HttpHeaderWrapper} for
+   * {@link HttpURLConnection}.
+   *
+   * @author Philip Helger
+   */
+  private static final class HttpURLConnectionHeaderWrapper implements IAS2HttpHeaderWrapper
+  {
+    private final HttpURLConnection m_aConn;
+
+    private HttpURLConnectionHeaderWrapper (@Nonnull final HttpURLConnection aConn)
+    {
+      m_aConn = aConn;
+    }
+
+    public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
+    {
+      m_aConn.setRequestProperty (sName, sValue);
+    }
+  }
+
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
   private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
@@ -436,10 +457,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * @throws IOException
    *         in case of an IO error
    */
-  protected void receiveMDN (@Nonnull final AS2Message aMsg,
-                             @Nonnull final HttpURLConnection aConn,
-                             @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
+  protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
+                                 @Nonnull final HttpURLConnection aConn,
+                                 @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Receiving synchronous MDN for message" + aMsg.getLoggingText ());
+
     try
     {
       // Create a MessageMDN and copy HTTP headers
@@ -552,15 +576,93 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
-  private void _resend (@Nonnull final IMessage aMsg,
-                        final OpenAS2Exception aCause,
-                        final int nTries) throws OpenAS2Exception
+  private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
+                             @Nonnull final MimeBodyPart aSecuredData,
+                             @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
   {
-    if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, aCause, nTries))
+    final Partnership aPartnership = aMsg.getPartnership ();
+
+    // Create the HTTP connection
+    final String sUrl = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL);
+    final boolean bOutput = true;
+    final boolean bInput = true;
+    final boolean bUseCaches = false;
+    final String sRequestMethod = "POST";
+    final HttpURLConnection aConn = getConnection (sUrl,
+                                                   bOutput,
+                                                   bInput,
+                                                   bUseCaches,
+                                                   sRequestMethod,
+                                                   getSession ().getHttpProxy ());
+    try
     {
-      // Oh dear, we've run out of retries, do something interesting.
-      // TODO create a fake failure MDN
-      s_aLogger.error ("Message abandoned" + aMsg.getLoggingText ());
+      updateHttpHeaders (new HttpURLConnectionHeaderWrapper (aConn), aMsg);
+
+      aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
+      aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
+
+      s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
+
+      // Note: closing this stream causes connection abort errors on some AS2
+      // servers
+      final OutputStream aMsgOS = aConn.getOutputStream ();
+
+      // Transfer the data
+      final InputStream aMsgIS = aSecuredData.getInputStream ();
+
+      final StopWatch aSW = StopWatch.createdStarted ();
+      // Main transmission - closes InputStream
+      final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
+      aSW.stop ();
+      s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+
+      // Check the HTTP Response code
+      final int nResponseCode = aConn.getResponseCode ();
+      if (nResponseCode != HttpURLConnection.HTTP_OK &&
+          nResponseCode != HttpURLConnection.HTTP_CREATED &&
+          nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
+          nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
+          nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
+      {
+        s_aLogger.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
+        throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
+      }
+
+      // Asynch MDN 2007-03-12
+      // Receive an MDN
+      try
+      {
+        // Receive an MDN
+        if (aMsg.isRequestingMDN ())
+        {
+          // Check if the AsyncMDN is required
+          if (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) == null)
+          {
+            // go ahead to receive sync MDN
+            receiveSyncMDN (aMsg, aConn, sMIC);
+            s_aLogger.info ("message sent" + aMsg.getLoggingText ());
+          }
+        }
+      }
+      catch (final DispositionException ex)
+      {
+        // If a disposition error hasn't been handled, the message transfer
+        // was not successful
+        throw ex;
+      }
+      catch (final OpenAS2Exception ex)
+      {
+        // Don't re-send or fail, just log an error if one occurs while
+        // receiving the MDN
+        final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
+                                                            ex);
+        oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+        oae2.terminate ();
+      }
+    }
+    finally
+    {
+      aConn.disconnect ();
     }
   }
 
@@ -569,137 +671,67 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final AS2Message aMsg = (AS2Message) aBaseMsg;
-    final Partnership aPartnership = aMsg.getPartnership ();
     s_aLogger.info ("Submitting message" + aMsg.getLoggingText ());
 
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    final int nRetries = getRetryCount (aOptions);
+    int nRetries = getRetryCount (aMsg.getPartnership (), aOptions);
+    MimeBodyPart aSecuredData = null;
+    String sMIC = null;
 
-    try
+    do
     {
-      // compress and/or sign and/or encrypt the message if needed
-      final MimeBodyPart aSecuredData = secure (aMsg);
-
-      // Calculate MIC after compress/sign/crypt was handled, because the
-      // message data might change if compression before signing is active.
-      final String sMIC = calculateAndStoreMIC (aMsg);
-
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
-      aMsg.setContentType (aSecuredData.getContentType ());
-
-      // Create the HTTP connection and set up headers
-      final String sUrl = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL);
-
-      final boolean bOutput = true;
-      final boolean bInput = true;
-      final boolean bUseCaches = false;
-      final HttpURLConnection aConn = getConnection (sUrl,
-                                                     bOutput,
-                                                     bInput,
-                                                     bUseCaches,
-                                                     "POST",
-                                                     getSession ().getHttpProxy ());
       try
       {
-        final IAS2HttpHeaderWrapper aWrapper = new IAS2HttpHeaderWrapper ()
+        // Do this only once and not for every retry
+        if (aSecuredData == null)
         {
-          public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
-          {
-            aConn.setRequestProperty (sName, sValue);
-          }
-        };
-        updateHttpHeaders (aWrapper, aMsg);
+          // compress and/or sign and/or encrypt the message if needed
+          aSecuredData = secure (aMsg);
 
-        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
-        aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
+          // Calculate MIC after compress/sign/crypt was handled, because the
+          // message data might change if compression before signing is active.
+          sMIC = calculateAndStoreMIC (aMsg);
 
-        s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
-
-        // Note: closing this stream causes connection abort errors on some AS2
-        // servers
-        final OutputStream aMsgOS = aConn.getOutputStream ();
-
-        // Transfer the data
-        final InputStream aMsgIS = aSecuredData.getInputStream ();
-
-        final StopWatch aSW = StopWatch.createdStarted ();
-        // Main transmission - closes InputStream
-        final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
-        aSW.stop ();
-        s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-
-        // Check the HTTP Response code
-        final int nResponseCode = aConn.getResponseCode ();
-        if (nResponseCode != HttpURLConnection.HTTP_OK &&
-            nResponseCode != HttpURLConnection.HTTP_CREATED &&
-            nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
-            nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
-            nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
+          aMsg.setContentType (aSecuredData.getContentType ());
+        }
+        else
         {
-          s_aLogger.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
-          throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
+          s_aLogger.info ("Retrying to send message" + aMsg.getLoggingText ());
         }
 
-        // Asynch MDN 2007-03-12
-        // Receive an MDN
-        try
-        {
-          // Receive an MDN
-          if (aMsg.isRequestingMDN ())
-          {
-            // Check if the AsyncMDN is required
-            if (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) == null)
-            {
-              // go ahead to receive sync MDN
-              receiveMDN (aMsg, aConn, sMIC);
-              s_aLogger.info ("message sent" + aMsg.getLoggingText ());
-            }
-          }
-        }
-        catch (final DispositionException ex)
-        {
-          // If a disposition error hasn't been handled, the message transfer
-          // was not successful
-          throw ex;
-        }
-        catch (final OpenAS2Exception ex)
-        {
-          // Don't resend or fail, just log an error if one occurs while
-          // receiving the MDN
-          final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN");
-          oae2.initCause (ex);
-          oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-          oae2.terminate ();
-        }
+        _sendViaHTTP (aMsg, aSecuredData, sMIC);
       }
-      finally
+      catch (final HttpResponseException ex)
       {
-        aConn.disconnect ();
-      }
-    }
-    catch (final HttpResponseException ex)
-    {
-      // Resend if the HTTP Response has an error code
-      s_aLogger.error ("Http Response Error " + ex.getMessage ());
-      ex.terminate ();
-      _resend (aMsg, ex, nRetries);
-    }
-    catch (final IOException ex)
-    {
-      // Resend if a network error occurs during transmission
-      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
-      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      wioe.terminate ();
+        s_aLogger.error ("Http Response Error " + ex.getMessage ());
 
-      _resend (aMsg, wioe, nRetries);
-    }
-    catch (final Exception ex)
-    {
-      // Propagate error if it can't be handled by a resend
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
+        // No retries left?
+        if (nRetries <= 0)
+          throw ex;
+
+        ex.terminate ();
+      }
+      catch (final IOException ex)
+      {
+        // Re-send if a network error occurs during transmission
+        final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
+        wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+
+        // No retries left?
+        if (nRetries <= 0)
+          throw wioe;
+
+        wioe.terminate ();
+      }
+      catch (final Exception ex)
+      {
+        // Propagate error if it can't be handled by a re-send
+        throw WrappedOpenAS2Exception.wrap (ex);
+      }
+    } while (nRetries-- > 0);
   }
 }

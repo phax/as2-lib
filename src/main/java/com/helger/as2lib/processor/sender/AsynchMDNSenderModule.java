@@ -98,11 +98,12 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       final boolean bOutput = true;
       final boolean bInput = true;
       final boolean bUseCaches = false;
+      final String sRequestMethod = "POST";
       final HttpURLConnection aConn = getConnection (sUrl,
                                                      bOutput,
                                                      bInput,
                                                      bUseCaches,
-                                                     "POST",
+                                                     sRequestMethod,
                                                      getSession ().getHttpProxy ());
 
       try
@@ -162,6 +163,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     }
     catch (final HttpResponseException ex)
     {
+      s_aLogger.error ("Http Response Error " + ex.getMessage ());
+
       // Resend if the HTTP Response has an error code
       ex.terminate ();
       _resend (aMsg, ex);
