@@ -53,6 +53,8 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
+import com.helger.as2lib.processor.DefaultMessageProcessor;
+import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
@@ -202,6 +204,14 @@ public class AS2Client
     aSession.setPartnershipFactory (aPartnershipFactory);
   }
 
+  @OverrideOnDemand
+  protected void initMessageProcessor (@Nonnull final AS2Session aSession) throws OpenAS2Exception
+  {
+    // Use a self-filling in-memory partnership factory
+    final DefaultMessageProcessor aMessageProcessor = new DefaultMessageProcessor ();
+    aSession.setMessageProcessor (aMessageProcessor);
+  }
+
   @Nonnull
   @OverrideOnDemand
   protected AS2ClientResponse createResponse ()
@@ -253,20 +263,28 @@ public class AS2Client
 
       initCertificateFactory (aSettings, aSession);
       initPartnershipFactory (aSession);
+      initMessageProcessor (aSession);
 
-      // Invoke callback
-      beforeSend (aSettings, aSession, aMsg);
+      aSession.getMessageProcessor ().startActiveModules ();
+      try
+      {
+        // Invoke callback
+        beforeSend (aSettings, aSession, aMsg);
 
-      // Build options map for "handle"
-      final Map <String, Object> aHandleOptions = new HashMap <String, Object> ();
-      aHandleOptions.put (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES,
-                          Integer.toString (aSettings.getRetryCount ()));
+        // Build options map for "handle"
+        final Map <String, Object> aHandleOptions = new HashMap <String, Object> ();
+        aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 
-      // And create a sender module that directly sends the message
-      // No need for a message processor, as the sending is exactly one module
-      final AS2SenderModule aSender = new AS2SenderModule ();
-      aSender.initDynamicComponent (aSession, null);
-      aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);
+        // And create a sender module that directly sends the message
+        // No need for a message processor, as the sending is exactly one module
+        final AS2SenderModule aSender = new AS2SenderModule ();
+        aSender.initDynamicComponent (aSession, null);
+        aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);
+      }
+      finally
+      {
+        aSession.getMessageProcessor ().stopActiveModules ();
+      }
     }
     catch (final Throwable t)
     {
