@@ -75,7 +75,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public AbstractBaseMessage ()
   {}
 
-  protected final void baseReadObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
+  private void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     // read in attributes
     m_aAttributes = (StringMap) aOIS.readObject ();
@@ -94,7 +94,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     m_aPartnership = (Partnership) aOIS.readObject ();
   }
 
-  protected final void baseWriteObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
+  private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
     // write attributes
     aOOS.writeObject (m_aAttributes);

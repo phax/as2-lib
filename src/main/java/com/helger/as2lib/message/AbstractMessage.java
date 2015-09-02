@@ -228,10 +228,8 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   }
 
   @SuppressWarnings ("deprecation")
-  private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
+  protected void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
-    baseReadObject (aOIS);
-
     try
     {
       // read in mime body
@@ -254,8 +252,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
-    baseWriteObject (aOOS);
-
     // write the mime body
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     try

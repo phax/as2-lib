@@ -124,8 +124,6 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
-    baseReadObject (aOIS);
-
     // read in text
     m_sText = (String) aOIS.readObject ();
 
@@ -145,8 +143,6 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
 
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
-    baseWriteObject (aOOS);
-
     // write text
     aOOS.writeObject (m_sText);
 
