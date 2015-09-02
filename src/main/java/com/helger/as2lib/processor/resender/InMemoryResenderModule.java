@@ -33,7 +33,6 @@
 package com.helger.as2lib.processor.resender;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,6 @@ import java.util.Vector;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +48,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 
@@ -65,64 +61,9 @@ import com.helger.commons.collection.CollectionHelper;
  */
 public class InMemoryResenderModule extends AbstractActiveResenderModule
 {
-  /**
-   * This class represents a single message to be resend.
-   *
-   * @author Philip Helger
-   */
-  @Immutable
-  public static final class Item
-  {
-    private final String m_sAction;
-    private final int m_nRetries;
-    private final IMessage m_aMsg;
-    private final long m_nEarliestResendDateMS;
-
-    Item (@Nonnull @Nonempty final String sAction,
-          @Nonnegative final int nRetries,
-          @Nonnull final IMessage aMsg,
-          @Nonnegative final long nResendDelayMS)
-    {
-      m_sAction = ValueEnforcer.notEmpty (sAction, "Action");
-      m_nRetries = ValueEnforcer.isGE0 (nRetries, "Retries");
-      m_aMsg = ValueEnforcer.notNull (aMsg, "Message");
-      m_nEarliestResendDateMS = new Date ().getTime () + nResendDelayMS;
-    }
-
-    @Nonnull
-    @Nonempty
-    public String getAction ()
-    {
-      return m_sAction;
-    }
-
-    @Nonnegative
-    public int getRetries ()
-    {
-      return m_nRetries;
-    }
-
-    @Nonnull
-    public IMessage getMessage ()
-    {
-      return m_aMsg;
-    }
-
-    @Nonnull
-    public Date getEarliestResendDate ()
-    {
-      return new Date (m_nEarliestResendDateMS);
-    }
-
-    public boolean isTimeToSend ()
-    {
-      return m_nEarliestResendDateMS <= new Date ().getTime ();
-    }
-  }
-
   private static final Logger s_aLogger = LoggerFactory.getLogger (InMemoryResenderModule.class);
 
-  private final Vector <Item> m_aItems = new Vector <Item> ();
+  private final Vector <ResendItem> m_aItems = new Vector <ResendItem> ();
 
   @Override
   public boolean canHandle (@Nonnull final String sAction,
@@ -156,13 +97,13 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
     }
 
-    final Item aItem = new Item (sResendAction, nRetries, aMsg, getResendDelayMS ());
+    final ResendItem aItem = new ResendItem (sResendAction, nRetries, aMsg, getResendDelayMS ());
     m_aItems.add (aItem);
 
     s_aLogger.info ("Message put in resend queue" + aMsg.getLoggingText ());
   }
 
-  protected void resendItem (@Nonnull final Item aItem) throws OpenAS2Exception
+  protected void resendItem (@Nonnull final ResendItem aItem) throws OpenAS2Exception
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Resending item");
@@ -196,13 +137,13 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   {
     try
     {
-      final List <Item> aResendItems = new ArrayList <Item> ();
-      for (final Item aItem : m_aItems)
+      final List <ResendItem> aResendItems = new ArrayList <ResendItem> ();
+      for (final ResendItem aItem : m_aItems)
         if (aItem.isTimeToSend ())
           aResendItems.add (aItem);
 
       // Resend all selected items
-      for (final Item aResendItem : aResendItems)
+      for (final ResendItem aResendItem : aResendItems)
         resendItem (aResendItem);
     }
     catch (final OpenAS2Exception ex)
@@ -233,7 +174,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <Item> getAllResendItems ()
+  public List <ResendItem> getAllResendItems ()
   {
     return CollectionHelper.newList (m_aItems);
   }
