@@ -111,16 +111,16 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     IMessage aMsg = null;
     try
     {
-      final String sAction = aItem.m_sAction;
-      final String sRetries = Integer.toString (aItem.m_nRetries - 1);
-      aMsg = aItem.m_aMsg;
+      final String sResendAction = aItem.getResendAction ();
+      final String sRetries = Integer.toString (aItem.getRetries () - 1);
+      aMsg = aItem.getMessage ();
 
       // Transmit the message
       s_aLogger.info ("Loaded message for resend" + aMsg.getLoggingText ());
 
       final Map <String, Object> aOptions = new HashMap <String, Object> ();
       aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
-      getSession ().getMessageProcessor ().handle (sAction, aMsg, aOptions);
+      getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
       // Finally remove from list
       m_aItems.remove (aItem);

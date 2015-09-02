@@ -50,17 +50,17 @@ import com.helger.commons.annotation.Nonempty;
 @Immutable
 public class ResendItem
 {
-  final String m_sAction;
-  final int m_nRetries;
-  final IMessage m_aMsg;
+  private final String m_sResendAction;
+  private final int m_nRetries;
+  private final IMessage m_aMsg;
   private final long m_nEarliestResendDateMS;
 
-  public ResendItem (@Nonnull @Nonempty final String sAction,
+  public ResendItem (@Nonnull @Nonempty final String sResendAction,
                      @Nonnegative final int nRetries,
                      @Nonnull final IMessage aMsg,
                      @Nonnegative final long nResendDelayMS)
   {
-    m_sAction = ValueEnforcer.notEmpty (sAction, "Action");
+    m_sResendAction = ValueEnforcer.notEmpty (sResendAction, "ResendAction");
     m_nRetries = ValueEnforcer.isGE0 (nRetries, "Retries");
     m_aMsg = ValueEnforcer.notNull (aMsg, "Message");
     ValueEnforcer.isGE0 (nResendDelayMS, "ResendDelayMS");
@@ -69,9 +69,9 @@ public class ResendItem
 
   @Nonnull
   @Nonempty
-  public String getAction ()
+  public String getResendAction ()
   {
-    return m_sAction;
+    return m_sResendAction;
   }
 
   @Nonnegative
