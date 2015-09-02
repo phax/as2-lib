@@ -58,9 +58,11 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
+import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
@@ -189,7 +191,18 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMsg.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
       aMsg.setMessageID (aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
-      getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+      try
+      {
+        getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
+      }
+      catch (final ComponentNotFoundException ex)
+      {
+        // No message processor found
+      }
+      catch (final NoModuleException ex)
+      {
+        // No module found in message processor
+      }
 
       // check if the mic (message integrity check) is correct
       if (checkAsyncMDN (aMsg))

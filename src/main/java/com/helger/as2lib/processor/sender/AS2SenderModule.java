@@ -70,14 +70,15 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.CNetAttribute;
+import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
-import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
@@ -496,7 +497,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       }
       catch (final ComponentNotFoundException ex)
       {
-        // No processor found
+        // No message processor found
+      }
+      catch (final NoModuleException ex)
+      {
+        // No module found in message processor
       }
 
       final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);

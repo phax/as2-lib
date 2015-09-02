@@ -32,18 +32,26 @@
  */
 package com.helger.as2lib.session;
 
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * Thrown from {@link AS2Session} if a component was not present.
+ * 
+ * @author Philip Helger
+ */
 public class ComponentNotFoundException extends OpenAS2Exception
 {
   private final String m_sComponentName;
 
-  public ComponentNotFoundException (final String sComponentName)
+  public ComponentNotFoundException (@Nullable final String sComponentName)
   {
-    super (sComponentName);
+    super ("No such component: " + sComponentName);
     m_sComponentName = sComponentName;
   }
 
+  @Nullable
   public String getComponentName ()
   {
     return m_sComponentName;

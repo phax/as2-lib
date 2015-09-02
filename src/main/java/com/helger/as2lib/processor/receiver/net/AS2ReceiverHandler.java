@@ -258,7 +258,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           }
           catch (final ComponentNotFoundException ex)
           {
-            // May be...
+            // No message processor found
+          }
+          catch (final NoModuleException ex)
+          {
+            // No module found in message processor
           }
           s_aLogger.info ("sent MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
         }
@@ -415,6 +419,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       try
       {
         aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
+      }
+      catch (final NoModuleException ex)
+      {
+        // No module installed - ignore
       }
       catch (final OpenAS2Exception ex)
       {

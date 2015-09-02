@@ -38,9 +38,9 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
 
 /**
- * Exception to be thrown if a component with the specified ID is already
- * registered.
- * 
+ * Exception to be thrown from {@link AS2Session} if a component with the
+ * specified ID is already registered.
+ *
  * @author Philip Helger
  */
 public class ComponentDuplicateException extends OpenAS2Exception
