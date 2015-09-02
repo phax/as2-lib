@@ -71,7 +71,7 @@ public final class IOHelper
   }
 
   @Nonnegative
-  public static long copy (@WillClose final InputStream aIS, @WillNotClose final OutputStream aOS)
+  public static long copy (@Nonnull @WillClose final InputStream aIS, @Nonnull @WillNotClose final OutputStream aOS)
   {
     final MutableLong aML = new MutableLong ();
     StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aML);
@@ -159,7 +159,7 @@ public final class IOHelper
 
   /**
    * move the file to an error directory
-   * 
+   *
    * @param aFile
    *        Source file to move
    * @param sErrorDirectory
