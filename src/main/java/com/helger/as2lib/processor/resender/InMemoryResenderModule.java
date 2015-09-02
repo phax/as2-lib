@@ -52,7 +52,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 
 /**
- * An in-memory, polling based resender module. Upon
+ * An asynchronous, in-memory, polling based resender module. Upon
  * {@link #handle(String, IMessage, Map)} the document is added to a queue there
  * is a background poller task that checks for resending (see {@link #resend()}
  * ). If resending fails an exception is thrown.
