@@ -62,17 +62,17 @@ public class OpenAS2Exception extends Exception
     log (false);
   }
 
-  public OpenAS2Exception (final String sMsg)
+  public OpenAS2Exception (@Nullable final String sMsg)
   {
     super (sMsg);
   }
 
-  public OpenAS2Exception (final String sMsg, final Throwable aCause)
+  public OpenAS2Exception (@Nullable final String sMsg, @Nullable final Throwable aCause)
   {
     super (sMsg, aCause);
   }
 
-  public OpenAS2Exception (final Throwable aCause)
+  public OpenAS2Exception (@Nullable final Throwable aCause)
   {
     super (aCause);
   }

@@ -50,15 +50,16 @@ import com.helger.commons.CGlobal;
  */
 public abstract class AbstractActiveResenderModule extends AbstractActiveModule implements IProcessorResenderModule
 {
-  // in seconds
+  /** The resend delay in seconds */
   public static final String ATTR_RESEND_DELAY_SECONDS = "resenddelay";
 
-  // TODO Resend set to 15 minutes. Implement a scaling resend time with
-  // eventual permanent failure of transmission
-  // 15 minutes
+  /** The default resend delay in milliseconds (15 minutes) */
   public static final long DEFAULT_RESEND_DELAY_MS = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
 
-  private class PollTask extends TimerTask
+  /** The timer default polling interval of 30 seconds. */
+  public static final long DEFAULT_POLLING_INTERVAL = 30 * CGlobal.MILLISECONDS_PER_SECOND;
+
+  private class ResendPollTask extends TimerTask
   {
     @Override
     public void run ()
@@ -68,9 +69,10 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
     }
   }
 
-  public static final long TICK_INTERVAL = 30 * CGlobal.MILLISECONDS_PER_SECOND;
-
   private Timer m_aTimer;
+
+  /** The timer polling interval. Defaults to 30 seconds. */
+  private final long m_nPollingInterval = DEFAULT_POLLING_INTERVAL;
 
   /**
    * @return The defined delay until re-send in milliseconds.
@@ -94,8 +96,8 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
     if (m_aTimer != null)
       throw new IllegalStateException ("Resendering timer is already running!");
 
-    m_aTimer = new Timer (true);
-    m_aTimer.scheduleAtFixedRate (new PollTask (), 0, TICK_INTERVAL);
+    m_aTimer = new Timer ("Resender", true);
+    m_aTimer.scheduleAtFixedRate (new ResendPollTask (), 0, m_nPollingInterval);
   }
 
   @Override

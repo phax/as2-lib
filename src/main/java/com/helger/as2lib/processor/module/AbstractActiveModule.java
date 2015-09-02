@@ -51,9 +51,10 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
     return m_bRunning;
   }
 
-  public abstract void doStart () throws OpenAS2Exception;
-
-  public abstract void doStop () throws OpenAS2Exception;
+  private void _setRunning (final boolean bRunning)
+  {
+    m_bRunning = bRunning;
+  }
 
   public boolean canHandle (@Nonnull final String sAction,
                             @Nonnull final IMessage aMsg,
@@ -69,7 +70,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
     throw new OpenAS2UnsupportedException ("Active modules don't handle anything by default");
   }
 
-  public void forceStop (final Exception aCause)
+  public void forceStop (@Nullable final Exception aCause)
   {
     new ForcedStopException (aCause).terminate ();
 
@@ -83,16 +84,27 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
     }
   }
 
-  private void _setRunning (final boolean bRunning)
-  {
-    m_bRunning = bRunning;
-  }
+  /**
+   * Implement the internal start logic.
+   * 
+   * @throws OpenAS2Exception
+   *         In case of an error.
+   */
+  public abstract void doStart () throws OpenAS2Exception;
 
   public void start () throws OpenAS2Exception
   {
     _setRunning (true);
     doStart ();
   }
+
+  /**
+   * Implement the internal stop logic.
+   * 
+   * @throws OpenAS2Exception
+   *         In case of an error.
+   */
+  public abstract void doStop () throws OpenAS2Exception;
 
   public void stop () throws OpenAS2Exception
   {
