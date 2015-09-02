@@ -36,6 +36,8 @@ import com.helger.as2lib.processor.module.IProcessorModule;
 
 public interface IProcessorSenderModule extends IProcessorModule
 {
+  /** Action name for sending a regular AS2Message */
   String DO_SEND = "send";
+  /** Action name for sending an MDN message */
   String DO_SENDMDN = "sendmdn";
 }

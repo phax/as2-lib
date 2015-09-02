@@ -54,8 +54,8 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.DefaultMessageProcessor;
-import com.helger.as2lib.processor.resender.DirectoryResenderModule;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
+import com.helger.as2lib.processor.resender.InMemoryResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
@@ -259,6 +259,8 @@ public class AS2Client
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("MessageID to send: " + aMsg.getMessageID ());
 
+      final boolean bHasRetries = aSettings.getRetryCount () > 0;
+
       // Start a new session
       final AS2Session aSession = createSession ();
 
@@ -266,12 +268,10 @@ public class AS2Client
       initPartnershipFactory (aSession);
       initMessageProcessor (aSession);
 
+      if (bHasRetries)
       {
-        final IProcessorResenderModule aResender = new DirectoryResenderModule ();
-        final StringMap aParameters = new StringMap ();
-        aParameters.setAttribute (DirectoryResenderModule.ATTR_RESEND_DIRECTORY, "client-data/resend");
-        aParameters.setAttribute (DirectoryResenderModule.ATTR_ERROR_DIRECTORY, "client-data/error");
-        aResender.initDynamicComponent (aSession, aParameters);
+        final IProcessorResenderModule aResender = new InMemoryResenderModule ();
+        aResender.initDynamicComponent (aSession, null);
         aSession.getMessageProcessor ().addModule (aResender);
       }
 
@@ -283,7 +283,8 @@ public class AS2Client
 
         // Build options map for "handle"
         final Map <String, Object> aHandleOptions = new HashMap <String, Object> ();
-        aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
+        if (bHasRetries)
+          aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 
         // And create a sender module that directly sends the message
         // No need for a message processor, as the sending is exactly one module

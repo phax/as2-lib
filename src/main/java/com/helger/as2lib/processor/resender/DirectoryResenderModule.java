@@ -60,14 +60,14 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
-import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 
 /**
- * A persisting file based resender module. Upon "
+ * A persisting file based resender module. Upon
  * {@link #handle(String, IMessage, Map)} it writes the document into a file and
  * there is a background poller task that checks for resending (see
- * {@link #resend()}).
+ * {@link #resend()}). If re-sending fails, the document is moved into an error
+ * folder.
  *
  * @author Philip Helger
  */
@@ -75,13 +75,6 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 {
   public static final String ATTR_RESEND_DIRECTORY = "resenddir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
-  // in seconds
-  public static final String ATTR_RESEND_DELAY_SECONDS = "resenddelay";
-
-  // TODO Resend set to 15 minutes. Implement a scaling resend time with
-  // eventual permanent failure of transmission
-  // 15 minutes
-  public static final long DEFAULT_RESEND_DELAY_MS = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
 
   private static final String FILENAME_DATE_FORMAT = "MM-dd-yy-HH-mm-ss";
 
@@ -115,7 +108,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       final File aResendFile = IOHelper.getUniqueFile (aResendDir, getFilename ());
       final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
 
-      String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
+      String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
       if (sMethod == null)
       {
         s_aLogger.warn ("The resending method is missing - default to message sending!");
@@ -155,12 +148,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   @Nonnull
   protected String getFilename () throws InvalidParameterException
   {
-    long nResendDelayMS;
-    if (!containsAttribute (ATTR_RESEND_DELAY_SECONDS))
-      nResendDelayMS = DEFAULT_RESEND_DELAY_MS;
-    else
-      nResendDelayMS = getAttributeAsIntRequired (ATTR_RESEND_DELAY_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
-
+    final long nResendDelayMS = getResendDelayMS ();
     final long nResendTime = new Date ().getTime () + nResendDelayMS;
     return DateHelper.formatDate (FILENAME_DATE_FORMAT, new Date (nResendTime));
   }
@@ -179,7 +167,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
   }
 
-  protected void processFile (@Nonnull final File aFile) throws OpenAS2Exception
+  protected void resendFile (@Nonnull final File aFile) throws OpenAS2Exception
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Processing " + aFile.getAbsolutePath ());
@@ -240,6 +228,10 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
   }
 
+  /**
+   * @return A list with all files that are ready to be resend.
+   * @throws OpenAS2Exception
+   */
   @Nonnull
   @ReturnsMutableCopy
   protected List <File> scanDirectory () throws OpenAS2Exception
@@ -273,7 +265,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
       // iterator through and send each file
       for (final File aCurrentFile : aSendFiles)
-        processFile (aCurrentFile);
+        resendFile (aCurrentFile);
     }
     catch (final OpenAS2Exception ex)
     {

@@ -35,17 +35,35 @@ package com.helger.as2lib.processor.resender;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 import com.helger.commons.CGlobal;
 
+/**
+ * Base class for an active resender module.
+ *
+ * @author Philip Helger
+ */
 public abstract class AbstractActiveResenderModule extends AbstractActiveModule implements IProcessorResenderModule
 {
+  // in seconds
+  public static final String ATTR_RESEND_DELAY_SECONDS = "resenddelay";
+
+  // TODO Resend set to 15 minutes. Implement a scaling resend time with
+  // eventual permanent failure of transmission
+  // 15 minutes
+  public static final long DEFAULT_RESEND_DELAY_MS = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
+
   private class PollTask extends TimerTask
   {
     @Override
     public void run ()
     {
+      // Call resend of module class
       resend ();
     }
   }
@@ -54,19 +72,34 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 
   private Timer m_aTimer;
 
+  /**
+   * @return The defined delay until re-send in milliseconds.
+   * @throws InvalidParameterException
+   *         If an invalid value is configured.
+   */
+  @Nonnegative
+  protected final long getResendDelayMS () throws InvalidParameterException
+  {
+    if (!containsAttribute (ATTR_RESEND_DELAY_SECONDS))
+      return DEFAULT_RESEND_DELAY_MS;
+    return getAttributeAsIntRequired (ATTR_RESEND_DELAY_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
+  }
+
   public abstract void resend ();
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void doStart () throws OpenAS2Exception
   {
     if (m_aTimer != null)
-      throw new IllegalStateException ("Timer is already running!");
+      throw new IllegalStateException ("Resendering timer is already running!");
 
     m_aTimer = new Timer (true);
     m_aTimer.scheduleAtFixedRate (new PollTask (), 0, TICK_INTERVAL);
   }
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void doStop () throws OpenAS2Exception
   {
     if (m_aTimer != null)

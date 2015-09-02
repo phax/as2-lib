@@ -121,7 +121,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     final Map <String, Object> aOptions = new HashMap <String, Object> ();
     aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
     aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    aOptions.put (IProcessorResenderModule.OPTION_RESEND_METHOD, sHow);
+    aOptions.put (IProcessorResenderModule.OPTION_RESEND_ACTION, sHow);
     aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
     getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
 

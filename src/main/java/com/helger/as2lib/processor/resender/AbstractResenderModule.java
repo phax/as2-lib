@@ -32,18 +32,14 @@
  */
 package com.helger.as2lib.processor.resender;
 
-import com.helger.as2lib.processor.module.IProcessorModule;
+import com.helger.as2lib.processor.module.AbstractProcessorModule;
 
-public interface IProcessorResenderModule extends IProcessorModule
+/**
+ * Base class for a non-active resender module.
+ * 
+ * @author Philip Helger
+ */
+public abstract class AbstractResenderModule extends AbstractProcessorModule implements IProcessorResenderModule
 {
-  String DO_RESEND = "resend";
-  String DO_RESENDMDN = "resendmdn";
-
-  String OPTION_CAUSE = "cause";
-  String OPTION_INITIAL_SENDER = "initial_sender";
-  String OPTION_RESEND_ACTION = "resend_method";
-  /** Defines the option to be set to define the number of retries. */
-  String OPTION_RETRIES = "retries";
-  /** Default retries: 0. All values &le; 0 mean: no retry */
-  int DEFAULT_RETRIES = 0;
+  /* empty */
 }

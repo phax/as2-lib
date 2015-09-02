@@ -43,6 +43,7 @@ import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
+import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.commons.ValueEnforcer;
 
 /**
@@ -72,7 +73,7 @@ public class AS2ClientSettings
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
                                                          "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** By default no retry happens. */
-  public static final int DEFAULT_RETRY_COUNT = 0;
+  public static final int DEFAULT_RETRY_COUNT = IProcessorResenderModule.DEFAULT_RETRIES;
 
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
@@ -484,7 +485,7 @@ public class AS2ClientSettings
 
   /**
    * Set the retry count for sending,
-   * 
+   *
    * @param nRetryCount
    *        Sending retry count. Values &le; 0 mean "no retry".
    * @return this for chaining
