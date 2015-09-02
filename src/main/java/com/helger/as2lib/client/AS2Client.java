@@ -54,6 +54,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.DefaultMessageProcessor;
+import com.helger.as2lib.processor.resender.DirectoryResenderModule;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -264,6 +265,15 @@ public class AS2Client
       initCertificateFactory (aSettings, aSession);
       initPartnershipFactory (aSession);
       initMessageProcessor (aSession);
+
+      {
+        final IProcessorResenderModule aResender = new DirectoryResenderModule ();
+        final StringMap aParameters = new StringMap ();
+        aParameters.setAttribute (DirectoryResenderModule.ATTR_RESEND_DIRECTORY, "client-data/resend");
+        aParameters.setAttribute (DirectoryResenderModule.ATTR_ERROR_DIRECTORY, "client-data/error");
+        aResender.initDynamicComponent (aSession, aParameters);
+        aSession.getMessageProcessor ().addModule (aResender);
+      }
 
       aSession.getMessageProcessor ().startActiveModules ();
       try

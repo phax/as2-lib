@@ -42,7 +42,7 @@ public interface IProcessorResenderModule extends IProcessorModule
   String OPTION_CAUSE = "cause";
   String OPTION_INITIAL_SENDER = "initial_sender";
   String OPTION_RESEND_METHOD = "resend_method";
-
+  /** Defines the option to be set to define the number of retries. */
   String OPTION_RETRIES = "retries";
   /** Default retries: none. All values &le; 0 mean: no retry */
   int DEFAULT_RETRIES = 0;

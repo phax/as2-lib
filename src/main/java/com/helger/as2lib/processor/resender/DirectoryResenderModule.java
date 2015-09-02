@@ -203,6 +203,9 @@ public class DirectoryResenderModule extends AbstractResenderModule
           aOIS.close ();
         }
 
+        // Decrement retries
+        sRetries = Integer.toString (Integer.parseInt (sRetries) - 1);
+
         // Transmit the message
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 

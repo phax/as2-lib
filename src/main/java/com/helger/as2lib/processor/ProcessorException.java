@@ -42,6 +42,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.lang.ClassHelper;
+import com.helger.commons.lang.StackTraceHelper;
 
 public class ProcessorException extends OpenAS2Exception
 {
@@ -53,14 +54,18 @@ public class ProcessorException extends OpenAS2Exception
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
-      aSB.append ('\n').append (aCause.getMessage ());
+      aSB.append ('\n').append (aCause.getMessage ()).append ('\n').append (StackTraceHelper.getStackAsString (aCause));
     return aSB.toString ();
   }
 
   public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
                              @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + " threw exception(s):" + _getMessage (aCauses));
+    super ("Processor '" +
+           ClassHelper.getClassLocalName (aProcessor) +
+           "'" +
+           (aCauses.size () == 1 ? "" : " threw exception(s):" + _getMessage (aCauses)),
+           aCauses.size () == 1 ? aCauses.get (0) : null);
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
