@@ -33,9 +33,13 @@
 package com.helger.as2lib.util.http;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -51,14 +55,17 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.codec.IDecoder;
 import com.helger.commons.codec.IdentityCodec;
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.system.SystemProperties;
 
 /**
  * HTTP utility methods.
@@ -82,6 +89,22 @@ public final class HTTPHelper
   public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
+  private static final File s_aHttpDumpDirectory;
+
+  static
+  {
+    final String sHttpDumpDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
+    if (StringHelper.hasText (sHttpDumpDirectory))
+    {
+      s_aHttpDumpDirectory = new File (sHttpDumpDirectory);
+      IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aHttpDumpDirectory);
+      s_aLogger.info ("Using directory " +
+                      s_aHttpDumpDirectory.getAbsolutePath () +
+                      " to dump all incoming HTTP requests to.");
+    }
+    else
+      s_aHttpDumpDirectory = null;
+  }
 
   private HTTPHelper ()
   {}
@@ -388,6 +411,48 @@ public final class HTTPHelper
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
+  private static void _dumpHttpRequest (@Nonnull final InternetHeaders aHeaders, @Nonnull final byte [] aPayload)
+  {
+    // Ensure a unique filename
+    File aDestinationFile;
+    int nIndex = 0;
+    do
+    {
+      aDestinationFile = new File (s_aHttpDumpDirectory,
+                                   "as2-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".http");
+      nIndex++;
+    } while (aDestinationFile.exists ());
+
+    s_aLogger.info ("Dumping HTTP request to file " + aDestinationFile.getAbsolutePath ());
+    final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile);
+    try
+    {
+      final Enumeration <?> aEnum = aHeaders.getAllHeaderLines ();
+      while (aEnum.hasMoreElements ())
+      {
+        final String sHeaderLine = (String) aEnum.nextElement ();
+        aOS.write (sHeaderLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+        aOS.write ('\r');
+        aOS.write ('\n');
+      }
+
+      // empty line
+      aOS.write ('\r');
+      aOS.write ('\n');
+
+      // Add payload
+      aOS.write (aPayload);
+    }
+    catch (final IOException ex)
+    {
+      s_aLogger.error ("Failed to dump HTTP request to file " + aDestinationFile.getAbsolutePath (), ex);
+    }
+    finally
+    {
+      StreamHelper.close (aOS);
+    }
+  }
+
   /**
    * Read headers and payload from the passed input stream provider.
    *
@@ -400,7 +465,9 @@ public final class HTTPHelper
    *        The Message to be filled. May not be <code>null</code>.
    * @return The payload of the HTTP request.
    * @throws IOException
+   *         In case of error reading from the InputStream
    * @throws MessagingException
+   *         In case header line parsing fails
    */
   @Nonnull
   public static byte [] readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
@@ -424,10 +491,16 @@ public final class HTTPHelper
       aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
 
       // Parse all HTTP headers from stream
-      aMsg.setHeaders (new InternetHeaders (aIS));
+      final InternetHeaders aHeaders = new InternetHeaders (aIS);
+      aMsg.setHeaders (aHeaders);
 
       // Read the message body
-      return readHttpPayload (aIS, aResponseHandler, aMsg);
+      final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
+
+      if (s_aHttpDumpDirectory != null)
+        _dumpHttpRequest (aHeaders, aPayload);
+
+      return aPayload;
     }
     finally
     {
