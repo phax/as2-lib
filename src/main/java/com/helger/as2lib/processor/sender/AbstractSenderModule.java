@@ -98,7 +98,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
   }
 
   /**
-   * @param sHow
+   * @param sResendAction
    *        Handler action name to use. May not be <code>null</code>.
    * @param aMsg
    *        The message to be resend. May be an AS2 message or an MDN.
@@ -110,22 +110,25 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
    * @throws OpenAS2Exception
    *         In case of an error
    */
-  protected final boolean doResend (@Nonnull final String sHow,
+  protected final boolean doResend (@Nonnull final String sResendAction,
                                     @Nonnull final IMessage aMsg,
                                     @Nullable final OpenAS2Exception aCause,
                                     final int nTries) throws OpenAS2Exception
   {
     if (nTries <= 0)
+    {
+      s_aLogger.info ("Retry count exceeded - no more retries for" + aMsg.getLoggingText ());
       return false;
+    }
 
     final Map <String, Object> aOptions = new HashMap <String, Object> ();
     aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
     aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
-    aOptions.put (IProcessorResenderModule.OPTION_RESEND_ACTION, sHow);
+    aOptions.put (IProcessorResenderModule.OPTION_RESEND_ACTION, sResendAction);
     aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
     getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
 
-    s_aLogger.info ("Scheduled message " + aMsg.getMessageID () + " for re-sending");
+    s_aLogger.info ("Scheduled message for resending" + aMsg.getLoggingText ());
     return true;
   }
 }
