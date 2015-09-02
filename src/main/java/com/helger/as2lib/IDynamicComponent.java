@@ -68,7 +68,7 @@ public interface IDynamicComponent extends IStringMap
    * Returns the Session used to initialize this Component. The returned session
    * is also used to locate other components if needed.
    *
-   * @return this component's session
+   * @return this component's session. Never <code>null</code>.
    */
   @Nonnull
   IAS2Session getSession ();
@@ -82,7 +82,9 @@ public interface IDynamicComponent extends IStringMap
    * @param aSession
    *        the component uses this object to access other components
    * @param aParameters
-   *        configuration values for the component
+   *        configuration values for the component. All parameters will be
+   *        stored as attributes of this component. All attributes existing
+   *        before this method is called will be removed!
    * @throws OpenAS2Exception
    *         If an error occurs while initializing the component
    * @throws InvalidParameterException
