@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.net.Socket;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.StreamHelper;
@@ -47,10 +48,17 @@ import com.helger.commons.io.stream.StreamHelper;
  *
  * @author Philip Helger
  */
+@Immutable
 public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
 {
   private final Socket m_aSocket;
 
+  /**
+   * Constructor
+   *
+   * @param aSocket
+   *        Socket to read from. May not be <code>null</code>.
+   */
   public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket)
   {
     ValueEnforcer.notNull (aSocket, "Socket");

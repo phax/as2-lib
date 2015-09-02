@@ -102,6 +102,14 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
    */
   void addHeader (@Nonnull String sKey, @Nullable String sValue);
 
+  /**
+   * Set all headers from the providers headers object. All existing headers are
+   * discarded.
+   * 
+   * @param aHeaders
+   *        The headers object to be used. May be <code>null</code> in which
+   *        case all existing headers are removed.
+   */
   void setHeaders (@Nullable InternetHeaders aHeaders);
 
   /**

@@ -108,7 +108,13 @@ public class AS2ReceiverHandler implements INetModuleHandler
     return aSocket.getInetAddress ().getHostAddress () + ":" + aSocket.getPort ();
   }
 
-  // Create a new message and record the source ip and port
+  /**
+   * Create a new message and record the source ip and port
+   *
+   * @param aSocket
+   *        The socket through which the message will be read.
+   * @return The {@link AS2Message} to use and never <code>null</code>.
+   */
   @Nonnull
   protected AS2Message createMessage (@Nonnull final Socket aSocket)
   {
@@ -477,24 +483,21 @@ public class AS2ReceiverHandler implements INetModuleHandler
     }
   }
 
-  public void handle (final AbstractNetModule owner, @Nonnull final Socket aSocket)
+  public void handle (final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
     s_aLogger.info ("Incoming connection " + sClientInfo);
 
     final AS2Message aMsg = createMessage (aSocket);
 
-    byte [] aMsgData = null;
-
     final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
 
     // Time the transmission
     final StopWatch aSW = StopWatch.createdStarted ();
-
-    // Read in the message request, headers, and data
+    byte [] aMsgData = null;
     try
     {
-      // Read HTTP request incl. headers
+      // Read in the message request, headers, and data
       aMsgData = HTTPHelper.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
     }
     catch (final Exception ex)
