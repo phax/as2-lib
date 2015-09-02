@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
 
-public class AS2ReceiverModule extends AbstractNetModule
+public class AS2ReceiverModule extends AbstractActiveNetModule
 {
   @Override
   @Nonnull

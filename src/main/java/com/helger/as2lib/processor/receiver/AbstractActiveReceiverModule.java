@@ -34,7 +34,7 @@ package com.helger.as2lib.processor.receiver;
 
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 
-public abstract class AbstractReceiverModule extends AbstractActiveModule implements IProcessorReceiverModule
+public abstract class AbstractActiveReceiverModule extends AbstractActiveModule implements IProcessorReceiverModule
 {
   /* empty */
 }

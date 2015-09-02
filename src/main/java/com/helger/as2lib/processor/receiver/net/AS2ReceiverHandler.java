@@ -64,7 +64,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
-import com.helger.as2lib.processor.receiver.AbstractNetModule;
+import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
@@ -152,7 +152,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       s_aLogger.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (DispositionType.createError ("decryption-failed"),
-                                      AbstractNetModule.DISP_DECRYPTION_ERROR,
+                                      AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
                                       ex);
     }
   }
@@ -184,7 +184,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       s_aLogger.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (DispositionType.createError ("integrity-check-failed"),
-                                      AbstractNetModule.DISP_VERIFY_SIGNATURE_FAILED,
+                                      AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED,
                                       ex);
     }
   }
@@ -208,7 +208,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     {
       s_aLogger.error ("Error decompressing received message", ex);
       throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                      AbstractNetModule.DISP_DECOMPRESSION_ERROR,
+                                      AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
                                       ex);
     }
   }
@@ -321,7 +321,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_PARSING_MIME_FAILED,
+                                        AbstractActiveNetModule.DISP_PARSING_MIME_FAILED,
                                         ex);
       }
 
@@ -341,7 +341,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("authentication-failed"),
-                                        AbstractNetModule.DISP_PARTNERSHIP_NOT_FOUND,
+                                        AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND,
                                         ex);
       }
 
@@ -371,7 +371,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
         if (bIsDecompressed)
         {
           throw new DispositionException (DispositionType.createError ("decompression-failed"),
-                                          AbstractNetModule.DISP_DECOMPRESSION_ERROR,
+                                          AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
                                           new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
         }
 
@@ -413,7 +413,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_VALIDATION_FAILED +
+                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED +
                                                                                                      "\n" +
                                                                                                      StackTraceHelper.getStackAsString (ex),
                                         ex);
@@ -427,7 +427,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_STORAGE_FAILED + "\n" + ex.getMessage (),
+                                        AbstractActiveNetModule.DISP_STORAGE_FAILED + "\n" + ex.getMessage (),
                                         ex);
       }
 
@@ -443,7 +443,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractNetModule.DISP_VALIDATION_FAILED +
+                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED +
                                                                                                      "\n" +
                                                                                                      StackTraceHelper.getStackAsString (ex),
                                         ex);
@@ -458,7 +458,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
                    aResponseHandler,
                    aMsg,
                    DispositionType.createSuccess (),
-                   AbstractNetModule.DISP_SUCCESS);
+                   AbstractActiveNetModule.DISP_SUCCESS);
         }
         else
         {
@@ -483,7 +483,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     }
   }
 
-  public void handle (final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
+  public void handle (final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
     s_aLogger.info ("Incoming connection " + sClientInfo);

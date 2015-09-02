@@ -68,7 +68,7 @@ import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 
-public abstract class AbstractDirectoryPollingModule extends AbstractPollingModule
+public abstract class AbstractDirectoryPollingModule extends AbstractActivePollingModule
 {
   public static final String ATTR_OUTBOX_DIRECTORY = "outboxdir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";

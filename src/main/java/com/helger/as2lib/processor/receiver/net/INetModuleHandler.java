@@ -36,7 +36,7 @@ import java.net.Socket;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.processor.receiver.AbstractNetModule;
+import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 
 /**
  * Base interface for a module handler for Net interactions.
@@ -45,5 +45,5 @@ import com.helger.as2lib.processor.receiver.AbstractNetModule;
  */
 public interface INetModuleHandler
 {
-  void handle (@Nonnull AbstractNetModule aOwner, @Nonnull Socket aSocket);
+  void handle (@Nonnull AbstractActiveNetModule aOwner, @Nonnull Socket aSocket);
 }

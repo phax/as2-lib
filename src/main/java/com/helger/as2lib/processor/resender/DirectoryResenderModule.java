@@ -69,7 +69,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
  * {@link #resend()}). If re-sending fails, the document is moved into an error
  * folder.
  *
- * @author Philip Helger
+ * @author OpenAS2
  */
 public class DirectoryResenderModule extends AbstractActiveResenderModule
 {

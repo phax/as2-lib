@@ -65,7 +65,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.ClassHelper;
 
-public abstract class AbstractNetModule extends AbstractReceiverModule
+public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModule
 {
   public static final String ATTR_ADDRESS = "address";
   public static final String ATTR_PORT = "port";
@@ -121,7 +121,7 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
 
   private MainThread m_aMainThread;
 
-  public AbstractNetModule ()
+  public AbstractActiveNetModule ()
   {}
 
   @Override
@@ -210,10 +210,10 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (ConnectionThread.class);
 
-    private final AbstractNetModule m_aOwner;
+    private final AbstractActiveNetModule m_aOwner;
     private final Socket m_aSocket;
 
-    public ConnectionThread (@Nonnull final AbstractNetModule aOwner, @Nonnull @WillClose final Socket aSocket)
+    public ConnectionThread (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull @WillClose final Socket aSocket)
     {
       super ("AS2ConnectionThread-" + ClassHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
@@ -246,11 +246,11 @@ public abstract class AbstractNetModule extends AbstractReceiverModule
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (MainThread.class);
 
-    private final AbstractNetModule m_aOwner;
+    private final AbstractActiveNetModule m_aOwner;
     private final ServerSocket m_aServerSocket;
     private volatile boolean m_bTerminated;
 
-    public MainThread (@Nonnull final AbstractNetModule aOwner,
+    public MainThread (@Nonnull final AbstractActiveNetModule aOwner,
                        @Nullable final String sAddress,
                        @Nonnegative final int nPort) throws IOException
     {

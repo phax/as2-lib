@@ -46,7 +46,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IStringMap;
 
-public abstract class AbstractPollingModule extends AbstractReceiverModule
+public abstract class AbstractActivePollingModule extends AbstractActiveReceiverModule
 {
   public static final String ATTR_POLLING_INTERVAL = "interval";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PollTask.class);

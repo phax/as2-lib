@@ -40,10 +40,19 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.processor.IMessageProcessor;
 
+/**
+ * A processor module is a module that is to be used within an
+ * {@link IMessageProcessor} instance.
+ * 
+ * @author OpenAS2
+ */
 public interface IProcessorModule extends IDynamicComponent
 {
   boolean canHandle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions);
 
-  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
+  void handle (@Nonnull String sAction,
+               @Nonnull IMessage aMsg,
+               @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
 }

@@ -53,7 +53,7 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.processor.receiver.AbstractNetModule;
+import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
@@ -87,7 +87,7 @@ public class MessageFileModule extends AbstractStorageModule
     catch (final Exception ex)
     {
       throw new DispositionException (DispositionType.createError ("Error storing transaction"),
-                                      AbstractNetModule.DISP_STORAGE_FAILED,
+                                      AbstractActiveNetModule.DISP_STORAGE_FAILED,
                                       ex);
     }
 

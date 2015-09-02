@@ -59,7 +59,7 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
-import com.helger.as2lib.processor.receiver.AbstractNetModule;
+import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
@@ -104,7 +104,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     return m_aModule;
   }
 
-  public void handle (@Nonnull final AbstractNetModule aOwner, @Nonnull final Socket aSocket)
+  public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     s_aLogger.info ("incoming connection [" + getClientInfo (aSocket) + "]");
 

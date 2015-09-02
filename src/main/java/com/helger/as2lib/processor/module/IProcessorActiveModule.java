@@ -34,6 +34,12 @@ package com.helger.as2lib.processor.module;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * A special processor module that supports a special start/stop cycle (e.g.
+ * polling tasks).
+ * 
+ * @author OpenAS2
+ */
 public interface IProcessorActiveModule extends IProcessorModule
 {
   boolean isRunning ();
