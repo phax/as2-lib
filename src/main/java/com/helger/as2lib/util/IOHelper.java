@@ -157,7 +157,16 @@ public final class IOHelper
     }
   }
 
-  // move the file to an error directory
+  /**
+   * move the file to an error directory
+   * 
+   * @param aFile
+   *        Source file to move
+   * @param sErrorDirectory
+   *        Error directory path.
+   * @throws OpenAS2Exception
+   *         In case moving failed
+   */
   public static void handleError (@Nonnull final File aFile,
                                   @Nonnull final String sErrorDirectory) throws OpenAS2Exception
   {
