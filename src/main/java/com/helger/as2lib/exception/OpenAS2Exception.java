@@ -79,7 +79,7 @@ public class OpenAS2Exception extends Exception
 
   @Nonnull
   @ReturnsMutableCopy
-  public final Map <String, Object> getSources ()
+  public final Map <String, Object> getAllSources ()
   {
     return CollectionHelper.newMap (m_aSources);
   }
@@ -112,6 +112,7 @@ public class OpenAS2Exception extends Exception
                     (bTerminated ? "terminated" : "caught") +
                     ": " +
                     getMessage () +
-                    (m_aSources == null ? "" : "; sources: " + m_aSources), getCause ());
+                    (m_aSources == null ? "" : "; sources: " + m_aSources),
+                    getCause ());
   }
 }
