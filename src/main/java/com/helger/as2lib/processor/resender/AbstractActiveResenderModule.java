@@ -39,7 +39,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 import com.helger.commons.CGlobal;
 
-public abstract class AbstractResenderModule extends AbstractActiveModule implements IProcessorResenderModule
+public abstract class AbstractActiveResenderModule extends AbstractActiveModule implements IProcessorResenderModule
 {
   private class PollTask extends TimerTask
   {

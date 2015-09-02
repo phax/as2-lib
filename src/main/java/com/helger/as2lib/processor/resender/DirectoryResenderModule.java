@@ -71,7 +71,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
  *
  * @author Philip Helger
  */
-public class DirectoryResenderModule extends AbstractResenderModule
+public class DirectoryResenderModule extends AbstractActiveResenderModule
 {
   public static final String ATTR_RESEND_DIRECTORY = "resenddir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
