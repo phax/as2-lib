@@ -77,6 +77,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
@@ -90,27 +91,6 @@ import com.helger.commons.timing.StopWatch;
 @SuppressWarnings ("deprecation")
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
-  /**
-   * Implementation of {@link IAS2HttpHeaderWrapper} for
-   * {@link HttpURLConnection}.
-   *
-   * @author Philip Helger
-   */
-  private static final class HttpURLConnectionHeaderWrapper implements IAS2HttpHeaderWrapper
-  {
-    private final HttpURLConnection m_aConn;
-
-    private HttpURLConnectionHeaderWrapper (@Nonnull final HttpURLConnection aConn)
-    {
-      m_aConn = aConn;
-    }
-
-    public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
-    {
-      m_aConn.setRequestProperty (sName, sValue);
-    }
-  }
-
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
   private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
@@ -596,7 +576,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                    getSession ().getHttpProxy ());
     try
     {
-      updateHttpHeaders (new HttpURLConnectionHeaderWrapper (aConn), aMsg);
+      updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn), aMsg);
 
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
