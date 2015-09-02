@@ -442,34 +442,28 @@ public final class HTTPHelper
     if (aIS == null)
       throw new IllegalStateException ("Failed to open InputStream from " + aISP);
 
-    try
-    {
-      // Read the HTTP meta data
-      final String [] aRequest = _readRequestInfo (aIS);
-      // Request method (e.g. "POST")
-      aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
-      // Request URL (e.g. "/as2")
-      aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
-      // HTTP version (e.g. "HTTP/1.1")
-      aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
+    // Read the HTTP meta data
+    final String [] aRequest = _readRequestInfo (aIS);
+    // Request method (e.g. "POST")
+    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
+    // Request URL (e.g. "/as2")
+    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
+    // HTTP version (e.g. "HTTP/1.1")
+    aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
 
-      // Parse all HTTP headers from stream
-      final InternetHeaders aHeaders = new InternetHeaders (aIS);
-      aMsg.setHeaders (aHeaders);
+    // Parse all HTTP headers from stream
+    final InternetHeaders aHeaders = new InternetHeaders (aIS);
+    aMsg.setHeaders (aHeaders);
 
-      // Read the message body - no Content-Transfer-Encoding handling
-      final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
+    // Read the message body - no Content-Transfer-Encoding handling
+    final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
 
-      if (s_aHttpDumpDirectory != null)
-        _dumpHttpRequest (aHeaders, aPayload);
+    if (s_aHttpDumpDirectory != null)
+      _dumpHttpRequest (aHeaders, aPayload);
 
-      return aPayload;
-    }
-    finally
-    {
-      // Close InputStream
-      StreamHelper.close (aIS);
-    }
+    return aPayload;
+
+    // Don't close the IS here!
   }
 
   public static void sendSimpleHTTPResponse (@Nonnull final IAS2HttpResponseHandler aResponseHandler,
