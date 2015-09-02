@@ -108,11 +108,11 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       final File aResendFile = IOHelper.getUniqueFile (aResendDir, getFilename ());
       final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
 
-      String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
-      if (sMethod == null)
+      String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+      if (sResendAction == null)
       {
         s_aLogger.warn ("The resending method is missing - default to message sending!");
-        sMethod = IProcessorSenderModule.DO_SEND;
+        sResendAction = IProcessorSenderModule.DO_SEND;
       }
 
       String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
@@ -124,7 +124,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
       }
 
-      aOOS.writeObject (sMethod);
+      aOOS.writeObject (sResendAction);
       aOOS.writeObject (sRetries);
       aOOS.writeObject (aMsg);
       aOOS.close ();
@@ -178,11 +178,11 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       try
       {
         final ObjectInputStream aOIS = new ObjectInputStream (new FileInputStream (aFile));
-        String sMethod;
+        String sResendAction;
         String sRetries;
         try
         {
-          sMethod = (String) aOIS.readObject ();
+          sResendAction = (String) aOIS.readObject ();
           sRetries = (String) aOIS.readObject ();
           aMsg = (IMessage) aOIS.readObject ();
         }
@@ -199,7 +199,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
         final Map <String, Object> aOptions = new HashMap <String, Object> ();
         aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
-        getSession ().getMessageProcessor ().handle (sMethod, aMsg, aOptions);
+        getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
         if (IOHelper.getFileOperationManager ().deleteFile (aFile).isFailure ())
         {
