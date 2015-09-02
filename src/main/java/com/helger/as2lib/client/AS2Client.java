@@ -55,7 +55,7 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.DefaultMessageProcessor;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
-import com.helger.as2lib.processor.resender.InMemoryResenderModule;
+import com.helger.as2lib.processor.resender.ImmediateResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
@@ -270,7 +270,8 @@ public class AS2Client
 
       if (bHasRetries)
       {
-        final IProcessorResenderModule aResender = new InMemoryResenderModule ();
+        // Use synchronous no-delay resender
+        final IProcessorResenderModule aResender = new ImmediateResenderModule ();
         aResender.initDynamicComponent (aSession, null);
         aSession.getMessageProcessor ().addModule (aResender);
       }
@@ -287,9 +288,12 @@ public class AS2Client
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 
         // And create a sender module that directly sends the message
-        // No need for a message processor, as the sending is exactly one module
+        // The message processor registration is required for the resending
+        // feature
         final AS2SenderModule aSender = new AS2SenderModule ();
         aSender.initDynamicComponent (aSession, null);
+        aSession.getMessageProcessor ().addModule (aSender);
+
         aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);
       }
       finally
