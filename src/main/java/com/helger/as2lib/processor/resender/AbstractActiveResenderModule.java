@@ -50,6 +50,7 @@ import com.helger.commons.CGlobal;
 /**
  * Base class for an active resender module.
  *
+ * @author OpenAS2
  * @author Philip Helger
  */
 public abstract class AbstractActiveResenderModule extends AbstractActiveModule implements IProcessorResenderModule

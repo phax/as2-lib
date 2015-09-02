@@ -36,7 +36,9 @@ import com.helger.as2lib.processor.module.IProcessorModule;
 
 public interface IProcessorResenderModule extends IProcessorModule
 {
+  /** Action to resend a real message */
   String DO_RESEND = "resend";
+  /** Action to resend an MDN */
   String DO_RESENDMDN = "resendmdn";
 
   /** An OpenAS2Exception representing the cause of the error */

@@ -63,7 +63,7 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 
 /**
- * A persisting file based resender module. Upon
+ * A persisting, file based, polling resender module. Upon
  * {@link #handle(String, IMessage, Map)} it writes the document into a file and
  * there is a background poller task that checks for resending (see
  * {@link #resend()}). If re-sending fails, the document is moved into an error

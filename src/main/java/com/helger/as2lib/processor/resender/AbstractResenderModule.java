@@ -36,8 +36,8 @@ import com.helger.as2lib.processor.module.AbstractProcessorModule;
 
 /**
  * Base class for a non-active resender module.
- * 
- * @author Philip Helger
+ *
+ * @author OpenAS2
  */
 public abstract class AbstractResenderModule extends AbstractProcessorModule implements IProcessorResenderModule
 {
