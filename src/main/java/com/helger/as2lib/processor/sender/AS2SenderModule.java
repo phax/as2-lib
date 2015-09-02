@@ -676,62 +676,45 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    int nRetries = getRetryCount (aMsg.getPartnership (), aOptions);
-    MimeBodyPart aSecuredData = null;
-    String sMIC = null;
+    final int nRetries = getRetryCount (aMsg.getPartnership (), aOptions);
 
-    do
+    try
     {
-      try
-      {
-        // Do this only once and not for every retry
-        if (aSecuredData == null)
-        {
-          // compress and/or sign and/or encrypt the message if needed
-          aSecuredData = secure (aMsg);
+      // compress and/or sign and/or encrypt the message if needed
+      final MimeBodyPart aSecuredData = secure (aMsg);
 
-          // Calculate MIC after compress/sign/crypt was handled, because the
-          // message data might change if compression before signing is active.
-          sMIC = calculateAndStoreMIC (aMsg);
+      // Calculate MIC after compress/sign/crypt was handled, because the
+      // message data might change if compression before signing is active.
+      final String sMIC = calculateAndStoreMIC (aMsg);
 
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
-          aMsg.setContentType (aSecuredData.getContentType ());
-        }
-        else
-        {
-          s_aLogger.info ("Retrying to send message" + aMsg.getLoggingText ());
-        }
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
+      aMsg.setContentType (aSecuredData.getContentType ());
 
-        _sendViaHTTP (aMsg, aSecuredData, sMIC);
-      }
-      catch (final HttpResponseException ex)
-      {
-        s_aLogger.error ("Http Response Error " + ex.getMessage ());
+      _sendViaHTTP (aMsg, aSecuredData, sMIC);
+    }
+    catch (final HttpResponseException ex)
+    {
+      s_aLogger.error ("Http Response Error " + ex.getMessage ());
+      ex.terminate ();
 
-        // No retries left?
-        if (nRetries <= 0)
-          throw ex;
+      if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, ex, nRetries))
+        throw ex;
+    }
+    catch (final IOException ex)
+    {
+      // Re-send if a network error occurs during transmission
+      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
+      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      wioe.terminate ();
 
-        ex.terminate ();
-      }
-      catch (final IOException ex)
-      {
-        // Re-send if a network error occurs during transmission
-        final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
-        wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-
-        // No retries left?
-        if (nRetries <= 0)
-          throw wioe;
-
-        wioe.terminate ();
-      }
-      catch (final Exception ex)
-      {
-        // Propagate error if it can't be handled by a re-send
-        throw WrappedOpenAS2Exception.wrap (ex);
-      }
-    } while (nRetries-- > 0);
+      if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, wioe, nRetries))
+        throw wioe;
+    }
+    catch (final Exception ex)
+    {
+      // Propagate error if it can't be handled by a re-send
+      throw WrappedOpenAS2Exception.wrap (ex);
+    }
   }
 }

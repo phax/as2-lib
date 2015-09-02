@@ -38,8 +38,12 @@ public interface IProcessorResenderModule extends IProcessorModule
 {
   String DO_RESEND = "resend";
   String DO_RESENDMDN = "resendmdn";
+
   String OPTION_CAUSE = "cause";
   String OPTION_INITIAL_SENDER = "initial_sender";
   String OPTION_RESEND_METHOD = "resend_method";
+
   String OPTION_RETRIES = "retries";
+  /** Default retries: none. All values &le; 0 mean: no retry */
+  int DEFAULT_RETRIES = 0;
 }

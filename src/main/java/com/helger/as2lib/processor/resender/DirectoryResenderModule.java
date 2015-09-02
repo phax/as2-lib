@@ -63,9 +63,16 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 
+/**
+ * A persisting file based resender module. Upon "
+ * {@link #handle(String, IMessage, Map)} it writes the document into a file and
+ * there is a background poller task that checks for resending (see
+ * {@link #resend()}).
+ *
+ * @author Philip Helger
+ */
 public class DirectoryResenderModule extends AbstractResenderModule
 {
-  private static final String DATE_FORMAT = "MM-dd-yy-HH-mm-ss";
   public static final String ATTR_RESEND_DIRECTORY = "resenddir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   // in seconds
@@ -76,7 +83,18 @@ public class DirectoryResenderModule extends AbstractResenderModule
   // 15 minutes
   public static final long DEFAULT_RESEND_DELAY_MS = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
 
+  private static final String FILENAME_DATE_FORMAT = "MM-dd-yy-HH-mm-ss";
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
+
+  @Override
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  {
+    super.initDynamicComponent (aSession, aOptions);
+    getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);
+    getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
+  }
 
   @Override
   public boolean canHandle (@Nonnull final String sAction,
@@ -96,18 +114,29 @@ public class DirectoryResenderModule extends AbstractResenderModule
       final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
       final File aResendFile = IOHelper.getUniqueFile (aResendDir, getFilename ());
       final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
+
       String sMethod = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_METHOD);
       if (sMethod == null)
+      {
+        s_aLogger.warn ("The resending method is missing - default to message sending!");
         sMethod = IProcessorSenderModule.DO_SEND;
+      }
+
       String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
       if (sRetries == null)
-        sRetries = "-1";
+      {
+        s_aLogger.warn ("The resending retry count is missing - default to " +
+                        IProcessorResenderModule.DEFAULT_RETRIES +
+                        "!");
+        sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
+      }
+
       aOOS.writeObject (sMethod);
       aOOS.writeObject (sRetries);
       aOOS.writeObject (aMsg);
       aOOS.close ();
 
-      s_aLogger.info ("message put in resend queue" + aMsg.getLoggingText ());
+      s_aLogger.info ("Message put in resend queue" + aMsg.getLoggingText ());
     }
     catch (final IOException ioe)
     {
@@ -115,33 +144,14 @@ public class DirectoryResenderModule extends AbstractResenderModule
     }
   }
 
-  @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
-  {
-    super.initDynamicComponent (aSession, aOptions);
-    getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);
-    getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
-  }
-
-  @Override
-  public void resend ()
-  {
-    try
-    {
-      // get a list of files that need to be sent now
-      final List <File> aSendFiles = scanDirectory ();
-
-      // iterator through and send each file
-      for (final File aCurrentFile : aSendFiles)
-        processFile (aCurrentFile);
-    }
-    catch (final OpenAS2Exception ex)
-    {
-      ex.terminate ();
-      forceStop (ex);
-    }
-  }
-
+  /**
+   * Build the filename for re-sending. The filename consists of the date and
+   * time when the document is to be re-send.
+   *
+   * @return The filename and never <code>null</code>.
+   * @throws InvalidParameterException
+   *         Only theoretically
+   */
   @Nonnull
   protected String getFilename () throws InvalidParameterException
   {
@@ -152,7 +162,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
       nResendDelayMS = getAttributeAsIntRequired (ATTR_RESEND_DELAY_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
 
     final long nResendTime = new Date ().getTime () + nResendDelayMS;
-    return DateHelper.formatDate (DATE_FORMAT, new Date (nResendTime));
+    return DateHelper.formatDate (FILENAME_DATE_FORMAT, new Date (nResendTime));
   }
 
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
@@ -160,7 +170,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
     try
     {
       final StringTokenizer aFileTokens = new StringTokenizer (aCurrentFile.getName (), ".", false);
-      final Date aTimestamp = DateHelper.parseDate (DATE_FORMAT, aFileTokens.nextToken ());
+      final Date aTimestamp = DateHelper.parseDate (FILENAME_DATE_FORMAT, aFileTokens.nextToken ());
       return aTimestamp.before (new Date ());
     }
     catch (final Exception ex)
@@ -175,7 +185,6 @@ public class DirectoryResenderModule extends AbstractResenderModule
       s_aLogger.debug ("Processing " + aFile.getAbsolutePath ());
 
     IMessage aMsg = null;
-
     try
     {
       try
@@ -198,7 +207,7 @@ public class DirectoryResenderModule extends AbstractResenderModule
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 
         final Map <String, Object> aOptions = new HashMap <String, Object> ();
-        aOptions.put (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES, sRetries);
+        aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
         getSession ().getMessageProcessor ().handle (sMethod, aMsg, aOptions);
 
         if (IOHelper.getFileOperationManager ().deleteFile (aFile).isFailure ())
@@ -249,5 +258,24 @@ public class DirectoryResenderModule extends AbstractResenderModule
         if (aCurrentFile.exists () && aCurrentFile.isFile () && aCurrentFile.canWrite () && isTimeToSend (aCurrentFile))
           ret.add (aCurrentFile);
     return ret;
+  }
+
+  @Override
+  public void resend ()
+  {
+    try
+    {
+      // get a list of files that need to be sent now
+      final List <File> aSendFiles = scanDirectory ();
+
+      // iterator through and send each file
+      for (final File aCurrentFile : aSendFiles)
+        processFile (aCurrentFile);
+    }
+    catch (final OpenAS2Exception ex)
+    {
+      ex.terminate ();
+      forceStop (ex);
+    }
   }
 }

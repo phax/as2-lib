@@ -36,7 +36,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
@@ -46,6 +50,8 @@ import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSenderModule.class);
+
   /**
    * How many times should this message be sent?
    *
@@ -66,34 +72,47 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     if (aPartnership != null)
     {
       // Get from partnership
-      sTriesLeft = aPartnership.getAttribute (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
+      sTriesLeft = aPartnership.getAttribute (IProcessorResenderModule.OPTION_RETRIES);
     }
 
     if (sTriesLeft == null && aOptions != null)
     {
       // Provided in the options?
-      sTriesLeft = (String) aOptions.get (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
+      sTriesLeft = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
     }
 
     if (sTriesLeft == null)
     {
       // No. Provided as an attribute?
-      sTriesLeft = getAttributeAsString (IProcessorSenderModule.ATTR_SENDER_OPTION_RETRIES);
+      sTriesLeft = getAttributeAsString (IProcessorResenderModule.OPTION_RETRIES);
     }
 
     if (sTriesLeft == null)
     {
       // Not provided. Use default.
-      return IProcessorSenderModule.DEFAULT_RETRIES;
+      return IProcessorResenderModule.DEFAULT_RETRIES;
     }
 
     // Avoid returning negative values
     return Math.max (Integer.parseInt (sTriesLeft), 0);
   }
 
-  protected final boolean doResend (final String sHow,
-                                    final IMessage aMsg,
-                                    final OpenAS2Exception aCause,
+  /**
+   * @param sHow
+   *        Handler action name to use. May not be <code>null</code>.
+   * @param aMsg
+   *        The message to be resend. May be an AS2 message or an MDN.
+   * @param aCause
+   *        The error cause.
+   * @param nTries
+   *        The number of retries left.
+   * @return <code>true</code> if the message was scheduled for re-sending.
+   * @throws OpenAS2Exception
+   *         In case of an error
+   */
+  protected final boolean doResend (@Nonnull final String sHow,
+                                    @Nonnull final IMessage aMsg,
+                                    @Nullable final OpenAS2Exception aCause,
                                     final int nTries) throws OpenAS2Exception
   {
     if (nTries <= 0)
@@ -105,6 +124,8 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     aOptions.put (IProcessorResenderModule.OPTION_RESEND_METHOD, sHow);
     aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
     getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
+
+    s_aLogger.info ("Scheduled message " + aMsg.getMessageID () + " for re-sending");
     return true;
   }
 }

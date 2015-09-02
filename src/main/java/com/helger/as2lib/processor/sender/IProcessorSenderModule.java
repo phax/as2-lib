@@ -38,11 +38,4 @@ public interface IProcessorSenderModule extends IProcessorModule
 {
   String DO_SEND = "send";
   String DO_SENDMDN = "sendmdn";
-  /**
-   * Attribute definining the number of retries. Must be of type String but need
-   * to have a numeric value!
-   */
-  String ATTR_SENDER_OPTION_RETRIES = "retries";
-  /** Default retries: none. All values &le; 0 mean: no retry */
-  int DEFAULT_RETRIES = 0;
 }
