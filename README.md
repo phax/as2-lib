@@ -19,7 +19,12 @@ This project is licensed under the FreeBSD License.
 
 #News and noteworthy
 
-  * 2015-08-20 Version 2.1.0 fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify. Also compression according to RFC 5402 is now supported.
+  * 2015-xx-yy Version 2.2.0
+    * added system properties (see below) for configuration and debugging purposes
+    * added the partnership attribute `content_transfer_encoding_receive` to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
+  * 2015-08-20 Version 2.1.0
+    * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
+    * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
 
 #Maven usage
 Add the following to your pom.xml to use this artifact:
@@ -56,12 +61,13 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
 
 #Building
-This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `target` directory.
+This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
 
 #System Properties
 The following system properties are available for global customization
 
-  * `AS2.useSecureRandom` - since 2.1.1 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
+  * boolean `AS2.useSecureRandom` - since 2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
+  * String `AS2.httpDumpDirectory` - since 2.2.0 - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectory=/var/dump/as2-http`). The filename starts with "as2-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
  
 
 ---
