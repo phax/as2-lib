@@ -40,7 +40,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 public class NetException extends OpenAS2Exception
 {
-  public NetException (final InetAddress aAddress, final int nPort, @Nullable final Throwable aCause)
+  public NetException (@Nullable final InetAddress aAddress, final int nPort, @Nullable final Throwable aCause)
   {
     super ("Address = " + aAddress + " port = " + nPort, aCause);
   }
