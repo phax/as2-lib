@@ -57,6 +57,7 @@ import com.helger.commons.charset.CCharset;
 import com.helger.commons.codec.IDecoder;
 import com.helger.commons.codec.IdentityCodec;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 
 /**
@@ -387,26 +388,52 @@ public final class HTTPHelper
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
+  /**
+   * Read headers and payload from the passed input stream provider.
+   *
+   * @param aISP
+   *        The abstract input stream provider to use. May not be
+   *        <code>null</code>.
+   * @param aResponseHandler
+   *        The HTTP response handler to be used. May not be <code>null</code>.
+   * @param aMsg
+   *        The Message to be filled. May not be <code>null</code>.
+   * @return The payload of the HTTP request.
+   * @throws IOException
+   * @throws MessagingException
+   */
   @Nonnull
   public static byte [] readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                          @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                          @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
-    // Get the stream and read in the HTTP request and headers
+    // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
-    final String [] aRequest = _readRequestInfo (aIS);
-    // Request method (e.g. "POST")
-    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
-    // Request URL (e.g. "/as2")
-    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
-    // HTTP version (e.g. "HTTP/1.1")
-    aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
+    if (aIS == null)
+      throw new IllegalStateException ("Failed to open InputStream from " + aISP);
 
-    // Parse all HTTP headers from stream
-    aMsg.setHeaders (new InternetHeaders (aIS));
+    try
+    {
+      // Read the HTTP meta data
+      final String [] aRequest = _readRequestInfo (aIS);
+      // Request method (e.g. "POST")
+      aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
+      // Request URL (e.g. "/as2")
+      aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
+      // HTTP version (e.g. "HTTP/1.1")
+      aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
 
-    // Read the message body
-    return readHttpPayload (aIS, aResponseHandler, aMsg);
+      // Parse all HTTP headers from stream
+      aMsg.setHeaders (new InternetHeaders (aIS));
+
+      // Read the message body
+      return readHttpPayload (aIS, aResponseHandler, aMsg);
+    }
+    finally
+    {
+      // Close InputStream
+      StreamHelper.close (aIS);
+    }
   }
 
   public static void sendSimpleHTTPResponse (@Nonnull final IAS2HttpResponseHandler aResponseHandler,
