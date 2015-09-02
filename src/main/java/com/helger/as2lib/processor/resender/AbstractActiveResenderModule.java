@@ -36,11 +36,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
+import com.helger.as2lib.session.IAS2Session;
+import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.CGlobal;
 
 /**
@@ -52,12 +56,14 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 {
   /** The resend delay in seconds */
   public static final String ATTR_RESEND_DELAY_SECONDS = "resenddelay";
+  /** The polling interval in seconds */
+  public static final String ATTR_POLLING_INTERVAL_SECONDS = "pollinginterval";
 
   /** The default resend delay in milliseconds (15 minutes) */
   public static final long DEFAULT_RESEND_DELAY_MS = 15 * CGlobal.MILLISECONDS_PER_MINUTE;
 
   /** The timer default polling interval of 30 seconds. */
-  public static final long DEFAULT_POLLING_INTERVAL = 30 * CGlobal.MILLISECONDS_PER_SECOND;
+  public static final long DEFAULT_POLLING_MS = 30 * CGlobal.MILLISECONDS_PER_SECOND;
 
   private class ResendPollTask extends TimerTask
   {
@@ -71,8 +77,24 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 
   private Timer m_aTimer;
 
-  /** The timer polling interval. Defaults to 30 seconds. */
-  private final long m_nPollingInterval = DEFAULT_POLLING_INTERVAL;
+  /** The timer polling interval in milliseconds. Defaults to 30 seconds. */
+  private long m_nPollingMS = DEFAULT_POLLING_MS;
+
+  @Override
+  @OverridingMethodsMustInvokeSuper
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aParameters) throws OpenAS2Exception
+  {
+    super.initDynamicComponent (aSession, aParameters);
+
+    if (containsAttribute (ATTR_POLLING_INTERVAL_SECONDS))
+    {
+      m_nPollingMS = getAttributeAsLong (ATTR_POLLING_INTERVAL_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
+      if (m_nPollingMS < 1)
+        throw new OpenAS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " +
+                                    m_nPollingMS);
+    }
+  }
 
   /**
    * @return The defined delay until re-send in milliseconds.
@@ -94,10 +116,10 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
   public void doStart () throws OpenAS2Exception
   {
     if (m_aTimer != null)
-      throw new IllegalStateException ("Resendering timer is already running!");
+      throw new IllegalStateException ("Resending timer is already running!");
 
     m_aTimer = new Timer ("Resender", true);
-    m_aTimer.scheduleAtFixedRate (new ResendPollTask (), 0, m_nPollingInterval);
+    m_aTimer.scheduleAtFixedRate (new ResendPollTask (), 0, m_nPollingMS);
   }
 
   @Override
