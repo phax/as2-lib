@@ -195,7 +195,7 @@ public class AS2Client
   }
 
   @OverrideOnDemand
-  protected void initPartnershipFactory (final AS2Session aSession) throws OpenAS2Exception
+  protected void initPartnershipFactory (@Nonnull final AS2Session aSession) throws OpenAS2Exception
   {
     // Use a self-filling in-memory partnership factory
     final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
