@@ -91,8 +91,13 @@ public final class CPartnershipIDs
   public static final String PA_PROTOCOL = "protocol";
   /** Subject sent in messages */
   public static final String PA_SUBJECT = "subject";
-  /** optional content transfer encoding value */
+  /** optional content transfer encoding value for outgoing messages */
   public static final String PA_CONTENT_TRANSFER_ENCODING = "content_transfer_encoding";
+  /**
+   * optional content transfer encoding value for incoming messages if not
+   * specified
+   */
+  public static final String PA_CONTENT_TRANSFER_ENCODING_RECEIVE = "content_transfer_encoding_receive";
   /**
    * Optional compression type. Check {@link ECompressionType} constants for
    * values (using the value of the <code>getID()</code> method)

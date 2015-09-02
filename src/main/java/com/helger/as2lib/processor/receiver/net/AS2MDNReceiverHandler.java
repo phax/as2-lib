@@ -70,13 +70,12 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
 
-public class AS2MDNReceiverHandler implements INetModuleHandler
+public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 {
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
   private static final String ATTR_PENDINGMDN = "pendingmdn";
@@ -87,15 +86,7 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
-    ValueEnforcer.notNull (aModule, "Module");
-    m_aModule = aModule;
-  }
-
-  @Nonnull
-  @Nonempty
-  public String getClientInfo (@Nonnull final Socket aSocket)
-  {
-    return aSocket.getInetAddress ().getHostAddress () + " " + aSocket.getPort ();
+    m_aModule = ValueEnforcer.notNull (aModule, "Module");
   }
 
   @Nonnull
@@ -106,7 +97,8 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
 
   public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
-    s_aLogger.info ("incoming connection [" + getClientInfo (aSocket) + "]");
+    final String sClientInfo = getClientInfo (aSocket);
+    s_aLogger.info ("incoming connection [" + sClientInfo + "]");
 
     final AS2Message aMsg = new AS2Message ();
 
@@ -117,16 +109,12 @@ public class AS2MDNReceiverHandler implements INetModuleHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = HTTPHelper.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aData = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
 
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
-      s_aLogger.info ("incoming connection for receiving AsyncMDN" +
-                      " [" +
-                      getClientInfo (aSocket) +
-                      "]" +
-                      aMsg.getLoggingText ());
+      s_aLogger.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
 
       final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
       final String sReceivedContentType = aReceivedContentType.toString ();

@@ -78,13 +78,12 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
 import com.helger.commons.timing.StopWatch;
 
-public class AS2ReceiverHandler implements INetModuleHandler
+public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiverHandler.class);
 
@@ -99,13 +98,6 @@ public class AS2ReceiverHandler implements INetModuleHandler
   protected final AS2ReceiverModule getReceiverModule ()
   {
     return m_aReceiverModule;
-  }
-
-  @Nonnull
-  @Nonempty
-  public static String getClientInfo (@Nonnull final Socket aSocket)
-  {
-    return aSocket.getInetAddress ().getHostAddress () + ":" + aSocket.getPort ();
   }
 
   /**
@@ -498,7 +490,7 @@ public class AS2ReceiverHandler implements INetModuleHandler
     try
     {
       // Read in the message request, headers, and data
-      aMsgData = HTTPHelper.readHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aMsgData = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
     }
     catch (final Exception ex)
     {

@@ -54,13 +54,10 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.codec.IDecoder;
-import com.helger.commons.codec.IdentityCodec;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -80,13 +77,6 @@ public final class HTTPHelper
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
   /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
-  /** The value of the Content-Transfer-Encoding header (if provided) */
-  public static final String MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING = "HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING";
-  /**
-   * The original content length before any eventual decoding (only if
-   * Content-Transfer-Encoding is provided)
-   */
-  public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
   private static final File s_aHttpDumpDirectory;
@@ -330,33 +320,6 @@ public final class HTTPHelper
       aDataIS.readFully (aData);
     }
 
-    final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING);
-    if (StringHelper.hasText (sContentTransferEncoding))
-    {
-      final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
-      if (eCTE == null)
-        s_aLogger.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
-      else
-      {
-        // Decode data if necessary
-        final IDecoder <byte []> aDecoder = eCTE.createDecoder ();
-        if (!(aDecoder instanceof IdentityCodec <?>))
-        {
-          // Remember original length before continuing
-          final int nOriginalContentLength = aData.length;
-
-          s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
-                          sContentTransferEncoding +
-                          "' - decoding");
-          aData = aDecoder.getDecoded (aData);
-
-          // Remember that we potentially did something
-          aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
-          aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_LENGTH, Integer.toString (nOriginalContentLength));
-        }
-      }
-    }
-
     return aData;
   }
 
@@ -494,7 +457,7 @@ public final class HTTPHelper
       final InternetHeaders aHeaders = new InternetHeaders (aIS);
       aMsg.setHeaders (aHeaders);
 
-      // Read the message body
+      // Read the message body - no Content-Transfer-Encoding handling
       final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
 
       if (s_aHttpDumpDirectory != null)
