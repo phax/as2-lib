@@ -109,6 +109,18 @@ public final class CPartnershipIDs
   public static final String COMPRESS_BEFORE_SIGNING = "compress-before-signing";
   /** Value for {@link #PA_COMPRESSION_MODE}: compress after sign */
   public static final String COMPRESS_AFTER_SIGNING = "compress-after-signing";
+  /**
+   * Special attribute to force decryption of a received message, even if the
+   * Content-Type header claims the messages is not encrypted. This is a
+   * work-around for non spec-compliant senders.
+   */
+  public static final String PA_FORCE_DECRYPT = "force_decrypt";
+  /**
+   * Special attribute to force signature verification of a received message,
+   * even if the Content-Type header claims the messages is not signed. This is
+   * a work-around for non spec-compliant senders.
+   */
+  public static final String PA_FORCE_VERIFY = "force_verify";
 
   private CPartnershipIDs ()
   {}

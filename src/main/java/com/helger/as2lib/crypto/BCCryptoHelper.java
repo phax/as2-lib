@@ -187,8 +187,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aPart, "Part");
 
     final ContentType aContentType = new ContentType (aPart.getContentType ());
-    final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
-    return sBaseType.equals ("multipart/signed");
+    final String sBaseType = aContentType.getBaseType ();
+    return sBaseType.equalsIgnoreCase ("multipart/signed");
   }
 
   public boolean isCompressed (@Nonnull final String sContentType) throws OpenAS2Exception
@@ -292,18 +292,18 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final PrivateKey aPrivateKey) throws GeneralSecurityException,
-                                                                      MessagingException,
-                                                                      CMSException,
-                                                                      IOException,
-                                                                      SMIMEException
+                               @Nonnull final PrivateKey aPrivateKey,
+                               final boolean bForceDecrypt) throws GeneralSecurityException,
+                                                            MessagingException,
+                                                            CMSException,
+                                                            SMIMEException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
 
     // Make sure the data is encrypted
-    if (!isEncrypted (aPart))
+    if (!bForceDecrypt && !isEncrypted (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
 
     // Parse the MIME body into an SMIME envelope object
@@ -404,15 +404,15 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
-                              final boolean bAllowCertificateInBodyPart) throws GeneralSecurityException,
-                                                                         IOException,
-                                                                         MessagingException,
-                                                                         CMSException,
-                                                                         OperatorCreationException,
-                                                                         SMIMEException
+                              final boolean bAllowCertificateInBodyPart,
+                              final boolean bForceVerify) throws GeneralSecurityException,
+                                                          IOException,
+                                                          MessagingException,
+                                                          CMSException,
+                                                          OperatorCreationException
   {
     // Make sure the data is signed
-    if (!isSigned (aPart))
+    if (!bForceVerify && !isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();

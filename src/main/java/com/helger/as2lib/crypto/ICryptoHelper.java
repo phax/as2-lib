@@ -158,7 +158,8 @@ public interface ICryptoHelper
   @Nonnull
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
                         @Nonnull X509Certificate aCert,
-                        @Nonnull PrivateKey aKey) throws Exception;
+                        @Nonnull PrivateKey aKey,
+                        boolean bForceDecrypt) throws Exception;
 
   /**
    * Sign a MIME body part.
@@ -194,6 +195,9 @@ public interface ICryptoHelper
    *        If <code>true</code> any certificate that is passed in the body part
    *        is used for verification. If <code>false</code> only the provided
    *        certificate is used.
+   * @param bForceVerify
+   *        <code>true</code> to force verification even if the Content-Type
+   *        header does not indicate so.
    * @return The signed content. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -201,5 +205,6 @@ public interface ICryptoHelper
   @Nonnull
   MimeBodyPart verify (@Nonnull MimeBodyPart aPart,
                        @Nullable X509Certificate aCert,
-                       boolean bAllowCertificateInBodyPart) throws Exception;
+                       boolean bAllowCertificateInBodyPart,
+                       boolean bForceVerify) throws Exception;
 }

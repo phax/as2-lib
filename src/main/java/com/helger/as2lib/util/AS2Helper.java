@@ -309,9 +309,10 @@ public final class AS2Helper
     MimeBodyPart aMainPart = aMdn.getData ();
     final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
-    if (aCryptoHelper.isSigned (aMainPart))
+    final boolean bForceVerify = "true".equals (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
+    if (bForceVerify || aCryptoHelper.isSigned (aMainPart))
     {
-      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart);
+      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart, bForceVerify);
     }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());

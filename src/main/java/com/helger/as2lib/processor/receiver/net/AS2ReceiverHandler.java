@@ -126,7 +126,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
-      if (aCryptoHelper.isEncrypted (aMsg.getData ()))
+      final boolean bForceDecrypt = "true".equals (aMsg.getPartnership ()
+                                                       .getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
+
+      if (bForceDecrypt || aCryptoHelper.isEncrypted (aMsg.getData ()))
       {
         // Decrypt
         if (s_aLogger.isDebugEnabled ())
@@ -134,7 +137,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
         final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
         final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
-        final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (), aReceiverCert, aReceiverKey);
+        final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
+                                                                   aReceiverCert,
+                                                                   aReceiverKey,
+                                                                   bForceDecrypt);
         aMsg.setData (aDecryptedData);
         // Remember that message was encrypted
         aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
@@ -156,7 +162,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
-      if (aCryptoHelper.isSigned (aMsg.getData ()))
+      final boolean bForceVerify = "true".equals (aMsg.getPartnership ()
+                                                      .getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
+
+      if (bForceVerify || aCryptoHelper.isSigned (aMsg.getData ()))
       {
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
@@ -166,7 +175,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
                                                                  aSenderCert,
                                                                  m_aReceiverModule.getSession ()
-                                                                                  .isCryptoVerifyUseCertificateInBodyPart ());
+                                                                                  .isCryptoVerifyUseCertificateInBodyPart (),
+                                                                 bForceVerify);
         aMsg.setData (aVerifiedData);
         // Remember that message was signed
         aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
