@@ -39,6 +39,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
@@ -49,9 +50,10 @@ import com.helger.commons.state.EChange;
 
 /**
  * The default implementation of {@link IPartnershipMap}.
- * 
+ *
  * @author Philip Helger
  */
+@NotThreadSafe
 public final class PartnershipMap implements IPartnershipMap
 {
   private final Map <String, Partnership> m_aMap = new LinkedHashMap <String, Partnership> ();
@@ -66,13 +68,22 @@ public final class PartnershipMap implements IPartnershipMap
     m_aMap.putAll (aPartnerships.m_aMap);
   }
 
-  public void addPartnership (@Nonnull final Partnership aPartnership)
+  @Nonnull
+  public EChange addPartnership (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
     final String sName = aPartnership.getName ();
     if (m_aMap.containsKey (sName))
-      throw new IllegalArgumentException ("A partnership with the name '" + sName + "' already exists!");
+      return EChange.UNCHANGED;
     m_aMap.put (sName, aPartnership);
+    return EChange.CHANGED;
+  }
+
+  public void setPartnership (@Nonnull final Partnership aPartnership)
+  {
+    ValueEnforcer.notNull (aPartnership, "Partnership");
+    // overwrite if already present
+    m_aMap.put (aPartnership.getName (), aPartnership);
   }
 
   @Nonnull

@@ -48,39 +48,96 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
 /**
- * original author unknown added getPartners method
+ * This is the base interface for a partnership factory (it is more manager but
+ * who cares). It consists of "partners" (represented as {@link StringMap} or -
+ * if read-only {@link IStringMap}) and partnerships represented by
+ * {@link Partnership} objects. <br/>
+ * original author unknown
  *
  * @author joseph mcverry
+ * @author Philip Helger
  */
 public interface IPartnershipFactory extends IDynamicComponent
 {
+  /**
+   * Add a partner.
+   *
+   * @param aNewPartner
+   *        The partner data to be used. May not be <code>null</code>.
+   * @throws OpenAS2Exception
+   *         Generic error
+   */
   void addPartner (@Nonnull StringMap aNewPartner) throws OpenAS2Exception;
 
+  /**
+   * Remove a partner.
+   *
+   * @param sPartnerName
+   *        The name of the partner to be removed.
+   * @return {@link EChange#CHANGED} if the partner was successfully removed,
+   *         {@link EChange#UNCHANGED} if no such partner exists.
+   * @throws OpenAS2Exception
+   *         Generic error
+   */
   @Nonnull
   EChange removePartner (@Nullable String sPartnerName) throws OpenAS2Exception;
 
+  /**
+   * Get all the partner data of the partner with the given name.
+   *
+   * @param sPartnerName
+   *        Partner name to search. May be <code>null</code>.
+   * @return <code>null</code> if no such partner exists.
+   */
   @Nullable
   IStringMap getPartnerOfName (@Nullable String sPartnerName);
 
+  /**
+   * @return A set with all contained partner names. Never <code>null</code> but
+   *         maybe empty.
+   */
   @Nonnull
   @ReturnsMutableCopy
   Set <String> getAllPartnerNames ();
 
+  /**
+   * @return An (unordered) list of all contained partner data.
+   */
   @Nonnull
   @ReturnsMutableCopy
   List <? extends IStringMap> getAllPartners ();
 
+  /**
+   * Add a partnership.
+   *
+   * @param aPartnership
+   *        The partnership to be added. May not be <code>null</code>. The name
+   *        of the partnership must be unique so that it gets added.
+   * @return {@link EChange#CHANGED} if adding was successfully,
+   *         {@link EChange#UNCHANGED} if the name is already contained.
+   * @throws OpenAS2Exception
+   *         Generic error
+   */
   @Nonnull
-  IPartnerMap getPartnerMap ();
+  EChange addPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
-  void addPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
-
+  /**
+   * Remove the specified partnership.
+   *
+   * @param aPartnership
+   *        The partnership to be removed.
+   * @return {@link EChange#CHANGED} if removal was successful,
+   *         {@link EChange#UNCHANGED} if no such partnership to be removed is
+   *         present.
+   * @throws OpenAS2Exception
+   *         Generic error
+   */
   @Nonnull
   EChange removePartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
   /**
    * Get the partnership identified by the provided stub partnership.
-   * 
+   *
    * @param aPartnership
    *        Stub partnership which must contain either a name or a set of sender
    *        and receiver IDs.
@@ -92,22 +149,31 @@ public interface IPartnershipFactory extends IDynamicComponent
   @Nonnull
   Partnership getPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
 
+  /**
+   * Find an existing partnership by its name.
+   *
+   * @param sName
+   *        The partnership name to be looked up. May be <code>null</code>.
+   * @return <code>null</code> if no such partnership exists.
+   */
   @Nullable
   Partnership getPartnershipByName (@Nullable String sName);
 
+  /**
+   * @return A set with all contained partnership names. Never <code>null</code>
+   *         but maybe empty.
+   */
   @Nonnull
   @ReturnsMutableCopy
   Set <String> getAllPartnershipNames ();
 
   /**
-   * @return A list of all contained partnerships.
+   * @return A list of all contained partnerships. Never <code>null</code> but
+   *         maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
   List <Partnership> getAllPartnerships ();
-
-  @Nonnull
-  IPartnershipMap getPartnershipMap ();
 
   /**
    * Looks up and fills in any header info for a specific msg's partnership.

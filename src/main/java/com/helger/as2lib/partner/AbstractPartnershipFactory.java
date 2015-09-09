@@ -279,13 +279,16 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     }
   }
 
-  public final void addPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  @Nonnull
+  public final EChange addPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
     {
-      m_aPartnerships.addPartnership (aPartnership);
+      if (m_aPartnerships.addPartnership (aPartnership).isUnchanged ())
+        return EChange.UNCHANGED;
       markAsChanged ();
+      return EChange.CHANGED;
     }
     finally
     {
