@@ -198,7 +198,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
       }
 
       if (aRealPartnership == null)
-        throw new PartnershipNotFoundException ("Partnership not found: " + aPartnership);
+        throw new PartnershipNotFoundException (aPartnership);
       return aRealPartnership;
     }
     finally

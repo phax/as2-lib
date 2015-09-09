@@ -32,12 +32,31 @@
  */
 package com.helger.as2lib.partner;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * Exception thrown if a desired partnership is not present.
+ *
+ * @author Philip Helger
+ */
 public class PartnershipNotFoundException extends OpenAS2Exception
 {
-  public PartnershipNotFoundException (final String sMsg)
+  private final Partnership m_aPartnership;
+
+  public PartnershipNotFoundException (@Nonnull final Partnership aPartnership)
   {
-    super (sMsg);
+    super ("Partnership not found: " + aPartnership);
+    m_aPartnership = aPartnership;
+  }
+
+  /**
+   * @return The partnership that was not found. May not be <code>null</code>.
+   */
+  @Nonnull
+  public Partnership getPartnership ()
+  {
+    return m_aPartnership;
   }
 }
