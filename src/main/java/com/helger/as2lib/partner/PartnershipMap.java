@@ -61,6 +61,13 @@ public final class PartnershipMap implements IPartnershipMap
   public PartnershipMap ()
   {}
 
+  /**
+   * Set all partnerships from the passed map. All existing partnerships are
+   * removed.
+   *
+   * @param aPartnerships
+   *        The partnerships to be set. May not be <code>null</code>.
+   */
   public void setPartnerships (@Nonnull final PartnershipMap aPartnerships)
   {
     ValueEnforcer.notNull (aPartnerships, "Partnerships");
@@ -68,6 +75,15 @@ public final class PartnershipMap implements IPartnershipMap
     m_aMap.putAll (aPartnerships.m_aMap);
   }
 
+  /**
+   * Add a new partnership.
+   *
+   * @param aPartnership
+   *        The partnership to be added. May not be <code>null</code>.
+   * @return {@link EChange#CHANGED} if adding was successfully,
+   *         {@link EChange#UNCHANGED} if a partnership with the given name is
+   *         already present and nothing changed.
+   */
   @Nonnull
   public EChange addPartnership (@Nonnull final Partnership aPartnership)
   {
@@ -79,6 +95,13 @@ public final class PartnershipMap implements IPartnershipMap
     return EChange.CHANGED;
   }
 
+  /**
+   * Overwrite an existing partnership.
+   *
+   * @param aPartnership
+   *        The partnership to be set (and potentially overwritten). May not be
+   *        <code>null</code>.
+   */
   public void setPartnership (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
@@ -86,6 +109,14 @@ public final class PartnershipMap implements IPartnershipMap
     m_aMap.put (aPartnership.getName (), aPartnership);
   }
 
+  /**
+   * Remove the provided partnership.
+   * 
+   * @param aPartnership
+   *        The partnership to be removed. May not be <code>null</code>.
+   * @return {@link EChange#CHANGED} if removal was successful,
+   *         {@link EChange#UNCHANGED} if no such partnership is contained.
+   */
   @Nonnull
   public EChange removePartnership (@Nonnull final Partnership aPartnership)
   {
@@ -127,14 +158,22 @@ public final class PartnershipMap implements IPartnershipMap
   @Nullable
   public Partnership getPartnershipByID (@Nonnull final IStringMap aSenderIDs, @Nonnull final IStringMap aReceiverIDs)
   {
+    // For all partnerships
     for (final Partnership aPartnership : m_aMap.values ())
     {
+      // Get all sender attributes of the current partnership
       final IStringMap aCurrentSenderIDs = aPartnership.getAllSenderIDs ();
+      // Do the sender attributes of the current partnership match?
       if (_arePartnerIDsPresent (aSenderIDs, aCurrentSenderIDs))
       {
+        // Get the receiver attributes of the current partnership
         final IStringMap aCurrentReceiverIDs = aPartnership.getAllReceiverIDs ();
+        // Do the sender attributes of the current partnership match?
         if (_arePartnerIDsPresent (aReceiverIDs, aCurrentReceiverIDs))
+        {
+          // We take the first match :)
           return aPartnership;
+        }
       }
     }
 
