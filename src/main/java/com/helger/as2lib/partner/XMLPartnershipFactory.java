@@ -65,7 +65,7 @@ import com.helger.commons.string.StringHelper;
  *
  * @author joseph mcverry
  */
-public class XMLPartnershipFactory extends AbstractPartnershipFactory
+public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartners
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
@@ -142,7 +142,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactory
   }
 
   protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode,
-                                 @Nonnull final Partnership aPartnership) throws OpenAS2Exception
+                                            @Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
     final String sNodeName = "attribute";
     final String sNodeKeyName = "name";

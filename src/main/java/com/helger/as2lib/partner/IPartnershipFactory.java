@@ -42,16 +42,13 @@ import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.util.IStringMap;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
 /**
  * This is the base interface for a partnership factory (it is more manager but
- * who cares). It consists of "partners" (represented as {@link StringMap} or -
- * if read-only {@link IStringMap}) and partnerships represented by
- * {@link Partnership} objects. <br/>
+ * who cares). It consists of partnerships represented by {@link Partnership}
+ * objects. <br/>
  * original author unknown
  *
  * @author joseph mcverry
@@ -59,54 +56,6 @@ import com.helger.commons.state.EChange;
  */
 public interface IPartnershipFactory extends IDynamicComponent
 {
-  /**
-   * Add a partner.
-   *
-   * @param aNewPartner
-   *        The partner data to be used. May not be <code>null</code>.
-   * @throws OpenAS2Exception
-   *         Generic error
-   */
-  void addPartner (@Nonnull StringMap aNewPartner) throws OpenAS2Exception;
-
-  /**
-   * Remove a partner.
-   *
-   * @param sPartnerName
-   *        The name of the partner to be removed.
-   * @return {@link EChange#CHANGED} if the partner was successfully removed,
-   *         {@link EChange#UNCHANGED} if no such partner exists.
-   * @throws OpenAS2Exception
-   *         Generic error
-   */
-  @Nonnull
-  EChange removePartner (@Nullable String sPartnerName) throws OpenAS2Exception;
-
-  /**
-   * Get all the partner data of the partner with the given name.
-   *
-   * @param sPartnerName
-   *        Partner name to search. May be <code>null</code>.
-   * @return <code>null</code> if no such partner exists.
-   */
-  @Nullable
-  IStringMap getPartnerOfName (@Nullable String sPartnerName);
-
-  /**
-   * @return A set with all contained partner names. Never <code>null</code> but
-   *         maybe empty.
-   */
-  @Nonnull
-  @ReturnsMutableCopy
-  Set <String> getAllPartnerNames ();
-
-  /**
-   * @return An (unordered) list of all contained partner data.
-   */
-  @Nonnull
-  @ReturnsMutableCopy
-  List <? extends IStringMap> getAllPartners ();
-
   /**
    * Add a partnership.
    *

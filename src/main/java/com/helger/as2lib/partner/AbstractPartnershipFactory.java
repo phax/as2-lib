@@ -48,7 +48,6 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ELockType;
 import com.helger.commons.annotation.IsLocked;
@@ -56,12 +55,17 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
+/**
+ * Abstract {@link IPartnershipFactory} implementation using
+ * {@link PartnershipMap} as the underlying data storage object.
+ * 
+ * @author Philip Helger
+ */
 @ThreadSafe
 public abstract class AbstractPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractPartnershipFactory.class);
 
-  private final PartnerMap m_aPartners = new PartnerMap ();
   private final PartnershipMap m_aPartnerships = new PartnershipMap ();
 
   /**
@@ -76,109 +80,6 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @IsLocked (ELockType.WRITE)
   protected void markAsChanged () throws OpenAS2Exception
   {}
-
-  protected final void setPartners (@Nonnull final PartnerMap aPartners) throws OpenAS2Exception
-  {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
-      m_aPartners.setPartners (aPartners);
-      markAsChanged ();
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
-  }
-
-  public void addPartner (@Nonnull final StringMap aNewPartner) throws OpenAS2Exception
-  {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
-      m_aPartners.addPartner (aNewPartner);
-      markAsChanged ();
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
-  }
-
-  @Nonnull
-  public EChange removePartner (@Nullable final String sPartnerName) throws OpenAS2Exception
-  {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
-      if (m_aPartners.removePartner (sPartnerName).isUnchanged ())
-        return EChange.UNCHANGED;
-      markAsChanged ();
-      return EChange.CHANGED;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
-  }
-
-  @Nullable
-  public StringMap getPartnerOfName (@Nullable final String sPartnerName)
-  {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners.getPartnerOfName (sPartnerName);
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public Set <String> getAllPartnerNames ()
-  {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners.getAllPartnerNames ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public List <StringMap> getAllPartners ()
-  {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners.getAllPartners ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
-  }
-
-  @Nonnull
-  public IPartnerMap getPartnerMap ()
-  {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners;
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
-  }
 
   @Nonnull
   @OverridingMethodsMustInvokeSuper
