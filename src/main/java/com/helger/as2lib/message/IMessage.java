@@ -36,7 +36,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
 
 /**
@@ -81,7 +80,7 @@ public interface IMessage extends IBaseMessage
   MimeBodyPart getData ();
 
   @Nonnull
-  void setData (@Nonnull MimeBodyPart aData) throws OpenAS2Exception;
+  void setData (@Nonnull MimeBodyPart aData);
 
   @Nullable
   IMessageMDN getMDN ();
