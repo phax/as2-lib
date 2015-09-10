@@ -69,7 +69,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
-  private static final String PARTNER_NAME = PartnerMap.PARTNER_NAME;
+  private static final String PARTNER_NAME = Partner.PARTNER_NAME;
+  private static final String PARTNERSHIP_NAME = Partner.PARTNER_NAME;
   private static final Logger s_aLogger = LoggerFactory.getLogger (XMLPartnershipFactory.class);
 
   public void setFilename (final String filename)
@@ -119,7 +120,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
         if (sNodeName.equals ("partner"))
         {
-          final StringMap aNewPartner = loadPartner (eRootNode);
+          final Partner aNewPartner = loadPartner (eRootNode);
           aNewPartners.addPartner (aNewPartner);
         }
         else
@@ -155,10 +156,11 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   @Nonnull
-  public StringMap loadPartner (@Nonnull final IMicroElement ePartner) throws OpenAS2Exception
+  public Partner loadPartner (@Nonnull final IMicroElement ePartner) throws OpenAS2Exception
   {
     // Name is required
-    return XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartner, PARTNER_NAME);
+    final StringMap aAttrs = XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartner, PARTNER_NAME);
+    return new Partner (aAttrs);
   }
 
   protected void loadPartnerIDs (@Nonnull final IMicroElement ePartnership,
@@ -182,26 +184,27 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     if (sPartnerName != null)
     {
       // Resolve name from existing partners
-      final IStringMap aPartner = aAllPartners.getPartnerOfName (sPartnerName);
+      final IPartner aPartner = aAllPartners.getPartnerOfName (sPartnerName);
       if (aPartner == null)
       {
         throw new OpenAS2Exception ("Partnership '" +
                                     aPartnership.getName () +
                                     "' has a non-existing " +
                                     sPartnerType +
-                                    ": '" +
+                                    " partner: '" +
                                     sPartnerName +
                                     "'");
       }
 
+      // Set all attributes from the stored partner
       if (bIsSender)
         aPartnership.addSenderIDs (aPartner.getAllAttributes ());
       else
         aPartnership.addReceiverIDs (aPartner.getAllAttributes ());
     }
 
-    // copy all other attributes to the partner id map - overwrite the ones
-    // present in the partner element
+    // copy all other (existing) attributes to the partner id map - overwrite
+    // the ones present in the partner element
     if (bIsSender)
       aPartnership.addSenderIDs (aPartnerAttrs.getAllAttributes ());
     else
@@ -214,9 +217,9 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     // Name attribute is required
     final IStringMap aPartnershipAttrs = XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
-                                                                                             PARTNER_NAME);
+                                                                                             PARTNERSHIP_NAME);
 
-    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAttributeAsString (PARTNER_NAME));
+    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAttributeAsString (PARTNERSHIP_NAME));
 
     // load the sender and receiver information
     loadPartnerIDs (ePartnership, aAllPartners, aPartnership, true);
@@ -266,7 +269,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     for (final Partnership aPartnership : getAllPartnerships ())
     {
       final IMicroElement ePartnership = ePartnerships.appendElement ("partnership");
-      ePartnership.setAttribute (PARTNER_NAME, aPartnership.getName ());
+      ePartnership.setAttribute (PARTNERSHIP_NAME, aPartnership.getName ());
 
       final IMicroElement eSender = ePartnership.appendElement ("sender");
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllSenderIDs ())

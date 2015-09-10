@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
@@ -70,7 +69,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
     }
   }
 
-  public void addPartner (@Nonnull final StringMap aNewPartner) throws OpenAS2Exception
+  public void addPartner (@Nonnull final Partner aNewPartner) throws OpenAS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -102,7 +101,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
   }
 
   @Nullable
-  public StringMap getPartnerOfName (@Nullable final String sPartnerName)
+  public Partner getPartnerOfName (@Nullable final String sPartnerName)
   {
     m_aRWLock.readLock ().lock ();
     try
@@ -132,7 +131,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <StringMap> getAllPartners ()
+  public List <Partner> getAllPartners ()
   {
     m_aRWLock.readLock ().lock ();
     try

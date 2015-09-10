@@ -42,29 +42,30 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.state.EChange;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Defines a map with all known partners.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
 public final class PartnerMap implements IPartnerMap
 {
-  public static final String PARTNER_NAME = "name";
+  private final Map <String, Partner> m_aMap = new LinkedHashMap <String, Partner> ();
 
-  private final Map <String, StringMap> m_aMap = new LinkedHashMap <String, StringMap> ();
+  public PartnerMap ()
+  {}
 
-  public void addPartner (@Nonnull final StringMap aNewPartner) throws OpenAS2Exception
+  public void addPartner (@Nonnull final Partner aNewPartner) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aNewPartner, "NewPartner");
 
-    final String sName = aNewPartner.getAttributeAsString (PARTNER_NAME);
+    final String sName = aNewPartner.getName ();
     if (m_aMap.containsKey (sName))
       throw new OpenAS2Exception ("Partner is defined more than once: '" + sName + "'");
 
@@ -85,7 +86,7 @@ public final class PartnerMap implements IPartnerMap
   }
 
   @Nullable
-  public StringMap getPartnerOfName (@Nullable final String sPartnerName)
+  public Partner getPartnerOfName (@Nullable final String sPartnerName)
   {
     return m_aMap.get (sPartnerName);
   }
@@ -99,8 +100,14 @@ public final class PartnerMap implements IPartnerMap
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <StringMap> getAllPartners ()
+  public List <Partner> getAllPartners ()
   {
     return CollectionHelper.newList (m_aMap.values ());
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("Map", m_aMap).toString ();
   }
 }

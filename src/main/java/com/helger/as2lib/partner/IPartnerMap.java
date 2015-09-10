@@ -44,13 +44,13 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 /**
  * Read-only interface to manage the mapping from name to partner (represented
  * by a {@link StringMap}).
- * 
+ *
  * @author Philip Helger
  */
 public interface IPartnerMap
 {
   @Nullable
-  StringMap getPartnerOfName (@Nullable String sPartnerName);
+  IPartner getPartnerOfName (@Nullable String sPartnerName);
 
   @Nonnull
   @ReturnsMutableCopy
@@ -58,5 +58,5 @@ public interface IPartnerMap
 
   @Nonnull
   @ReturnsMutableCopy
-  List <StringMap> getAllPartners ();
+  List <? extends IPartner> getAllPartners ();
 }

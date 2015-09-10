@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.util.IStringMap;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
@@ -49,7 +48,7 @@ import com.helger.commons.state.EChange;
  * "partners". This can be used for providing certain fixed value on a
  * per-partner basis (e.g. email address or X509 certificate alias to the
  * keystore) without having redundancy data in all partnerships.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
@@ -62,7 +61,7 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
    * @throws OpenAS2Exception
    *         Generic error
    */
-  void addPartner (@Nonnull StringMap aNewPartner) throws OpenAS2Exception;
+  void addPartner (@Nonnull Partner aNewPartner) throws OpenAS2Exception;
 
   /**
    * Remove a partner.
@@ -100,5 +99,5 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <? extends IStringMap> getAllPartners ();
+  List <? extends IPartner> getAllPartners ();
 }
