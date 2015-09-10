@@ -41,12 +41,8 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -54,8 +50,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 {
   private MimeBodyPart m_aData;
   private IMessageMDN m_aMDN;
-  @Deprecated
-  private DataHistory m_aHistory = new DataHistory ();
 
   public AbstractMessage ()
   {}
@@ -113,8 +107,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     return getHeader (CAS2Header.HEADER_SUBJECT);
   }
 
-  @Deprecated
-  public void setData (@Nullable final MimeBodyPart aData, @Nullable final DataHistoryItem aHistoryItem)
+  public void setData (@Nullable final MimeBodyPart aData)
   {
     // Remember data
     m_aData = aData;
@@ -140,28 +133,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       {
         setContentDisposition (null);
       }
-    }
-
-    // Add to history (if any)
-    if (aHistoryItem != null)
-      m_aHistory.addItem (aHistoryItem);
-  }
-
-  @SuppressWarnings ("deprecation")
-  @Nonnull
-  public DataHistoryItem setData (@Nonnull final MimeBodyPart aData) throws OpenAS2Exception
-  {
-    ValueEnforcer.notNull (aData, "Data");
-
-    try
-    {
-      final DataHistoryItem aHistoryItem = new DataHistoryItem (aData.getContentType ());
-      setData (aData, aHistoryItem);
-      return aHistoryItem;
-    }
-    catch (final Exception ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 
@@ -191,14 +162,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   }
 
   @Nonnull
-  @ReturnsMutableObject ("design")
-  @Deprecated
-  public final DataHistory getHistory ()
-  {
-    return m_aHistory;
-  }
-
-  @Nonnull
   @Nonempty
   public String getAsString ()
   {
@@ -221,13 +184,9 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("data", m_aData)
-                                       .append ("MDN", m_aMDN)
-                                       .append ("history", m_aHistory)
-                                       .toString ();
+    return new ToStringGenerator (this).append ("data", m_aData).append ("MDN", m_aMDN).toString ();
   }
 
-  @SuppressWarnings ("deprecation")
   protected void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     try
@@ -245,9 +204,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     m_aMDN = (IMessageMDN) aOIS.readObject ();
     if (m_aMDN != null)
       m_aMDN.setMessage (this);
-
-    // read in data history
-    m_aHistory = (DataHistory) aOIS.readObject ();
   }
 
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
@@ -276,8 +232,5 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
     // write the message's MDN
     aOOS.writeObject (m_aMDN);
-
-    // write data history
-    aOOS.writeObject (m_aHistory);
   }
 }

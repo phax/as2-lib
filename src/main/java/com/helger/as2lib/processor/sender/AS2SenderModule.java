@@ -62,7 +62,6 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
-import com.helger.as2lib.message.DataHistoryItem;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.InvalidParameterException;
@@ -89,7 +88,6 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
 
-@SuppressWarnings ("deprecation")
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
@@ -332,11 +330,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm);
 
-      // Async MDN 2007-03-12
-      final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
-      // *** add one more item to msg history
-      aMsg.getHistory ().addItem (aHistoryItem);
-
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Signed data with " +
                          eSignAlgorithm +
@@ -364,11 +357,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         throw new OpenAS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
 
       aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm);
-
-      // Asynch MDN 2007-03-12
-      final DataHistoryItem aHistoryItem = new DataHistoryItem (aDataBP.getContentType ());
-      // *** add one more item to msg history
-      aMsg.getHistory ().addItem (aHistoryItem);
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Encrypted data with " +

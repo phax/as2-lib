@@ -38,14 +38,12 @@ import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
 
 /**
  * Base interface for an AS2 Message
- * 
+ *
  * @author Philip Helger
  */
-@SuppressWarnings ("deprecation")
 public interface IMessage extends IBaseMessage
 {
   /**
@@ -82,11 +80,8 @@ public interface IMessage extends IBaseMessage
   @Nullable
   MimeBodyPart getData ();
 
-  @Deprecated
-  void setData (@Nullable MimeBodyPart aData, @Nullable DataHistoryItem aHistoryItem) throws OpenAS2Exception;
-
   @Nonnull
-  DataHistoryItem setData (@Nonnull MimeBodyPart aData) throws OpenAS2Exception;
+  void setData (@Nonnull MimeBodyPart aData) throws OpenAS2Exception;
 
   @Nullable
   IMessageMDN getMDN ();
@@ -96,11 +91,6 @@ public interface IMessage extends IBaseMessage
   @Nonnull
   @Nonempty
   String getLoggingText ();
-
-  @Nonnull
-  @ReturnsMutableObject ("design")
-  @Deprecated
-  DataHistory getHistory ();
 
   String getProtocol ();
 

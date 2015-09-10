@@ -150,8 +150,7 @@ public class AS2Client
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
   protected AS2Message createMessage (@Nonnull final Partnership aPartnership,
-                                      @Nonnull final AS2ClientRequest aRequest) throws MessagingException,
-                                                                                OpenAS2Exception
+                                      @Nonnull final AS2ClientRequest aRequest) throws MessagingException
   {
     final AS2Message aMsg = createAS2MessageObj ();
     aMsg.setContentType (aRequest.getContentType ());
