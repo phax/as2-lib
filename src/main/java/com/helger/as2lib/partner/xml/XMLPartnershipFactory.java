@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.partner;
+package com.helger.as2lib.partner.xml;
 
 import java.io.File;
 import java.io.InputStream;
@@ -46,6 +46,8 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.partner.PartnershipMap;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;

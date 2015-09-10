@@ -30,59 +30,33 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.partner;
+package com.helger.as2lib.partner.xml;
+
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.as2lib.util.StringMap;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 
 /**
- * A special {@link XMLPartnershipFactory} that adds a new partnership if it is
- * not yet existing.
+ * Read-only interface to manage the mapping from name to partner (represented
+ * by a {@link StringMap}).
  *
  * @author Philip Helger
  */
-public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
+public interface IPartnerMap
 {
-  /**
-   * Callback method that is invoked every time a new partnership is
-   * automatically added. This method is called BEFORE the main add-process is
-   * started.
-   *
-   * @param aPartnership
-   *        The partnership that will be added. Never <code>null</code>.
-   * @throws OpenAS2Exception
-   *         In case of an error.
-   */
-  @OverrideOnDemand
-  @OverridingMethodsMustInvokeSuper
-  protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
-  {
-    // Ensure the X509 key is contained for certificate store alias retrieval
-    if (!aPartnership.containsSenderX509Alias ())
-      aPartnership.setSenderX509Alias (aPartnership.getSenderAS2ID ());
+  @Nullable
+  IPartner getPartnerOfName (@Nullable String sPartnerName);
 
-    if (!aPartnership.containsReceiverX509Alias ())
-      aPartnership.setReceiverX509Alias (aPartnership.getReceiverAS2ID ());
-  }
-
-  @Override
   @Nonnull
-  public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
-  {
-    try
-    {
-      return super.getPartnership (aPartnership);
-    }
-    catch (final PartnershipNotFoundException ex)
-    {
-      onBeforeAddPartnership (aPartnership);
+  @ReturnsMutableCopy
+  Set <String> getAllPartnerNames ();
 
-      // Create a new one
-      addPartnership (aPartnership);
-      return aPartnership;
-    }
-  }
+  @Nonnull
+  @ReturnsMutableCopy
+  List <? extends IPartner> getAllPartners ();
 }

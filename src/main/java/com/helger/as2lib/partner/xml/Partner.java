@@ -1,4 +1,4 @@
-package com.helger.as2lib.partner;
+package com.helger.as2lib.partner.xml;
 
 import java.util.Iterator;
 import java.util.Map;

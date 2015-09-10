@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.partner;
+package com.helger.as2lib.partner.xml;
 
 import java.util.List;
 import java.util.Set;
@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.partner.AbstractPartnershipFactory;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
