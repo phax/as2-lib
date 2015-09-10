@@ -258,17 +258,17 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     }
 
     final IMicroDocument aDoc = new MicroDocument ();
-    final IMicroElement ePartnerships = aDoc.appendElement ("partnerships");
-    for (final IStringMap aAttrs : getAllPartners ())
+    final IMicroElement eRoot = aDoc.appendElement ("partnerships");
+    for (final IPartner aPartner : getAllPartners ())
     {
-      final IMicroElement ePartner = ePartnerships.appendElement ("partner");
-      for (final Map.Entry <String, String> aAttr : aAttrs)
+      final IMicroElement ePartner = eRoot.appendElement ("partner");
+      for (final Map.Entry <String, String> aAttr : aPartner)
         ePartner.setAttribute (aAttr.getKey (), aAttr.getValue ());
     }
 
     for (final Partnership aPartnership : getAllPartnerships ())
     {
-      final IMicroElement ePartnership = ePartnerships.appendElement ("partnership");
+      final IMicroElement ePartnership = eRoot.appendElement ("partnership");
       ePartnership.setAttribute (PARTNERSHIP_NAME, aPartnership.getName ());
 
       final IMicroElement eSender = ePartnership.appendElement ("sender");

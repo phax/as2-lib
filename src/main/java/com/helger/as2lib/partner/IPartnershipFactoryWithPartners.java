@@ -39,7 +39,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
 
@@ -84,7 +83,7 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
    * @return <code>null</code> if no such partner exists.
    */
   @Nullable
-  IStringMap getPartnerOfName (@Nullable String sPartnerName);
+  IPartner getPartnerOfName (@Nullable String sPartnerName);
 
   /**
    * @return A set with all contained partner names. Never <code>null</code> but
