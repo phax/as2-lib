@@ -224,7 +224,6 @@ public final class AS2Helper
 
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
     aMDN.setHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    // RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
     aMDN.setHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMDN.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
     aMDN.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
@@ -278,7 +277,6 @@ public final class AS2Helper
                                               aDispositionOptions.getFirstMICAlg (),
                                               bIncludeHeadersInMIC);
     }
-
     aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
 
     boolean bSignMDN = false;

@@ -132,7 +132,8 @@ public interface IPartnershipFactory extends IDynamicComponent
    *        <code>null</code> and must already contain a partnership with at
    *        least name or sender and receiver IDs.
    * @param bOverwrite
-   *        <code>true</code> to also set the subject of the message
+   *        <code>true</code> to also set the subject of the message with the
+   *        subject stored in the partnership.
    * @throws OpenAS2Exception
    *         In case of an error
    * @see #getPartnership(Partnership)
@@ -140,7 +141,7 @@ public interface IPartnershipFactory extends IDynamicComponent
   void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
 
   /**
-   * Looks up and fills in any header info for a specific msg's partnership
+   * Looks up and fills in any header info for a specific MDN's partnership
    *
    * @param aMdn
    *        The MDN of which the partnership information should be updated. May

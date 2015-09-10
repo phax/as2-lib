@@ -73,7 +73,11 @@ public final class CAS2Header
    * RFC 6017
    */
   public static final String DEFAULT_AS2_VERSION = "1.1";
+  /**
+   * RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
+   */
   public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
+  /** Default Content-Transfer-Encoding is "8bit" which means binary. */
   public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = EContentTransferEncoding._8BIT.getID ();
 
   private CAS2Header ()
