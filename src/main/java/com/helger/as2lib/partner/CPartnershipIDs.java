@@ -46,11 +46,11 @@ import com.helger.as2lib.crypto.ECompressionType;
 @Immutable
 public final class CPartnershipIDs
 {
-  /** AS2 ID */
+  /** AS2 ID (sender or receiver) */
   public static final String PID_AS2 = "as2_id";
-  /** Alias to an X509 Certificate */
+  /** Alias to an X509 Certificate (sender or receiver) */
   public static final String PID_X509_ALIAS = "x509_alias";
-  /** Email address */
+  /** Email address (sender or receiver) */
   public static final String PID_EMAIL = "email";
 
   /** URL destination for AS2 transactions */

@@ -158,7 +158,7 @@ public class AS2Client
     aMsg.setPartnership (aPartnership);
     aMsg.setMessageID (aMsg.generateMessageID ());
 
-    aMsg.setAttribute (CPartnershipIDs.PA_AS2_URL, aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+    aMsg.setAttribute (CPartnershipIDs.PA_AS2_URL, aPartnership.getAS2URL ());
     aMsg.setAttribute (CPartnershipIDs.PID_AS2, aPartnership.getReceiverAS2ID ());
     aMsg.setAttribute (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderEmail ());
 

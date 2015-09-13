@@ -466,17 +466,114 @@ public class Partnership implements Serializable
     return m_aAttributes.getAttributeAsString (sKey, sDefault);
   }
 
-  /**
-   * Check if a value for the provided attribute name is present.
-   *
-   * @param sKey
-   *        Attribute name to search. May be <code>null</code>.
-   * @return <code>true</code> if a value for the attribute is present,
-   *         <code>false</code> otherwise.
-   */
-  public boolean containsAttribute (@Nullable final String sKey)
+  @Nullable
+  public String getAS2URL ()
   {
-    return m_aAttributes.containsAttribute (sKey);
+    return getAttribute (CPartnershipIDs.PA_AS2_URL);
+  }
+
+  @Nullable
+  public String getAS2MDNTo ()
+  {
+    return getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
+  }
+
+  @Nullable
+  public String getAS2MDNOptions ()
+  {
+    return getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
+  }
+
+  @Nullable
+  public String getAS2ReceiptOption ()
+  {
+    return getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
+  }
+
+  @Nullable
+  public String getMessageIDFormat (@Nullable final String sDefault)
+  {
+    return getAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, sDefault);
+  }
+
+  @Nullable
+  public String getMDNSubject ()
+  {
+    return getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
+  }
+
+  public boolean isBlockErrorMDN ()
+  {
+    return m_aAttributes.containsAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN);
+  }
+
+  @Nullable
+  public String getDateFormat (@Nullable final String sDefault)
+  {
+    return getAttribute (CPartnershipIDs.PA_DATE_FORMAT, sDefault);
+  }
+
+  @Nullable
+  public String getEncryptAlgorithm ()
+  {
+    return getAttribute (CPartnershipIDs.PA_ENCRYPT);
+  }
+
+  @Nullable
+  public String getSigningAlgorithm ()
+  {
+    return getAttribute (CPartnershipIDs.PA_SIGN);
+  }
+
+  @Nullable
+  public String getProtocol ()
+  {
+    return getAttribute (CPartnershipIDs.PA_PROTOCOL);
+  }
+
+  @Nullable
+  public String getSubject ()
+  {
+    return getAttribute (CPartnershipIDs.PA_SUBJECT);
+  }
+
+  @Nullable
+  public String getContentTransferEncoding (@Nullable final String sDefault)
+  {
+    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sDefault);
+  }
+
+  @Nullable
+  public String getContentTransferEncodingReceive ()
+  {
+    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE);
+  }
+
+  @Nullable
+  public String getCompressionType ()
+  {
+    return getAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE);
+  }
+
+  @Nullable
+  public String getCompressionMode ()
+  {
+    return getAttribute (CPartnershipIDs.PA_COMPRESSION_MODE);
+  }
+
+  public boolean isCompressBeforeSign ()
+  {
+    return !CPartnershipIDs.COMPRESS_AFTER_SIGNING.equals (getCompressionMode ());
+  }
+
+  public boolean isForceDecrypt ()
+  {
+    return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
+  }
+
+  public boolean isForceVerify ()
+  {
+    return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
   }
 
   /**

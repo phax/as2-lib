@@ -58,7 +58,7 @@ import com.helger.commons.state.EChange;
 /**
  * Abstract {@link IPartnershipFactory} implementation using
  * {@link PartnershipMap} as the underlying data storage object.
- * 
+ *
  * @author Philip Helger
  */
 @ThreadSafe
@@ -230,7 +230,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     // Set attributes
     if (bOverwrite)
     {
-      final String sSubject = aPartnership.getAttribute (CPartnershipIDs.PA_SUBJECT);
+      final String sSubject = aPartnership.getSubject ();
       if (sSubject != null)
       {
         aMsg.setSubject (new MessageParameters (aMsg).format (sSubject));

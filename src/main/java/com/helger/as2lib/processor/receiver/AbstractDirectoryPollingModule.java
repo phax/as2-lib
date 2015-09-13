@@ -53,7 +53,6 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
@@ -358,8 +357,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (new DataHandler (aByteSource));
 
       // Headers must be set AFTER the DataHandler
-      final String sEncodeType = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING,
-                                                                      CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING);
+      final String sEncodeType = aMsg.getPartnership ()
+                                     .getContentTransferEncoding (CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING);
       aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
 
       // below statement is not filename related, just want to make it

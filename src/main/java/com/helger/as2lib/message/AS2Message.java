@@ -41,7 +41,6 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.annotation.Nonempty;
@@ -77,7 +76,7 @@ public class AS2Message extends AbstractMessage
                                                                        .add ("msg", new MessageParameters (this))
                                                                        .add ("rand", new RandomParameters ());
 
-    final String sIDFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, DEFAULT_ID_FORMAT);
+    final String sIDFormat = getPartnership ().getMessageIDFormat (DEFAULT_ID_FORMAT);
 
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ('<');
@@ -98,8 +97,7 @@ public class AS2Message extends AbstractMessage
   {
     // Requesting by partnership?
     final Partnership aPartnership = getPartnership ();
-    final boolean bRequesting = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null ||
-                                aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null;
+    final boolean bRequesting = aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null;
     if (bRequesting)
       return true;
 
@@ -114,9 +112,8 @@ public class AS2Message extends AbstractMessage
     // Requesting by partnership?
     final Partnership aPartnership = getPartnership ();
     // Same as regular MDN + PA_AS2_RECEIPT_OPTION
-    final boolean bRequesting = (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO) != null ||
-                                 aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS) != null) &&
-                                aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null;
+    final boolean bRequesting = (aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null) &&
+                                aPartnership.getAS2ReceiptOption () != null;
     if (bRequesting)
       return true;
 

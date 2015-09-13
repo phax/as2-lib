@@ -113,7 +113,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
       InvalidParameterException.checkValue (aMsg,
                                             "Attribute: " + CPartnershipIDs.PA_AS2_URL,
-                                            aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+                                            aPartnership.getAS2URL ());
       InvalidParameterException.checkValue (aMsg,
                                             "Receiver: " + CPartnershipIDs.PID_AS2,
                                             aPartnership.getReceiverAS2ID ());
@@ -227,16 +227,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   protected String calculateAndStoreMIC (@Nonnull final AS2Message aMsg) throws Exception
   {
     final Partnership aPartnership = aMsg.getPartnership ();
-    final String sDispositionOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
+    final String sDispositionOptions = aPartnership.getAS2MDNOptions ();
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("DispositionOptions=" + aDispositionOptions);
 
     // Calculate and get the original mic
-    final boolean bIncludeHeadersInMIC = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN) != null ||
-                                         aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT) != null ||
-                                         aPartnership.getAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE) != null;
+    final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null ||
+                                         aPartnership.getEncryptAlgorithm () != null ||
+                                         aPartnership.getCompressionType () != null;
 
     final String sMIC = AS2Helper.getCryptoHelper ().calculateMIC (aMsg.getData (),
                                                                    aDispositionOptions.getFirstMICAlg (),
@@ -244,7 +244,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Calculated MIC: '" + sMIC + "'");
 
-    if (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) != null)
+    if (aPartnership.getAS2ReceiptOption () != null)
     {
       // if yes : PA_AS2_RECEIPT_OPTION != null
       // then keep the original mic & message id.
@@ -263,9 +263,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
-    String sTransferEncoding = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING);
-    if (sTransferEncoding == null)
-      sTransferEncoding = CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING;
+    final String sTransferEncoding = aMsg.getPartnership ()
+                                         .getContentTransferEncoding (CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING);
     aCompressedGenerator.setContentTransferEncoding (sTransferEncoding);
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
@@ -294,7 +293,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Check compression parameters
     // If compression is enabled, by default is is compressed before signing
-    final String sCompressionType = aPartnership.getAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE);
+    final String sCompressionType = aPartnership.getCompressionType ();
     ECompressionType eCompressionType = null;
     boolean bCompressBeforeSign = true;
     if (sCompressionType != null)
@@ -303,8 +302,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (eCompressionType == null)
         throw new OpenAS2Exception ("The compression type '" + sCompressionType + "' is not supported!");
 
-      final String sCompressionMode = aPartnership.getAttribute (CPartnershipIDs.PA_COMPRESSION_MODE);
-      bCompressBeforeSign = !CPartnershipIDs.COMPRESS_AFTER_SIGNING.equals (sCompressionMode);
+      bCompressBeforeSign = aPartnership.isCompressBeforeSign ();
     }
 
     if (eCompressionType != null && bCompressBeforeSign)
@@ -319,7 +317,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
 
     // Sign the data if requested
-    final String sSignAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_SIGN);
+    final String sSignAlgorithm = aPartnership.getSigningAlgorithm ();
     if (sSignAlgorithm != null)
     {
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
@@ -348,7 +346,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
 
     // Encrypt the data if requested
-    final String sCryptAlgorithm = aPartnership.getAttribute (CPartnershipIDs.PA_ENCRYPT);
+    final String sCryptAlgorithm = aPartnership.getEncryptAlgorithm ();
     if (sCryptAlgorithm != null)
     {
       final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
@@ -383,7 +381,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setHttpHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getContentType ());
     aConn.setHttpHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aConn.setHttpHeader (CAS2Header.HEADER_RECIPIENT_ADDRESS, aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL));
+    aConn.setHttpHeader (CAS2Header.HEADER_RECIPIENT_ADDRESS, aPartnership.getAS2URL ());
     aConn.setHttpHeader (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderAS2ID ());
     aConn.setHttpHeader (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverAS2ID ());
     aConn.setHttpHeader (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
@@ -393,16 +391,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                          aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
 
     // Determine where to send the MDN to
-    final String sDispTo = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
+    final String sDispTo = aPartnership.getAS2MDNTo ();
     if (sDispTo != null)
       aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
 
-    final String sDispositionOptions = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
+    final String sDispositionOptions = aPartnership.getAS2MDNOptions ();
     if (sDispositionOptions != null)
       aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionOptions);
 
     // Asynch MDN 2007-03-12
-    final String sReceiptOption = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
+    final String sReceiptOption = aPartnership.getAS2ReceiptOption ();
     if (sReceiptOption != null)
       aConn.setHttpHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptOption);
 
@@ -556,7 +554,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final Partnership aPartnership = aMsg.getPartnership ();
 
     // Create the HTTP connection
-    final String sUrl = aPartnership.getAttribute (CPartnershipIDs.PA_AS2_URL);
+    final String sUrl = aPartnership.getAS2URL ();
     final boolean bOutput = true;
     final boolean bInput = true;
     final boolean bUseCaches = false;
@@ -609,7 +607,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         if (aMsg.isRequestingMDN ())
         {
           // Check if the AsyncMDN is required
-          if (aPartnership.getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION) == null)
+          if (aPartnership.getAS2ReceiptOption () == null)
           {
             // go ahead to receive sync MDN
             receiveSyncMDN (aMsg, aConn, sMIC);

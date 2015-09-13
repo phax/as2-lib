@@ -39,7 +39,6 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
@@ -67,7 +66,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public String generateMessageID ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    final String sDateFormat = getPartnership ().getAttribute (CPartnershipIDs.PA_DATE_FORMAT, DEFAULT_DATE_FORMAT);
+    final String sDateFormat = getPartnership ().getDateFormat (DEFAULT_DATE_FORMAT);
     aSB.append ("<").append (CAS2Info.NAME).append ("-").append (DateHelper.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");

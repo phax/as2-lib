@@ -60,7 +60,6 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
@@ -127,9 +126,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     try
     {
       final boolean bMsgIsEncrypted = aCryptoHelper.isEncrypted (aMsg.getData ());
-      final boolean bForceDecrypt = "true".equals (aMsg.getPartnership ()
-                                                       .getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
-
+      final boolean bForceDecrypt = aMsg.getPartnership ().isForceDecrypt ();
       if (bMsgIsEncrypted || bForceDecrypt)
       {
         // Decrypt
@@ -167,9 +164,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     try
     {
       final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMsg.getData ());
-      final boolean bForceVerify = "true".equals (aMsg.getPartnership ()
-                                                      .getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
-
+      final boolean bForceVerify = aMsg.getPartnership ().isForceVerify ();
       if (bMsgIsSigned || bForceVerify)
       {
         if (bForceVerify && !bMsgIsSigned)
@@ -229,7 +224,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                           @Nonnull final DispositionType aDisposition,
                           @Nonnull final String sText)
   {
-    final boolean bMDNBlocked = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN) != null;
+    final boolean bMDNBlocked = aMsg.getPartnership ().isBlockErrorMDN ();
     if (!bMDNBlocked)
     {
       try

@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -89,7 +88,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     // the partnership for a default one.
     final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
                                                             aMsg.getPartnership ()
-                                                                .getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE));
+                                                                .getContentTransferEncodingReceive ());
     if (StringHelper.hasText (sContentTransferEncoding))
     {
       final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);

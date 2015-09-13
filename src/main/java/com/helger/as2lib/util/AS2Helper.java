@@ -62,7 +62,6 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
@@ -240,7 +239,7 @@ public final class AS2Helper
     aSession.getPartnershipFactory ().updatePartnership (aMDN, true);
 
     aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverEmail ());
-    final String sSubject = aMDN.getPartnership ().getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
+    final String sSubject = aMDN.getPartnership ().getMDNSubject ();
     if (sSubject != null)
     {
       aMDN.setHeader (CAS2Header.HEADER_SUBJECT, new MessageParameters (aMsg).format (sSubject));
@@ -268,10 +267,9 @@ public final class AS2Helper
     {
       // If the source message was signed or encrypted, include the headers -
       // see message sending for details
-      final boolean bIncludeHeadersInMIC = aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_SIGN) != null ||
-                                           aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_ENCRYPT) != null ||
-                                           aMsg.getPartnership ()
-                                               .getAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE) != null;
+      final boolean bIncludeHeadersInMIC = aMsg.getPartnership ().getSigningAlgorithm () != null ||
+                                           aMsg.getPartnership ().getEncryptAlgorithm () != null ||
+                                           aMsg.getPartnership ().getCompressionType () != null;
 
       sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
                                               aDispositionOptions.getFirstMICAlg (),
@@ -308,7 +306,7 @@ public final class AS2Helper
     final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
     final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMainPart);
-    final boolean bForceVerify = "true".equals (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
+    final boolean bForceVerify = aMsg.getPartnership ().isForceVerify ();
     if (bMsgIsSigned || bForceVerify)
     {
       if (bForceVerify && !bMsgIsSigned)
