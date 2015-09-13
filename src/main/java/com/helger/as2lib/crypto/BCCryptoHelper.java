@@ -32,8 +32,10 @@
  */
 package com.helger.as2lib.crypto;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.DigestInputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -47,6 +49,7 @@ import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -94,6 +97,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
@@ -102,6 +106,8 @@ import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.system.SystemProperties;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle.
@@ -111,6 +117,22 @@ import com.helger.commons.lang.priviledged.AccessControllerHelper;
 public final class BCCryptoHelper implements ICryptoHelper
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (BCCryptoHelper.class);
+  private static final File s_aDumpDecryptedDirectory;
+
+  static
+  {
+    final String sDumpDecryptedDirectory = SystemProperties.getPropertyValueOrNull ("AS2.dumpDecryptedDirectory");
+    if (StringHelper.hasText (sDumpDecryptedDirectory))
+    {
+      s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
+      IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
+      s_aLogger.info ("Using directory " +
+                      s_aDumpDecryptedDirectory.getAbsolutePath () +
+                      " to dump all decrypted body parts to.");
+    }
+    else
+      s_aDumpDecryptedDirectory = null;
+  }
 
   public BCCryptoHelper ()
   {
@@ -289,6 +311,35 @@ public final class BCCryptoHelper implements ICryptoHelper
     return sMICString + ", " + eDigestAlgorithm.getID ();
   }
 
+  private static void _dumpDecrypted (@Nonnull final byte [] aPayload)
+  {
+    // Ensure a unique filename
+    File aDestinationFile;
+    int nIndex = 0;
+    do
+    {
+      aDestinationFile = new File (s_aDumpDecryptedDirectory,
+                                   "as2-decrypted-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".part");
+      nIndex++;
+    } while (aDestinationFile.exists ());
+
+    s_aLogger.info ("Dumping decrypted MIME part to file " + aDestinationFile.getAbsolutePath ());
+    final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile);
+    try
+    {
+      // Add payload
+      aOS.write (aPayload);
+    }
+    catch (final IOException ex)
+    {
+      s_aLogger.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
+    }
+    finally
+    {
+      StreamHelper.close (aOS);
+    }
+  }
+
   @Nonnull
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
@@ -318,6 +369,10 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // try to decrypt the data
     final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (BouncyCastleProvider.PROVIDER_NAME));
+
+    if (s_aDumpDecryptedDirectory != null)
+      _dumpDecrypted (aDecryptedData);
+
     return SMIMEUtil.toMimeBodyPart (aDecryptedData);
   }
 
