@@ -211,16 +211,23 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   {
     try
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Decompressing a compressed AS2 message");
+      if (aMsg.getPartnership ().isDisableDecompress ())
+      {
+        s_aLogger.info ("Message claims to be compress but decompression is disabled" + aMsg.getLoggingText ());
+      }
+      else
+      {
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Decompressing a compressed AS2 message");
 
-      final SMIMECompressed aCompressed = new SMIMECompressed (aMsg.getData ());
-      // decompression step MimeBodyPart
-      final MimeBodyPart aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressed.getContent (new ZlibExpanderProvider ()));
-      // Update the message object
-      aMsg.setData (aDecompressedPart);
-      // Remember that message was decompressed
-      aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, Boolean.TRUE.toString ());
+        final SMIMECompressed aCompressed = new SMIMECompressed (aMsg.getData ());
+        // decompression step MimeBodyPart
+        final MimeBodyPart aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressed.getContent (new ZlibExpanderProvider ()));
+        // Update the message object
+        aMsg.setData (aDecompressedPart);
+        // Remember that message was decompressed
+        aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, Boolean.TRUE.toString ());
+      }
     }
     catch (final Exception ex)
     {

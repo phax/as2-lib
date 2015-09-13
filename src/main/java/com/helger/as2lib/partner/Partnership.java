@@ -586,6 +586,11 @@ public class Partnership implements Serializable
     return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_VERIFY));
   }
 
+  public boolean isDisableDecompress ()
+  {
+    return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECOMPRESS));
+  }
+
   /**
    * @return A copy of all contained attributes. Never <code>null</code>.
    */

@@ -133,6 +133,12 @@ public final class CPartnershipIDs
    * work-around for non spec-compliant senders.
    */
   public static final String PA_DISABLE_VERIFY = "disable_verify";
+  /**
+   * Special attribute to disable decompression of a received message, even if
+   * the Content-Type header claims the messages is compressed. This is a
+   * work-around for non spec-compliant senders.
+   */
+  public static final String PA_DISABLE_DECOMPRESS = "disable_decompress";
 
   private CPartnershipIDs ()
   {}
