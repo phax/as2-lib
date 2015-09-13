@@ -126,14 +126,18 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
+      final boolean bMsgIsEncrypted = aCryptoHelper.isEncrypted (aMsg.getData ());
       final boolean bForceDecrypt = "true".equals (aMsg.getPartnership ()
                                                        .getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
 
-      if (bForceDecrypt || aCryptoHelper.isEncrypted (aMsg.getData ()))
+      if (bMsgIsEncrypted || bForceDecrypt)
       {
         // Decrypt
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
+        if (bForceDecrypt && !bMsgIsEncrypted)
+          s_aLogger.info ("Forced decrypting" + aMsg.getLoggingText ());
+        else
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
 
         final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
         final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
@@ -162,13 +166,17 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
+      final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMsg.getData ());
       final boolean bForceVerify = "true".equals (aMsg.getPartnership ()
                                                       .getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
 
-      if (bForceVerify || aCryptoHelper.isSigned (aMsg.getData ()))
+      if (bMsgIsSigned || bForceVerify)
       {
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
+        if (bForceVerify && !bMsgIsSigned)
+          s_aLogger.info ("Forced verify signature" + aMsg.getLoggingText ());
+        else
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
         final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
                                                                                ECertificatePartnershipType.SENDER);

@@ -307,9 +307,16 @@ public final class AS2Helper
     MimeBodyPart aMainPart = aMdn.getData ();
     final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
+    final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMainPart);
     final boolean bForceVerify = "true".equals (aMsg.getPartnership ().getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
-    if (bForceVerify || aCryptoHelper.isSigned (aMainPart))
+    if (bMsgIsSigned || bForceVerify)
     {
+      if (bForceVerify && !bMsgIsSigned)
+        s_aLogger.info ("Forced verify MDN signature" + aMsg.getLoggingText ());
+      else
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
+
       aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart, bForceVerify);
     }
 
