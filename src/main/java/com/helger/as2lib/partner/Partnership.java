@@ -576,6 +576,16 @@ public class Partnership implements Serializable
     return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
   }
 
+  public boolean isDisableDecrypt ()
+  {
+    return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECRYPT));
+  }
+
+  public boolean isDisableVerify ()
+  {
+    return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_VERIFY));
+  }
+
   /**
    * @return A copy of all contained attributes. Never <code>null</code>.
    */

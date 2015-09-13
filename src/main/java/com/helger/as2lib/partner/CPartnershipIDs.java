@@ -121,6 +121,18 @@ public final class CPartnershipIDs
    * a work-around for non spec-compliant senders.
    */
   public static final String PA_FORCE_VERIFY = "force_verify";
+  /**
+   * Special attribute to disable decryption of a received message, even if the
+   * Content-Type header claims the messages is encrypted. This is a work-around
+   * for non spec-compliant senders.
+   */
+  public static final String PA_DISABLE_DECRYPT = "disable_decrypt";
+  /**
+   * Special attribute to disable signature verification of a received message,
+   * even if the Content-Type header claims the messages is signed. This is a
+   * work-around for non spec-compliant senders.
+   */
+  public static final String PA_DISABLE_VERIFY = "disable_verify";
 
   private CPartnershipIDs ()
   {}
