@@ -54,6 +54,7 @@ import com.helger.commons.annotation.IsLocked;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.state.EChange;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Abstract {@link IPartnershipFactory} implementation using
@@ -246,5 +247,11 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMdn.getPartnership ());
     aMdn.getPartnership ().copyFrom (aPartnership);
+  }
+
+  @Override
+  public String toString ()
+  {
+    return ToStringGenerator.getDerived (super.toString ()).append ("Partnerships", m_aPartnerships).toString ();
   }
 }

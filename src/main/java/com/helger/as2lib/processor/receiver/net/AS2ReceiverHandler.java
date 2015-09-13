@@ -213,7 +213,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     {
       if (aMsg.getPartnership ().isDisableDecompress ())
       {
-        s_aLogger.info ("Message claims to be compress but decompression is disabled" + aMsg.getLoggingText ());
+        s_aLogger.info ("Message claims to be compressed but decompression is disabled" + aMsg.getLoggingText ());
       }
       else
       {
