@@ -305,18 +305,24 @@ public final class AS2Helper
     MimeBodyPart aMainPart = aMdn.getData ();
     final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
+    final boolean bDisableVerify = aMsg.getPartnership ().isDisableVerify ();
     final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMainPart);
     final boolean bForceVerify = aMsg.getPartnership ().isForceVerify ();
-    if (bMsgIsSigned || bForceVerify)
+    if (bMsgIsSigned && bDisableVerify)
     {
-      if (bForceVerify && !bMsgIsSigned)
-        s_aLogger.info ("Forced verify MDN signature" + aMsg.getLoggingText ());
-      else
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
-
-      aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart, bForceVerify);
+      s_aLogger.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
     }
+    else
+      if (bMsgIsSigned || bForceVerify)
+      {
+        if (bForceVerify && !bMsgIsSigned)
+          s_aLogger.info ("Forced verify MDN signature" + aMsg.getLoggingText ());
+        else
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
+
+        aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart, bForceVerify);
+      }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
     final ContentType aReportType = new ContentType (aReportParts.getContentType ());

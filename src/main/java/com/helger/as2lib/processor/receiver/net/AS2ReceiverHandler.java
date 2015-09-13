@@ -125,27 +125,34 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
+      final boolean bDisableDecrypt = aMsg.getPartnership ().isDisableDecrypt ();
       final boolean bMsgIsEncrypted = aCryptoHelper.isEncrypted (aMsg.getData ());
       final boolean bForceDecrypt = aMsg.getPartnership ().isForceDecrypt ();
-      if (bMsgIsEncrypted || bForceDecrypt)
+      if (bMsgIsEncrypted && bDisableDecrypt)
       {
-        // Decrypt
-        if (bForceDecrypt && !bMsgIsEncrypted)
-          s_aLogger.info ("Forced decrypting" + aMsg.getLoggingText ());
-        else
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
-
-        final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
-        final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
-        final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
-                                                                   aReceiverCert,
-                                                                   aReceiverKey,
-                                                                   bForceDecrypt);
-        aMsg.setData (aDecryptedData);
-        // Remember that message was encrypted
-        aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
+        s_aLogger.info ("Message claims to be encrypted but decryption is disabled" + aMsg.getLoggingText ());
       }
+      else
+        if (bMsgIsEncrypted || bForceDecrypt)
+        {
+          // Decrypt
+          if (bForceDecrypt && !bMsgIsEncrypted)
+            s_aLogger.info ("Forced decrypting" + aMsg.getLoggingText ());
+          else
+            if (s_aLogger.isDebugEnabled ())
+              s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
+
+          final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg,
+                                                                             ECertificatePartnershipType.RECEIVER);
+          final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
+          final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
+                                                                     aReceiverCert,
+                                                                     aReceiverKey,
+                                                                     bForceDecrypt);
+          aMsg.setData (aDecryptedData);
+          // Remember that message was encrypted
+          aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
+        }
     }
     catch (final Exception ex)
     {
@@ -163,27 +170,33 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
+      final boolean bDisableVerify = aMsg.getPartnership ().isDisableVerify ();
       final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMsg.getData ());
       final boolean bForceVerify = aMsg.getPartnership ().isForceVerify ();
-      if (bMsgIsSigned || bForceVerify)
+      if (bMsgIsSigned && bDisableVerify)
       {
-        if (bForceVerify && !bMsgIsSigned)
-          s_aLogger.info ("Forced verify signature" + aMsg.getLoggingText ());
-        else
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
-
-        final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
-                                                                               ECertificatePartnershipType.SENDER);
-        final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
-                                                                 aSenderCert,
-                                                                 m_aReceiverModule.getSession ()
-                                                                                  .isCryptoVerifyUseCertificateInBodyPart (),
-                                                                 bForceVerify);
-        aMsg.setData (aVerifiedData);
-        // Remember that message was signed
-        aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
+        s_aLogger.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
       }
+      else
+        if (bMsgIsSigned || bForceVerify)
+        {
+          if (bForceVerify && !bMsgIsSigned)
+            s_aLogger.info ("Forced verify signature" + aMsg.getLoggingText ());
+          else
+            if (s_aLogger.isDebugEnabled ())
+              s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
+
+          final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
+                                                                                 ECertificatePartnershipType.SENDER);
+          final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
+                                                                   aSenderCert,
+                                                                   m_aReceiverModule.getSession ()
+                                                                                    .isCryptoVerifyUseCertificateInBodyPart (),
+                                                                   bForceVerify);
+          aMsg.setData (aVerifiedData);
+          // Remember that message was signed
+          aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
+        }
     }
     catch (final Exception ex)
     {
