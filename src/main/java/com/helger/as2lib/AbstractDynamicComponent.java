@@ -32,9 +32,6 @@
  */
 package com.helger.as2lib;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -45,12 +42,13 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
 {
-  protected final ReadWriteLock m_aRWLock = new ReentrantReadWriteLock ();
+  protected final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
   private IAS2Session m_aSession;
 
   @Nonnull
@@ -85,7 +83,8 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   }
 
   @OverridingMethodsMustInvokeSuper
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aParameters) throws OpenAS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
     setAttributes (aParameters != null ? aParameters.getAllAttributes () : null);
