@@ -51,7 +51,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.attr.AbstractReadOnlyAttributeContainer;
+import com.helger.commons.collection.attr.AttributeValueConverter;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.state.EChange;
@@ -133,7 +133,7 @@ public class StringMap implements IStringMap, Serializable
   public final int getAttributeAsInt (@Nullable final String sName, final int nDefault)
   {
     final String sValue = getAttributeAsString (sName);
-    return AbstractReadOnlyAttributeContainer.getAsInt (sName, sValue, nDefault);
+    return AttributeValueConverter.getAsInt (sName, sValue, nDefault);
   }
 
   public final long getAttributeAsLong (@Nullable final String sName)
@@ -144,7 +144,7 @@ public class StringMap implements IStringMap, Serializable
   public final long getAttributeAsLong (@Nullable final String sName, final long nDefault)
   {
     final String sValue = getAttributeAsString (sName);
-    return AbstractReadOnlyAttributeContainer.getAsLong (sName, sValue, nDefault);
+    return AttributeValueConverter.getAsLong (sName, sValue, nDefault);
   }
 
   public final double getAttributeAsDouble (@Nullable final String sName)
@@ -155,7 +155,7 @@ public class StringMap implements IStringMap, Serializable
   public final double getAttributeAsDouble (@Nullable final String sName, final double dDefault)
   {
     final String sValue = getAttributeAsString (sName);
-    return AbstractReadOnlyAttributeContainer.getAsDouble (sName, sValue, dDefault);
+    return AttributeValueConverter.getAsDouble (sName, sValue, dDefault);
   }
 
   public final boolean getAttributeAsBoolean (@Nullable final String sName)
@@ -166,7 +166,7 @@ public class StringMap implements IStringMap, Serializable
   public final boolean getAttributeAsBoolean (@Nullable final String sName, final boolean bDefault)
   {
     final String sValue = getAttributeAsString (sName);
-    return AbstractReadOnlyAttributeContainer.getAsBoolean (sName, sValue, bDefault);
+    return AttributeValueConverter.getAsBoolean (sName, sValue, bDefault);
   }
 
   /**
