@@ -63,9 +63,9 @@ import com.helger.commons.string.StringHelper;
  *
  * @author Philip Helger
  */
-public final class MimeBodyPartTest
+public final class MimeBodyPartFuncTest
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MimeBodyPartTest.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MimeBodyPartFuncTest.class);
 
   @Test
   public void testWriteContentTransferEncoding8Bit () throws MessagingException, IOException

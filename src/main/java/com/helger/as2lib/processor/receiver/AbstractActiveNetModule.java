@@ -176,7 +176,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final String sErrorFilename = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sErrorDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
       final File aMsgErrorFile = IOHelper.getUniqueFile (IOHelper.getDirectoryFile (sErrorDirectory),
-                                                       FilenameHelper.getAsSecureValidFilename (sErrorFilename));
+                                                         FilenameHelper.getAsSecureValidFilename (sErrorFilename));
 
       final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
       try
@@ -242,7 +242,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     }
   }
 
-  protected static final class MainThread extends Thread
+  protected static class MainThread extends Thread
   {
     private static final Logger s_aLogger = LoggerFactory.getLogger (MainThread.class);
 
