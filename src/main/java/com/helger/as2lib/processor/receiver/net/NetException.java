@@ -38,10 +38,30 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 
+/**
+ * @author OpenAS2
+ * @author Philip Helger
+ */
 public class NetException extends OpenAS2Exception
 {
+  private final InetAddress m_aAddress;
+  private final int m_nPort;
+
   public NetException (@Nullable final InetAddress aAddress, final int nPort, @Nullable final Throwable aCause)
   {
     super ("Address = " + aAddress + " port = " + nPort, aCause);
+    m_aAddress = aAddress;
+    m_nPort = nPort;
+  }
+
+  @Nullable
+  public InetAddress getAddress ()
+  {
+    return m_aAddress;
+  }
+
+  public int getPort ()
+  {
+    return m_nPort;
   }
 }

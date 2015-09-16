@@ -55,11 +55,6 @@ public class Partnership implements Serializable
   private final StringMap m_aReceiverIDs = new StringMap ();
   private final StringMap m_aAttributes = new StringMap ();
 
-  public Partnership ()
-  {
-    this (DEFAULT_NAME);
-  }
-
   public Partnership (@Nonnull final String sName)
   {
     m_sName = ValueEnforcer.notNull (sName, "Name");
@@ -687,5 +682,11 @@ public class Partnership implements Serializable
                                        .append ("receiverIDs", m_aReceiverIDs)
                                        .append ("attributes", m_aAttributes)
                                        .toString ();
+  }
+
+  @Nonnull
+  public static Partnership createPlaceholderPartnership ()
+  {
+    return new Partnership (DEFAULT_NAME);
   }
 }

@@ -34,6 +34,12 @@ package com.helger.as2lib.processor.resender;
 
 import com.helger.as2lib.processor.module.IProcessorModule;
 
+/**
+ * Base interface for a re-sender module.
+ * 
+ * @author OpenAS2
+ * @author Philip Helger
+ */
 public interface IProcessorResenderModule extends IProcessorModule
 {
   /** Action to resend a real message */

@@ -70,7 +70,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   private StringMap m_aAttributes = new StringMap ();
   private InternetHeaders m_aHeaders = new InternetHeaders ();
-  private Partnership m_aPartnership = new Partnership ();
+  private Partnership m_aPartnership = Partnership.createPlaceholderPartnership ();
 
   public AbstractBaseMessage ()
   {}
@@ -151,6 +151,13 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     m_aHeaders.setHeader (sKey, sValue);
   }
 
+  public final void addHeader (@Nonnull final String sKey, @Nullable final String sValue)
+  {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Adding message header: '" + sKey + "' = '" + sValue + "'");
+    m_aHeaders.addHeader (sKey, sValue);
+  }
+
   @Nullable
   public final String getHeader (@Nonnull final String sKey)
   {
@@ -165,6 +172,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final void setHeaders (@Nullable final InternetHeaders aHeaders)
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Setting all message headers " + aHeaders);
     if (aHeaders == null)
       m_aHeaders = new InternetHeaders ();
     else
@@ -190,13 +199,6 @@ public abstract class AbstractBaseMessage implements IBaseMessage
       aMap.put (aHeader.getName (), aHeader.getValue ());
     }
     return aMap.toString ();
-  }
-
-  public final void addHeader (@Nonnull final String sKey, @Nullable final String sValue)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Adding message header: '" + sKey + "' = '" + sValue + "'");
-    m_aHeaders.addHeader (sKey, sValue);
   }
 
   public final void setMessageID (@Nullable final String sMessageID)

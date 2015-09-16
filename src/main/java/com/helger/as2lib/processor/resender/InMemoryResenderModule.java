@@ -58,12 +58,14 @@ import com.helger.commons.collection.CollectionHelper;
  * ). If resending fails an exception is thrown.
  *
  * @author Philip Helger
+ * @since 2.2.0
  */
 public class InMemoryResenderModule extends AbstractActiveResenderModule
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (InMemoryResenderModule.class);
 
-  private final Vector <ResendItem> m_aItems = new Vector <ResendItem> ();
+  // Use a Vector to be easily thread-safe
+  private final List <ResendItem> m_aItems = new Vector <ResendItem> ();
 
   @Override
   public boolean canHandle (@Nonnull final String sAction,
@@ -78,6 +80,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
+    // Get the action to be used
     String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
@@ -85,6 +88,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       sResendAction = IProcessorSenderModule.DO_SEND;
     }
 
+    // Get the number of retries
     final String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
     int nRetries;
     if (sRetries != null)
@@ -97,6 +101,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
     }
 
+    // Build the item and add it to the vector
     final ResendItem aItem = new ResendItem (sResendAction, nRetries, aMsg, getResendDelayMS ());
     m_aItems.add (aItem);
 
@@ -112,14 +117,14 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     try
     {
       final String sResendAction = aItem.getResendAction ();
-      final String sRetries = Integer.toString (aItem.getRetries () - 1);
+      final String sRemainingRetries = Integer.toString (aItem.getRetries () - 1);
       aMsg = aItem.getMessage ();
 
       // Transmit the message
       s_aLogger.info ("Loaded message for resend" + aMsg.getLoggingText ());
 
       final Map <String, Object> aOptions = new HashMap <String, Object> ();
-      aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
+      aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRemainingRetries);
       getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
       // Finally remove from list
@@ -137,6 +142,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   {
     try
     {
+      // Determine all items to be re-send
       final List <ResendItem> aResendItems = new ArrayList <ResendItem> ();
       for (final ResendItem aItem : m_aItems)
         if (aItem.isTimeToSend ())

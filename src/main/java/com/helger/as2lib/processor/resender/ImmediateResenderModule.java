@@ -48,6 +48,7 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
  * A synchronous, in-memory resender module that has no delay.
  *
  * @author Philip Helger
+ * @since 2.2.0
  */
 public class ImmediateResenderModule extends AbstractResenderModule
 {

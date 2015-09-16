@@ -41,6 +41,7 @@ import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 /**
  * Base interface for a module handler for Net interactions.
  *
+ * @author OpenAS2
  * @author Philip Helger
  */
 public interface INetModuleHandler

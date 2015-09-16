@@ -46,6 +46,7 @@ import com.helger.commons.annotation.Nonempty;
  * This class represents a single in-memory item to be resend.
  *
  * @author Philip Helger
+ * @since 2.2.0
  */
 @Immutable
 public class ResendItem
@@ -67,6 +68,9 @@ public class ResendItem
     m_nEarliestResendDateMS = new Date ().getTime () + nResendDelayMS;
   }
 
+  /**
+   * @return The internal action to be taken.
+   */
   @Nonnull
   @Nonempty
   public String getResendAction ()
@@ -74,24 +78,37 @@ public class ResendItem
     return m_sResendAction;
   }
 
+  /**
+   * @return The number of retries already performed (does not include the
+   *         original try!)
+   */
   @Nonnegative
   public int getRetries ()
   {
     return m_nRetries;
   }
 
+  /**
+   * @return The message to be resend
+   */
   @Nonnull
   public IMessage getMessage ()
   {
     return m_aMsg;
   }
 
+  /**
+   * @return The date the resend must not happen before
+   */
   @Nonnull
   public Date getEarliestResendDate ()
   {
     return new Date (m_nEarliestResendDateMS);
   }
 
+  /**
+   * @return <code>true</code> if this message can be resend now.
+   */
   public boolean isTimeToSend ()
   {
     return m_nEarliestResendDateMS <= new Date ().getTime ();
