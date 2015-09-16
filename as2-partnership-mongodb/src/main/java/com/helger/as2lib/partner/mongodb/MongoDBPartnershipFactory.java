@@ -1,0 +1,203 @@
+package com.helger.as2lib.partner.mongodb;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.bson.Document;
+import org.slf4j.Logger;
+
+import com.helger.as2lib.AbstractDynamicComponent;
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.params.MessageParameters;
+import com.helger.as2lib.partner.CPartnershipIDs;
+import com.helger.as2lib.partner.IPartnershipFactory;
+import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.partner.PartnershipNotFoundException;
+import com.helger.as2lib.util.IStringMap;
+import com.helger.commons.state.EChange;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.result.DeleteResult;
+
+/**
+ * MongoDB based implementation of {@link IPartnershipFactory}
+ *
+ * @author jochenberger
+ */
+public class MongoDBPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory {
+  private static final long serialVersionUID = -2282798646250446937L;
+  private static final String NAME_KEY = "name";
+  private static final String RECEIVER_IDS = "receiver-ids";
+  private static final String SENDER_IDS = "sender-ids";
+  private static final String ATTRIBUTES = "attributes";
+
+  private final MongoCollection <Document> partnerships;
+  private final Logger logger;
+
+  public MongoDBPartnershipFactory (final MongoCollection <Document> partnerships, final Logger logger) {
+    this.logger = logger;
+    partnerships.createIndex (new Document (NAME_KEY, Integer.valueOf (1)), new IndexOptions ().unique (true));
+    this.partnerships = partnerships;
+  }
+
+  @Override
+  public EChange addPartnership (final Partnership aPartnership) throws OpenAS2Exception {
+    partnerships.insertOne (toDocument (aPartnership));
+    return EChange.CHANGED;
+  }
+
+  @Override
+  public EChange removePartnership (final Partnership aPartnership) throws OpenAS2Exception {
+    final DeleteResult result = partnerships.deleteOne (new Document (NAME_KEY, aPartnership.getName ()));
+    if (result.getDeletedCount () >= 1l) {
+      return EChange.CHANGED;
+    }
+    return EChange.UNCHANGED;
+  }
+
+  @Override
+  public void updatePartnership (final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception {
+    // Fill in any available partnership information
+    final Partnership aPartnership = getPartnership (aMsg.getPartnership ());
+
+    logger.debug ("Updating partnership {}", aPartnership);
+
+    // Update partnership data of message with the stored ones
+    aMsg.getPartnership ().copyFrom (aPartnership);
+
+    // Set attributes
+    if (bOverwrite) {
+      final String sSubject = aPartnership.getAttribute (CPartnershipIDs.PA_SUBJECT);
+      if (sSubject != null) {
+        aMsg.setSubject (new MessageParameters (aMsg).format (sSubject));
+      }
+    }
+  }
+
+  @Override
+  public void updatePartnership (final IMessageMDN aMdn, final boolean bOverwrite) throws OpenAS2Exception {
+    final Partnership aPartnership = getPartnership (aMdn.getPartnership ());
+    aMdn.getPartnership ().copyFrom (aPartnership);
+  }
+
+  @Override
+  public Partnership getPartnership (final Partnership aPartnership) throws OpenAS2Exception {
+    Partnership aRealPartnership = getPartnershipByName (aPartnership.getName ());
+    if (aRealPartnership == null) {
+      // Found no partnership by name
+      aRealPartnership = getPartnershipByID (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
+    }
+
+    if (aRealPartnership == null) {
+      throw new PartnershipNotFoundException (aPartnership);
+    }
+    return aRealPartnership;
+  }
+
+  private Partnership getPartnershipByID (final IStringMap allSenderIDs, final IStringMap allReceiverIDs) {
+    Document filter = new Document ();
+    for (final Entry <String, String> entry : allSenderIDs) {
+      filter.append (SENDER_IDS + "." + entry.getKey (), entry.getValue ());
+    }
+    for (final Entry <String, String> entry : allReceiverIDs) {
+      filter.append (RECEIVER_IDS + "." + entry.getKey (), entry.getValue ());
+    }
+
+    Partnership result = partnerships.find (filter).map (MongoDBPartnershipFactory::toPartnership).first ();
+    if (result != null) {
+      return result;
+    }
+
+    // try the other way around, maybe we're receiving a response
+    // TODO is this really a good idea?
+    filter = new Document ();
+    for (final Entry <String, String> entry : allSenderIDs) {
+      filter.append (RECEIVER_IDS + "." + entry.getKey (), entry.getValue ());
+    }
+    for (final Entry <String, String> entry : allReceiverIDs) {
+      filter.append (SENDER_IDS + "." + entry.getKey (), entry.getValue ());
+    }
+
+    final Partnership inverseResult = partnerships.find (filter)
+                                                  .map (MongoDBPartnershipFactory::toPartnership)
+                                                  .first ();
+    if (inverseResult != null) {
+      result = new Partnership (inverseResult.getName () + "-inverse");
+      result.setReceiverX509Alias (inverseResult.getSenderX509Alias ());
+      result.setReceiverAS2ID (inverseResult.getSenderAS2ID ());
+      result.setSenderX509Alias (inverseResult.getReceiverX509Alias ());
+      result.setSenderAS2ID (inverseResult.getReceiverAS2ID ());
+
+      return result;
+    }
+    return null;
+
+  }
+
+  @Override
+  public Partnership getPartnershipByName (final String sName) {
+    return partnerships.find (new Document (NAME_KEY, sName)).map (MongoDBPartnershipFactory::toPartnership).first ();
+  }
+
+  @Override
+  public Set <String> getAllPartnershipNames () {
+    return partnerships.distinct (NAME_KEY, String.class).into (new HashSet <> ());
+  }
+
+  @Override
+  public List <Partnership> getAllPartnerships () {
+    return partnerships.find ().map (MongoDBPartnershipFactory::toPartnership).into (new ArrayList <> ());
+  }
+
+  private static Document toDocument (final IStringMap stringMap) {
+    final Document document = new Document ();
+    for (final Entry <String, String> entry : stringMap) {
+      document.put (entry.getKey (), entry.getValue ());
+    }
+    return document;
+  }
+
+  private static Document toDocument (final Partnership partnership) {
+    final Document document = new Document ();
+    document.put (NAME_KEY, partnership.getName ());
+    document.put (RECEIVER_IDS, toDocument (partnership.getAllReceiverIDs ()));
+    document.put (SENDER_IDS, toDocument (partnership.getAllSenderIDs ()));
+    document.put (ATTRIBUTES, toDocument (partnership.getAllAttributes ()));
+
+    return document;
+  }
+
+  private static Partnership toPartnership (final Document document) {
+    final Partnership partnership = new Partnership (document.getString (NAME_KEY));
+    final Document senderIDs = (Document) document.get (SENDER_IDS);
+    final Map <String, String> senders = new HashMap <> (senderIDs.size ());
+    for (final Entry <String, Object> e : senderIDs.entrySet ()) {
+      senders.put (e.getKey (), e.getValue ().toString ());
+    }
+    partnership.addSenderIDs (senders);
+
+    final Document receiverIDs = (Document) document.get (RECEIVER_IDS);
+    final Map <String, String> receivers = new HashMap <> (receiverIDs.size ());
+    for (final Entry <String, Object> e : receiverIDs.entrySet ()) {
+      receivers.put (e.getKey (), e.getValue ().toString ());
+    }
+    partnership.addReceiverIDs (receivers);
+
+    final Document attributes = (Document) document.get (ATTRIBUTES);
+    if (attributes != null) {
+      final Map <String, String> att = new HashMap <> (receiverIDs.size ());
+      for (final Entry <String, Object> e : attributes.entrySet ()) {
+        att.put (e.getKey (), e.getValue ().toString ());
+      }
+      partnership.addAllAttributes (att);
+    }
+    return partnership;
+  }
+}
