@@ -67,8 +67,10 @@ public class AS2Session implements IAS2Session
   public static final String COMPONENT_ID_PARTNERSHIP_FACTORY = "partnershipfactory";
   public static final String COMPONENT_ID_MESSAGE_PROCESSOR = "message-processor";
 
+  public static final boolean DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART = true;
+
   private final Map <String, IDynamicComponent> m_aComponents = new HashMap <String, IDynamicComponent> ();
-  private boolean m_bCryptoVerifyUseCertificateInBodyPart = true;
+  private boolean m_bCryptoVerifyUseCertificateInBodyPart = DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART;
   private Proxy m_aHttpProxy;
 
   /**
