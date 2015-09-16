@@ -96,47 +96,78 @@ public final class CPartnershipIDs
   /**
    * optional content transfer encoding value for incoming messages if not
    * specified
+   *
+   * @since 2.2.0
    */
   public static final String PA_CONTENT_TRANSFER_ENCODING_RECEIVE = "content_transfer_encoding_receive";
   /**
    * Optional compression type. Check {@link ECompressionType} constants for
    * values (using the value of the <code>getID()</code> method)
+   *
+   * @since 2.1.0
    */
   public static final String PA_COMPRESSION_TYPE = "compression_type";
-  /** Optional compression mode */
+  /**
+   * Optional compression mode
+   *
+   * @since 2.1.0
+   */
   public static final String PA_COMPRESSION_MODE = "compression_mode";
-  /** Value for {@link #PA_COMPRESSION_MODE}: compress before sign */
+  /**
+   * Value for {@link #PA_COMPRESSION_MODE}: compress before sign
+   *
+   * @since 2.1.0
+   */
   public static final String COMPRESS_BEFORE_SIGNING = "compress-before-signing";
-  /** Value for {@link #PA_COMPRESSION_MODE}: compress after sign */
+  /**
+   * Value for {@link #PA_COMPRESSION_MODE}: compress after sign
+   *
+   * @since 2.1.0
+   */
   public static final String COMPRESS_AFTER_SIGNING = "compress-after-signing";
   /**
    * Special attribute to force decryption of a received message, even if the
    * Content-Type header claims the messages is not encrypted. This is a
-   * work-around for non spec-compliant senders.
+   * work-around for non spec-compliant senders. Must be set to
+   * <code>true</code> to take effect.
+   *
+   * @since 2.2.0
    */
   public static final String PA_FORCE_DECRYPT = "force_decrypt";
   /**
    * Special attribute to force signature verification of a received message,
    * even if the Content-Type header claims the messages is not signed. This is
-   * a work-around for non spec-compliant senders.
+   * a work-around for non spec-compliant senders. Must be set to
+   * <code>true</code> to take effect.
+   *
+   * @since 2.2.0
    */
   public static final String PA_FORCE_VERIFY = "force_verify";
   /**
    * Special attribute to disable decryption of a received message, even if the
    * Content-Type header claims the messages is encrypted. This is a work-around
-   * for non spec-compliant senders.
+   * for non spec-compliant senders. Must be set to <code>true</code> to take
+   * effect.
+   *
+   * @since 2.2.0
    */
   public static final String PA_DISABLE_DECRYPT = "disable_decrypt";
   /**
    * Special attribute to disable signature verification of a received message,
    * even if the Content-Type header claims the messages is signed. This is a
-   * work-around for non spec-compliant senders.
+   * work-around for non spec-compliant senders. Must be set to
+   * <code>true</code> to take effect.
+   *
+   * @since 2.2.0
    */
   public static final String PA_DISABLE_VERIFY = "disable_verify";
   /**
    * Special attribute to disable decompression of a received message, even if
    * the Content-Type header claims the messages is compressed. This is a
-   * work-around for non spec-compliant senders.
+   * work-around for non spec-compliant senders. Must be set to
+   * <code>true</code> to take effect.
+   *
+   * @since 2.2.0
    */
   public static final String PA_DISABLE_DECOMPRESS = "disable_decompress";
 

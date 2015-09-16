@@ -17,6 +17,7 @@ import com.helger.commons.string.ToStringGenerator;
  * - a sender and a receiver.
  *
  * @author Philip Helger
+ * @since 2.2.0
  */
 public class Partner implements IPartner
 {

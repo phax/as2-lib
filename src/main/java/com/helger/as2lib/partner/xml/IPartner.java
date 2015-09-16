@@ -11,6 +11,7 @@ import com.helger.commons.name.IHasName;
  * Read-only interface for a single partner that is used in a partnership.
  *
  * @author Philip Helger
+ * @since 2.2.0
  */
 public interface IPartner extends IHasName, Iterable <Map.Entry <String, String>>
 {

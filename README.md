@@ -21,7 +21,14 @@ This project is licensed under the FreeBSD License.
 
   * 2015-xx-yy Version 2.2.0
     * added system properties (see below) for configuration and debugging purposes
-    * added the partnership attribute `content_transfer_encoding_receive` to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
+    * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
+    * added the following new partnership attributes:
+      * `content_transfer_encoding_receive` to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
+      * `force_decrypt` to force decryption of incoming messages even if the `Content-Type` header claims the meessage is not encrypted (as a work-around for non spec-compliant senders)
+      * `force_verify` to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
+      * `disable_decrypt` to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
+      * `disable_verify` to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
+      * `disable_decompress` to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
   * 2015-08-20 Version 2.1.0
     * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
     * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
@@ -47,12 +54,13 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.exception - contains basic exception classes
   * com.helger.as2lib.message - contains the main message and MDN classes
   * com.helger.as2lib.params - generic code that allows for parameterization of certain message related configuration items
-  * com.helger.as2lib.partner - contains the partner, partnership and factory code
+  * com.helger.as2lib.partner - contains the partnership and factory code
+  * com.helger.as2lib.partner.xml - contains the XML based version of a partnership factory
   * com.helger.as2lib.processor - contains the basic building blocks for processing of messages
   * com.helger.as2lib.processor.module - contains the basic classes for "active" modules (modules that can be started and stopped)
   * com.helger.as2lib.processor.receiver - module for receiving messages
   * com.helger.as2lib.processor.receiver.net - module for receiving messages from Sockets
-  * com.helger.as2lib.processor.resender - module for re-sending messages
+  * com.helger.as2lib.processor.resender - modules for re-sending messages
   * com.helger.as2lib.processor.sender - module for sending messages
   * com.helger.as2lib.processor.storage - module for storing messages
   * com.helger.as2lib.util - contains utility classes used in several places in this library or in derived projects
