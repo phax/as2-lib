@@ -12,10 +12,9 @@ This project is used in my following other projects:
   * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](http://www.peppol.eu) AS2 messages.
 
 Versions <= 1.1.0 are compatible with ph-commons < 6.0.
-
 Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
-This project is licensed under the FreeBSD License.
+`as2-lib` is licensed under the FreeBSD License. The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
 
 #News and noteworthy
 
