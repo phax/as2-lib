@@ -28,6 +28,7 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
       * `disable_decrypt` to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
       * `disable_verify` to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
       * `disable_decompress` to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
+      * Added the sub-project `as2-partnership-mongodb` - thanks to @jochenberger for contributing it
   * 2015-08-20 Version 2.1.0
     * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
     * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
@@ -68,7 +69,20 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
 
 #Building
-This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
+This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
+
+The `as2-lib` sub-project requires at least Java 1.6 and should be without problems. It is licensed under the FreeBSD license (as OpenAS2).
+
+The `as2-partnership-mongodb` sub-project requires at least Java 1.8 and upon installing it the first time it downloads an embedded MongoDB from the official web site and extracts it. If this makes problems specify the `-DskipTests=true` parameter when calling Maven.
+
+If you only have Java 1.6 or 1.7 available perform the following commands to build only `as2-lib` (assuming you are in the root directory of this project):
+```
+mvn clean install -N
+cd as2-lib
+mvn clean install
+```
+
+This installs the parent POM first (`-N` means *not recursive*) and afterwards `as2-lib` is build as usual.
 
 #System Properties
 The following system properties are available for global customization
