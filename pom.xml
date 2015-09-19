@@ -34,9 +34,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:phax/ph-datetime.git</connection>
-    <developerConnection>scm:git:git@github.com:phax/ph-datetime.git</developerConnection>
-    <url>http://github.com/phax/ph-datetime</url>
+    <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
+    <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
+    <url>http://github.com/phax/as2-lib</url>
     <tag>HEAD</tag>
   </scm>
 
