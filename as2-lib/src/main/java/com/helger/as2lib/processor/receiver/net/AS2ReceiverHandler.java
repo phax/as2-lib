@@ -152,6 +152,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           aMsg.setData (aDecryptedData);
           // Remember that message was encrypted
           aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
+          s_aLogger.info ("Successfully decrypted incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
     catch (final Exception ex)
@@ -194,8 +195,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                                     .isCryptoVerifyUseCertificateInBodyPart (),
                                                                    bForceVerify);
           aMsg.setData (aVerifiedData);
-          // Remember that message was signed
+          // Remember that message was signed and verified
           aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
+          s_aLogger.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
     catch (final Exception ex)
@@ -227,6 +229,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         aMsg.setData (aDecompressedPart);
         // Remember that message was decompressed
         aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, Boolean.TRUE.toString ());
+        s_aLogger.info ("Successfully decompressed incoming AS2 message" + aMsg.getLoggingText ());
       }
     }
     catch (final Exception ex)
