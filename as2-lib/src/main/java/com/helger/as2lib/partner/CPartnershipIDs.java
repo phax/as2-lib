@@ -165,7 +165,8 @@ public final class CPartnershipIDs
    * Define whether a certificate passed in the signed MIME body part shall be
    * used to verify the signature (when <code>true</code>) or whether to always
    * use the certificate provided in the partnership (when <code>false</code>).
-   * Must be set to <code>true</code> or <code>false</code> to take effect.
+   * If not set the value of the AS2 session is used. Must be set to
+   * <code>true</code> or <code>false</code> to take effect.
    *
    * @since 2.2.0
    */

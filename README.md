@@ -23,10 +23,11 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
     * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
     * added the following new partnership attributes:
       * `content_transfer_encoding_receive` to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
-      * `force_decrypt` to force decryption of incoming messages even if the `Content-Type` header claims the meessage is not encrypted (as a work-around for non spec-compliant senders)
-      * `force_verify` to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
+      * `force_decrypt` to force decryption of incoming messages even if the `Content-Type` header claims the message is not encrypted (as a work-around for non spec-compliant senders)
       * `disable_decrypt` to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
+      * `force_verify` to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
       * `disable_verify` to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
+      * `verify_use_cert_in_body_part` to define whether a certificate passed in the signed MIME body part shall be used to verify the signature (when `true`) or whether to always use the certificate provided in the partnership (when `false`). If not set the value of the AS2 session is used.
       * `disable_decompress` to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
       * Added the sub-project `as2-partnership-mongodb` - thanks to @jochenberger for contributing it
   * 2015-08-20 Version 2.1.0
