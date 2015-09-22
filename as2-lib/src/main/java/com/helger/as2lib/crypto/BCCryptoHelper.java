@@ -499,6 +499,12 @@ public final class BCCryptoHelper implements ICryptoHelper
                                           (bUseCertificateInBodyPart ? " and none found in the message" : "") +
                                           "!");
 
+    if (s_aLogger.isDebugEnabled ())
+      if (aRealX509Cert == aX509Cert)
+        s_aLogger.debug ("Verifying signature using the provided certificate (partnership)");
+      else
+        s_aLogger.debug ("Verifying signature using the certificate contained in the MIME body part");
+
     // Verify certificate
     final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                                     .build (aRealX509Cert.getPublicKey ());
