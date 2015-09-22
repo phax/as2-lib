@@ -191,7 +191,7 @@ public interface ICryptoHelper
    * @param aCert
    *        Certificate to check against or <code>null</code> if the certificate
    *        provided in the message should be used.
-   * @param bAllowCertificateInBodyPart
+   * @param bUseCertificateInBodyPart
    *        If <code>true</code> any certificate that is passed in the body part
    *        is used for verification. If <code>false</code> only the provided
    *        certificate is used.
@@ -205,6 +205,6 @@ public interface ICryptoHelper
   @Nonnull
   MimeBodyPart verify (@Nonnull MimeBodyPart aPart,
                        @Nullable X509Certificate aCert,
-                       boolean bAllowCertificateInBodyPart,
+                       boolean bUseCertificateInBodyPart,
                        boolean bForceVerify) throws Exception;
 }

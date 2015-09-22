@@ -459,7 +459,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
-                              final boolean bAllowCertificateInBodyPart,
+                              final boolean bUseCertificateInBodyPart,
                               final boolean bForceVerify) throws GeneralSecurityException,
                                                           IOException,
                                                           MessagingException,
@@ -475,7 +475,7 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                                    aMainPart);
 
     X509Certificate aRealX509Cert = aX509Cert;
-    if (bAllowCertificateInBodyPart)
+    if (bUseCertificateInBodyPart)
     {
       // get all certificates contained in the body part
       final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
@@ -496,7 +496,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
     if (aRealX509Cert == null)
       throw new GeneralSecurityException ("No certificate provided" +
-                                          (bAllowCertificateInBodyPart ? " and none found in the message" : "") +
+                                          (bUseCertificateInBodyPart ? " and none found in the message" : "") +
                                           "!");
 
     // Verify certificate
