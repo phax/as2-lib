@@ -80,6 +80,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.timing.StopWatch;
 
 public class AS2ReceiverHandler extends AbstractReceiverHandler
@@ -189,10 +190,22 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
           final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
                                                                                  ECertificatePartnershipType.SENDER);
+          boolean bUseCertificateInBodyPart;
+          final ETriState eUseCertificateInBodyPart = aMsg.getPartnership ().getVerifyUseCertificateInBodyPart ();
+          if (eUseCertificateInBodyPart.isDefined ())
+          {
+            // Use per partnership
+            bUseCertificateInBodyPart = eUseCertificateInBodyPart.getAsBooleanValue ();
+          }
+          else
+          {
+            // Use global value
+            bUseCertificateInBodyPart = m_aReceiverModule.getSession ().isCryptoVerifyUseCertificateInBodyPart ();
+          }
+
           final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
                                                                    aSenderCert,
-                                                                   m_aReceiverModule.getSession ()
-                                                                                    .isCryptoVerifyUseCertificateInBodyPart (),
+                                                                   bUseCertificateInBodyPart,
                                                                    bForceVerify);
           aMsg.setData (aVerifiedData);
           // Remember that message was signed and verified

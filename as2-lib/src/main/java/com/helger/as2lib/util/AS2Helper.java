@@ -299,7 +299,7 @@ public final class AS2Helper
 
   public static void parseMDN (@Nonnull final IMessage aMsg,
                                @Nonnull final X509Certificate aReceiverCert,
-                               final boolean bAllowCertificateInBodyPart) throws Exception
+                               final boolean bUseCertificateInBodyPart) throws Exception
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
     MimeBodyPart aMainPart = aMdn.getData ();
@@ -321,7 +321,10 @@ public final class AS2Helper
           if (s_aLogger.isDebugEnabled ())
             s_aLogger.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
 
-        aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bAllowCertificateInBodyPart, bForceVerify);
+        aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bUseCertificateInBodyPart, bForceVerify);
+        // Remember that message was signed and verified
+        aMdn.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
+        s_aLogger.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());

@@ -75,6 +75,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 
 public class AS2MDNReceiverHandler extends AbstractReceiverHandler
@@ -155,7 +156,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    * @throws IOException
    *         In case of IO error
    */
-  protected final void receiveMDN (final AS2Message aMsg,
+  protected final void receiveMDN (@Nonnull final AS2Message aMsg,
                                    final byte [] aData,
                                    @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws OpenAS2Exception,
                                                                                             IOException
@@ -182,7 +183,20 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ());
+      boolean bUseCertificateInBodyPart;
+      final ETriState eUseCertificateInBodyPart = aMsg.getPartnership ().getVerifyUseCertificateInBodyPart ();
+      if (eUseCertificateInBodyPart.isDefined ())
+      {
+        // Use per partnership
+        bUseCertificateInBodyPart = eUseCertificateInBodyPart.getAsBooleanValue ();
+      }
+      else
+      {
+        // Use global value
+        bUseCertificateInBodyPart = getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ();
+      }
+
+      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,

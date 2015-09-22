@@ -135,15 +135,6 @@ public final class CPartnershipIDs
    */
   public static final String PA_FORCE_DECRYPT = "force_decrypt";
   /**
-   * Special attribute to force signature verification of a received message,
-   * even if the Content-Type header claims the messages is not signed. This is
-   * a work-around for non spec-compliant senders. Must be set to
-   * <code>true</code> to take effect.
-   *
-   * @since 2.2.0
-   */
-  public static final String PA_FORCE_VERIFY = "force_verify";
-  /**
    * Special attribute to disable decryption of a received message, even if the
    * Content-Type header claims the messages is encrypted. This is a work-around
    * for non spec-compliant senders. Must be set to <code>true</code> to take
@@ -153,6 +144,15 @@ public final class CPartnershipIDs
    */
   public static final String PA_DISABLE_DECRYPT = "disable_decrypt";
   /**
+   * Special attribute to force signature verification of a received message,
+   * even if the Content-Type header claims the messages is not signed. This is
+   * a work-around for non spec-compliant senders. Must be set to
+   * <code>true</code> to take effect.
+   *
+   * @since 2.2.0
+   */
+  public static final String PA_FORCE_VERIFY = "force_verify";
+  /**
    * Special attribute to disable signature verification of a received message,
    * even if the Content-Type header claims the messages is signed. This is a
    * work-around for non spec-compliant senders. Must be set to
@@ -161,6 +161,15 @@ public final class CPartnershipIDs
    * @since 2.2.0
    */
   public static final String PA_DISABLE_VERIFY = "disable_verify";
+  /**
+   * Define whether a certificate passed in the signed MIME body part shall be
+   * used to verify the signature (when <code>true</code>) or whether to always
+   * use the certificate provided in the partnership (when <code>false</code>).
+   * Must be set to <code>true</code> or <code>false</code> to take effect.
+   *
+   * @since 2.2.0
+   */
+  public static final String PA_VERIFY_USE_CERT_IN_BODY_PART = "verify_use_cert_in_body_part";
   /**
    * Special attribute to disable decompression of a received message, even if
    * the Content-Type header claims the messages is compressed. This is a

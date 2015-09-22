@@ -44,6 +44,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
 
 public class Partnership implements Serializable
@@ -566,19 +567,30 @@ public class Partnership implements Serializable
     return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
   }
 
-  public boolean isForceVerify ()
-  {
-    return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
-  }
-
   public boolean isDisableDecrypt ()
   {
     return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECRYPT));
   }
 
+  public boolean isForceVerify ()
+  {
+    return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
+  }
+
   public boolean isDisableVerify ()
   {
     return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_VERIFY));
+  }
+
+  @Nonnull
+  public ETriState getVerifyUseCertificateInBodyPart ()
+  {
+    final String sValue = getAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART);
+    if ("true".equals (sValue))
+      return ETriState.TRUE;
+    if ("false".equals (sValue))
+      return ETriState.FALSE;
+    return ETriState.UNDEFINED;
   }
 
   public boolean isDisableDecompress ()

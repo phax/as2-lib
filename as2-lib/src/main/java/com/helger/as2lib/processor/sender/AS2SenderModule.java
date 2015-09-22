@@ -85,6 +85,7 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
 
@@ -475,7 +476,20 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, getSession ().isCryptoVerifyUseCertificateInBodyPart ());
+      boolean bUseCertificateInBodyPart;
+      final ETriState eUseCertificateInBodyPart = aMsg.getPartnership ().getVerifyUseCertificateInBodyPart ();
+      if (eUseCertificateInBodyPart.isDefined ())
+      {
+        // Use per partnership
+        bUseCertificateInBodyPart = eUseCertificateInBodyPart.getAsBooleanValue ();
+      }
+      else
+      {
+        // Use global value
+        bUseCertificateInBodyPart = getSession ().isCryptoVerifyUseCertificateInBodyPart ();
+      }
+
+      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart);
 
       try
       {

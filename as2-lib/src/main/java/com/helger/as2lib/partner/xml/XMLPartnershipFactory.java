@@ -71,6 +71,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
+
   private static final String PARTNER_NAME = Partner.PARTNER_NAME;
   private static final String PARTNERSHIP_NAME = Partner.PARTNER_NAME;
   private static final Logger s_aLogger = LoggerFactory.getLogger (XMLPartnershipFactory.class);
