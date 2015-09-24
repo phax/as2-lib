@@ -32,14 +32,75 @@
  */
 package com.helger.as2lib.cert;
 
+import java.security.cert.X509Certificate;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.AbstractDynamicComponent;
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.partner.Partnership;
 
 /**
  * Abstract implementation of {@link ICertificateFactory}.
- * 
+ *
  * @author Philip Helger
  */
 public abstract class AbstractCertificateFactory extends AbstractDynamicComponent implements ICertificateFactory
 {
-  /* empty */
+  @Nonnull
+  public abstract String getAlias (@Nonnull final Partnership aPartnership,
+                                   @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+
+  @Nonnull
+  protected abstract X509Certificate internalGetCertificate (@Nullable final String sAlias,
+                                                             @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+
+  @Nonnull
+  public X509Certificate getCertificate (@Nonnull final IMessage aMsg,
+                                         @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    final String sAlias = getAlias (aMsg.getPartnership (), ePartnershipType);
+    return internalGetCertificate (sAlias, ePartnershipType);
+  }
+
+  @Nullable
+  public X509Certificate getCertificateOrNull (@Nonnull final IMessage aMsg,
+                                               @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    try
+    {
+      return getCertificate (aMsg, ePartnershipType);
+    }
+    catch (final CertificateNotFoundException ex)
+    {
+      // No such certificate
+      return null;
+    }
+  }
+
+  @Nonnull
+  public X509Certificate getCertificate (@Nonnull final IMessageMDN aMDN,
+                                         @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    final String sAlias = getAlias (aMDN.getPartnership (), ePartnershipType);
+    return internalGetCertificate (sAlias, ePartnershipType);
+  }
+
+  @Nullable
+  public X509Certificate getCertificateOrNull (@Nonnull final IMessageMDN aMDN,
+                                               @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    try
+    {
+      return getCertificate (aMDN, ePartnershipType);
+    }
+    catch (final CertificateNotFoundException ex)
+    {
+      // No such certificate
+      return null;
+    }
+  }
 }

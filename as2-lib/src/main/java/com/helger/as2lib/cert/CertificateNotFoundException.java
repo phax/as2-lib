@@ -34,18 +34,21 @@ package com.helger.as2lib.cert;
 
 import java.security.cert.X509Certificate;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.partner.Partnership;
 
 public class CertificateNotFoundException extends OpenAS2Exception
 {
   private final ECertificatePartnershipType m_ePartnershipType;
   private final String m_sAlias;
 
-  public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType)
+  public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
+                                       @Nonnull final Partnership aPartnership)
   {
-    super ("Type: " + ePartnershipType + ", no alias found");
+    super ("Type: " + ePartnershipType + ", no alias found for partnership " + aPartnership);
     m_ePartnershipType = ePartnershipType;
     m_sAlias = null;
   }

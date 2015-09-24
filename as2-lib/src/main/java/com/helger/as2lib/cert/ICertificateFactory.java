@@ -50,18 +50,73 @@ import com.helger.as2lib.message.IMessageMDN;
  */
 public interface ICertificateFactory extends IDynamicComponent
 {
+  /**
+   * Get the certificate of the specified type for the partnership defined in
+   * the provided message
+   *
+   * @param aMsg
+   *        Message to get the partnership from. May not be <code>null</code>.
+   * @param ePartnershipType
+   *        Sender or receiver?
+   * @return Never <code>null</code>-
+   * @throws OpenAS2Exception
+   *         In case of error
+   * @throws CertificateNotFoundException
+   *         If no certificate is present
+   */
   @Nonnull
-  X509Certificate getCertificate (@Nonnull IMessage aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+  X509Certificate getCertificate (@Nonnull IMessage aMsg,
+                                  @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
+  /**
+   * Get the certificate of the specified type for the partnership defined in
+   * the provided message
+   *
+   * @param aMsg
+   *        Message to get the partnership from. May not be <code>null</code>.
+   * @param ePartnershipType
+   *        Sender or receiver?
+   * @return <code>null</code> if no such alias or certificate exists.
+   * @throws OpenAS2Exception
+   *         In case of error
+   */
   @Nullable
-  X509Certificate getCertificateOrNull (@Nonnull IMessage aMsg, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+  X509Certificate getCertificateOrNull (@Nonnull IMessage aMsg,
+                                        @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
   @Nonnull
   PrivateKey getPrivateKey (@Nullable IMessage aMsg, @Nullable X509Certificate aCert) throws OpenAS2Exception;
 
+  /**
+   * Get the certificate of the specified type for the partnership defined in
+   * the provided MDN
+   *
+   * @param aMDN
+   *        MDN to get the partnership from. May not be <code>null</code>.
+   * @param ePartnershipType
+   *        Sender or receiver?
+   * @return Never <code>null</code>-
+   * @throws OpenAS2Exception
+   *         In case of error
+   * @throws CertificateNotFoundException
+   *         If no certificate is present
+   */
   @Nonnull
-  X509Certificate getCertificate (@Nonnull IMessageMDN aMDN, @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+  X509Certificate getCertificate (@Nonnull IMessageMDN aMDN,
+                                  @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
+  /**
+   * Get the certificate of the specified type for the partnership defined in
+   * the provided MDN
+   *
+   * @param aMDN
+   *        Message to get the partnership from. May not be <code>null</code>.
+   * @param ePartnershipType
+   *        Sender or receiver?
+   * @return <code>null</code> if no such alias or certificate exists.
+   * @throws OpenAS2Exception
+   *         In case of error
+   */
   @Nullable
   X509Certificate getCertificateOrNull (@Nonnull IMessageMDN aMDN,
                                         @Nullable ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
