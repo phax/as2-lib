@@ -162,6 +162,15 @@ public final class CPartnershipIDs
    */
   public static final String PA_DISABLE_VERIFY = "disable_verify";
   /**
+   * Indicates whether the certificate used for signing should be part of the
+   * signed content (when <code>true</code>) or not (when <code>false</code>).
+   * If not set the value of the AS2 session is used. Must be set to
+   * <code>true</code> or <code>false</code> to take effect.
+   *
+   * @since 2.2.0
+   */
+  public static final String PA_SIGN_INCLUDE_CERT_IN_BODY_PART = "sign_include_cert_in_body_part";
+  /**
    * Define whether a certificate passed in the signed MIME body part shall be
    * used to verify the signature (when <code>true</code>) or whether to always
    * use the certificate provided in the partnership (when <code>false</code>).

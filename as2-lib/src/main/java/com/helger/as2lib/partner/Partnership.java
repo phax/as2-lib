@@ -583,14 +583,27 @@ public class Partnership implements Serializable
   }
 
   @Nonnull
-  public ETriState getVerifyUseCertificateInBodyPart ()
+  private static ETriState _getAsTriState (@Nullable final String sValue)
   {
-    final String sValue = getAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART);
     if ("true".equals (sValue))
       return ETriState.TRUE;
     if ("false".equals (sValue))
       return ETriState.FALSE;
     return ETriState.UNDEFINED;
+  }
+
+  @Nonnull
+  public ETriState getIncludeCertificateInSignedContent ()
+  {
+    final String sValue = getAttribute (CPartnershipIDs.PA_SIGN_INCLUDE_CERT_IN_BODY_PART);
+    return _getAsTriState (sValue);
+  }
+
+  @Nonnull
+  public ETriState getVerifyUseCertificateInBodyPart ()
+  {
+    final String sValue = getAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART);
+    return _getAsTriState (sValue);
   }
 
   public boolean isDisableDecompress ()

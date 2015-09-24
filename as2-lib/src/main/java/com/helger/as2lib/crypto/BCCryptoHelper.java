@@ -402,10 +402,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart sign (@Nonnull final MimeBodyPart aPart,
                             @Nonnull final X509Certificate aX509Cert,
                             @Nonnull final PrivateKey aPrivateKey,
-                            @Nonnull final ECryptoAlgorithmSign eAlgorithm) throws GeneralSecurityException,
-                                                                            SMIMEException,
-                                                                            MessagingException,
-                                                                            OperatorCreationException
+                            @Nonnull final ECryptoAlgorithmSign eAlgorithm,
+                            final boolean bIncludeCertificateInSignedContent) throws GeneralSecurityException,
+                                                                              SMIMEException,
+                                                                              MessagingException,
+                                                                              OperatorCreationException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -445,8 +446,11 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                                                     aPrivateKey,
                                                                                     aX509Cert));
 
-    // add our pool of certs and cerls (if any) to go with the signature
-    aSGen.addCertificates (aCertStore);
+    if (bIncludeCertificateInSignedContent)
+    {
+      // add our pool of certs and cerls (if any) to go with the signature
+      aSGen.addCertificates (aCertStore);
+    }
 
     final MimeMultipart aSignedData = aSGen.generate (aPart);
 

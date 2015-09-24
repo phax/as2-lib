@@ -130,10 +130,30 @@ public interface IAS2Session
   IMessageProcessor getMessageProcessor () throws ComponentNotFoundException;
 
   /**
+   * @return <code>true</code> if the certificate used for signing a message
+   *         should be included in the signed MIME body part or not. Defaults to
+   *         <code>true</code>.
+   * @see #setCryptoSignIncludeCertificateInBodyPart(boolean)
+   */
+  boolean isCryptoSignIncludeCertificateInBodyPart ();
+
+  /**
+   * Settings flag, whether a the signing certificate should be included in the
+   * signed MIME body part or not.
+   *
+   * @param bCryptoSignIncludeCertificateInBodyPart
+   *        <code>true</code> to include the signing certificate in the signed
+   *        MIME body part, <code>false</code> to not do so.
+   * @see #isCryptoSignIncludeCertificateInBodyPart()
+   */
+  void setCryptoSignIncludeCertificateInBodyPart (boolean bCryptoSignIncludeCertificateInBodyPart);
+
+  /**
    * @return <code>true</code> if any certificate passed in a message body is
    *         used for certificate verification or <code>false</code> if only the
    *         certificate present in the partnership factory is to be used.
    *         Defaults to <code>true</code>.
+   * @see #setCryptoVerifyUseCertificateInBodyPart(boolean)
    */
   boolean isCryptoVerifyUseCertificateInBodyPart ();
 
@@ -145,6 +165,7 @@ public interface IAS2Session
    *        <code>true</code> if any certificate passed in a message body is
    *        used for certificate verification or <code>false</code> if only the
    *        certificate present in the partnership factory is to be used.
+   * @see #isCryptoVerifyUseCertificateInBodyPart()
    */
   void setCryptoVerifyUseCertificateInBodyPart (boolean bCryptoVerifyUseCertificateInBodyPart);
 

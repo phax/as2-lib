@@ -22,13 +22,14 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
     * added system properties (see below) for configuration and debugging purposes
     * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
     * added the following new partnership attributes:
-      * `content_transfer_encoding_receive` to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
-      * `force_decrypt` to force decryption of incoming messages even if the `Content-Type` header claims the message is not encrypted (as a work-around for non spec-compliant senders)
-      * `disable_decrypt` to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
-      * `force_verify` to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
-      * `disable_verify` to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
-      * `verify_use_cert_in_body_part` to define whether a certificate passed in the signed MIME body part shall be used to verify the signature (when `true`) or whether to always use the certificate provided in the partnership (when `false`). If not set the value of the AS2 session is used.
-      * `disable_decompress` to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
+      * `content_transfer_encoding_receive` [receiver side] to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
+      * `force_decrypt` [receiver side] to force decryption of incoming messages even if the `Content-Type` header claims the message is not encrypted (as a work-around for non spec-compliant senders)
+      * `disable_decrypt` [receiver side] to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
+      * `force_verify` [receiver side] to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
+      * `disable_verify` [receiver side] to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
+      * `verify_use_cert_in_body_part` [receiver side] to define whether a certificate passed in the signed MIME body part shall be used to verify the signature (when `true`) or whether to always use the certificate provided in the partnership (when `false`). If not set the value of the AS2 session is used.
+      * `disable_decompress` [receiver side] to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
+      * `sign_include_cert_in_body_part` [sender side] to determine whether the certificate used for signing should be included in the signed content part (when `true`) or not (when `false`). The default value is `true`.
       * Added the sub-project `as2-partnership-mongodb` - thanks to @jochenberger for contributing it
   * 2015-08-20 Version 2.1.0
     * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify

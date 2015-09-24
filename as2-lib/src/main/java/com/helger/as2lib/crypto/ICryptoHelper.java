@@ -173,6 +173,10 @@ public interface ICryptoHelper
    *        Private key to be used for signing. May not be <code>null</code>.
    * @param eAlgorithm
    *        The algorithm to be used for signing. May not be <code>null</code>.
+   * @param bIncludeCertificateInSignedContent
+   *        <code>true</code> if the passed certificate should be part of the
+   *        signed content, <code>false</code> if the certificate should not be
+   *        put in the content. E.g. for PEPPOL this must be <code>true</code>.
    * @return The signed MIME body part. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -181,7 +185,8 @@ public interface ICryptoHelper
   MimeBodyPart sign (@Nonnull MimeBodyPart aPart,
                      @Nonnull X509Certificate aCert,
                      @Nonnull PrivateKey aKey,
-                     @Nonnull ECryptoAlgorithmSign eAlgorithm) throws Exception;
+                     @Nonnull ECryptoAlgorithmSign eAlgorithm,
+                     boolean bIncludeCertificateInSignedContent) throws Exception;
 
   /**
    * Verify the specified Mime Body part against the part certificate

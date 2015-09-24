@@ -327,7 +327,24 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (eSignAlgorithm == null)
         throw new OpenAS2Exception ("The signing algorithm '" + sSignAlgorithm + "' is not supported!");
 
-      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm);
+      // Include certificate in signed content?
+      boolean bIncludeCertificateInSignedContent;
+      final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ()
+                                                               .getIncludeCertificateInSignedContent ();
+      if (eIncludeCertificateInSignedContent.isDefined ())
+      {
+        // Use per partnership
+        bIncludeCertificateInSignedContent = eIncludeCertificateInSignedContent.getAsBooleanValue ();
+      }
+      else
+      {
+        // Use global value
+        bIncludeCertificateInSignedContent = getSession ().isCryptoSignIncludeCertificateInBodyPart ();
+      }
+
+      // Main signing
+      aDataBP = AS2Helper.getCryptoHelper ()
+                         .sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm, bIncludeCertificateInSignedContent);
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Signed data with " +

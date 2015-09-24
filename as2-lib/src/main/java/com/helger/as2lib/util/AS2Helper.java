@@ -66,6 +66,7 @@ import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.state.ETriState;
 
 @Immutable
 public final class AS2Helper
@@ -101,6 +102,10 @@ public final class AS2Helper
    *        The MDN object to be filled
    * @param bSignMDN
    *        <code>true</code> to sign the MDN
+   * @param bIncludeCertificateInSignedContent
+   *        <code>true</code> if the passed certificate should be part of the
+   *        signed content, <code>false</code> if the certificate should not be
+   *        put in the content. E.g. for PEPPOL this must be <code>true</code>.
    * @param eMICAlg
    *        The MIC algorithm to be used. Must be present if bSignMDN is
    *        <code>true</code>.
@@ -110,6 +115,7 @@ public final class AS2Helper
   public static void createMDNData (@Nonnull final IAS2Session aSession,
                                     @Nonnull final IMessageMDN aMdn,
                                     final boolean bSignMDN,
+                                    final boolean bIncludeCertificateInSignedContent,
                                     @Nullable final ECryptoAlgorithmSign eMICAlg) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
@@ -163,7 +169,11 @@ public final class AS2Helper
       {
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMdn, aSenderCert);
-        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport, aSenderCert, aSenderKey, eMICAlg);
+        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
+                                                                    aSenderCert,
+                                                                    aSenderKey,
+                                                                    eMICAlg,
+                                                                    bIncludeCertificateInSignedContent);
         aMdn.setData (aSignedReport);
       }
       catch (final CertificateNotFoundException ex)
@@ -278,15 +288,31 @@ public final class AS2Helper
     aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
 
     boolean bSignMDN = false;
+    boolean bIncludeCertificateInSignedContent = false;
     if (aDispositionOptions.getProtocol () != null)
     {
       if (aDispositionOptions.isProtocolRequired () || aDispositionOptions.hasMICAlg ())
       {
         // Sign if required or if optional and a MIC algorithm is present
         bSignMDN = true;
+
+        // Include certificate in signed content?
+        final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ()
+                                                                 .getIncludeCertificateInSignedContent ();
+        if (eIncludeCertificateInSignedContent.isDefined ())
+        {
+          // Use per partnership
+          bIncludeCertificateInSignedContent = eIncludeCertificateInSignedContent.getAsBooleanValue ();
+        }
+        else
+        {
+          // Use global value
+          bIncludeCertificateInSignedContent = aSession.isCryptoSignIncludeCertificateInBodyPart ();
+        }
       }
     }
-    createMDNData (aSession, aMDN, bSignMDN, aDispositionOptions.getFirstMICAlg ());
+
+    createMDNData (aSession, aMDN, bSignMDN, bIncludeCertificateInSignedContent, aDispositionOptions.getFirstMICAlg ());
 
     aMDN.updateMessageID ();
 
