@@ -221,7 +221,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *
    * @param aMsg
    *        Source message
-   * @return MIC value
+   * @return MIC value. Neither <code>null</code> nor empty.
+   * @throws Exception
+   *         On security or AS2 issues
    */
   @Nonnull
   @Nonempty

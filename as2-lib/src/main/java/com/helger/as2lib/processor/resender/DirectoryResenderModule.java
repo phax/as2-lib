@@ -230,11 +230,12 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
   /**
    * @return A list with all files that are ready to be resend.
-   * @throws OpenAS2Exception
+   * @throws InvalidParameterException
+   *         In case the directory listing fails
    */
   @Nonnull
   @ReturnsMutableCopy
-  protected List <File> scanDirectory () throws OpenAS2Exception
+  protected List <File> scanDirectory () throws InvalidParameterException
   {
     final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
 

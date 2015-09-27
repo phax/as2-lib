@@ -48,9 +48,9 @@ import com.helger.commons.state.EChange;
 /**
  * This is the base interface for a partnership factory (it is more manager but
  * who cares). It consists of partnerships represented by {@link Partnership}
- * objects. <br/>
- * original author unknown
- *
+ * objects.
+ * 
+ * @author original author unknown
  * @author joseph mcverry
  * @author Philip Helger
  */
