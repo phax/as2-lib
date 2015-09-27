@@ -44,7 +44,7 @@ import com.helger.commons.lang.EnumHelper;
 
 /**
  * Enumeration with all message encryption algorithms supported.
- * 
+ *
  * @author Philip Helger
  */
 public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
@@ -80,5 +80,18 @@ public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
   public static ECryptoAlgorithmCrypt getFromIDOrNull (@Nullable final String sID)
   {
     return EnumHelper.getFromIDOrNull (ECryptoAlgorithmCrypt.class, sID);
+  }
+
+  @Nonnull
+  public static ECryptoAlgorithmCrypt getFromIDOrThrow (@Nullable final String sID)
+  {
+    return EnumHelper.getFromIDOrThrow (ECryptoAlgorithmCrypt.class, sID);
+  }
+
+  @Nullable
+  public static ECryptoAlgorithmCrypt getFromIDOrDefault (@Nullable final String sID,
+                                                          @Nullable final ECryptoAlgorithmCrypt eDefault)
+  {
+    return EnumHelper.getFromIDOrDefault (ECryptoAlgorithmCrypt.class, sID, eDefault);
   }
 }

@@ -55,15 +55,9 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
- @Deprecated
-  @DevelopersNote ("Use DIGEST_SHA_256 instead")
-  DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
- @Deprecated
-  @DevelopersNote ("Use DIGEST_SHA_384 instead")
-  DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
- @Deprecated
-  @DevelopersNote ("Use DIGEST_SHA_512 instead")
-  DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+ @Deprecated @DevelopersNote ("Use DIGEST_SHA_256 instead") DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+ @Deprecated @DevelopersNote ("Use DIGEST_SHA_384 instead") DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+ @Deprecated @DevelopersNote ("Use DIGEST_SHA_512 instead") DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
  /*
   * Identifiers as used in Mendelson.
   */
@@ -112,5 +106,18 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   public static ECryptoAlgorithmSign getFromIDOrNull (@Nullable final String sID)
   {
     return EnumHelper.getFromIDOrNull (ECryptoAlgorithmSign.class, sID);
+  }
+
+  @Nonnull
+  public static ECryptoAlgorithmSign getFromIDOrThrow (@Nullable final String sID)
+  {
+    return EnumHelper.getFromIDOrThrow (ECryptoAlgorithmSign.class, sID);
+  }
+
+  @Nullable
+  public static ECryptoAlgorithmSign getFromIDOrDefault (@Nullable final String sID,
+                                                         @Nullable final ECryptoAlgorithmSign eDefault)
+  {
+    return EnumHelper.getFromIDOrDefault (ECryptoAlgorithmSign.class, sID, eDefault);
   }
 }
