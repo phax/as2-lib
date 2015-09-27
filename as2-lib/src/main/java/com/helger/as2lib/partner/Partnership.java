@@ -47,6 +47,14 @@ import com.helger.commons.state.EChange;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * This class represents a single partnership. It has a unique name, a set of
+ * sender and receiver specific attributes (like AS2 ID, Email and key alias)
+ * and a set of generic attributes that are interpreted depending on the
+ * context.
+ * 
+ * @author Philip Helger
+ */
 public class Partnership implements Serializable
 {
   public static final String DEFAULT_NAME = "auto-created-dummy";
@@ -58,10 +66,9 @@ public class Partnership implements Serializable
 
   public Partnership (@Nonnull final String sName)
   {
-    m_sName = ValueEnforcer.notNull (sName, "Name");
+    setName (sName);
   }
 
-  @Deprecated
   public void setName (@Nonnull final String sName)
   {
     m_sName = ValueEnforcer.notNull (sName, "Name");
