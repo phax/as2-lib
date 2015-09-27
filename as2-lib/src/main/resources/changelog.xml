@@ -34,6 +34,22 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <release date="2015-09-27" version="2.2.0" />
+  <entry date="2015-09-24" category="tech" action="add">
+    <change>
+      <text locale="en">Added possibility to centrally enable and disable the inclusion of the certificate in the MIME body part</text>
+    </change>
+  </entry>
+  <entry date="2015-09-17" category="tech" action="add">
+    <change>
+      <text locale="en">Added possibility to centrally enable and disable the usage of the certificate contained in the MIME body part</text>
+    </change>
+  </entry>
+  <entry date="2015-09-01" category="tech" action="add">
+    <change>
+      <text locale="en">Added new partnership attributes to handle non-spec compliant partners better.</text>
+    </change>
+  </entry>
   <entry date="2015-08-20" category="api" action="add">
     <change>
       <text locale="en">Added possibility to globally enable/disable the usage of SecureRandom in as2-lib</text>
