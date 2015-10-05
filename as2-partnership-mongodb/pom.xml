@@ -67,6 +67,19 @@
       <version>1.50.0</version>
       <scope>test</scope>
     </dependency>
+        <!-- Mandatory dependencies for using Spock -->
+    <dependency>
+      <groupId>org.spockframework</groupId>
+      <artifactId>spock-core</artifactId>
+      <version>1.0-groovy-2.4</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Optional dependencies for using Spock -->
+    <dependency> <!-- use a specific Groovy version rather than the one specified by spock-core -->
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>2.4.5</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -92,6 +105,34 @@
               !javax.annotation.*,*
             </Import-Package>
           </instructions>
+        </configuration>
+      </plugin>
+      <!-- Mandatory plugins for using Spock -->
+      <plugin>
+        <!-- The gmavenplus plugin is used to compile Groovy code. To learn more about this plugin, 
+        visit https://github.com/groovy/GMavenPlus/wiki -->
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Optional plugins for using Spock -->
+      <!-- Only required if names of spec classes don't match default Surefire patterns (`*Test` etc.) -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <useFile>false</useFile>
+          <includes>
+            <include>**/*Spec.java</include>
+          </includes>
         </configuration>
       </plugin>
     </plugins>
