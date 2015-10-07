@@ -271,6 +271,15 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("BCCryptoHelper.calculateMIC (" +
+                       eDigestAlgorithm +
+                       " [" +
+                       eDigestAlgorithm.getOID ().getId () +
+                       "], " +
+                       bIncludeHeaders +
+                       ")");
+
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
     final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (),
@@ -308,7 +317,12 @@ public final class BCCryptoHelper implements ICryptoHelper
     final String sMICString = Base64.encodeBytes (aMIC);
 
     // Concatenate
-    return sMICString + ", " + eDigestAlgorithm.getID ();
+    final String ret = sMICString + ", " + eDigestAlgorithm.getID ();
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("  MIC = " + ret);
+
+    return ret;
   }
 
   private static void _dumpDecrypted (@Nonnull final byte [] aPayload)
@@ -353,6 +367,12 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("BCCryptoHelper.decrypt; X509 subject=" +
+                       aX509Cert.getSubjectX500Principal ().getName () +
+                       "; forceDecrypt=" +
+                       bForceDecrypt);
+
     // Make sure the data is encrypted
     if (!bForceDecrypt && !isEncrypted (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
@@ -387,6 +407,12 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("BCCryptoHelper.encrypt; X509 subject=" +
+                       aX509Cert.getSubjectX500Principal ().getName () +
+                       "; algorithm=" +
+                       eAlgorithm);
+
     final ASN1ObjectIdentifier aEncAlg = eAlgorithm.getOID ();
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
@@ -412,6 +438,14 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("BCCryptoHelper.sign; X509 subject=" +
+                       aX509Cert.getSubjectX500Principal ().getName () +
+                       "; algorithm=" +
+                       eAlgorithm +
+                       "; includeCertificateInSignedContent=" +
+                       bIncludeCertificateInSignedContent);
 
     // create a CertStore containing the certificates we want carried
     // in the signature
@@ -470,6 +504,14 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                           CMSException,
                                                           OperatorCreationException
   {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("BCCryptoHelper.verify; X509 subject=" +
+                       aX509Cert.getSubjectX500Principal ().getName () +
+                       "; useCertificateInBodyPart=" +
+                       bUseCertificateInBodyPart +
+                       "; forceVerify=" +
+                       bForceVerify);
+
     // Make sure the data is signed
     if (!bForceVerify && !isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
