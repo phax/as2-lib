@@ -34,6 +34,11 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <entry date="2015-09-24" category="tech" action="update">
+    <change>
+      <text locale="en">Improved debug logging in the BouncyCastle provider</text>
+    </change>
+  </entry>
   <release date="2015-09-27" version="2.2.0" />
   <entry date="2015-09-24" category="tech" action="add">
     <change>
