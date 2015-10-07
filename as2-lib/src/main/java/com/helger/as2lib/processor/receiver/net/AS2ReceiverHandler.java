@@ -254,11 +254,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  protected void sendMDN (@Nonnull final String sClientInfo,
-                          @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                          @Nonnull final AS2Message aMsg,
-                          @Nonnull final DispositionType aDisposition,
-                          @Nonnull final String sText)
+  protected void sendSyncMDN (@Nonnull final String sClientInfo,
+                              @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                              @Nonnull final AS2Message aMsg,
+                              @Nonnull final DispositionType aDisposition,
+                              @Nonnull final String sText)
   {
     final boolean bMDNBlocked = aMsg.getPartnership ().isBlockErrorMDN ();
     if (!bMDNBlocked)
@@ -503,11 +503,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (aMsg.isRequestingMDN ())
         {
           // Transmit a success MDN if requested
-          sendMDN (sClientInfo,
-                   aResponseHandler,
-                   aMsg,
-                   DispositionType.createSuccess (),
-                   AbstractActiveNetModule.DISP_SUCCESS);
+          sendSyncMDN (sClientInfo,
+                       aResponseHandler,
+                       aMsg,
+                       DispositionType.createSuccess (),
+                       AbstractActiveNetModule.DISP_SUCCESS);
         }
         else
         {
@@ -523,7 +523,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final DispositionException ex)
     {
-      sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
+      sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
       m_aReceiverModule.handleError (aMsg, ex);
     }
     catch (final OpenAS2Exception ex)

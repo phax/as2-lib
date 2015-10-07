@@ -38,6 +38,9 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.helger.as2lib.crypto.ECompressionType;
+import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
+import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
@@ -52,7 +55,7 @@ import com.helger.commons.string.ToStringGenerator;
  * sender and receiver specific attributes (like AS2 ID, Email and key alias)
  * and a set of generic attributes that are interpreted depending on the
  * context.
- * 
+ *
  * @author Philip Helger
  */
 public class Partnership implements Serializable
@@ -475,10 +478,22 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_AS2_URL);
   }
 
+  @Nonnull
+  public EChange setAS2URL (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_AS2_URL, sValue);
+  }
+
   @Nullable
   public String getAS2MDNTo ()
   {
     return getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
+  }
+
+  @Nonnull
+  public EChange setAS2MDNTo (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_AS2_MDN_TO, sValue);
   }
 
   @Nullable
@@ -487,10 +502,22 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
   }
 
+  @Nonnull
+  public EChange setAS2MDNOptions (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, sValue);
+  }
+
   @Nullable
   public String getAS2ReceiptOption ()
   {
     return getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
+  }
+
+  @Nonnull
+  public EChange setAS2ReceiptOption (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION, sValue);
   }
 
   @Nullable
@@ -499,15 +526,33 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, sDefault);
   }
 
+  @Nonnull
+  public EChange setMessageIDFormat (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, sValue);
+  }
+
   @Nullable
   public String getMDNSubject ()
   {
     return getAttribute (CPartnershipIDs.PA_MDN_SUBJECT);
   }
 
+  @Nonnull
+  public EChange setMDNSubject (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_MDN_SUBJECT, sValue);
+  }
+
   public boolean isBlockErrorMDN ()
   {
     return m_aAttributes.containsAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN);
+  }
+
+  @Nonnull
+  public EChange setBlockErrorMDN (final boolean bBlock)
+  {
+    return setAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN, bBlock ? "true" : null);
   }
 
   @Nullable
@@ -516,10 +561,28 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_DATE_FORMAT, sDefault);
   }
 
+  @Nonnull
+  public EChange setDateFormat (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_DATE_FORMAT, sValue);
+  }
+
   @Nullable
   public String getEncryptAlgorithm ()
   {
     return getAttribute (CPartnershipIDs.PA_ENCRYPT);
+  }
+
+  @Nonnull
+  public EChange setEncryptAlgorithm (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_ENCRYPT, sValue);
+  }
+
+  @Nonnull
+  public EChange setEncryptAlgorithm (@Nullable final ECryptoAlgorithmCrypt eValue)
+  {
+    return setEncryptAlgorithm (eValue == null ? null : eValue.getID ());
   }
 
   @Nullable
@@ -528,10 +591,28 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_SIGN);
   }
 
+  @Nonnull
+  public EChange setSigningAlgorithm (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_SIGN, sValue);
+  }
+
+  @Nonnull
+  public EChange setSigningAlgorithm (@Nullable final ECryptoAlgorithmSign eValue)
+  {
+    return setSigningAlgorithm (eValue == null ? null : eValue.getID ());
+  }
+
   @Nullable
   public String getProtocol ()
   {
     return getAttribute (CPartnershipIDs.PA_PROTOCOL);
+  }
+
+  @Nonnull
+  public EChange setProtocol (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_PROTOCOL, sValue);
   }
 
   @Nullable
@@ -540,10 +621,22 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_SUBJECT);
   }
 
+  @Nonnull
+  public EChange setSubject (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_SUBJECT, sValue);
+  }
+
   @Nullable
   public String getContentTransferEncoding (@Nullable final String sDefault)
   {
     return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sDefault);
+  }
+
+  @Nonnull
+  public EChange setContentTransferEncoding (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sValue);
   }
 
   @Nullable
@@ -552,10 +645,28 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE);
   }
 
+  @Nonnull
+  public EChange setContentTransferEncodingReceive (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE, sValue);
+  }
+
   @Nullable
   public String getCompressionType ()
   {
     return getAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE);
+  }
+
+  @Nonnull
+  public EChange setCompressionType (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE, sValue);
+  }
+
+  @Nonnull
+  public EChange setCompressionType (@Nullable final ECompressionType eValue)
+  {
+    return setCompressionType (eValue == null ? null : eValue.getID ());
   }
 
   @Nullable
@@ -564,9 +675,27 @@ public class Partnership implements Serializable
     return getAttribute (CPartnershipIDs.PA_COMPRESSION_MODE);
   }
 
+  @Nonnull
+  public EChange setCompressionMode (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_COMPRESSION_MODE, sValue);
+  }
+
   public boolean isCompressBeforeSign ()
   {
     return !CPartnershipIDs.COMPRESS_AFTER_SIGNING.equals (getCompressionMode ());
+  }
+
+  @Nonnull
+  public EChange setCompressionModeCompressAfterSigning ()
+  {
+    return setCompressionMode (CPartnershipIDs.COMPRESS_AFTER_SIGNING);
+  }
+
+  @Nonnull
+  public EChange setCompressionModeCompressBeforeSigning ()
+  {
+    return setCompressionMode (CPartnershipIDs.COMPRESS_BEFORE_SIGNING);
   }
 
   public boolean isForceDecrypt ()
@@ -574,9 +703,21 @@ public class Partnership implements Serializable
     return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
   }
 
+  @Nonnull
+  public EChange setForceDecrypt (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_FORCE_DECRYPT, Boolean.toString (bValue));
+  }
+
   public boolean isDisableDecrypt ()
   {
     return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECRYPT));
+  }
+
+  @Nonnull
+  public EChange setDisableDecrypt (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_DISABLE_DECRYPT, Boolean.toString (bValue));
   }
 
   public boolean isForceVerify ()
@@ -584,9 +725,21 @@ public class Partnership implements Serializable
     return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
   }
 
+  @Nonnull
+  public EChange setForceVerify (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_FORCE_VERIFY, Boolean.toString (bValue));
+  }
+
   public boolean isDisableVerify ()
   {
     return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_VERIFY));
+  }
+
+  @Nonnull
+  public EChange setDisableVerify (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_DISABLE_VERIFY, Boolean.toString (bValue));
   }
 
   @Nonnull
@@ -607,15 +760,35 @@ public class Partnership implements Serializable
   }
 
   @Nonnull
+  public EChange setIncludeCertificateInSignedContent (@Nonnull final ETriState eValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_SIGN_INCLUDE_CERT_IN_BODY_PART,
+                         eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
+  }
+
+  @Nonnull
   public ETriState getVerifyUseCertificateInBodyPart ()
   {
     final String sValue = getAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART);
     return _getAsTriState (sValue);
   }
 
+  @Nonnull
+  public EChange setVerifyUseCertificateInBodyPart (@Nonnull final ETriState eValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART,
+                         eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
+  }
+
   public boolean isDisableDecompress ()
   {
     return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECOMPRESS));
+  }
+
+  @Nonnull
+  public EChange setDisableDecompress (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_DISABLE_DECOMPRESS, Boolean.toString (bValue));
   }
 
   /**

@@ -34,7 +34,13 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
-  <entry date="2015-09-24" category="tech" action="update">
+  <release date="2015-10-07" version="2.2.1" />
+  <entry date="2015-10-07" category="api" action="add">
+    <change>
+      <text locale="en">Added special setter methods for certain Partnership attributes</text>
+    </change>
+  </entry>
+  <entry date="2015-10-07" category="tech" action="update">
     <change>
       <text locale="en">Improved debug logging in the BouncyCastle provider</text>
     </change>

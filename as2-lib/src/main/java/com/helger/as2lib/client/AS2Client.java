@@ -114,26 +114,25 @@ public class AS2Client
     aPartnership.setReceiverAS2ID (aSettings.getReceiverAS2ID ());
     aPartnership.setReceiverX509Alias (aSettings.getReceiverKeyAlias ());
 
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_URL, aSettings.getDestinationAS2URL ());
-    aPartnership.setAttribute (CPartnershipIDs.PA_ENCRYPT, aSettings.getCryptAlgoID ());
-    aPartnership.setAttribute (CPartnershipIDs.PA_SIGN, aSettings.getSignAlgoID ());
-    aPartnership.setAttribute (CPartnershipIDs.PA_PROTOCOL, AS2Message.PROTOCOL_AS2);
-    aPartnership.setAttribute (CPartnershipIDs.PA_MESSAGEID_FORMAT, aSettings.getMessageIDFormat ());
+    aPartnership.setAS2URL (aSettings.getDestinationAS2URL ());
+    aPartnership.setEncryptAlgorithm (aSettings.getCryptAlgo ());
+    aPartnership.setSigningAlgorithm (aSettings.getSignAlgo ());
+    aPartnership.setProtocol (AS2Message.PROTOCOL_AS2);
+    aPartnership.setMessageIDFormat (aSettings.getMessageIDFormat ());
 
     // We want a sync MDN:
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, aSettings.getMDNOptions ());
+    aPartnership.setAS2MDNOptions (aSettings.getMDNOptions ());
     if (false)
-      aPartnership.setAttribute (CPartnershipIDs.PA_AS2_MDN_TO, "http://localhost:10080");
+      aPartnership.setAS2MDNTo ("http://localhost:10080");
 
     // We don't want an async MDN:
-    aPartnership.setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION, null);
+    aPartnership.setAS2ReceiptOption (null);
 
     if (aSettings.getCompressionType () != null)
     {
-      aPartnership.setAttribute (CPartnershipIDs.PA_COMPRESSION_TYPE, aSettings.getCompressionType ().getID ());
-      aPartnership.setAttribute (CPartnershipIDs.PA_COMPRESSION_MODE,
-                                 aSettings.isCompressBeforeSigning () ? CPartnershipIDs.COMPRESS_BEFORE_SIGNING
-                                                                      : CPartnershipIDs.COMPRESS_AFTER_SIGNING);
+      aPartnership.setCompressionType (aSettings.getCompressionType ());
+      aPartnership.setCompressionMode (aSettings.isCompressBeforeSigning () ? CPartnershipIDs.COMPRESS_BEFORE_SIGNING
+                                                                            : CPartnershipIDs.COMPRESS_AFTER_SIGNING);
     }
 
     return aPartnership;
