@@ -34,7 +34,7 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
-  <release date="2015-10-07" version="2.2.1" />
+  <release date="2015-10-08" version="2.2.1" />
   <entry date="2015-10-07" category="api" action="add">
     <change>
       <text locale="en">Added special setter methods for certain Partnership attributes</text>
