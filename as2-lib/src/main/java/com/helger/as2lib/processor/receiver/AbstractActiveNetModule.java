@@ -90,6 +90,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                                          " with Subject " +
                                          MSG_SUBJECT +
                                          " has been received, ";
+  // Note: it should read "its integrity", not "it's integrity"!
   public static final String DP_DECRYPTED = DP_HEADER +
                                             "the EDI Interchange was successfully decrypted and it's integrity was verified. ";
   public static final String DP_VERIFIED = DP_DECRYPTED +
