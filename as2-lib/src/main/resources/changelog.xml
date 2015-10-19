@@ -34,6 +34,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <release date="2015-10-19" version="2.2.2" />
+  <entry date="2015-10-19" category="tech" action="update">
+    <change>
+      <text locale="en">Updated to Bouncy Castle 1.53</text>
+    </change>
+  </entry>
   <release date="2015-10-08" version="2.2.1" />
   <entry date="2015-10-07" category="api" action="add">
     <change>

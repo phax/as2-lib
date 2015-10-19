@@ -18,6 +18,8 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
+  * 2015-10-19 Version 2.2.2
+    * Updated to Bouncy Castle 1.53
   * 2015-10-08 Version 2.2.1
     * Extended API and some debug logging added
   * 2015-09-27 Version 2.2.0
@@ -38,12 +40,21 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
     * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
 
 #Maven usage
-Add the following to your pom.xml to use this artifact:
+Add the following to your `pom.xml` to use this artifact:
 ```
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.2.1</version>
+  <version>2.2.2</version>
+</dependency>
+```
+
+For the MongoDB partnership factory, add the following to your `pom.xml`:
+```
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>as2-partnership-mongodb</artifactId>
+  <version>2.2.2</version>
 </dependency>
 ```
 
