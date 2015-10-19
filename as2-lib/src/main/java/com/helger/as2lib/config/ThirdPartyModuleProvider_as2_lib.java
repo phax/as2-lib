@@ -54,8 +54,7 @@ public final class ThirdPartyModuleProvider_as2_lib implements IThirdPartyModule
                                                                               "Legion of the Bouncy Castle",
                                                                               ELicense.MIT,
                                                                               new Version (1, 53),
-                                                                              "https://www.bouncycastle.org/",
-                                                                              true);
+                                                                              "https://www.bouncycastle.org/");
 
   public static final IThirdPartyModule JAVAX_MAIL = new ThirdPartyModule ("JavaMail",
                                                                            "Oracle",
