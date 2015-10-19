@@ -278,7 +278,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
 
-          s_aLogger.info ("setup to send asynch MDN [" +
+          s_aLogger.info ("Setup to send asynch MDN [" +
                           aDisposition.getAsString () +
                           "] " +
                           sClientInfo +
@@ -290,6 +290,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         else
         {
           // otherwise, send sync MDN back on same connection
+          s_aLogger.info ("Sending back sync MDN [" +
+                          aDisposition.getAsString () +
+                          "] " +
+                          sClientInfo +
+                          aMsg.getLoggingText ());
 
           // Get data and therefore content length for sync MDN
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
