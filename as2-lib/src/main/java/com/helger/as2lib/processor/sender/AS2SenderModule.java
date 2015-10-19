@@ -80,6 +80,7 @@ import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
@@ -580,6 +581,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
+  @OverrideOnDemand
+  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg, @Nonnull final OpenAS2Exception ex)
+  {
+    final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
+                                                        ex);
+    oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+    oae2.terminate ();
+  }
+
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final MimeBodyPart aSecuredData,
                              @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
@@ -658,10 +668,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         // Don't re-send or fail, just log an error if one occurs while
         // receiving the MDN
-        final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
-                                                            ex);
-        oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-        oae2.terminate ();
+        onReceivedMDNError (aMsg, ex);
       }
     }
     finally
