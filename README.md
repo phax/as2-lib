@@ -19,10 +19,11 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 #News and noteworthy
 
   * 2015-xx-yy Version 2.2.3
-    * The MIC calculation is now handled with canonicalized line endings (if the Content-Transfer-Encoding is not `binary`)
-    * Receiving a message for an unknown partnership now results in a correct error MDN (phax/as2-server#16) 
+    * Improved API for handling MDN errors (as2-lib issue #11)  
+    * The MIC calculation is now handled with canonicalized line endings (if the Content-Transfer-Encoding is not `binary`) (as2-lib issue #12)
+    * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
   * 2015-10-19 Version 2.2.2
-    * Updated to Bouncy Castle 1.53
+    * Updated to Bouncy Castle 1.53 (as2-lib issue #10)
   * 2015-10-08 Version 2.2.1
     * Extended API and some debug logging added
   * 2015-09-27 Version 2.2.0
