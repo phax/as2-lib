@@ -498,8 +498,10 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
-    // SMIMESignedParser uses "7bit" as the default
-    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME).build (), aMainPart);
+    // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
+    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME).build (),
+                                                                   aMainPart,
+                                                                   EContentTransferEncoding.BINARY.getID ());
 
     X509Certificate aRealX509Cert = aX509Cert;
     if (bUseCertificateInBodyPart)
