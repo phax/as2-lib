@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.DigestInputStream;
+import java.security.DigestOutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -50,6 +50,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,6 +62,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -97,13 +99,14 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.NullOutputStream;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
@@ -126,9 +129,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     {
       s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
       IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
-      s_aLogger.info ("Using directory " +
-                      s_aDumpDecryptedDirectory.getAbsolutePath () +
-                      " to dump all decrypted body parts to.");
+      s_aLogger.info ("Using directory " + s_aDumpDecryptedDirectory.getAbsolutePath () + " to dump all decrypted body parts to.");
     }
     else
       s_aDumpDecryptedDirectory = null;
@@ -141,14 +142,12 @@ public final class BCCryptoHelper implements ICryptoHelper
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
     aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=" +
                             org.bouncycastle.mail.smime.handlers.pkcs7_signature.class.getName ());
-    aCommandMap.addMailcap ("application/pkcs7-mime;; x-java-content-handler=" +
-                            org.bouncycastle.mail.smime.handlers.pkcs7_mime.class.getName ());
+    aCommandMap.addMailcap ("application/pkcs7-mime;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.pkcs7_mime.class.getName ());
     aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=" +
                             org.bouncycastle.mail.smime.handlers.x_pkcs7_signature.class.getName ());
     aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=" +
                             org.bouncycastle.mail.smime.handlers.x_pkcs7_mime.class.getName ());
-    aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=" +
-                            org.bouncycastle.mail.smime.handlers.multipart_signed.class.getName ());
+    aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.multipart_signed.class.getName ());
     AccessControllerHelper.run (new PrivilegedAction <Object> ()
     {
       public Object run ()
@@ -261,12 +260,20 @@ public final class BCCryptoHelper implements ICryptoHelper
     return aIS;
   }
 
+  private static byte [] _getBytes (final String s)
+  {
+    final char [] chars = s.toCharArray ();
+    final int size = chars.length;
+    final byte [] bytes = new byte [size];
+    for (int i = 0; i < size;)
+      bytes[i] = (byte) chars[i++];
+    return bytes;
+  }
+
   @Nonnull
   public String calculateMIC (@Nonnull final MimeBodyPart aPart,
                               @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
-                              final boolean bIncludeHeaders) throws GeneralSecurityException,
-                                                             MessagingException,
-                                                             IOException
+                              final boolean bIncludeHeaders) throws GeneralSecurityException, MessagingException, IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
@@ -282,42 +289,46 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
-    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (),
-                                                                    BouncyCastleProvider.PROVIDER_NAME);
+    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), BouncyCastleProvider.PROVIDER_NAME);
 
-    // convert the Mime data to a byte array, then to an InputStream
-    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     if (bIncludeHeaders)
     {
-      aPart.writeTo (aBAOS);
+      // Start hashing the header
+      final byte [] aCRLF = new byte [] { '\r', '\n' };
+      final Enumeration <?> aHeaderLines = aPart.getAllHeaderLines ();
+      while (aHeaderLines.hasMoreElements ())
+      {
+        aMessageDigest.update (_getBytes ((String) aHeaderLines.nextElement ()));
+        aMessageDigest.update (aCRLF);
+      }
+
+      // The CRLF separator between header and content
+      aMessageDigest.update (aCRLF);
+    }
+
+    final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
+    final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ());
+    final OutputStream aFOS;
+    if (EContentTransferEncoding.BINARY.getID ().equals (aPart.getEncoding ()))
+    {
+      // Non canonicalization for "binary" transfer encoding
+      aFOS = aOS;
     }
     else
     {
-      // Only the "content" of the part
-      StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aBAOS);
+      // Change all newlines to "\r\n" for MIC calculation
+      aFOS = new CanonicalizeLineEndingsOutputStream (aOS);
     }
-
-    final byte [] aData = aBAOS.toByteArray ();
-    aBAOS.close ();
-
-    // Cut all leading "\r\n"
-    final NonBlockingByteArrayInputStream aIS = _trimCRLFPrefix (aData);
-
-    // calculate the hash of the data and mime header
-    final DigestInputStream aDigIS = new DigestInputStream (aIS, aMessageDigest);
-    final byte [] aBuf = new byte [4096];
-    while (aDigIS.read (aBuf) >= 0)
-    {}
-    aDigIS.close ();
+    aPart.getDataHandler ().writeTo (aFOS);
+    aFOS.close ();
+    aOS.close ();
+    aDOS.close ();
 
     // Build result digest array
-    final byte [] aMIC = aDigIS.getMessageDigest ().digest ();
+    final byte [] aMIC = aMessageDigest.digest ();
 
-    // Perform Base64 encoding
-    final String sMICString = Base64.encodeBytes (aMIC);
-
-    // Concatenate
-    final String ret = sMICString + ", " + eDigestAlgorithm.getID ();
+    // Perform Base64 encoding and append algorithm ID
+    final String ret = Base64.encodeBytes (aMIC) + ", " + eDigestAlgorithm.getID ();
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("  MIC = " + ret);
@@ -332,8 +343,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     int nIndex = 0;
     do
     {
-      aDestinationFile = new File (s_aDumpDecryptedDirectory,
-                                   "as2-decrypted-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".part");
+      aDestinationFile = new File (s_aDumpDecryptedDirectory, "as2-decrypted-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".part");
       nIndex++;
     } while (aDestinationFile.exists ());
 
@@ -358,20 +368,14 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final PrivateKey aPrivateKey,
-                               final boolean bForceDecrypt) throws GeneralSecurityException,
-                                                            MessagingException,
-                                                            CMSException,
-                                                            SMIMEException
+                               final boolean bForceDecrypt) throws GeneralSecurityException, MessagingException, CMSException, SMIMEException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.decrypt; X509 subject=" +
-                       aX509Cert.getSubjectX500Principal ().getName () +
-                       "; forceDecrypt=" +
-                       bForceDecrypt);
+      s_aLogger.debug ("BCCryptoHelper.decrypt; X509 subject=" + aX509Cert.getSubjectX500Principal ().getName () + "; forceDecrypt=" + bForceDecrypt);
 
     // Make sure the data is encrypted
     if (!bForceDecrypt && !isEncrypted (aPart))
@@ -399,27 +403,21 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException,
-                                                                                SMIMEException,
-                                                                                CMSException
+                               @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException, SMIMEException, CMSException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.encrypt; X509 subject=" +
-                       aX509Cert.getSubjectX500Principal ().getName () +
-                       "; algorithm=" +
-                       eAlgorithm);
+      s_aLogger.debug ("BCCryptoHelper.encrypt; X509 subject=" + aX509Cert.getSubjectX500Principal ().getName () + "; algorithm=" + eAlgorithm);
 
     final ASN1ObjectIdentifier aEncAlg = eAlgorithm.getOID ();
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
     aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (BouncyCastleProvider.PROVIDER_NAME));
 
-    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (BouncyCastleProvider.PROVIDER_NAME)
-                                                                                  .build ();
+    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (BouncyCastleProvider.PROVIDER_NAME).build ();
     final MimeBodyPart aEncData = aGen.generate (aPart, aEncryptor);
     return aEncData;
   }
@@ -476,9 +474,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // used is taken from the key - in this RSA with PKCS1Padding
     aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
-                                                                            .build (eAlgorithm.getSignAlgorithmName (),
-                                                                                    aPrivateKey,
-                                                                                    aX509Cert));
+                                                                            .build (eAlgorithm.getSignAlgorithmName (), aPrivateKey, aX509Cert));
 
     if (bIncludeCertificateInSignedContent)
     {
@@ -517,7 +513,8 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
-    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().build (),
+    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                                            .build (),
                                                                    aMainPart);
 
     X509Certificate aRealX509Cert = aX509Cert;
@@ -541,9 +538,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       }
     }
     if (aRealX509Cert == null)
-      throw new GeneralSecurityException ("No certificate provided" +
-                                          (bUseCertificateInBodyPart ? " and none found in the message" : "") +
-                                          "!");
+      throw new GeneralSecurityException ("No certificate provided" + (bUseCertificateInBodyPart ? " and none found in the message" : "") + "!");
 
     if (s_aLogger.isDebugEnabled ())
       if (aRealX509Cert == aX509Cert)
