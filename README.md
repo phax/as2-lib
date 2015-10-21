@@ -18,6 +18,8 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
+  * 2015-xx-yy Version 2.2.3
+    * The MIC calculation is now handled with canonicalized line endings (if the Content-Transfer-Encoding is not `binary`)
   * 2015-10-19 Version 2.2.2
     * Updated to Bouncy Castle 1.53
   * 2015-10-08 Version 2.2.1
