@@ -62,6 +62,7 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
+import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
@@ -169,11 +170,7 @@ public final class AS2Helper
       {
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
         final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMdn, aSenderCert);
-        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
-                                                                    aSenderCert,
-                                                                    aSenderKey,
-                                                                    eMICAlg,
-                                                                    bIncludeCertificateInSignedContent);
+        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport, aSenderCert, aSenderKey, eMICAlg, bIncludeCertificateInSignedContent);
         aMdn.setData (aSignedReport);
       }
       catch (final CertificateNotFoundException ex)
@@ -246,7 +243,15 @@ public final class AS2Helper
     aMDN.getPartnership ().setSenderX509Alias (aMsg.getPartnership ().getReceiverX509Alias ());
     aMDN.getPartnership ().setReceiverX509Alias (aMsg.getPartnership ().getSenderX509Alias ());
     // Update the partnership
-    aSession.getPartnershipFactory ().updatePartnership (aMDN, true);
+    try
+    {
+      aSession.getPartnershipFactory ().updatePartnership (aMDN, true);
+    }
+    catch (final PartnershipNotFoundException ex)
+    {
+      // This would block sending an MDN in case a PartnershipNotFoundException
+      // was the reason for sending the MDN :)
+    }
 
     aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverEmail ());
     final String sSubject = aMDN.getPartnership ().getMDNSubject ();
@@ -281,9 +286,7 @@ public final class AS2Helper
                                            aMsg.getPartnership ().getEncryptAlgorithm () != null ||
                                            aMsg.getPartnership ().getCompressionType () != null;
 
-      sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                              aDispositionOptions.getFirstMICAlg (),
-                                              bIncludeHeadersInMIC);
+      sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (), aDispositionOptions.getFirstMICAlg (), bIncludeHeadersInMIC);
     }
     aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
 
@@ -297,8 +300,7 @@ public final class AS2Helper
         bSignMDN = true;
 
         // Include certificate in signed content?
-        final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ()
-                                                                 .getIncludeCertificateInSignedContent ();
+        final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ().getIncludeCertificateInSignedContent ();
         if (eIncludeCertificateInSignedContent.isDefined ())
         {
           // Use per partnership
@@ -372,12 +374,9 @@ public final class AS2Helper
           {
             final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
             aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
-                               aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                               aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
-                               aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
             aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
             aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }
