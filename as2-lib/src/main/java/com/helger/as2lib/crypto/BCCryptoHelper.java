@@ -90,6 +90,7 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMESignedParser;
 import org.bouncycastle.mail.smime.SMIMEUtil;
+import org.bouncycastle.mail.smime.util.CRLFOutputStream;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
@@ -317,7 +318,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     else
     {
       // Change all newlines to "\r\n" for MIC calculation
-      aFOS = new CanonicalizeLineEndingsOutputStream (aOS);
+      aFOS = new CRLFOutputStream (aOS);
     }
     aPart.getDataHandler ().writeTo (aFOS);
     aFOS.close ();
@@ -513,6 +514,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
+    // SMIMESignedParser uses "7bit" as the default
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                                                             .build (),
                                                                    aMainPart);
