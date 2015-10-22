@@ -78,7 +78,8 @@ public final class CAS2Header
    */
   public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
   /** Default Content-Transfer-Encoding is "8bit" which means binary. */
-  public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = EContentTransferEncoding._8BIT.getID ();
+  @Deprecated
+  public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = EContentTransferEncoding.AS2_DEFAULT.getID ();
 
   private CAS2Header ()
   {}

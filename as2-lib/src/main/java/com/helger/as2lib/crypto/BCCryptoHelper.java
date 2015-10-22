@@ -103,10 +103,10 @@ import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.NullOutputStream;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
@@ -228,43 +228,16 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
   }
 
-  /**
-   * Remove all leading "\r\n" combinations.
-   *
-   * @param aData
-   *        Byte array to work on.
-   * @return An input stream to read from. The leading "\r\n"'s have been
-   *         skipped.
-   */
   @Nonnull
-  private static NonBlockingByteArrayInputStream _trimCRLFPrefix (@Nonnull final byte [] aData)
+  @ReturnsMutableCopy
+  private static byte [] _getAsciiBytes (@Nonnull final String sString)
   {
-    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (aData);
-
-    int nScanPos = 0;
-    final int nLen = aData.length;
-    while (nScanPos < nLen - 1)
-    {
-      if (aData[nScanPos] != '\r' || aData[nScanPos + 1] != '\n')
-        break;
-
-      // skip \r\n
-      aIS.read ();
-      aIS.read ();
-      nScanPos += 2;
-    }
-
-    return aIS;
-  }
-
-  private static byte [] _getBytes (final String s)
-  {
-    final char [] chars = s.toCharArray ();
-    final int size = chars.length;
-    final byte [] bytes = new byte [size];
-    for (int i = 0; i < size;)
-      bytes[i] = (byte) chars[i++];
-    return bytes;
+    final char [] aChars = sString.toCharArray ();
+    final int nLength = aChars.length;
+    final byte [] ret = new byte [nLength];
+    for (int i = 0; i < nLength; i++)
+      ret[i] = (byte) aChars[i];
+    return ret;
   }
 
   @Nonnull
@@ -289,7 +262,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       final Enumeration <?> aHeaderLines = aPart.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {
-        aMessageDigest.update (_getBytes ((String) aHeaderLines.nextElement ()));
+        aMessageDigest.update (_getAsciiBytes ((String) aHeaderLines.nextElement ()));
         aMessageDigest.update (aCRLF);
       }
 
@@ -489,7 +462,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME).build (),
                                                                    aMainPart,
-                                                                   EContentTransferEncoding.BINARY.getID ());
+                                                                   EContentTransferEncoding.AS2_DEFAULT.getID ());
 
     X509Certificate aRealX509Cert = aX509Cert;
     if (bUseCertificateInBodyPart)

@@ -640,9 +640,9 @@ public class Partnership implements Serializable
   }
 
   @Nullable
-  public String getContentTransferEncodingReceive ()
+  public String getContentTransferEncodingReceive (@Nullable final String sDefault)
   {
-    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE);
+    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE, sDefault);
   }
 
   @Nonnull
@@ -762,8 +762,7 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setIncludeCertificateInSignedContent (@Nonnull final ETriState eValue)
   {
-    return setAttribute (CPartnershipIDs.PA_SIGN_INCLUDE_CERT_IN_BODY_PART,
-                         eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
+    return setAttribute (CPartnershipIDs.PA_SIGN_INCLUDE_CERT_IN_BODY_PART, eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
   }
 
   @Nonnull
@@ -776,8 +775,7 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setVerifyUseCertificateInBodyPart (@Nonnull final ETriState eValue)
   {
-    return setAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART,
-                         eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
+    return setAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART, eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
   }
 
   public boolean isDisableDecompress ()
@@ -827,8 +825,7 @@ public class Partnership implements Serializable
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
-           compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
+    return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) && compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
   }
 
   /**
@@ -882,11 +879,7 @@ public class Partnership implements Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("name", m_sName)
-                                       .append ("senderIDs", m_aSenderIDs)
-                                       .append ("receiverIDs", m_aReceiverIDs)
-                                       .append ("attributes", m_aAttributes)
-                                       .toString ();
+    return new ToStringGenerator (this).append ("name", m_sName).append ("senderIDs", m_aSenderIDs).append ("receiverIDs", m_aReceiverIDs).append ("attributes", m_aAttributes).toString ();
   }
 
   @Nonnull

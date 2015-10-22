@@ -57,6 +57,7 @@ import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
@@ -83,8 +84,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   private Map <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -117,10 +117,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     final File [] aFiles = aDir.listFiles ();
     if (aFiles == null)
     {
-      throw new InvalidParameterException ("Error getting list of files in directory",
-                                           this,
-                                           ATTR_OUTBOX_DIRECTORY,
-                                           aDir.getAbsolutePath ());
+      throw new InvalidParameterException ("Error getting list of files in directory", this, ATTR_OUTBOX_DIRECTORY, aDir.getAbsolutePath ());
     }
 
     // iterator through each entry, and start tracking new files
@@ -246,20 +243,12 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
        */
       if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.getAttribute (CFileAttribute.MA_STATUS)))
       {
-        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
-                                            aMsg.getAttribute (CFileAttribute.MA_PENDING_FILENAME));
+        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING), aMsg.getAttribute (CFileAttribute.MA_PENDING_FILENAME));
         final FileIOError aIOErr = IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
-          throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
-                                      aPendingFile +
-                                      " - " +
-                                      aIOErr.toString ());
+          throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " + aPendingFile + " - " + aIOErr.toString ());
 
-        s_aLogger.info ("copied " +
-                        aFile.getAbsolutePath () +
-                        " to pending folder : " +
-                        aPendingFile.getAbsolutePath () +
-                        aMsg.getLoggingText ());
+        s_aLogger.info ("copied " + aFile.getAbsolutePath () + " to pending folder : " + aPendingFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
 
       // If the Sent Directory option is set, move the transmitted file to
@@ -269,21 +258,15 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
-                                aFile.getName ());
+          aSentFile = new File (IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)), aFile.getName ());
           aSentFile = IOHelper.moveFile (aFile, aSentFile, false, true);
 
-          s_aLogger.info ("moved " +
-                          aFile.getAbsolutePath () +
-                          " to " +
-                          aSentFile.getAbsolutePath () +
-                          aMsg.getLoggingText ());
+          s_aLogger.info ("moved " + aFile.getAbsolutePath () + " to " + aSentFile.getAbsolutePath () + aMsg.getLoggingText ());
 
         }
         catch (final IOException ex)
         {
-          final OpenAS2Exception se = new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " +
-                                                            aSentFile);
+          final OpenAS2Exception se = new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile);
           se.initCause (ex);
         }
       }
@@ -357,8 +340,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (new DataHandler (aByteSource));
 
       // Headers must be set AFTER the DataHandler
-      final String sEncodeType = aMsg.getPartnership ()
-                                     .getContentTransferEncoding (CAS2Header.DEFAULT_CONTENT_TRANSFER_ENCODING);
+      final String sEncodeType = aMsg.getPartnership ().getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
       aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
 
       // below statement is not filename related, just want to make it

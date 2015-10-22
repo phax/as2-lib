@@ -96,6 +96,9 @@ public enum EContentTransferEncoding implements IHasID <String>
    }
  };
 
+  /** AS2 default CTE is "binary" */
+  public static final EContentTransferEncoding AS2_DEFAULT = BINARY;
+
   private final String m_sID;
 
   private EContentTransferEncoding (@Nonnull @Nonempty final String sID)
@@ -124,8 +127,7 @@ public enum EContentTransferEncoding implements IHasID <String>
   }
 
   @Nullable
-  public static EContentTransferEncoding getFromIDCaseInsensitiveOrDefault (@Nullable final String sID,
-                                                                            @Nullable final EContentTransferEncoding eDefault)
+  public static EContentTransferEncoding getFromIDCaseInsensitiveOrDefault (@Nullable final String sID, @Nullable final EContentTransferEncoding eDefault)
   {
     return EnumHelper.getFromIDCaseInsensitiveOrDefault (EContentTransferEncoding.class, sID, eDefault);
   }
