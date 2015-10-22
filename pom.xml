@@ -77,6 +77,12 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- version 3.0.1 for JDK 1.6 -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>3.0.1</version><!--$NO-MVN-MAN-VER$-->
+      </dependency>
 
       <dependency>
         <groupId>com.helger</groupId>
@@ -86,6 +92,11 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>as2-partnership-mongodb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>as2-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
@@ -107,5 +118,6 @@
   <modules>
     <module>as2-lib</module>
     <module>as2-partnership-mongodb</module>
+    <module>as2-servlet</module>
   </modules>
 </project>
