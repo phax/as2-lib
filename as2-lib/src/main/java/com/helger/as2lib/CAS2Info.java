@@ -46,7 +46,7 @@ public final class CAS2Info
   public static final String NAME = "ph-OpenAS2";
 
   /** The version of this AS2 client. May not contain blanks. */
-  public static final String VERSION = "v2.2.2-SNAPSHOT";
+  public static final String VERSION = "v2.2.3";
 
   /** Combination of {@link #NAME} and {@link #VERSION} separated by a blank. */
   public static final String NAME_VERSION = NAME + " " + VERSION;

@@ -34,6 +34,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <release date="2015-10-22" version="2.2.3" />
+  <entry date="2015-10-22" category="tech" action="update">
+    <change>
+      <text locale="en">Fixed a problem with verifying signed messages without Content-Transfer-Encoding</text>
+    </change>
+  </entry>
   <release date="2015-10-19" version="2.2.2" />
   <entry date="2015-10-19" category="tech" action="update">
     <change>
