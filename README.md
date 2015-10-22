@@ -135,6 +135,87 @@ A stand alone servlet that takes AS2 requests and handles them via a `AS2Servlet
 
 This sub-project is licensed under the Apache 2 License.
 
+###Usage
+To use this project you have to do the following - all described in more detail below:
+  1. Add the `as2-servlet` project as a dependency to your project - e.g. via Maven
+  2. Modify your `WEB-INF/web.xml` file so that it references the `com.helger.as2servlet.AS2ReceiveServlet`.
+  3. Create an AS2 configuration file and store it in a folder that is fully writable to your project. The details of the configuration files are described below.
+  4. Create a key store file (e.g.) called `server-certs.p12` located in the same folder as the configuration file. The keystore type must be `PKCS12`. It must at least contain your private key. The path and the password of the keystore must be set in the AS2 configuration file.
+
+###WEB-INF/web.xml configuration  
+Example `WEB-INF/web.xml` configuration:
+```xml
+  <servlet>
+    <servlet-name>AS2ReceiveServlet</servlet-name>
+    <servlet-class>com.helger.as2servlet.AS2ReceiveServlet</servlet-class>
+    <init-param>
+      <param-name>as2-servlet-config-filename</param-name>
+      <param-value>as2-server-data/as2-server-config.xml</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AS2ReceiveServlet</servlet-name>
+    <url-pattern>/as2/*</url-pattern>
+  </servlet-mapping>
+```
+As you can see, a configuration file called `as2-server-data/as2-server-config.xml` is referenced as an `init-param` of the servlet. The name of the `init-param` must be `as2-servlet-config-filename`. Please make sure to insert the correct **absolute path** to the configuration file inside the `param-value` element.
+
+In this example the servlet is mapped to the path `/as2` meaning that messages must be targeted to this URL (e.g. `https://myserver/as2`). 
+
+
+###AS2 Configuration file
+A special XML configuration file must be used to configure the AS2 handling. It contains:
+  * a reference to the keystore to be used (in element `certificates`)
+  * a reference to a partnership factory (storing the exchange combinations) (in element `partnerships`)
+  * a list of modules that are executed when a message is received (in elements `module`)
+
+Within a configuration file, the macro `%home%` is replaced with the parent directory of the configuration file. This replacement happens only when a value starts with `%home%`.
+
+Complete example configuration file:
+ 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<openas2>
+  <!-- [required] The keystore to be used -->
+  <certificates classname="com.helger.as2lib.cert.PKCS12CertificateFactory" 
+                filename="%home%/server-certs.p12"
+                password="peppol" />
+  <!-- [required] The pro-forma partnership factory -->                  
+  <partnerships classname="com.helger.as2servlet.util.AS2ServletPartnershipFactory"
+                filename="%home%/server-partnerships.xml"
+                disablebackup="true" />
+ 
+  <!-- [required] the processing queue -->
+  <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
+             pendingMDN="%home%/pendingMDN"
+             pendingMDNinfo="%home%/pendinginfoMDN">
+    <!-- [optional] Store sent MDNs to a file -->
+    <module classname="com.helger.as2lib.processor.storage.MDNFileModule"
+            filename="%home%/mdn/$date.yyyy$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
+            protocol="as2"
+            tempdir="%home%/temp"/>
+    <!-- [optional] Store received messages and headers to a file -->
+    <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
+            filename="%home%/inbox/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
+            header="%home%/inbox/msgheaders/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
+            protocol="as2"
+            tempdir="%home%/temp"/>
+    <!-- [required] The main receiver module that performs the message parsing.
+         This module also sends synchronous MDNs back.
+         Note: the port attribute is required but can be ignored in our case!
+     -->            
+    <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"      
+            port="10080"
+            errordir="%home%/inbox/error"
+            errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>
+            
+    <!-- To process the documents further than just storing them to disk, implement
+         class AbstractProcessorModule and register the module here.
+         See the phax/as2-peppol-servlet project on how to handle e.g. SBDH documents 
+    -->                      
+  </processor>
+</openas2>
+```
 
 ---
 
