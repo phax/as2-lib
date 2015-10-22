@@ -20,8 +20,9 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
   * 2015-xx-yy Version 2.2.3
     * Improved API for handling MDN errors (as2-lib issue #11)  
-    * The MIC calculation is now handled with canonicalized line endings (if the Content-Transfer-Encoding is not `binary`) (as2-lib issue #12)
+    * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
     * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
+    * The new sub-project `as2-servlet` is now contained
   * 2015-10-19 Version 2.2.2
     * Updated to Bouncy Castle 1.53 (as2-lib issue #10)
   * 2015-10-08 Version 2.2.1
@@ -62,7 +63,36 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 </dependency>
 ```
 
-#Package structure
+For the receive servlet, add the following to your `pom.xml` (no release yet):
+```
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>as2-servlet</artifactId>
+  <version>2.2.3-SNAPSHOT</version>
+</dependency>
+```
+
+#Building
+This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
+
+The `as2-lib` sub-project requires at least Java 1.6 and should be without problems. It is licensed under the FreeBSD license (as OpenAS2).
+
+The `as2-partnership-mongodb` sub-project requires at least Java 1.8 and upon installing it the first time it downloads an embedded MongoDB from the official web site and extracts it. If this makes problems specify the `-DskipTests=true` parameter when calling Maven.
+
+The `as2-servlet` sub-project requires at least Java 1.6 and should be without problems. It is licensed under the Apache 2 license (as OpenAS2).
+
+
+If you only have Java 1.6 or 1.7 available perform the following commands to build only `as2-lib` (assuming you are in the root directory of this project):
+```
+mvn clean install -N
+cd as2-lib
+mvn clean install
+```
+
+This installs the parent POM first (`-N` means *not recursive*) and afterwards `as2-lib` is build as usual.
+
+##as2-lib
+###Package structure
 This library manages the package `com.helger.as2lib` and all sub-packages:
 
   * com.helger.as2lib - contains the global AS2 settings
@@ -87,29 +117,24 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.util.http - utility classes for HTTP connection handling
   * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
 
-#Building
-This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
-
-The `as2-lib` sub-project requires at least Java 1.6 and should be without problems. It is licensed under the FreeBSD license (as OpenAS2).
-
-The `as2-partnership-mongodb` sub-project requires at least Java 1.8 and upon installing it the first time it downloads an embedded MongoDB from the official web site and extracts it. If this makes problems specify the `-DskipTests=true` parameter when calling Maven.
-
-If you only have Java 1.6 or 1.7 available perform the following commands to build only `as2-lib` (assuming you are in the root directory of this project):
-```
-mvn clean install -N
-cd as2-lib
-mvn clean install
-```
-
-This installs the parent POM first (`-N` means *not recursive*) and afterwards `as2-lib` is build as usual.
-
-#System Properties
+###System Properties
 The following system properties are available for global customization
 
   * boolean `AS2.useSecureRandom` - since 2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
   * String `AS2.httpDumpDirectory` - since 2.2.0 - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectory=/var/dump/as2-http`). The filename starts with "as2-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
   * String `AS2.dumpDecryptedDirectory` - since 2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
- 
+
+##as2-partnership-mongodb
+This is an implementation of interface `com.helger.as2lib.partner.IPartnershipFactory` from as2-lib using MongoDB as the backend. It requires Java 1.8 for building and running.
+Tests are done with Groovy and Spock.
+
+This sub-project is licensed under the Apache 2 License.
+
+##as2-servlet
+A stand alone servlet that takes AS2 requests and handles them via a `AS2ServletReceiverModule`.
+
+This sub-project is licensed under the Apache 2 License.
+
 
 ---
 
