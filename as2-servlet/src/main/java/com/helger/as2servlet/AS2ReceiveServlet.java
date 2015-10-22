@@ -42,7 +42,10 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.string.StringHelper;
 
 /**
- * This is the main servlet that takes AS2 messages and processes them.
+ * This is the main servlet that takes AS2 messages and processes them. This
+ * servlet is configured to accept only POST requests. This class contains a lot
+ * of methods that may be overridden. So simply subclass this class and
+ * reference the subclasses class in your web.xml file.
  *
  * @author Philip Helger
  */
@@ -98,10 +101,12 @@ public class AS2ReceiveServlet extends HttpServlet
    * @return The created session. May not be <code>null</code>.
    * @throws OpenAS2Exception
    *         In case something goes wrong when initializing the session
+   * @throws ServletException
+   *         In case an overriding methods wants to throw a different exception
    */
   @Nonnull
   @OverrideOnDemand
-  protected AS2ServletSession createAS2ServletSession (@Nonnull final File aConfigurationFile) throws OpenAS2Exception
+  protected AS2ServletSession createAS2ServletSession (@Nonnull final File aConfigurationFile) throws OpenAS2Exception, ServletException
   {
     return new AS2ServletSession (aConfigurationFile);
   }
