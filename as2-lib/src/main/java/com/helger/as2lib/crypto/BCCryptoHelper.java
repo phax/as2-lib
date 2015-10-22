@@ -90,7 +90,6 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMESignedParser;
 import org.bouncycastle.mail.smime.SMIMEUtil;
-import org.bouncycastle.mail.smime.util.CRLFOutputStream;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
@@ -298,21 +297,10 @@ public final class BCCryptoHelper implements ICryptoHelper
       aMessageDigest.update (aCRLF);
     }
 
+    // No need to canonicalize here - see issue #12
     final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
     final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ());
-    final OutputStream aFOS;
-    if (EContentTransferEncoding.BINARY.getID ().equals (aPart.getEncoding ()))
-    {
-      // Non canonicalization for "binary" transfer encoding
-      aFOS = aOS;
-    }
-    else
-    {
-      // Change all newlines to "\r\n" for MIC calculation
-      aFOS = new CRLFOutputStream (aOS);
-    }
-    aPart.getDataHandler ().writeTo (aFOS);
-    aFOS.close ();
+    aPart.getDataHandler ().writeTo (aOS);
     aOS.close ();
     aDOS.close ();
 
