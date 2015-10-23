@@ -18,7 +18,7 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
-  * 2015-xx-yy Version 2.2.3
+  * 2015-10-22 Version 2.2.3
     * Improved API for handling MDN errors (as2-lib issue #11)  
     * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
     * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
@@ -50,7 +50,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
 </dependency>
 ```
 
@@ -59,16 +59,16 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
 </dependency>
 ```
 
-For the receive servlet, add the following to your `pom.xml` (no release yet):
+For the receive servlet, add the following to your `pom.xml`:
 ```
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>2.2.3-SNAPSHOT</version>
+  <version>2.2.3</version>
 </dependency>
 ```
 
