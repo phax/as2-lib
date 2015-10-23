@@ -3,6 +3,11 @@ package com.helger.as2lib.util;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * An {@link OutputStream} that discards all bytes to be written
+ *
+ * @author Philip Helger
+ */
 public class NullOutputStream extends OutputStream
 {
   /**
@@ -51,4 +56,18 @@ public class NullOutputStream extends OutputStream
   {
     // do nothing
   }
+
+  /**
+   * Does not nothing and therefore does not throw an Exception.
+   */
+  @Override
+  public void flush ()
+  {}
+
+  /**
+   * Does not nothing and therefore does not throw an Exception.
+   */
+  @Override
+  public void close ()
+  {}
 }
