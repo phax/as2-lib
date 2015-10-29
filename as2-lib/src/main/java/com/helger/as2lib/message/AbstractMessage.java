@@ -199,7 +199,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     return new ToStringGenerator (this).append ("data", m_aData).append ("MDN", m_aMDN).toString ();
   }
 
-  protected void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
+  private void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     try
     {

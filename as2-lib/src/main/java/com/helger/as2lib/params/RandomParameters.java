@@ -43,6 +43,16 @@ import com.helger.commons.string.StringHelper;
 
 public class RandomParameters extends AbstractParameterParser
 {
+  private static final Random s_aRandom;
+
+  static
+  {
+    if (AS2GlobalSettings.isUseSecureRandom ())
+      s_aRandom = VerySecureRandom.getInstance ();
+    else
+      s_aRandom = new Random ();
+  }
+
   @Override
   public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
   {
@@ -58,11 +68,7 @@ public class RandomParameters extends AbstractParameterParser
 
     final int nWantedChars = sKey.length ();
     final int nMax = (int) Math.pow (10, nWantedChars);
-    int nRandom;
-    if (AS2GlobalSettings.isUseSecureRandom ())
-      nRandom = VerySecureRandom.getInstance ().nextInt (nMax);
-    else
-      nRandom = new Random ().nextInt (nMax);
+    final int nRandom = s_aRandom.nextInt (nMax);
 
     return StringHelper.getLeadingZero (nRandom, nWantedChars);
   }
