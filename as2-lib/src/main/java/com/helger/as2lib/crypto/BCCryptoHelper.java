@@ -101,12 +101,12 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
-import com.helger.as2lib.util.NullOutputStream;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.NullOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
@@ -140,10 +140,13 @@ public final class BCCryptoHelper implements ICryptoHelper
     Security.addProvider (new BouncyCastleProvider ());
 
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.pkcs7_signature.class.getName ());
+    aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.pkcs7_signature.class.getName ());
     aCommandMap.addMailcap ("application/pkcs7-mime;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.pkcs7_mime.class.getName ());
-    aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.x_pkcs7_signature.class.getName ());
-    aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.x_pkcs7_mime.class.getName ());
+    aCommandMap.addMailcap ("application/x-pkcs7-signature;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.x_pkcs7_signature.class.getName ());
+    aCommandMap.addMailcap ("application/x-pkcs7-mime;; x-java-content-handler=" +
+                            org.bouncycastle.mail.smime.handlers.x_pkcs7_mime.class.getName ());
     aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=" + org.bouncycastle.mail.smime.handlers.multipart_signed.class.getName ());
     AccessControllerHelper.run (new PrivilegedAction <Object> ()
     {
@@ -241,15 +244,21 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public String calculateMIC (@Nonnull final MimeBodyPart aPart, @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm, final boolean bIncludeHeaders) throws GeneralSecurityException,
-                                                                                                                                                      MessagingException,
-                                                                                                                                                      IOException
+  public String calculateMIC (@Nonnull final MimeBodyPart aPart,
+                              @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
+                              final boolean bIncludeHeaders) throws GeneralSecurityException, MessagingException, IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.calculateMIC (" + eDigestAlgorithm + " [" + eDigestAlgorithm.getOID ().getId () + "], " + bIncludeHeaders + ")");
+      s_aLogger.debug ("BCCryptoHelper.calculateMIC (" +
+                       eDigestAlgorithm +
+                       " [" +
+                       eDigestAlgorithm.getOID ().getId () +
+                       "], " +
+                       bIncludeHeaders +
+                       ")");
 
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
@@ -354,9 +363,9 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart, @Nonnull final X509Certificate aX509Cert, @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException,
-                                                                                                                                                             SMIMEException,
-                                                                                                                                                             CMSException
+  public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
+                               @Nonnull final X509Certificate aX509Cert,
+                               @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException, SMIMEException, CMSException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -380,7 +389,10 @@ public final class BCCryptoHelper implements ICryptoHelper
                             @Nonnull final X509Certificate aX509Cert,
                             @Nonnull final PrivateKey aPrivateKey,
                             @Nonnull final ECryptoAlgorithmSign eAlgorithm,
-                            final boolean bIncludeCertificateInSignedContent) throws GeneralSecurityException, SMIMEException, MessagingException, OperatorCreationException
+                            final boolean bIncludeCertificateInSignedContent) throws GeneralSecurityException,
+                                                                              SMIMEException,
+                                                                              MessagingException,
+                                                                              OperatorCreationException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -444,7 +456,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
                               final boolean bUseCertificateInBodyPart,
-                              final boolean bForceVerify) throws GeneralSecurityException, IOException, MessagingException, CMSException, OperatorCreationException
+                              final boolean bForceVerify) throws GeneralSecurityException,
+                                                          IOException,
+                                                          MessagingException,
+                                                          CMSException,
+                                                          OperatorCreationException
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("BCCryptoHelper.verify; X509 subject=" +
@@ -460,7 +476,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
-    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME).build (),
+    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                                            .build (),
                                                                    aMainPart,
                                                                    EContentTransferEncoding.AS2_DEFAULT.getID ());
 
@@ -476,7 +493,8 @@ public final class BCCryptoHelper implements ICryptoHelper
           s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
-        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME).getCertificate (aCertHolder);
+        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                        .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
           s_aLogger.warn ("Certificate mismatch! Provided certificate\n" + aX509Cert + " differs from certficate contained in message\n" + aCert);
 
@@ -493,7 +511,8 @@ public final class BCCryptoHelper implements ICryptoHelper
         s_aLogger.debug ("Verifying signature using the certificate contained in the MIME body part");
 
     // Verify certificate
-    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME).build (aRealX509Cert.getPublicKey ());
+    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                                    .build (aRealX509Cert.getPublicKey ());
 
     for (final Object aSigner : aSignedParser.getSignerInfos ().getSigners ())
     {
