@@ -46,7 +46,7 @@ import com.helger.commons.lang.StackTraceHelper;
 
 /**
  * An exception thrown the an {@link IMessageProcessor} has caught exceptions.
- * 
+ *
  * @author Philip Helger
  */
 public class ProcessorException extends OpenAS2Exception
@@ -65,7 +65,11 @@ public class ProcessorException extends OpenAS2Exception
 
   public ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + "' threw " + (aCauses.size () == 1 ? "exception:" : "exceptions:") + _getMessage (aCauses));
+    super ("Processor '" +
+           ClassHelper.getClassLocalName (aProcessor) +
+           "' threw " +
+           (aCauses.size () == 1 ? "exception:" : "exceptions:") +
+           _getMessage (aCauses));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
@@ -80,6 +84,7 @@ public class ProcessorException extends OpenAS2Exception
   }
 
   /**
+   * @return A list of all causing exceptions
    * @deprecated Use {@link #getAllCauses()} instead
    */
   @Deprecated
@@ -91,6 +96,10 @@ public class ProcessorException extends OpenAS2Exception
     return getAllCauses ();
   }
 
+  /**
+   * @return A list of all causing exceptions. Never <code>null</code> nor
+   *         empty.
+   */
   @Nonnull
   @Nonempty
   @ReturnsMutableCopy
