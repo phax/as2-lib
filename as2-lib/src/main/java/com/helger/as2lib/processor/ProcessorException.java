@@ -44,6 +44,11 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.lang.StackTraceHelper;
 
+/**
+ * An exception thrown the an {@link IMessageProcessor} has caught exceptions.
+ * 
+ * @author Philip Helger
+ */
 public class ProcessorException extends OpenAS2Exception
 {
   private final IMessageProcessor m_aProcessor;
@@ -58,14 +63,9 @@ public class ProcessorException extends OpenAS2Exception
     return aSB.toString ();
   }
 
-  public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
-                             @Nonnull @Nonempty final List <Throwable> aCauses)
+  public ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
   {
-    super ("Processor '" +
-           ClassHelper.getClassLocalName (aProcessor) +
-           "'" +
-           (aCauses.size () == 1 ? "" : " threw exception(s):" + _getMessage (aCauses)),
-           aCauses.size () == 1 ? aCauses.get (0) : null);
+    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + "' threw " + (aCauses.size () == 1 ? "exception:" : "exceptions:") + _getMessage (aCauses));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
@@ -79,10 +79,22 @@ public class ProcessorException extends OpenAS2Exception
     return m_aProcessor;
   }
 
+  /**
+   * @deprecated Use {@link #getAllCauses()} instead
+   */
+  @Deprecated
   @Nonnull
   @Nonempty
   @ReturnsMutableCopy
   public final List <Throwable> getCauses ()
+  {
+    return getAllCauses ();
+  }
+
+  @Nonnull
+  @Nonempty
+  @ReturnsMutableCopy
+  public final List <Throwable> getAllCauses ()
   {
     return CollectionHelper.newList (m_aCauses);
   }
