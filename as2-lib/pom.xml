@@ -68,10 +68,6 @@
       <groupId>com.sun.mail</groupId>
       <artifactId>javax.mail</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>javax.mail</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>javax.activation</groupId>
