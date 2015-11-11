@@ -34,6 +34,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <release date="2015-11-11" version="2.2.4" />
+  <entry date="2015-11-10" category="tech" action="update">
+    <change>
+      <text locale="en">Fixed a minor issue where details of a ProcessingException were not passed into the MDN text</text>
+    </change>
+  </entry>
   <release date="2015-10-22" version="2.2.3" />
   <entry date="2015-10-22" category="tech" action="update">
     <change>

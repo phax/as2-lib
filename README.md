@@ -22,6 +22,8 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
+  * 2015-11-11 Version 2.2.4
+    * Fixed a minor issue where details of a ProcessingException were not passed into the MDN text
   * 2015-10-22 Version 2.2.3
     * Improved API for handling MDN errors (as2-lib issue #11)  
     * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
