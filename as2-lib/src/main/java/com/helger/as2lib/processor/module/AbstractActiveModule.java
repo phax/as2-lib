@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.OpenAS2UnsupportedException;
 import com.helger.as2lib.message.IMessage;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
@@ -56,16 +57,13 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
     m_bRunning = bRunning;
   }
 
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  @OverrideOnDemand
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return false;
   }
 
-  public void handle (@Nonnull final String sAction,
-                      @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     throw new OpenAS2UnsupportedException ("Active modules don't handle anything by default");
   }
@@ -86,7 +84,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 
   /**
    * Implement the internal start logic.
-   * 
+   *
    * @throws OpenAS2Exception
    *         In case of an error.
    */
@@ -100,7 +98,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 
   /**
    * Implement the internal stop logic.
-   * 
+   *
    * @throws OpenAS2Exception
    *         In case of an error.
    */
