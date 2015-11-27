@@ -30,9 +30,9 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-/**
- * phloc javadoc CSS
- *
+
+/*
+ * based on phloc javadoc CSS.
  * (c) 2011-2014 phloc systems.
  * Derived from the original javadoc CSS from Sun JDK
  */
@@ -356,7 +356,6 @@ ul.blockList li.blockList h2 {
 .serializedFormContainer dl.nameValue dd {
 	display: inline;
 	font-size: 1.1em;
-	margin: 0 0 0 1px;
 }
 
 ul.horizontal li {
