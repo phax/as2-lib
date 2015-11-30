@@ -104,14 +104,6 @@ public class StringMap implements IStringMap, Serializable
   }
 
   @Nullable
-  @Deprecated
-  public String getAttributeObject (@Nullable final String sName)
-  {
-    // ConcurrentHashMap cannot handle null keys
-    return sName == null ? null : m_aAttrs.get (sName);
-  }
-
-  @Nullable
   public final String getAttributeAsString (@Nullable final String sName)
   {
     // ConcurrentHashMap cannot handle null keys
