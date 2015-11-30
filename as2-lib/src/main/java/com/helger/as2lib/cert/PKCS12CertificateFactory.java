@@ -84,7 +84,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_PASSWORD = "password";
-  public static final String ATTR_SAVE_CHANGES_TO_FILE = "save_changes";
+  public static final String ATTR_SAVE_CHANGES_TO_FILE = "autosave";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (PKCS12CertificateFactory.class);
 
