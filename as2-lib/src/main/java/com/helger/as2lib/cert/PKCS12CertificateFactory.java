@@ -64,6 +64,7 @@ import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.EAppend;
@@ -73,7 +74,7 @@ import com.helger.commons.io.stream.StreamHelper;
 /**
  * An implementation of a file-based certificate factory using BouncyCastle
  * PKCS12 format.
- * 
+ *
  * @author Philip Helger
  */
 public class PKCS12CertificateFactory extends AbstractCertificateFactory implements
@@ -83,12 +84,57 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_PASSWORD = "password";
+  public static final boolean DEFAULT_SAVE_CHANGES_TO_FILE = true;
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (PKCS12CertificateFactory.class);
 
+  private boolean m_bSaveChangesToFile = DEFAULT_SAVE_CHANGES_TO_FILE;
   private KeyStore m_aKeyStore;
 
   public PKCS12CertificateFactory ()
   {}
+
+  /**
+   * @return <code>true</code> if changes to the key store should be persisted
+   *         back to the original file, <code>false</code> if not. The default
+   *         value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
+   */
+  public boolean isSaveChangesToFile ()
+  {
+    return m_bSaveChangesToFile;
+  }
+
+  /**
+   * Change the behavior if all changes should trigger a saving to the original
+   * file. The default value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
+   *
+   * @param bSaveChangesToFile
+   *        <code>true</code> to enable auto-saving, <code>false</code> to
+   *        disable it.
+   * @return this for chaining
+   */
+  @Nonnull
+  public PKCS12CertificateFactory setSaveChangesToFile (final boolean bSaveChangesToFile)
+  {
+    m_bSaveChangesToFile = bSaveChangesToFile;
+    return this;
+  }
+
+  /**
+   * Custom callback method that is invoked if something changes in the
+   * keystore. By default the changes are written back to disk.
+   *
+   * @throws OpenAS2Exception
+   *         In case saving fails.
+   * @see #isSaveChangesToFile()
+   * @see #setSaveChangesToFile(boolean)
+   */
+  @OverrideOnDemand
+  protected void onChange () throws OpenAS2Exception
+  {
+    if (m_bSaveChangesToFile)
+      save ();
+  }
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
@@ -265,7 +311,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
         throw new CertificateExistsException (sAlias);
 
       aKeyStore.setCertificateEntry (sAlias, aCert);
-      save (getFilename (), getPassword ());
+      onChange ();
       s_aLogger.info ("Added certificate alias '" + sAlias + "' of certificate '" + aCert.getSubjectDN ());
     }
     catch (final GeneralSecurityException ex)
@@ -290,7 +336,8 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
       final Certificate [] aCertChain = aKeyStore.getCertificateChain (sAlias);
       aKeyStore.setKeyEntry (sAlias, aKey, sPassword.toCharArray (), aCertChain);
-      save (getFilename (), getPassword ());
+      onChange ();
+      s_aLogger.info ("Added key alias '" + sAlias + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -306,7 +353,8 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
       // Make a copy to be sure
       for (final String sAlias : CollectionHelper.newList (aKeyStore.aliases ()))
         aKeyStore.deleteEntry (sAlias);
-      save (getFilename (), getPassword ());
+      onChange ();
+      s_aLogger.info ("Remove all aliases in key store");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -372,11 +420,13 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     final KeyStore aKeyStore = getKeyStore ();
     try
     {
-      if (aKeyStore.getCertificate (sAlias) == null)
+      final Certificate aCert = aKeyStore.getCertificate (sAlias);
+      if (aCert == null)
         throw new CertificateNotFoundException (null, sAlias);
 
       aKeyStore.deleteEntry (sAlias);
-      save (getFilename (), getPassword ());
+      onChange ();
+      s_aLogger.info ("Removed certificate alias '" + sAlias + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -389,13 +439,14 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
     save (getFilename (), getPassword ());
   }
 
-  public void save (final String sFilename, final char [] aPassword) throws OpenAS2Exception
+  public void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
     final OutputStream fOut = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
     save (fOut, aPassword);
   }
 
-  public void save (@WillClose final OutputStream aOS, final char [] aPassword) throws OpenAS2Exception
+  public void save (@Nonnull @WillClose final OutputStream aOS,
+                    @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
     try
     {

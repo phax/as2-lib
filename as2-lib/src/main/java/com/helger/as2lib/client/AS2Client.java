@@ -170,6 +170,17 @@ public class AS2Client
     return aMsg;
   }
 
+  /**
+   * @return The certificate factory instance to be used. May not be
+   *         <code>null</code>.
+   */
+  @Nonnull
+  @OverrideOnDemand
+  protected IAliasedCertificateFactory createCertificateFactory ()
+  {
+    return new PKCS12CertificateFactory ();
+  }
+
   @OverrideOnDemand
   protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
                                          @Nonnull final AS2Session aSession) throws OpenAS2Exception
@@ -179,7 +190,7 @@ public class AS2Client
     aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
     aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
 
-    final IAliasedCertificateFactory aCertFactory = new PKCS12CertificateFactory ();
+    final IAliasedCertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
     if (aSettings.getReceiverCertificate () != null)
     {
