@@ -38,6 +38,11 @@ import java.io.OutputStream;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 
+/**
+ * Base interface for a certificate factory that can store to a file.
+ * 
+ * @author Philip Helger
+ */
 public interface IStorableCertificateFactory extends ICertificateFactory
 {
   void setFilename (String sFilename);

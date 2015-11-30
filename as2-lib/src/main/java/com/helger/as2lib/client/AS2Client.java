@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.CertificateExistsException;
+import com.helger.as2lib.cert.IAliasedCertificateFactory;
 import com.helger.as2lib.cert.PKCS12CertificateFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
@@ -178,7 +179,7 @@ public class AS2Client
     aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
     aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
 
-    final PKCS12CertificateFactory aCertFactory = new PKCS12CertificateFactory ();
+    final IAliasedCertificateFactory aCertFactory = new PKCS12CertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
     if (aSettings.getReceiverCertificate () != null)
     {

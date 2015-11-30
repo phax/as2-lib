@@ -70,7 +70,16 @@ import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 
-public class PKCS12CertificateFactory extends AbstractCertificateFactory implements IAliasedCertificateFactory, IKeyStoreCertificateFactory, IStorableCertificateFactory
+/**
+ * An implementation of a file-based certificate factory using BouncyCastle
+ * PKCS12 format.
+ * 
+ * @author Philip Helger
+ */
+public class PKCS12CertificateFactory extends AbstractCertificateFactory implements
+                                      IAliasedCertificateFactory,
+                                      IKeyStoreCertificateFactory,
+                                      IStorableCertificateFactory
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_PASSWORD = "password";

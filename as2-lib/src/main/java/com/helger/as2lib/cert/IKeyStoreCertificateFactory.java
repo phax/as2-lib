@@ -36,6 +36,11 @@ import java.security.KeyStore;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Base interface for a certificate factory that is based on a key store.
+ * 
+ * @author Philip Helger
+ */
 public interface IKeyStoreCertificateFactory extends ICertificateFactory
 {
   @Nonnull
