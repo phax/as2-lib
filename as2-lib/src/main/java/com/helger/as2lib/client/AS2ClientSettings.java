@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.CAS2Info;
+import com.helger.as2lib.cert.IStorableCertificateFactory;
 import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
@@ -77,6 +78,7 @@ public class AS2ClientSettings
 
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
+  private boolean m_bSaveKeyStoreChangesToFile = IStorableCertificateFactory.DEFAULT_SAVE_CHANGES_TO_FILE;
 
   private String m_sSenderEmailAddress;
   private String m_sSenderAS2ID;
@@ -137,6 +139,31 @@ public class AS2ClientSettings
   public String getKeyStorePassword ()
   {
     return m_sKeyStorePassword;
+  }
+
+  /**
+   * Change the behavior if all changes to the keystore should trigger a saving
+   * to the original file.
+   *
+   * @param bSaveKeyStoreChangesToFile
+   *        <code>true</code> if key store changes should be written back to the
+   *        file, <code>false</code> if not.
+   * @return this for chaining
+   */
+  @Nonnull
+  public AS2ClientSettings setSaveKeyStoreChangesToFile (final boolean bSaveKeyStoreChangesToFile)
+  {
+    m_bSaveKeyStoreChangesToFile = bSaveKeyStoreChangesToFile;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if key store changes should be written back to
+   *         the file, <code>false</code> if not.
+   */
+  public boolean isSaveKeyStoreChangesToFile ()
+  {
+    return m_bSaveKeyStoreChangesToFile;
   }
 
   /**

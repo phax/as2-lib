@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.CertificateExistsException;
-import com.helger.as2lib.cert.IAliasedCertificateFactory;
 import com.helger.as2lib.cert.PKCS12CertificateFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
@@ -176,7 +175,7 @@ public class AS2Client
    */
   @Nonnull
   @OverrideOnDemand
-  protected IAliasedCertificateFactory createCertificateFactory ()
+  protected PKCS12CertificateFactory createCertificateFactory ()
   {
     return new PKCS12CertificateFactory ();
   }
@@ -189,8 +188,9 @@ public class AS2Client
     final StringMap aParams = new StringMap ();
     aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
     aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
+    aParams.setAttribute (PKCS12CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
 
-    final IAliasedCertificateFactory aCertFactory = createCertificateFactory ();
+    final PKCS12CertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
     if (aSettings.getReceiverCertificate () != null)
     {
@@ -223,6 +223,11 @@ public class AS2Client
     aSession.setMessageProcessor (aMessageProcessor);
   }
 
+  /**
+   * Create an empty response object that is too be filled.
+   *
+   * @return The empty response object and never <code>null</code>.
+   */
   @Nonnull
   @OverrideOnDemand
   protected AS2ClientResponse createResponse ()
@@ -230,6 +235,12 @@ public class AS2Client
     return new AS2ClientResponse ();
   }
 
+  /**
+   * Create the AS2 session to be used. This method must ensure an eventually
+   * needed proxy is set.
+   *
+   * @return The new AS2 session and never <code>null</code>.
+   */
   @Nonnull
   @OverrideOnDemand
   protected AS2Session createSession ()
