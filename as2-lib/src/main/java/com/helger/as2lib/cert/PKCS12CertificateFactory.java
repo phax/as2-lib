@@ -84,57 +84,14 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_PASSWORD = "password";
-  public static final boolean DEFAULT_SAVE_CHANGES_TO_FILE = true;
+  public static final String ATTR_SAVE_CHANGES_TO_FILE = "save_changes";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (PKCS12CertificateFactory.class);
 
-  private boolean m_bSaveChangesToFile = DEFAULT_SAVE_CHANGES_TO_FILE;
   private KeyStore m_aKeyStore;
 
   public PKCS12CertificateFactory ()
   {}
-
-  /**
-   * @return <code>true</code> if changes to the key store should be persisted
-   *         back to the original file, <code>false</code> if not. The default
-   *         value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
-   */
-  public boolean isSaveChangesToFile ()
-  {
-    return m_bSaveChangesToFile;
-  }
-
-  /**
-   * Change the behavior if all changes should trigger a saving to the original
-   * file. The default value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
-   *
-   * @param bSaveChangesToFile
-   *        <code>true</code> to enable auto-saving, <code>false</code> to
-   *        disable it.
-   * @return this for chaining
-   */
-  @Nonnull
-  public PKCS12CertificateFactory setSaveChangesToFile (final boolean bSaveChangesToFile)
-  {
-    m_bSaveChangesToFile = bSaveChangesToFile;
-    return this;
-  }
-
-  /**
-   * Custom callback method that is invoked if something changes in the
-   * keystore. By default the changes are written back to disk.
-   *
-   * @throws OpenAS2Exception
-   *         In case saving fails.
-   * @see #isSaveChangesToFile()
-   * @see #setSaveChangesToFile(boolean)
-   */
-  @OverrideOnDemand
-  protected void onChange () throws OpenAS2Exception
-  {
-    if (m_bSaveChangesToFile)
-      save ();
-  }
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
@@ -254,6 +211,32 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   public char [] getPassword () throws InvalidParameterException
   {
     return getAttributeAsStringRequired (ATTR_PASSWORD).toCharArray ();
+  }
+
+  public void setSaveChangesToFile (final boolean bSaveChangesToFile)
+  {
+    setAttribute (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile);
+  }
+
+  public boolean isSaveChangesToFile ()
+  {
+    return getAttributeAsBoolean (ATTR_SAVE_CHANGES_TO_FILE, DEFAULT_SAVE_CHANGES_TO_FILE);
+  }
+
+  /**
+   * Custom callback method that is invoked if something changes in the
+   * keystore. By default the changes are written back to disk.
+   *
+   * @throws OpenAS2Exception
+   *         In case saving fails.
+   * @see #isSaveChangesToFile()
+   * @see #setSaveChangesToFile(boolean)
+   */
+  @OverrideOnDemand
+  protected void onChange () throws OpenAS2Exception
+  {
+    if (isSaveChangesToFile ())
+      save ();
   }
 
   @Nonnull

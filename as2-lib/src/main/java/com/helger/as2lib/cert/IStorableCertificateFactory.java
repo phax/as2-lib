@@ -47,6 +47,8 @@ import com.helger.as2lib.params.InvalidParameterException;
  */
 public interface IStorableCertificateFactory extends ICertificateFactory
 {
+  boolean DEFAULT_SAVE_CHANGES_TO_FILE = true;
+
   void setFilename (String sFilename);
 
   String getFilename () throws InvalidParameterException;
@@ -56,8 +58,25 @@ public interface IStorableCertificateFactory extends ICertificateFactory
   char [] getPassword () throws InvalidParameterException;
 
   /**
+   * Change the behavior if all changes should trigger a saving to the original
+   * file. The default value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
+   *
+   * @param bSaveChangesToFile
+   *        <code>true</code> to enable auto-saving, <code>false</code> to
+   *        disable it.
+   */
+  void setSaveChangesToFile (boolean bSaveChangesToFile);
+
+  /**
+   * @return <code>true</code> if changes to the key store should be persisted
+   *         back to the original file, <code>false</code> if not. The default
+   *         value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
+   */
+  boolean isSaveChangesToFile ();
+
+  /**
    * Shortcut for <code>load (getFilename (), getPassword ());</code>
-   * 
+   *
    * @throws OpenAS2Exception
    *         In case of an internal error
    */
@@ -69,7 +88,7 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 
   /**
    * Shortcut for <code>save (getFilename (), getPassword ());</code>
-   * 
+   *
    * @throws OpenAS2Exception
    *         In case of an internal error
    */
