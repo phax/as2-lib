@@ -44,8 +44,10 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
+import com.helger.commons.string.StringParser;
 
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
@@ -54,35 +56,64 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
   /**
    * How many times should this message be sent?
    *
+   * @param aPartnerhsip
+   *        Partnership to be used. May be <code>null</code>
    * @param aOptions
    *        Options to choose from. May be <code>null</code>.
    * @return 0 to indicate no retry.
    */
   @Nonnegative
-  protected final int getRetryCount (@Nullable final Map <String, Object> aOptions)
+  protected final int getRetryCount (@Nullable final Partnership aPartnerhsip,
+                                     @Nullable final Map <String, Object> aOptions)
   {
-    String sTriesLeft = null;
+    int nRetries = -1;
+
+    if (aPartnerhsip != null)
+    {
+      // Provided in the partnership?
+      final String sTriesLeft = aPartnerhsip.getAttribute (IProcessorResenderModule.OPTION_RETRIES);
+      final int nRetriesPS = StringParser.parseInt (sTriesLeft, -1);
+      if (nRetriesPS >= 0)
+        nRetries = nRetriesPS;
+    }
 
     if (aOptions != null)
     {
       // Provided in the options?
-      sTriesLeft = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+      final String sTriesLeft = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+      final int nRetriesOptions = StringParser.parseInt (sTriesLeft, -1);
+      if (nRetriesOptions >= 0)
+        if (nRetries < 0)
+          nRetries = nRetriesOptions;
+        else
+        {
+          // Use the minimum
+          nRetries = Math.min (nRetries, nRetriesOptions);
+        }
     }
 
-    if (sTriesLeft == null)
     {
-      // No. Provided as an attribute?
-      sTriesLeft = getAttributeAsString (IProcessorResenderModule.OPTION_RETRIES);
+      // Provided as an attribute?
+      final String sTriesLeft = getAttributeAsString (IProcessorResenderModule.OPTION_RETRIES);
+      final int nRetriesAttr = StringParser.parseInt (sTriesLeft, -1);
+      if (nRetriesAttr >= 0)
+        if (nRetries < 0)
+          nRetries = nRetriesAttr;
+        else
+        {
+          // Use the minimum
+          nRetries = Math.min (nRetries, nRetriesAttr);
+        }
     }
 
-    if (sTriesLeft == null)
+    if (nRetries < 0)
     {
       // Not provided. Use default.
       return IProcessorResenderModule.DEFAULT_RETRIES;
     }
 
-    // Avoid returning negative values
-    return Math.max (Integer.parseInt (sTriesLeft), 0);
+    // Never returning negative values
+    return nRetries;
   }
 
   /**
