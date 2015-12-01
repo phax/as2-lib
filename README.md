@@ -24,7 +24,8 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
   * 2015-12-01 Version 2.2.5
     * Added a validity check so that expired certificates can no longer be used to sign, verify and encrypt messages. Decrypt is still possible.
-    * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings.
+    * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings. (issue #17)
+    * Fixed potential endless loop when a retry count was specified at a partnership (issue #16) 
   * 2015-11-11 Version 2.2.4
     * Fixed a minor issue where details of a ProcessingException were not passed into the MDN text
   * 2015-10-22 Version 2.2.3
