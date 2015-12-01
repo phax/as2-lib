@@ -166,7 +166,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       s_aLogger.info ("Async MDN submitted" + aMsg.getLoggingText ());
       final DispositionType aDisposition = DispositionType.createSuccess ();
 
-      final int nRetries = getRetryCount (aMsg.getPartnership (), aOptions);
+      final int nRetries = getRetryCount (aOptions);
 
       try
       {

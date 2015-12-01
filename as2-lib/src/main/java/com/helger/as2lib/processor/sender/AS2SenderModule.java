@@ -100,7 +100,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   public AS2SenderModule ()
   {}
 
-  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return IProcessorSenderModule.DO_SEND.equals (sAction) && aMsg instanceof AS2Message;
   }
@@ -112,11 +114,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     try
     {
       InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
-      InvalidParameterException.checkValue (aMsg, "Attribute: " + CPartnershipIDs.PA_AS2_URL, aPartnership.getAS2URL ());
-      InvalidParameterException.checkValue (aMsg, "Receiver: " + CPartnershipIDs.PID_AS2, aPartnership.getReceiverAS2ID ());
+      InvalidParameterException.checkValue (aMsg,
+                                            "Attribute: " + CPartnershipIDs.PA_AS2_URL,
+                                            aPartnership.getAS2URL ());
+      InvalidParameterException.checkValue (aMsg,
+                                            "Receiver: " + CPartnershipIDs.PID_AS2,
+                                            aPartnership.getReceiverAS2ID ());
       InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
       InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
-      InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_EMAIL, aPartnership.getSenderEmail ());
+      InvalidParameterException.checkValue (aMsg,
+                                            "Sender: " + CPartnershipIDs.PID_EMAIL,
+                                            aPartnership.getSenderEmail ());
       InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
     catch (final InvalidParameterException ex)
@@ -145,11 +153,18 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Original MIC is '" + sMIC + "'" + aMsg.getLoggingText ());
 
-      final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDNINFO));
+      final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
+                                                                                               .getAttributeAsString (ATTR_PENDINGMDNINFO));
       final String sMsgFilename = IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
-      final String sPendingFilename = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDN)) + "/" + sMsgFilename;
+      final String sPendingFilename = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
+                                                                                                 .getAttributeAsString (ATTR_PENDINGMDN)) +
+                                      "/" +
+                                      sMsgFilename;
 
-      s_aLogger.info ("Save Original MIC & message id information into folder '" + sPendingFolder + "'" + aMsg.getLoggingText ());
+      s_aLogger.info ("Save Original MIC & message id information into folder '" +
+                      sPendingFolder +
+                      "'" +
+                      aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
@@ -224,9 +239,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       s_aLogger.debug ("DispositionOptions=" + aDispositionOptions);
 
     // Calculate and get the original mic
-    final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null || aPartnership.getEncryptAlgorithm () != null || aPartnership.getCompressionType () != null;
+    final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null ||
+                                         aPartnership.getEncryptAlgorithm () != null ||
+                                         aPartnership.getCompressionType () != null;
 
-    final String sMIC = AS2Helper.getCryptoHelper ().calculateMIC (aMsg.getData (), aDispositionOptions.getFirstMICAlg (), bIncludeHeadersInMIC);
+    final String sMIC = AS2Helper.getCryptoHelper ().calculateMIC (aMsg.getData (),
+                                                                   aDispositionOptions.getFirstMICAlg (),
+                                                                   bIncludeHeadersInMIC);
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Calculated MIC: '" + sMIC + "'");
 
@@ -242,18 +261,28 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  protected MimeBodyPart compress (@Nonnull final IMessage aMsg, @Nonnull final MimeBodyPart aData, @Nonnull final ECompressionType eCompressionType) throws SMIMEException, MessagingException
+  protected MimeBodyPart compress (@Nonnull final IMessage aMsg,
+                                   @Nonnull final MimeBodyPart aData,
+                                   @Nonnull final ECompressionType eCompressionType) throws SMIMEException,
+                                                                                     MessagingException
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
-    final String sTransferEncoding = aMsg.getPartnership ().getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    final String sTransferEncoding = aMsg.getPartnership ()
+                                         .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
     aCompressedGenerator.setContentTransferEncoding (sTransferEncoding);
 
-    final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData, eCompressionType.createOutputCompressor ());
+    final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
+                                                                            eCompressionType.createOutputCompressor ());
     aMsg.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sTransferEncoding);
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Compressed data with " + eCompressionType + " to " + aCompressedBodyPart.getContentType () + ":" + aMsg.getLoggingText ());
+      s_aLogger.debug ("Compressed data with " +
+                       eCompressionType +
+                       " to " +
+                       aCompressedBodyPart.getContentType () +
+                       ":" +
+                       aMsg.getLoggingText ());
 
     return aCompressedBodyPart;
   }
@@ -304,7 +333,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Include certificate in signed content?
       boolean bIncludeCertificateInSignedContent;
-      final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ().getIncludeCertificateInSignedContent ();
+      final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ()
+                                                               .getIncludeCertificateInSignedContent ();
       if (eIncludeCertificateInSignedContent.isDefined ())
       {
         // Use per partnership
@@ -317,10 +347,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       }
 
       // Main signing
-      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm, bIncludeCertificateInSignedContent);
+      aDataBP = AS2Helper.getCryptoHelper ()
+                         .sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm, bIncludeCertificateInSignedContent);
 
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Signed data with " + eSignAlgorithm + " to " + aDataBP.getContentType () + ":" + aMsg.getLoggingText ());
+        s_aLogger.debug ("Signed data with " +
+                         eSignAlgorithm +
+                         " to " +
+                         aDataBP.getContentType () +
+                         ":" +
+                         aMsg.getLoggingText ());
     }
 
     if (eCompressionType != null && !bCompressBeforeSign)
@@ -343,7 +379,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm);
 
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Encrypted data with " + eCryptAlgorithm + " to " + aDataBP.getContentType () + ":" + aMsg.getLoggingText ());
+        s_aLogger.debug ("Encrypted data with " +
+                         eCryptAlgorithm +
+                         " to " +
+                         aDataBP.getContentType () +
+                         ":" +
+                         aMsg.getLoggingText ());
     }
 
     return aDataBP;
@@ -368,7 +409,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setHttpHeader (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
     aConn.setHttpHeader (CAS2Header.HEADER_FROM, aPartnership.getSenderEmail ());
     // Set when compression is enabled
-    aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
+    aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
+                         aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
 
     // Determine where to send the MDN to
     final String sDispTo = aPartnership.getAS2MDNTo ();
@@ -404,7 +446,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * @throws IOException
    *         in case of an IO error
    */
-  protected void receiveSyncMDN (@Nonnull final AS2Message aMsg, @Nonnull final HttpURLConnection aConn, @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
+  protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
+                                 @Nonnull final HttpURLConnection aConn,
+                                 @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Receiving synchronous MDN for message" + aMsg.getLoggingText ());
@@ -496,7 +540,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // don't know it needs or needs not to be resent ? it's depended on
         // what!
         // anyway, just log the warning message here.
-        s_aLogger.info ("MIC IS NOT MATCHED, original mic: '" + sOriginalMIC + "' return mic: '" + sReturnMIC + "'" + aMsg.getLoggingText ());
+        s_aLogger.info ("MIC IS NOT MATCHED, original mic: '" +
+                        sOriginalMIC +
+                        "' return mic: '" +
+                        sReturnMIC +
+                        "'" +
+                        aMsg.getLoggingText ());
       }
       else
       {
@@ -536,12 +585,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   @OverrideOnDemand
   protected void onReceivedMDNError (@Nonnull final AS2Message aMsg, @Nonnull final OpenAS2Exception ex)
   {
-    final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN", ex);
+    final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
+                                                        ex);
     oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
     oae2.terminate ();
   }
 
-  private void _sendViaHTTP (@Nonnull final AS2Message aMsg, @Nonnull final MimeBodyPart aSecuredData, @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
+  private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
+                             @Nonnull final MimeBodyPart aSecuredData,
+                             @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
   {
     final Partnership aPartnership = aMsg.getPartnership ();
 
@@ -551,7 +603,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final boolean bInput = true;
     final boolean bUseCaches = false;
     final String sRequestMethod = "POST";
-    final HttpURLConnection aConn = getConnection (sUrl, bOutput, bInput, bUseCaches, sRequestMethod, getSession ().getHttpProxy ());
+    final HttpURLConnection aConn = getConnection (sUrl,
+                                                   bOutput,
+                                                   bInput,
+                                                   bUseCaches,
+                                                   sRequestMethod,
+                                                   getSession ().getHttpProxy ());
     try
     {
       updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn), aMsg);
@@ -621,7 +678,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
-  public void handle (@Nonnull final String sAction, @Nonnull final IMessage aBaseMsg, @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aBaseMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final AS2Message aMsg = (AS2Message) aBaseMsg;
     s_aLogger.info ("Submitting message" + aMsg.getLoggingText ());
@@ -629,7 +688,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    final int nRetries = getRetryCount (aMsg.getPartnership (), aOptions);
+    final int nRetries = getRetryCount (aOptions);
 
     try
     {
