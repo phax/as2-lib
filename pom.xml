@@ -30,7 +30,7 @@
     <version>1.4.1</version>
   </parent>
   <artifactId>as2-lib-parent-pom</artifactId>
-  <version>2.2.5-SNAPSHOT</version>
+  <version>2.2.5</version>
   <packaging>pom</packaging>
   <name>as2-lib-parent-pom</name>
   <description>Base POM to build the as2-lib projects</description>
@@ -54,7 +54,7 @@
     <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
     <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
     <url>http://github.com/phax/as2-lib</url>
-    <tag>HEAD</tag>
+    <tag>as2-lib-parent-pom-2.2.5</tag>
   </scm>
 
   <organization>
