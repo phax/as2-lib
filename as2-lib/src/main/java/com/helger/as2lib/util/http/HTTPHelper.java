@@ -291,8 +291,12 @@ public final class HTTPHelper
             aData = aNewData;
             nLength = nNewlen;
             // And now the CRLF after the chunk;
-            while (aDataIS.readByte () != '\n')
-            {}
+            while (true)
+            {
+              final int n = aDataIS.readByte ();
+              if (n == '\n')
+                break;
+            }
           }
           aMsg.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (nLength));
         }
