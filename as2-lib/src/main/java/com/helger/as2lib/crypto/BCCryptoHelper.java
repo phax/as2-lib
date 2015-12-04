@@ -46,6 +46,7 @@ import java.security.PrivateKey;
 import java.security.PrivilegedAction;
 import java.security.Security;
 import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -481,6 +482,43 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
+  private X509Certificate _verifyFindCertificate (@Nullable final X509Certificate aX509Cert,
+                                                  final boolean bUseCertificateInBodyPart,
+                                                  @Nonnull final SMIMESignedParser aSignedParser) throws CMSException,
+                                                                                                  CertificateException,
+                                                                                                  GeneralSecurityException
+  {
+    X509Certificate aRealX509Cert = aX509Cert;
+    if (bUseCertificateInBodyPart)
+    {
+      // get all certificates contained in the body part
+      final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
+      if (!aContainedCerts.isEmpty ())
+      {
+        // For PEPPOL the certificate is passed in
+        if (aContainedCerts.size () > 1)
+          s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
+
+        final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
+        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
+                                                                        .getCertificate (aCertHolder);
+        if (aX509Cert != null && !aX509Cert.equals (aCert))
+          s_aLogger.warn ("Certificate mismatch! Provided certificate\n" +
+                          aX509Cert +
+                          " differs from certficate contained in message\n" +
+                          aCert);
+
+        aRealX509Cert = aCert;
+      }
+    }
+    if (aRealX509Cert == null)
+      throw new GeneralSecurityException ("No certificate provided" +
+                                          (bUseCertificateInBodyPart ? " and none found in the message" : "") +
+                                          "!");
+    return aRealX509Cert;
+  }
+
+  @Nonnull
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
                               final boolean bUseCertificateInBodyPart,
@@ -509,39 +547,11 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                                    aMainPart,
                                                                    EContentTransferEncoding.AS2_DEFAULT.getID ());
 
-    X509Certificate aRealX509Cert = aX509Cert;
-    if (bUseCertificateInBodyPart)
-    {
-      // get all certificates contained in the body part
-      final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
-      if (!aContainedCerts.isEmpty ())
-      {
-        // For PEPPOL the certificate is passed in
-        if (aContainedCerts.size () > 1)
-          s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
-
-        final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
-        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
-                                                                        .getCertificate (aCertHolder);
-        if (aX509Cert != null && !aX509Cert.equals (aCert))
-          s_aLogger.warn ("Certificate mismatch! Provided certificate\n" +
-                          aX509Cert +
-                          " differs from certficate contained in message\n" +
-                          aCert);
-
-        aRealX509Cert = aCert;
-      }
-    }
-    if (aRealX509Cert == null)
-      throw new GeneralSecurityException ("No certificate provided" +
-                                          (bUseCertificateInBodyPart ? " and none found in the message" : "") +
-                                          "!");
+    final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
     if (s_aLogger.isDebugEnabled ())
-      if (aRealX509Cert == aX509Cert)
-        s_aLogger.debug ("Verifying signature using the provided certificate (partnership)");
-      else
-        s_aLogger.debug ("Verifying signature using the certificate contained in the MIME body part");
+      s_aLogger.debug (aRealX509Cert == aX509Cert ? "Verifying signature using the provided certificate (partnership)"
+                                                  : "Verifying signature using the certificate contained in the MIME body part");
 
     // Check if the certificate is expired or active.
     aRealX509Cert.checkValidity ();
