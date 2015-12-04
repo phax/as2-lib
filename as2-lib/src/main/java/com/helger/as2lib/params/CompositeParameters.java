@@ -75,7 +75,20 @@ public class CompositeParameters extends AbstractParameterParser
     m_bIgnoreMissingParsers = bIgnoreMissingParsers;
   }
 
+  /**
+   * @return <code>true</code> to ignore missing parameters
+   * @deprecated Use {@link #isIgnoreMissingParsers()} instead
+   */
+  @Deprecated
   public boolean getIgnoreMissingParsers ()
+  {
+    return isIgnoreMissingParsers ();
+  }
+
+  /**
+   * @return <code>true</code> to ignore missing parameters
+   */
+  public boolean isIgnoreMissingParsers ()
   {
     return m_bIgnoreMissingParsers;
   }
@@ -97,7 +110,7 @@ public class CompositeParameters extends AbstractParameterParser
       aParser.setParameter (aSB.toString (), sValue);
     }
     else
-      if (!getIgnoreMissingParsers ())
+      if (!isIgnoreMissingParsers ())
         throw new InvalidParameterException ("Invalid area in key", this, sKey, sValue);
   }
 
@@ -126,7 +139,7 @@ public class CompositeParameters extends AbstractParameterParser
 
       return aParser.getParameter (aKeyBuf.toString ());
     }
-    if (!getIgnoreMissingParsers ())
+    if (!isIgnoreMissingParsers ())
       throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
 
     return "";

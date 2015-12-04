@@ -67,7 +67,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   {
     final StringBuilder aSB = new StringBuilder ();
     final String sDateFormat = getPartnership ().getDateFormat (DEFAULT_DATE_FORMAT);
-    aSB.append ("<").append (CAS2Info.NAME).append ("-").append (DateHelper.getFormattedDateNow (sDateFormat));
+    aSB.append ('<').append (CAS2Info.NAME).append ('-').append (DateHelper.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
     int nRandom;
