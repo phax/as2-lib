@@ -234,6 +234,19 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     return aPartnership;
   }
 
+  @Nonnull
+  private File _getUniqueBackupFile (final String sFilename)
+  {
+    long nIndex = 0;
+    File aBackupFile;
+    do
+    {
+      aBackupFile = new File (sFilename + '.' + StringHelper.getLeadingZero (nIndex, 7));
+      nIndex++;
+    } while (aBackupFile.exists ());
+    return aBackupFile;
+  }
+
   /**
    * Store the current status of the partnerships to a file.
    *
@@ -246,13 +259,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
     if (!containsAttribute (ATTR_DISABLE_BACKUP))
     {
-      long nIndex = 0;
-      File aBackupFile;
-      do
-      {
-        aBackupFile = new File (sFilename + '.' + StringHelper.getLeadingZero (nIndex, 7));
-        nIndex++;
-      } while (aBackupFile.exists ());
+      final File aBackupFile = _getUniqueBackupFile (sFilename);
 
       s_aLogger.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
