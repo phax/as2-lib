@@ -34,6 +34,12 @@
 
 -->
 <changelog xmlns="http://www.helger.com/xsd/changelog/1.0" version="1.0" component="as2-lib">
+  <entry date="2015-12-19" category="tech" action="update">
+    <change>
+      <text locale="en">Updated to javax.mail 1.5.5</text>
+    </change>
+  </entry>
+  <release date="2015-12-01" version="2.2.5" />
   <release date="2015-11-11" version="2.2.4" />
   <entry date="2015-11-10" category="tech" action="update">
     <change>
