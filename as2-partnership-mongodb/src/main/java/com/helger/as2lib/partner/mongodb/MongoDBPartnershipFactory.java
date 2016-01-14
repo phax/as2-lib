@@ -36,6 +36,7 @@ import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.util.IStringMap;
+import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.state.EChange;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
@@ -46,6 +47,7 @@ import com.mongodb.client.result.DeleteResult;
  *
  * @author jochenberger
  */
+@CodingStyleguideUnaware
 public class MongoDBPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory {
   private static final long serialVersionUID = -2282798646250446937L;
   private static final String NAME_KEY = "name";
