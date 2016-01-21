@@ -14,6 +14,9 @@ st0da29wkem8vFGdg2057ktVtNJ2TCIgw2s5kBIdxAxONduR4Fd1qyjHEZRVKlxYf/5VeFwn8h449gDx
 jdk:
   - oraclejdk8
   
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
+  
 cache:
   directories:
   - $HOME/.m2
