@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
     </dependency>
 
     <dependency>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>de.flapdoodle.embed</groupId>
       <artifactId>de.flapdoodle.embed.mongo</artifactId>
-      <version>1.50.1</version>
+      <version>1.50.2</version>
       <scope>test</scope>
     </dependency>
         <!-- Mandatory dependencies for using Spock -->
