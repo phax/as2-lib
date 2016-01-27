@@ -76,7 +76,7 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons</artifactId>
-        <version>6.2.3</version>
+        <version>6.2.4</version>
       </dependency>
 
       <dependency>
