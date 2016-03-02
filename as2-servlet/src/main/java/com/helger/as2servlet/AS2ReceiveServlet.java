@@ -81,7 +81,9 @@ public class AS2ReceiveServlet extends HttpServlet
   {
     final String sConfigurationFilename = getServletConfig ().getInitParameter (SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME);
     if (StringHelper.hasNoText (sConfigurationFilename))
-      throw new ServletException ("Servlet Init-Parameter '" + SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME + "' is missing or empty!");
+      throw new ServletException ("Servlet Init-Parameter '" +
+                                  SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME +
+                                  "' is missing or empty!");
 
     try
     {
@@ -106,7 +108,8 @@ public class AS2ReceiveServlet extends HttpServlet
    */
   @Nonnull
   @OverrideOnDemand
-  protected AS2ServletSession createAS2ServletSession (@Nonnull final File aConfigurationFile) throws OpenAS2Exception, ServletException
+  protected AS2ServletSession createAS2ServletSession (@Nonnull final File aConfigurationFile) throws OpenAS2Exception,
+                                                                                               ServletException
   {
     return new AS2ServletSession (aConfigurationFile);
   }
@@ -134,7 +137,9 @@ public class AS2ReceiveServlet extends HttpServlet
       throw new ServletException ("Failed to init AS2 configuration", ex);
     }
 
-    s_aLogger.info ("Successfully initialized AS2 configuration from file '" + aConfigurationFile.getAbsolutePath () + "'");
+    s_aLogger.info ("Successfully initialized AS2 configuration from file '" +
+                    aConfigurationFile.getAbsolutePath () +
+                    "'");
   }
 
   /**
@@ -197,7 +202,8 @@ public class AS2ReceiveServlet extends HttpServlet
   }
 
   @Override
-  protected void doPost (@Nonnull final HttpServletRequest aHttpRequest, @Nonnull final HttpServletResponse aHttpResponse) throws ServletException, IOException
+  protected void doPost (@Nonnull final HttpServletRequest aHttpRequest,
+                         @Nonnull final HttpServletResponse aHttpResponse) throws ServletException, IOException
   {
     // Create empty message
     final AS2Message aMsg = new AS2Message ();
@@ -229,6 +235,9 @@ public class AS2ReceiveServlet extends HttpServlet
 
     // Read the S/MIME content
     final byte [] aMsgData = HTTPHelper.readHttpPayload (aHttpRequest.getInputStream (), aResponseHandler, aMsg);
+
+    // Dump on demand
+    HTTPHelper.dumpHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.getHeaders ()), aMsgData);
 
     // Call main handling method
     handeIncomingMessage (aHttpRequest, aHttpResponse, aMsgData, aMsg, aResponseHandler);

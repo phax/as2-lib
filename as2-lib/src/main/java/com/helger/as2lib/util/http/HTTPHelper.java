@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -57,6 +58,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -101,6 +103,17 @@ public final class HTTPHelper
 
   private HTTPHelper ()
   {}
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public static List <String> getAllHTTPHeaderLines (@Nonnull final InternetHeaders aHeaders)
+  {
+    final List <String> ret = new ArrayList <String> ();
+    final Enumeration <?> aEnum = aHeaders.getAllHeaderLines ();
+    while (aEnum.hasMoreElements ())
+      ret.add ((String) aEnum.nextElement ());
+    return ret;
+  }
 
   @Nonnull
   @Nonempty
@@ -381,8 +394,11 @@ public final class HTTPHelper
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
-  private static void _dumpHttpRequest (@Nonnull final InternetHeaders aHeaders, @Nonnull final byte [] aPayload)
+  public static void dumpHttpRequest (@Nonnull final List <String> aHeaderLines, @Nonnull final byte [] aPayload)
   {
+    if (s_aHttpDumpDirectory == null)
+      return;
+
     // Ensure a unique filename
     File aDestinationFile;
     int nIndex = 0;
@@ -397,12 +413,8 @@ public final class HTTPHelper
     final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile);
     try
     {
-      final Enumeration <?> aEnum = aHeaders.getAllHeaderLines ();
-      while (aEnum.hasMoreElements ())
-      {
-        final String sHeaderLine = (String) aEnum.nextElement ();
+      for (final String sHeaderLine : aHeaderLines)
         aOS.write ((sHeaderLine + EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-      }
 
       // empty line
       aOS.write (EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
@@ -462,8 +474,8 @@ public final class HTTPHelper
     // Read the message body - no Content-Transfer-Encoding handling
     final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
 
-    if (s_aHttpDumpDirectory != null)
-      _dumpHttpRequest (aHeaders, aPayload);
+    // Dump on demand
+    dumpHttpRequest (getAllHTTPHeaderLines (aHeaders), aPayload);
 
     return aPayload;
 
