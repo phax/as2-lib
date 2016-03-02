@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -99,15 +100,22 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   public String getAsString ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("MDN From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
-    aSB.append ("\r\nTo:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
-    aSB.append ("\r\nHeaders:")
+    aSB.append ("MDN From:")
+       .append (getPartnership ().getAllSenderIDs ().getAllAttributes ())
+       .append (HTTPHelper.EOL)
+       .append ("To:")
+       .append (getPartnership ().getAllReceiverIDs ().getAllAttributes ())
+       .append (HTTPHelper.EOL)
+       .append ("Headers:")
        .append (getHeadersDebugFormatted ())
-       .append ("\r\nAttributes:")
+       .append (HTTPHelper.EOL)
+       .append ("Attributes:")
        .append (getAllAttributes ().getAllAttributes ())
-       .append ("\r\nText:\r\n")
+       .append (HTTPHelper.EOL)
+       .append ("Text:")
+       .append (HTTPHelper.EOL)
        .append (getText ())
-       .append ("\r\n");
+       .append (HTTPHelper.EOL);
     return aSB.toString ();
   }
 

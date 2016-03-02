@@ -52,10 +52,12 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.charset.CCharset;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -103,10 +105,10 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     final Enumeration <?> en = m_aHeaders.getAllHeaderLines ();
     while (en.hasMoreElements ())
     {
-      aOOS.writeBytes ((String) en.nextElement () + "\r\n");
+      aOOS.write (((String) en.nextElement () + HTTPHelper.EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
     }
 
-    aOOS.writeBytes ("\r\n");
+    aOOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
 
     // write partnership info
     aOOS.writeObject (m_aPartnership);

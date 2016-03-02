@@ -78,6 +78,9 @@ public final class HTTPHelper
   /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
 
+  /* End of line MUST be \r and \n */
+  public static final String EOL = "\r\n";
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
   private static final File s_aHttpDumpDirectory;
 
@@ -398,14 +401,11 @@ public final class HTTPHelper
       while (aEnum.hasMoreElements ())
       {
         final String sHeaderLine = (String) aEnum.nextElement ();
-        aOS.write (sHeaderLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-        aOS.write ('\r');
-        aOS.write ('\n');
+        aOS.write ((sHeaderLine + EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
       }
 
       // empty line
-      aOS.write ('\r');
-      aOS.write ('\n');
+      aOS.write (EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
 
       // Add payload
       aOS.write (aPayload);
@@ -478,7 +478,7 @@ public final class HTTPHelper
     aData.write ((Integer.toString (nResponseCode) +
                   " " +
                   getHTTPResponseMessage (nResponseCode) +
-                  "\r\n").getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+                  EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
     aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
   }
 

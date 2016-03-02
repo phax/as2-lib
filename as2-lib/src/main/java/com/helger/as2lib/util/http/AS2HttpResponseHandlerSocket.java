@@ -77,27 +77,24 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
 
     final OutputStream aOS = createOutputStream ();
 
-    // End of line MUST be \r and \n
-    final String sEOL = "\r\n";
-
     // Send HTTP version and response code
     final String sHttpStatusLine = "HTTP/1.1 " +
                                    Integer.toString (nHttpResponseCode) +
                                    " " +
                                    HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
-                                   sEOL;
+                                   HTTPHelper.EOL;
     aOS.write (sHttpStatusLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
 
     // Add response headers
     final Enumeration <?> aHeaderLines = aHeaders.getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
-      final String sHeader = (String) aHeaderLines.nextElement () + sEOL;
+      final String sHeader = (String) aHeaderLines.nextElement () + HTTPHelper.EOL;
       aOS.write (sHeader.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
     }
 
     // Empty line as separator
-    aOS.write (sEOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+    aOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
 
     // Write body
     aData.writeTo (aOS);

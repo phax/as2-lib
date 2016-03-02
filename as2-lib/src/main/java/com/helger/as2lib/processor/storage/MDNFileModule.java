@@ -52,6 +52,7 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageMDNParameters;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
@@ -90,11 +91,14 @@ public class MDNFileModule extends AbstractStorageModule
   }
 
   @Override
-  protected String getFilename (final IMessage aMsg, final String sFileParam, final String sAction) throws InvalidParameterException
+  protected String getFilename (final IMessage aMsg,
+                                final String sFileParam,
+                                final String sAction) throws InvalidParameterException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
-                                                                           .add ("mdn", new MessageMDNParameters (aMdn));
+                                                                           .add ("mdn",
+                                                                                 new MessageMDNParameters (aMdn));
     return aCompParams.format (sFileParam);
   }
 
@@ -104,25 +108,25 @@ public class MDNFileModule extends AbstractStorageModule
     final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aSB.append ("Headers:\r\n");
+    aSB.append ("Headers:" + HTTPHelper.EOL);
 
     final Enumeration <?> aHeaderLines = aMdn.getHeaders ().getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
       final String sHeaderLine = (String) aHeaderLines.nextElement ();
-      aSB.append (sHeaderLine).append ("\r\n");
+      aSB.append (sHeaderLine).append (HTTPHelper.EOL);
     }
 
-    aSB.append ("\r\n");
+    aSB.append (HTTPHelper.EOL);
 
     // write attributes to the string buffer
-    aSB.append ("Attributes:\r\n");
+    aSB.append ("Attributes:" + HTTPHelper.EOL);
     for (final Map.Entry <String, String> aEntry : aMdn.getAllAttributes ())
     {
-      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append ("\r\n");
+      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (HTTPHelper.EOL);
     }
     // finally, write the MDN text
-    aSB.append ("Text:\r\n").append (aMdn.getText ());
+    aSB.append ("Text:").append (HTTPHelper.EOL).append (aMdn.getText ());
 
     // TODO which charset?
     return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes ());

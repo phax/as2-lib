@@ -65,6 +65,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
@@ -129,7 +130,7 @@ public final class AS2Helper
 
     // Create the text part
     final MimeBodyPart aTextPart = new MimeBodyPart ();
-    final String sText = aMdn.getText () + "\r\n";
+    final String sText = aMdn.getText () + HTTPHelper.EOL;
     aTextPart.setContent (sText, CMimeType.TEXT_PLAIN.getAsString ());
     aTextPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, CMimeType.TEXT_PLAIN.getAsString ());
     aReportParts.addBodyPart (aTextPart);
@@ -148,8 +149,8 @@ public final class AS2Helper
       final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
       final StringBuilder aReportData = new StringBuilder ();
       while (aReportEn.hasMoreElements ())
-        aReportData.append ((String) aReportEn.nextElement ()).append ("\r\n");
-      aReportData.append ("\r\n");
+        aReportData.append ((String) aReportEn.nextElement ()).append (HTTPHelper.EOL);
+      aReportData.append (HTTPHelper.EOL);
       aReportPart.setContent (aReportData.toString (), "message/disposition-notification");
     }
 

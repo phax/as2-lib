@@ -54,6 +54,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
@@ -110,7 +111,9 @@ public class MessageFileModule extends AbstractStorageModule
   }
 
   @Override
-  protected String getFilename (final IMessage aMsg, final String sFileParam, final String sAction) throws InvalidParameterException
+  protected String getFilename (final IMessage aMsg,
+                                final String sFileParam,
+                                final String sAction) throws InvalidParameterException
   {
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("msg", new MessageParameters (aMsg));
@@ -123,22 +126,22 @@ public class MessageFileModule extends AbstractStorageModule
     final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aSB.append ("Headers:\r\n");
+    aSB.append ("Headers:" + HTTPHelper.EOL);
 
     final Enumeration <?> aHeaderLines = aMsg.getHeaders ().getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
       final String sHeaderLine = (String) aHeaderLines.nextElement ();
-      aSB.append (sHeaderLine).append ("\r\n");
+      aSB.append (sHeaderLine).append (HTTPHelper.EOL);
     }
 
-    aSB.append ("\r\n");
+    aSB.append (HTTPHelper.EOL);
 
     // write attributes to the string buffer
-    aSB.append ("Attributes:\r\n");
+    aSB.append ("Attributes:" + HTTPHelper.EOL);
     for (final Map.Entry <String, String> attrEntry : aMsg.getAllAttributes ())
     {
-      aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append ("\r\n");
+      aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (HTTPHelper.EOL);
     }
 
     // TODO which charset?
