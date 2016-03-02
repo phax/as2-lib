@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.charset.CCharset;
@@ -125,12 +126,17 @@ public final class MimeBodyPartFuncTest
   @Test
   public void testReadContentTransferEncodingBase64 () throws MessagingException, IOException
   {
-    final String sHTTP = "Content-Type: text/plain\r\n" +
-                         "Content-Transfer-Encoding: base64\r\n" +
-                         "x-custom: junit\r\n" +
-                         "Content-Length: 44\r\n" +
-                         "\r\n" +
-                         "VGVzdCBtZXNzYWdlCkxpbmUgMgoKTGluZSA0CkVPRg==\r\n";
+    final String sHTTP = "Content-Type: text/plain" +
+                         HTTPHelper.EOL +
+                         "Content-Transfer-Encoding: base64" +
+                         HTTPHelper.EOL +
+                         "x-custom: junit" +
+                         HTTPHelper.EOL +
+                         "Content-Length: 44" +
+                         HTTPHelper.EOL +
+                         HTTPHelper.EOL +
+                         "VGVzdCBtZXNzYWdlCkxpbmUgMgoKTGluZSA0CkVPRg==" +
+                         HTTPHelper.EOL;
     InputStream aIS = new StringInputStream (sHTTP, CCharset.CHARSET_ISO_8859_1_OBJ);
 
     // Parse all HTTP headers from stream
