@@ -22,6 +22,8 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
+  * 2016-03-02 Version 2.2.6
+    * Added support for dumping HTTP requests when using `as2-servlet` 
   * 2015-12-01 Version 2.2.5
     * Added a validity check so that expired certificates can no longer be used to sign, verify and encrypt messages. Decrypt is still possible.
     * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings. (issue #17)
@@ -60,7 +62,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.2.5</version>
+  <version>2.2.6</version>
 </dependency>
 ```
 
@@ -69,7 +71,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>2.2.5</version>
+  <version>2.2.6</version>
 </dependency>
 ```
 
@@ -78,7 +80,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>2.2.5</version>
+  <version>2.2.6</version>
 </dependency>
 ```
 
