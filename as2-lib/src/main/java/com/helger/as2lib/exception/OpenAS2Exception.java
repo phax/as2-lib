@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.lang.ClassHelper;
 
 /**
  * Base class for all AS2 related exceptions used in this project.
@@ -108,7 +109,9 @@ public class OpenAS2Exception extends Exception
    */
   protected void log (final boolean bTerminated)
   {
-    s_aLogger.info ("OpenAS2Exception " +
+    s_aLogger.info ("OpenAS2 " +
+                    ClassHelper.getClassLocalName (getClass ()) +
+                    " " +
                     (bTerminated ? "terminated" : "caught") +
                     ": " +
                     getMessage () +
