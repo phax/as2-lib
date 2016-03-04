@@ -32,58 +32,20 @@
  */
 package com.helger.as2lib;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import static org.junit.Assert.assertTrue;
 
-import javax.annotation.concurrent.Immutable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.helger.commons.io.resource.ClassPathResource;
+import org.junit.Test;
 
 /**
- * Global information constants.
+ * Test class for class {@link CAS2Info}.
  *
  * @author Philip Helger
  */
-@Immutable
-public final class CAS2Info
+public final class CAS2InfoTest
 {
-  /** The name of this AS2 client. May not contain blanks. */
-  public static final String NAME = "ph-OpenAS2";
-
-  /** The version of this AS2 client. May not contain blanks. */
-  public static final String VERSION;
-
-  private static final Logger s_aLogger = LoggerFactory.getLogger (CAS2Info.class);
-
-  static
+  @Test
+  public void testBasic () throws Exception
   {
-    String sProjectVersion = "undefined";
-    try
-    {
-      final Properties p = new Properties ();
-      final InputStream aIS = ClassPathResource.getInputStream ("as2-lib-version.properties");
-      if (aIS != null)
-      {
-        p.load (aIS);
-        sProjectVersion = p.getProperty ("version");
-      }
-    }
-    catch (final IOException ex)
-    {
-      // Project version stays "undefined"
-    }
-    if (sProjectVersion == null)
-      s_aLogger.warn ("Failed to load version number");
-    VERSION = sProjectVersion;
+    assertTrue (!CAS2Info.VERSION.equals ("undefined"));
   }
-
-  /** Combination of {@link #NAME} and {@link #VERSION} separated by a blank. */
-  public static final String NAME_VERSION = NAME + " " + VERSION;
-
-  private CAS2Info ()
-  {}
 }
