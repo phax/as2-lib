@@ -177,6 +177,10 @@ public interface ICryptoHelper
    *        <code>true</code> if the passed certificate should be part of the
    *        signed content, <code>false</code> if the certificate should not be
    *        put in the content. E.g. for PEPPOL this must be <code>true</code>.
+   * @param bUseOldRFC3851MicAlgs
+   *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
+   *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
+   *        algorithm names (e.g. <code>sha-1</code>).
    * @return The signed MIME body part. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -186,7 +190,8 @@ public interface ICryptoHelper
                      @Nonnull X509Certificate aCert,
                      @Nonnull PrivateKey aKey,
                      @Nonnull ECryptoAlgorithmSign eAlgorithm,
-                     boolean bIncludeCertificateInSignedContent) throws Exception;
+                     boolean bIncludeCertificateInSignedContent,
+                     boolean bUseOldRFC3851MicAlgs) throws Exception;
 
   /**
    * Verify the specified Mime Body part against the part certificate

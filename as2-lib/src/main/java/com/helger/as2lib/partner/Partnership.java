@@ -762,7 +762,8 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setIncludeCertificateInSignedContent (@Nonnull final ETriState eValue)
   {
-    return setAttribute (CPartnershipIDs.PA_SIGN_INCLUDE_CERT_IN_BODY_PART, eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
+    return setAttribute (CPartnershipIDs.PA_SIGN_INCLUDE_CERT_IN_BODY_PART,
+                         eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
   }
 
   @Nonnull
@@ -775,7 +776,8 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setVerifyUseCertificateInBodyPart (@Nonnull final ETriState eValue)
   {
-    return setAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART, eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
+    return setAttribute (CPartnershipIDs.PA_VERIFY_USE_CERT_IN_BODY_PART,
+                         eValue.isUndefined () ? null : Boolean.toString (eValue.getAsBooleanValue ()));
   }
 
   public boolean isDisableDecompress ()
@@ -787,6 +789,36 @@ public class Partnership implements Serializable
   public EChange setDisableDecompress (final boolean bValue)
   {
     return setAttribute (CPartnershipIDs.PA_DISABLE_DECOMPRESS, Boolean.toString (bValue));
+  }
+
+  /**
+   * @return <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g.
+   *         <code>sha1</code>) should be used, <code>false</code> if the new
+   *         RFC 5751 MIC algorithm names (e.g. <code>sha-1</code>) should be
+   *         used. Default is <code>false</code>.
+   * @since 2.2.7
+   */
+  public boolean isRFC3851MICAlgs ()
+  {
+    return m_aAttributes.getAttributeAsBoolean (CPartnershipIDs.PA_RFC3851_MICALGS, false);
+  }
+
+  /**
+   * Enable or disable the usage of the old RFC 3851 MIC algorithm names. By
+   * default this is <code>false</code>.
+   *
+   * @param bValue
+   *        <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g.
+   *        <code>sha1</code>) should be used, <code>false</code> if the new RFC
+   *        5751 MIC algorithm names (e.g. <code>sha-1</code>) should be used.
+   *        Default is <code>false</code>.
+   * @return {@link EChange}.
+   * @since 2.2.7
+   */
+  @Nonnull
+  public EChange setRFC3851MICAlgs (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_RFC3851_MICALGS, Boolean.toString (bValue));
   }
 
   /**
@@ -825,7 +857,8 @@ public class Partnership implements Serializable
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) && compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
+    return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
+           compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
   }
 
   /**
@@ -879,7 +912,11 @@ public class Partnership implements Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("name", m_sName).append ("senderIDs", m_aSenderIDs).append ("receiverIDs", m_aReceiverIDs).append ("attributes", m_aAttributes).toString ();
+    return new ToStringGenerator (this).append ("name", m_sName)
+                                       .append ("senderIDs", m_aSenderIDs)
+                                       .append ("receiverIDs", m_aReceiverIDs)
+                                       .append ("attributes", m_aAttributes)
+                                       .toString ();
   }
 
   @Nonnull

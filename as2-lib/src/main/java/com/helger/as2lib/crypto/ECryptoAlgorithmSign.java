@@ -47,28 +47,50 @@ import com.helger.commons.lang.EnumHelper;
 /**
  * This enum contains all signing supported crypto algorithms. The algorithms
  * contained in here may not be used for encryption of anything. See
- * {@link ECryptoAlgorithmCrypt} for encryption algorithms.
+ * {@link ECryptoAlgorithmCrypt} for encryption algorithms.<br>
+ * Note: Mendelson uses the RFC 5751 identifiers.
  *
  * @author Philip Helger
  */
 public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
+  /** Same for RFC 3851 and RFC 5751 */
   DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
-  /*
+  /**
    * Old version as of RFC 3851.
    */
   @Deprecated @DevelopersNote ("Use DIGEST_SHA_1 instead") DIGEST_SHA1("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
-  @Deprecated @DevelopersNote ("Use DIGEST_SHA_224 instead") DIGEST_SHA224("sha224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA"),
+  /**
+   * Old version as of RFC 3851.
+   */
   @Deprecated @DevelopersNote ("Use DIGEST_SHA_256 instead") DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  /**
+   * Old version as of RFC 3851.
+   */
   @Deprecated @DevelopersNote ("Use DIGEST_SHA_384 instead") DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  /**
+   * Old version as of RFC 3851.
+   */
   @Deprecated @DevelopersNote ("Use DIGEST_SHA_512 instead") DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
-  /*
-   * New version as of RFC 5751. Identifiers as used in Mendelson.
+  /**
+   * New version as of RFC 5751.
    */
   DIGEST_SHA_1 ("sha-1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+  /**
+   * New version as of RFC 5751.
+   */
   DIGEST_SHA_224 ("sha-224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA"),
+  /**
+   * New version as of RFC 5751.
+   */
   DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  /**
+   * New version as of RFC 5751.
+   */
   DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  /**
+   * New version as of RFC 5751.
+   */
   DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA");
 
   private final String m_sID;

@@ -111,6 +111,10 @@ public final class AS2Helper
    * @param eMICAlg
    *        The MIC algorithm to be used. Must be present if bSignMDN is
    *        <code>true</code>.
+   * @param bUseOldRFC3851MicAlgs
+   *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
+   *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
+   *        algorithm names (e.g. <code>sha-1</code>).
    * @throws Exception
    *         In case something internally goes wrong
    */
@@ -118,7 +122,8 @@ public final class AS2Helper
                                     @Nonnull final IMessageMDN aMdn,
                                     final boolean bSignMDN,
                                     final boolean bIncludeCertificateInSignedContent,
-                                    @Nullable final ECryptoAlgorithmSign eMICAlg) throws Exception
+                                    @Nullable final ECryptoAlgorithmSign eMICAlg,
+                                    final boolean bUseOldRFC3851MicAlgs) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMdn, "MDN");
@@ -175,7 +180,8 @@ public final class AS2Helper
                                                                     aSenderCert,
                                                                     aSenderKey,
                                                                     eMICAlg,
-                                                                    bIncludeCertificateInSignedContent);
+                                                                    bIncludeCertificateInSignedContent,
+                                                                    bUseOldRFC3851MicAlgs);
         aMdn.setData (aSignedReport);
       }
       catch (final CertificateNotFoundException ex)
@@ -322,7 +328,14 @@ public final class AS2Helper
       }
     }
 
-    createMDNData (aSession, aMDN, bSignMDN, bIncludeCertificateInSignedContent, aDispositionOptions.getFirstMICAlg ());
+    final boolean bUseOldRFC3851MicAlgs = aMsg.getPartnership ().isRFC3851MICAlgs ();
+
+    createMDNData (aSession,
+                   aMDN,
+                   bSignMDN,
+                   bIncludeCertificateInSignedContent,
+                   aDispositionOptions.getFirstMICAlg (),
+                   bUseOldRFC3851MicAlgs);
 
     aMDN.updateMessageID ();
 

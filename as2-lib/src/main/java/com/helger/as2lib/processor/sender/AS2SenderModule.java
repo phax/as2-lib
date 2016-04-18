@@ -346,9 +346,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         bIncludeCertificateInSignedContent = getSession ().isCryptoSignIncludeCertificateInBodyPart ();
       }
 
+      // Use old MIC algorithms?
+      final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
+
       // Main signing
       aDataBP = AS2Helper.getCryptoHelper ()
-                         .sign (aDataBP, aSenderCert, aSenderKey, eSignAlgorithm, bIncludeCertificateInSignedContent);
+                         .sign (aDataBP,
+                                aSenderCert,
+                                aSenderKey,
+                                eSignAlgorithm,
+                                bIncludeCertificateInSignedContent,
+                                bUseRFC3851MICAlg);
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Signed data with " +

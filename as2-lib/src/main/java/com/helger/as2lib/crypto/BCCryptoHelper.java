@@ -413,10 +413,11 @@ public final class BCCryptoHelper implements ICryptoHelper
                             @Nonnull final X509Certificate aX509Cert,
                             @Nonnull final PrivateKey aPrivateKey,
                             @Nonnull final ECryptoAlgorithmSign eAlgorithm,
-                            final boolean bIncludeCertificateInSignedContent) throws GeneralSecurityException,
-                                                                              SMIMEException,
-                                                                              MessagingException,
-                                                                              OperatorCreationException
+                            final boolean bIncludeCertificateInSignedContent,
+                            final boolean bUseOldRFC3851MicAlgs) throws GeneralSecurityException,
+                                                                 SMIMEException,
+                                                                 MessagingException,
+                                                                 OperatorCreationException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -454,7 +455,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     // aSignedAttrs.add (new SMIMEEncryptionKeyPreferenceAttribute (issAndSer));
 
     // create the generator for creating an smime/signed message
-    final SMIMESignedGenerator aSGen = new SMIMESignedGenerator ();
+    final SMIMESignedGenerator aSGen = new SMIMESignedGenerator (bUseOldRFC3851MicAlgs ? SMIMESignedGenerator.RFC3851_MICALGS
+                                                                                       : SMIMESignedGenerator.RFC5751_MICALGS);
+
     // aSGen.addSigner (aPrivKey, aX509Cert, aSignDigest.getId ());
 
     // add a signer to the generator - this specifies we are using SHA1 and

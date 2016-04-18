@@ -190,6 +190,16 @@ public final class CPartnershipIDs
    */
   public static final String PA_DISABLE_DECOMPRESS = "disable_decompress";
 
+  /**
+   * Special attribute indicating that the "old" RFC 3851 MIC algorithm names
+   * should be used (e.g. <code>sha1</code>) instead of the default RFC 5751 MIC
+   * algorithm names (e.g. <code>sha-1</code> - note the dash between "sha" and
+   * "1").
+   *
+   * @since 2.2.7
+   */
+  public static final String PA_RFC3851_MICALGS = "rfc3851_micalgs";
+
   private CPartnershipIDs ()
   {}
 }
