@@ -143,9 +143,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             if (s_aLogger.isDebugEnabled ())
               s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
 
-          final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
+          final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg,
+                                                                             ECertificatePartnershipType.RECEIVER);
           final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
-          final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (), aReceiverCert, aReceiverKey, bForceDecrypt);
+          final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
+                                                                     aReceiverCert,
+                                                                     aReceiverKey,
+                                                                     bForceDecrypt);
           aMsg.setData (aDecryptedData);
           // Remember that message was encrypted
           aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
@@ -155,7 +159,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     catch (final Exception ex)
     {
       s_aLogger.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
-      throw new DispositionException (DispositionType.createError ("decryption-failed"), AbstractActiveNetModule.DISP_DECRYPTION_ERROR, ex);
+      throw new DispositionException (DispositionType.createError ("decryption-failed"),
+                                      AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
+                                      ex);
     }
   }
 
@@ -182,7 +188,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             if (s_aLogger.isDebugEnabled ())
               s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
 
-          final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg, ECertificatePartnershipType.SENDER);
+          final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
+                                                                                 ECertificatePartnershipType.SENDER);
           boolean bUseCertificateInBodyPart;
           final ETriState eUseCertificateInBodyPart = aMsg.getPartnership ().getVerifyUseCertificateInBodyPart ();
           if (eUseCertificateInBodyPart.isDefined ())
@@ -196,7 +203,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             bUseCertificateInBodyPart = m_aReceiverModule.getSession ().isCryptoVerifyUseCertificateInBodyPart ();
           }
 
-          final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (), aSenderCert, bUseCertificateInBodyPart, bForceVerify);
+          final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
+                                                                   aSenderCert,
+                                                                   bUseCertificateInBodyPart,
+                                                                   bForceVerify);
           aMsg.setData (aVerifiedData);
           // Remember that message was signed and verified
           aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
@@ -268,7 +278,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
 
-          s_aLogger.info ("Setup to send asynch MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
+          s_aLogger.info ("Setup to send asynch MDN [" +
+                          aDisposition.getAsString () +
+                          "] " +
+                          sClientInfo +
+                          aMsg.getLoggingText ());
 
           // trigger explicit sending
           aSession.getMessageProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
@@ -276,7 +290,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         else
         {
           // otherwise, send sync MDN back on same connection
-          s_aLogger.info ("Sending back sync MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
+          s_aLogger.info ("Sending back sync MDN [" +
+                          aDisposition.getAsString () +
+                          "] " +
+                          sClientInfo +
+                          aMsg.getLoggingText ());
 
           // Get data and therefore content length for sync MDN
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
@@ -445,7 +463,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED + "\n" + StackTraceHelper.getStackAsString (ex),
+                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED +
+                                                                                                     "\n" +
+                                                                                                     StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 
@@ -477,7 +497,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED + "\n" + StackTraceHelper.getStackAsString (ex),
+                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED +
+                                                                                                     "\n" +
+                                                                                                     StackTraceHelper.getStackAsString (ex),
                                         ex);
       }
 
@@ -486,7 +508,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (aMsg.isRequestingMDN ())
         {
           // Transmit a success MDN if requested
-          sendSyncMDN (sClientInfo, aResponseHandler, aMsg, DispositionType.createSuccess (), AbstractActiveNetModule.DISP_SUCCESS);
+          sendSyncMDN (sClientInfo,
+                       aResponseHandler,
+                       aMsg,
+                       DispositionType.createSuccess (),
+                       AbstractActiveNetModule.DISP_SUCCESS);
         }
         else
         {
@@ -502,7 +528,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final DispositionException ex)
     {
-      sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
+      sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getTextEscaped ());
       m_aReceiverModule.handleError (aMsg, ex);
     }
     catch (final OpenAS2Exception ex)
@@ -538,7 +564,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     if (aMsgData != null)
     {
-      s_aLogger.info ("received " + IOHelper.getTransferRate (aMsgData.length, aSW) + " from " + sClientInfo + aMsg.getLoggingText ());
+      s_aLogger.info ("received " +
+                      IOHelper.getTransferRate (aMsgData.length, aSW) +
+                      " from " +
+                      sClientInfo +
+                      aMsg.getLoggingText ());
 
       handleIncomingMessage (sClientInfo, aMsgData, aMsg, aResponseHandler);
     }

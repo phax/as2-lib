@@ -76,6 +76,13 @@ public class DispositionException extends OpenAS2Exception
     return m_sText;
   }
 
+  @Nullable
+  public String getTextEscaped ()
+  {
+    // Based on https://github.com/phax/as2-lib/pull/19
+    return StringHelper.replaceAll (m_sText, "$", "$$");
+  }
+
   public void setText (@Nullable final String sText)
   {
     m_sText = sText;
