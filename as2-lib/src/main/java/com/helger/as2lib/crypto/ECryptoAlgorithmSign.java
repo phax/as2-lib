@@ -53,17 +53,20 @@ import com.helger.commons.lang.EnumHelper;
  */
 public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
- DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
- DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
- @Deprecated @DevelopersNote ("Use DIGEST_SHA_256 instead") DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
- @Deprecated @DevelopersNote ("Use DIGEST_SHA_384 instead") DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
- @Deprecated @DevelopersNote ("Use DIGEST_SHA_512 instead") DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
- /*
-  * Identifiers as used in Mendelson.
-  */
- DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
- DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
- DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA");
+  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
+  /** Old version as of RFC 3851 */
+  DIGEST_SHA1 ("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+  /** New version as of RFC 5751 */
+  DIGEST_SHA1_NEW ("sha-1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+  @Deprecated @DevelopersNote ("Use DIGEST_SHA_256 instead") DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  @Deprecated @DevelopersNote ("Use DIGEST_SHA_384 instead") DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  @Deprecated @DevelopersNote ("Use DIGEST_SHA_512 instead") DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+  /*
+   * Identifiers as used in Mendelson.
+   */
+  DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA");
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
