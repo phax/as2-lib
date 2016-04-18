@@ -445,7 +445,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED + "\n" + StackTraceHelper.getStackAsString (ex),
+                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED + "\n" + StackTraceHelper.getStackAsString (ex).replace ("$", "$$"),
                                         ex);
       }
 
@@ -461,7 +461,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_STORAGE_FAILED + "\n" + ex.getMessage (),
+                                        AbstractActiveNetModule.DISP_STORAGE_FAILED + "\n" + ex.getMessage ().replace ("$", "$$"),
                                         ex);
       }
 
@@ -477,7 +477,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED + "\n" + StackTraceHelper.getStackAsString (ex),
+                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED + "\n" + StackTraceHelper.getStackAsString (ex).replace ("$", "$$"),
                                         ex);
       }
 
