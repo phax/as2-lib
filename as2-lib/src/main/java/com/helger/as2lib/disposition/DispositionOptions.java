@@ -278,7 +278,7 @@ public class DispositionOptions implements IHasStringRepresentation
 
   /**
    * @return The first MIC algorithm contained in the list. May be
-   *         <code>null</code> of no MIC algorithm is set.
+   *         <code>null</code> if no MIC algorithm is set.
    */
   @Nullable
   public ECryptoAlgorithmSign getFirstMICAlg ()
