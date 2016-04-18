@@ -36,11 +36,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Exception thrown in case a message disposition contains an error or a
  * warning.
- * 
+ *
  * @author Philip Helger
  */
 public class DispositionException extends OpenAS2Exception
@@ -59,7 +60,8 @@ public class DispositionException extends OpenAS2Exception
   {
     super (aDisposition.getAsString (), aCause);
     m_aDisposition = aDisposition;
-    m_sText = sText;
+    // Based on https://github.com/phax/as2-lib/pull/19
+    m_sText = StringHelper.replaceAll (sText, "$", "$$");
   }
 
   @Nonnull
