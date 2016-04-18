@@ -45,7 +45,7 @@ public class AS2ServletPartnershipFactory extends SelfFillingXMLPartnershipFacto
     // The algorithm itself does not really matter as for sending the algorithm
     // is specified anyway and for the MIC it is specified explicitly
     if (aPartnership.getSigningAlgorithm () == null)
-      aPartnership.setSigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA1);
+      aPartnership.setSigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1);
   }
 
   @Override

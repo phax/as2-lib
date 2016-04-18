@@ -63,7 +63,7 @@ public class AS2ClientSettings
   public static final String DEFAULT_MDN_OPTIONS = new DispositionOptions ().setProtocolImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
                                                                             .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                                             .setMICAlgImportance (DispositionOptions.IMPORTANCE_OPTIONAL)
-                                                                            .setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA1)
+                                                                            .setMICAlg (ECryptoAlgorithmSign.DIGEST_SHA_1)
                                                                             .getAsString ();
 
   /**
