@@ -530,7 +530,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("BCCryptoHelper.verify; X509 subject=" +
-                       aX509Cert.getSubjectX500Principal ().getName () +
+                       (aX509Cert == null ? "null" : aX509Cert.getSubjectX500Principal ().getName ()) +
                        "; useCertificateInBodyPart=" +
                        bUseCertificateInBodyPart +
                        "; forceVerify=" +
