@@ -103,6 +103,7 @@ public class MessageParameters extends AbstractParameterParser
   }
 
   @Override
+  @Nullable
   public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey);

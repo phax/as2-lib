@@ -67,6 +67,7 @@ public class ExceptionParameters extends AbstractParameterParser
   }
 
   @Override
+  @Nonnull
   public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     if (sKey == null)

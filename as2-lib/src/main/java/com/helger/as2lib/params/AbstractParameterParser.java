@@ -90,7 +90,9 @@ public abstract class AbstractParameterParser
    * @throws OpenAS2Exception
    *         In case the string is incorrect
    */
-  public void setParameters (@Nullable final String sFormat, @Nullable final String sDelimiters, @Nonnull final String sValue) throws OpenAS2Exception
+  public void setParameters (@Nullable final String sFormat,
+                             @Nullable final String sDelimiters,
+                             @Nonnull final String sValue) throws OpenAS2Exception
   {
     final List <String> aKeys = StringHelper.getExploded (',', sFormat);
 
@@ -129,13 +131,16 @@ public abstract class AbstractParameterParser
       nNext = sFormat.indexOf ('$', nPrev);
       if (nNext == -1)
       {
+        // Append the rest - we're done
         aSB.append (sFormat.substring (nPrev, sFormat.length ()));
         break;
       }
 
-      // Save text before $xxx$ sequence, if there is any
       if (nNext > nPrev)
+      {
+        // Save text before $xxx$ sequence, if there is any
         aSB.append (sFormat.substring (nPrev, nNext));
+      }
 
       // Find end of $xxx$ sequence
       nPrev = nNext + 1;
@@ -147,7 +152,10 @@ public abstract class AbstractParameterParser
       if (nNext == nPrev)
         aSB.append ('$');
       else
-        aSB.append (getParameter (sFormat.substring (nPrev, nNext)));
+      {
+        final String sParameterName = sFormat.substring (nPrev, nNext);
+        aSB.append (getParameter (sParameterName));
+      }
     }
 
     if (s_aLogger.isTraceEnabled ())

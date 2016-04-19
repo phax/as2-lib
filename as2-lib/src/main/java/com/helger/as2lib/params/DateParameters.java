@@ -39,12 +39,14 @@ import com.helger.as2lib.util.DateHelper;
 public class DateParameters extends AbstractParameterParser
 {
   @Override
+  @Deprecated
   public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
     throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
 
   @Override
+  @Nonnull
   public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     if (sKey == null)

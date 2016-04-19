@@ -54,13 +54,14 @@ public class RandomParameters extends AbstractParameterParser
   }
 
   @Override
+  @Deprecated
   public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
   {
     throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
 
   @Override
-  @Nullable
+  @Nonnull
   public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
   {
     if (sKey == null)

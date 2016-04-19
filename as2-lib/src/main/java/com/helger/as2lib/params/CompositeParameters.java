@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.lang.ClassHelper;
 
 public class CompositeParameters extends AbstractParameterParser
@@ -57,7 +58,7 @@ public class CompositeParameters extends AbstractParameterParser
   }
 
   public CompositeParameters (final boolean bIgnoreMissingParsers,
-                              final Map <String, ? extends AbstractParameterParser> aParameterParsers)
+                              @Nonnull final Map <String, ? extends AbstractParameterParser> aParameterParsers)
   {
     this (bIgnoreMissingParsers);
     getParameterParsers ().putAll (aParameterParsers);
@@ -151,6 +152,7 @@ public class CompositeParameters extends AbstractParameterParser
   }
 
   @Nonnull
+  @ReturnsMutableObject ("by design")
   protected final Map <String, AbstractParameterParser> getParameterParsers ()
   {
     if (m_aParameterParsers == null)

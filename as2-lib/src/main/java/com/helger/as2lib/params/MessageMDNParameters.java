@@ -35,6 +35,7 @@ package com.helger.as2lib.params;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.commons.ValueEnforcer;
@@ -90,6 +91,7 @@ public class MessageMDNParameters extends AbstractParameterParser
   }
 
   @Override
+  @Nullable
   public String getParameter (final String sKey) throws InvalidParameterException
   {
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
@@ -117,6 +119,7 @@ public class MessageMDNParameters extends AbstractParameterParser
       return m_aTarget.getAttribute (sAreaValue);
     if (sArea.equals (KEY_HEADERS))
       return m_aTarget.getHeader (sAreaValue);
+
     throw new InvalidParameterException ("Invalid area in key", this, "key", sKey);
   }
 }
