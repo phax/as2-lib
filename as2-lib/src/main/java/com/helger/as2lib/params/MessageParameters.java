@@ -129,4 +129,11 @@ public class MessageParameters extends AbstractParameterParser
 
     throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
   }
+
+  @Nullable
+  public static String getEscapedString (@Nullable final String sUnescaped)
+  {
+    // Based on https://github.com/phax/as2-lib/pull/19
+    return StringHelper.replaceAll (sUnescaped, "$", "$$");
+  }
 }

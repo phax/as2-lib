@@ -39,6 +39,7 @@ import java.security.cert.X509Certificate;
 
 import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
@@ -60,6 +61,7 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
@@ -465,7 +467,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
                                                                                                      "\n" +
-                                                                                                     StackTraceHelper.getStackAsString (ex),
+                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex)),
                                         ex);
       }
 
@@ -481,7 +483,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final OpenAS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_STORAGE_FAILED + "\n" + ex.getMessage (),
+                                        AbstractActiveNetModule.DISP_STORAGE_FAILED +
+                                                                                                     "\n" +
+                                                                                                     MessageParameters.getEscapedString (ex.getMessage ()),
                                         ex);
       }
 
@@ -499,7 +503,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
                                                                                                      "\n" +
-                                                                                                     StackTraceHelper.getStackAsString (ex),
+                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex)),
                                         ex);
       }
 
@@ -528,7 +532,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final DispositionException ex)
     {
-      sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getTextEscaped ());
+      sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
       m_aReceiverModule.handleError (aMsg, ex);
     }
     catch (final OpenAS2Exception ex)
@@ -537,7 +541,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  public void handle (final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
+  public void handle (@Nullable final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
     s_aLogger.info ("Incoming connection " + sClientInfo);
