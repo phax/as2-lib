@@ -33,6 +33,7 @@
 package com.helger.as2lib.params;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -72,8 +73,50 @@ public final class CompositeParametersTest
     assertEquals ("sender.as2_id, receiver.as2_id, headers.message-id",
                   aParams.format ("sender.as2_id, receiver.as2_id, headers.message-id"));
 
-    // No placeholders
+    // With placeholders
     assertEquals ("s1, r1, 12345",
                   aParams.format ("$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"));
+
+    // Unknown placeholders
+    try
+    {
+      aParams.format ("$dummy$");
+      fail ();
+    }
+    catch (final InvalidParameterException ex)
+    {}
+
+    // Escaping test
+    assertEquals ("$s1", aParams.format ("$$$msg.sender.as2_id$"));
+    assertEquals ("$$s1", aParams.format ("$$$$$msg.sender.as2_id$"));
+    assertEquals ("s1$", aParams.format ("$msg.sender.as2_id$$$"));
+    assertEquals ("s1$$", aParams.format ("$msg.sender.as2_id$$$$$"));
+    assertEquals ("s1$r1", aParams.format ("$msg.sender.as2_id$$$$msg.receiver.as2_id$"));
+    assertEquals ("s1$$r1", aParams.format ("$msg.sender.as2_id$$$$$$msg.receiver.as2_id$"));
+    assertEquals ("$$s1$$r1$$", aParams.format ("$$$$$msg.sender.as2_id$$$$$$msg.receiver.as2_id$$$$$"));
+  }
+
+  @Test
+  public void testIgnore () throws InvalidParameterException
+  {
+    final AS2Message aMsg = new AS2Message ();
+    aMsg.addHeader ("message-id", "12345");
+    aMsg.getPartnership ().setSenderAS2ID ("s1");
+    aMsg.getPartnership ().setReceiverAS2ID ("r1");
+    final CompositeParameters aParams = new CompositeParameters (true).add ("msg", new MessageParameters (aMsg));
+
+    // No placeholders
+    assertEquals ("sender.as2_id, receiver.as2_id, headers.message-id",
+                  aParams.format ("sender.as2_id, receiver.as2_id, headers.message-id"));
+
+    // With placeholders
+    assertEquals ("s1, r1, 12345",
+                  aParams.format ("$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"));
+
+    // Unknown placeholders
+    assertEquals ("", aParams.format ("$dummy$"));
+    assertEquals ("any", aParams.format ("any$dummy$"));
+    assertEquals ("any", aParams.format ("$dummy$any"));
+    assertEquals ("foobar", aParams.format ("foo$dummy$bar"));
   }
 }
