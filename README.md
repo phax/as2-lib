@@ -22,6 +22,9 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
+  * 2016-xx-yy Version 2.2.7
+    * Added per partnership attribute `rfc3851_micalgs` to determine to use RFC 3851 MIC algorithm names instead of the default RFC 5751 MIC algorithm names (issue #18)
+    * Fixed problem with special character escaping in MDN context (issue #19)
   * 2016-03-02 Version 2.2.6
     * Added support for dumping HTTP requests when using `as2-servlet` 
   * 2015-12-01 Version 2.2.5
