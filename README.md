@@ -65,7 +65,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.2.6</version>
+  <version>2.2.7</version>
 </dependency>
 ```
 
@@ -74,7 +74,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>2.2.6</version>
+  <version>2.2.7</version>
 </dependency>
 ```
 
@@ -83,7 +83,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>2.2.6</version>
+  <version>2.2.7</version>
 </dependency>
 ```
 
