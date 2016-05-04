@@ -41,6 +41,7 @@ import java.security.SecureRandom;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -51,6 +52,7 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.DoNothingTrustManager;
 import com.helger.as2lib.util.http.HostnameVerifierAlwaysTrue;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.random.VerySecureRandom;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
@@ -59,6 +61,45 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
   /** Read timeout in milliseconds */
   public static final String ATTR_READ_TIMEOUT = "readtimeout";
+
+  /**
+   * Create the {@link SSLContext} to be used for https connections. By default
+   * the SSL context will trust all hosts and present no keys. Override this
+   * method in a subclass to customize this handling.
+   *
+   * @return The created {@link SSLContext}. May not be <code>null</code>.
+   * @throws GeneralSecurityException
+   *         If something internally goes wrong.
+   */
+  @Nonnull
+  @OverrideOnDemand
+  protected SSLContext createSSLContext () throws GeneralSecurityException
+  {
+    // Trust all server certificates
+    final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
+    SecureRandom aSecureRandom = null;
+    if (AS2GlobalSettings.isUseSecureRandom ())
+      aSecureRandom = VerySecureRandom.getInstance ();
+    // else aSecureRandom stays null what is also okay
+
+    aSSLCtx.init (null, new TrustManager [] { new DoNothingTrustManager () }, aSecureRandom);
+    return aSSLCtx;
+  }
+
+  /**
+   * Get the hostname verifier to be used. By default an instance of
+   * {@link HostnameVerifierAlwaysTrue} is returned. Override this method to
+   * change this default behavior.
+   *
+   * @return The hostname verifier to be used. If the returned value is
+   *         <code>null</code> it will not be applied to the https connection.
+   */
+  @Nullable
+  @OverrideOnDemand
+  protected HostnameVerifier createHostnameVerifier ()
+  {
+    return new HostnameVerifierAlwaysTrue ();
+  }
 
   @Nonnull
   public HttpURLConnection getConnection (@Nonnull @Nonempty final String sUrl,
@@ -85,18 +126,14 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
         // SSL handling
         final HttpsURLConnection aConns = (HttpsURLConnection) aConn;
 
-        // Trust all server certificates
-        final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
-        SecureRandom aSecureRandom = null;
-        if (AS2GlobalSettings.isUseSecureRandom ())
-          aSecureRandom = VerySecureRandom.getInstance ();
-        // else aSecureRandom stays null what is also okay
-
-        aSSLCtx.init (null, new TrustManager [] { new DoNothingTrustManager () }, aSecureRandom);
+        // Create SSL context
+        final SSLContext aSSLCtx = createSSLContext ();
         aConns.setSSLSocketFactory (aSSLCtx.getSocketFactory ());
 
-        // Trust all host names
-        aConns.setHostnameVerifier (new HostnameVerifierAlwaysTrue ());
+        // Get hostname verifier
+        final HostnameVerifier aHV = createHostnameVerifier ();
+        if (aHV != null)
+          aConns.setHostnameVerifier (aHV);
       }
 
       return aConn;
