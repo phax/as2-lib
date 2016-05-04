@@ -60,7 +60,10 @@ import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.StringMap;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.factory.FactoryNewInstance;
+import com.helger.commons.factory.IFactory;
 
 /**
  * A simple client that allows for sending AS2 Messages and retrieving of
@@ -71,12 +74,26 @@ import com.helger.commons.annotation.OverrideOnDemand;
 public class AS2Client
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
-
+  private IFactory <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class, true);
   private Proxy m_aHttpProxy;
 
   public AS2Client ()
   {}
 
+  /**
+   * Set the factory to create {@link AS2SenderModule} objects internally. 
+   * By default a new instance of AS2SenderModule is created so you don't need
+   * to call this method.
+   *
+   * @param aAS2SenderModuleFactory
+   *        The factory to be used. May not be <code>null</code>.
+   */
+  @Nonnull
+  public void setAS2SenderModuleFactory (@Nonnull final IFactory <AS2SenderModule> aAS2SenderModuleFactory)
+  {
+    m_aAS2SenderModuleFactory = ValueEnforcer.notNull (aAS2SenderModuleFactory, "AS2SenderModuleFactory");
+  }
+  
   /**
    * @return The current HTTP proxy used. Defaults to <code>null</code>.
    */
@@ -311,7 +328,7 @@ public class AS2Client
         // And create a sender module that directly sends the message
         // The message processor registration is required for the resending
         // feature
-        final AS2SenderModule aSender = new AS2SenderModule ();
+        final AS2SenderModule aSender = m_aAS2SenderModuleFactory.create();
         aSender.initDynamicComponent (aSession, null);
         aSession.getMessageProcessor ().addModule (aSender);
 
