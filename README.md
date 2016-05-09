@@ -22,6 +22,8 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
+  * 2016-05-09 Version 2.2.8
+    * Improved AS2 client https customization and API
   * 2016-04-27 Version 2.2.7
     * Added per partnership attribute `rfc3851_micalgs` to determine to use RFC 3851 MIC algorithm names instead of the default RFC 5751 MIC algorithm names (issue #18)
     * Fixed problem with special character escaping in MDN context (issue #19)
@@ -65,7 +67,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.2.7</version>
+  <version>2.2.8</version>
 </dependency>
 ```
 
@@ -74,7 +76,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>2.2.7</version>
+  <version>2.2.8</version>
 </dependency>
 ```
 
@@ -83,7 +85,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>2.2.7</version>
+  <version>2.2.8</version>
 </dependency>
 ```
 
