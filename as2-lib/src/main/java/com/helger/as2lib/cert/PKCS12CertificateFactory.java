@@ -295,7 +295,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
       aKeyStore.setCertificateEntry (sAlias, aCert);
       onChange ();
-      s_aLogger.info ("Added certificate alias '" + sAlias + "' of certificate '" + aCert.getSubjectDN ());
+      s_aLogger.info ("Added certificate alias '" + sAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
     }
     catch (final GeneralSecurityException ex)
     {
