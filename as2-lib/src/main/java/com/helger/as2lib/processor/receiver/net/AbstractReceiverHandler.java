@@ -77,8 +77,9 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   }
 
   @Nonnull
-  protected byte [] readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP, @Nonnull final IAS2HttpResponseHandler aResponseHandler, @Nonnull final IMessage aMsg) throws IOException,
-                                                                                                                                                                                  MessagingException
+  protected byte [] readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
+                                              @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                              @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
     // Main read
     byte [] aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg);
@@ -87,7 +88,8 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     // the partnership for a default one. If none is in the partnership used the
     // default one
     final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
-                                                            aMsg.getPartnership ().getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ()));
+                                                            aMsg.getPartnership ()
+                                                                .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ()));
     if (StringHelper.hasText (sContentTransferEncoding))
     {
       final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
@@ -96,13 +98,15 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
       else
       {
         // Decode data if necessary
-        final IDecoder <byte []> aDecoder = eCTE.createDecoder ();
+        final IDecoder <byte [], byte []> aDecoder = eCTE.createDecoder ();
         if (!(aDecoder instanceof IdentityCodec <?>))
         {
           // Remember original length before continuing
           final int nOriginalContentLength = aPayload.length;
 
-          s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
+          s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
+                          sContentTransferEncoding +
+                          "' - decoding");
           aPayload = aDecoder.getDecoded (aPayload);
 
           // Remember that we potentially did something

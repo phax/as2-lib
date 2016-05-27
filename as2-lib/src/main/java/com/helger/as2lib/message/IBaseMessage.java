@@ -44,14 +44,13 @@ import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.lang.IHasStringRepresentation;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
  *
  * @author Philip Helger
  */
-public interface IBaseMessage extends IHasStringRepresentation, Serializable
+public interface IBaseMessage extends Serializable
 {
   boolean containsAttribute (@Nullable String sKey);
 
@@ -105,7 +104,7 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
   /**
    * Set all headers from the providers headers object. All existing headers are
    * discarded.
-   * 
+   *
    * @param aHeaders
    *        The headers object to be used. May be <code>null</code> in which
    *        case all existing headers are removed.
@@ -139,4 +138,8 @@ public interface IBaseMessage extends IHasStringRepresentation, Serializable
   Partnership getPartnership ();
 
   void setPartnership (@Nonnull Partnership aPartnership);
+
+  @Nonnull
+  @Nonempty
+  String getAsString ();
 }

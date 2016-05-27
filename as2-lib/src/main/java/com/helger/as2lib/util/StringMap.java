@@ -51,6 +51,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.IteratorHelper;
 import com.helger.commons.collection.attr.AttributeValueConverter;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
@@ -282,7 +283,7 @@ public class StringMap implements IStringMap, Serializable
   public Enumeration <String> getAttributeNames ()
   {
     // Build an enumerator on top of the set
-    return CollectionHelper.getEnumeration (m_aAttrs.keySet ());
+    return IteratorHelper.getEnumeration (m_aAttrs.keySet ());
   }
 
   @Nonnull

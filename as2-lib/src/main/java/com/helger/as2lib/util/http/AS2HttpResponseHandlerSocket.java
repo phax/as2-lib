@@ -75,32 +75,32 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
     ValueEnforcer.notNull (aHeaders, "Headers");
     ValueEnforcer.notNull (aData, "Data");
 
-    final OutputStream aOS = createOutputStream ();
-
-    // Send HTTP version and response code
-    final String sHttpStatusLine = "HTTP/1.1 " +
-                                   Integer.toString (nHttpResponseCode) +
-                                   " " +
-                                   HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
-                                   HTTPHelper.EOL;
-    aOS.write (sHttpStatusLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-
-    // Add response headers
-    final Enumeration <?> aHeaderLines = aHeaders.getAllHeaderLines ();
-    while (aHeaderLines.hasMoreElements ())
+    try (final OutputStream aOS = createOutputStream ())
     {
-      final String sHeader = (String) aHeaderLines.nextElement () + HTTPHelper.EOL;
-      aOS.write (sHeader.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      // Send HTTP version and response code
+      final String sHttpStatusLine = "HTTP/1.1 " +
+                                     Integer.toString (nHttpResponseCode) +
+                                     " " +
+                                     HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
+                                     HTTPHelper.EOL;
+      aOS.write (sHttpStatusLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+
+      // Add response headers
+      final Enumeration <?> aHeaderLines = aHeaders.getAllHeaderLines ();
+      while (aHeaderLines.hasMoreElements ())
+      {
+        final String sHeader = (String) aHeaderLines.nextElement () + HTTPHelper.EOL;
+        aOS.write (sHeader.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      }
+
+      // Empty line as separator
+      aOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+
+      // Write body
+      aData.writeTo (aOS);
+
+      // Done
+      aOS.flush ();
     }
-
-    // Empty line as separator
-    aOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-
-    // Write body
-    aData.writeTo (aOS);
-
-    // Done
-    aOS.flush ();
-    aOS.close ();
   }
 }

@@ -74,16 +74,17 @@ import com.helger.commons.factory.IFactory;
 public class AS2Client
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
-  private IFactory <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class, true);
+  private IFactory <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
+                                                                                            true);
   private Proxy m_aHttpProxy;
 
   public AS2Client ()
   {}
 
   /**
-   * Set the factory to create {@link AS2SenderModule} objects internally. 
-   * By default a new instance of AS2SenderModule is created so you don't need
-   * to call this method.
+   * Set the factory to create {@link AS2SenderModule} objects internally. By
+   * default a new instance of AS2SenderModule is created so you don't need to
+   * call this method.
    *
    * @param aAS2SenderModuleFactory
    *        The factory to be used. May not be <code>null</code>.
@@ -93,7 +94,7 @@ public class AS2Client
   {
     m_aAS2SenderModuleFactory = ValueEnforcer.notNull (aAS2SenderModuleFactory, "AS2SenderModuleFactory");
   }
-  
+
   /**
    * @return The current HTTP proxy used. Defaults to <code>null</code>.
    */
@@ -328,7 +329,7 @@ public class AS2Client
         // And create a sender module that directly sends the message
         // The message processor registration is required for the resending
         // feature
-        final AS2SenderModule aSender = m_aAS2SenderModuleFactory.create();
+        final AS2SenderModule aSender = m_aAS2SenderModuleFactory.get ();
         aSender.initDynamicComponent (aSession, null);
         aSession.getMessageProcessor ().addModule (aSender);
 

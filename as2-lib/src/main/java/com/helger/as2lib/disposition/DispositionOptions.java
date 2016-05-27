@@ -50,7 +50,6 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.lang.IHasStringRepresentation;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -61,7 +60,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class DispositionOptions implements IHasStringRepresentation
+public class DispositionOptions
 {
   /** Protocol attribute */
   public static final String SIGNED_RECEIPT_PROTOCOL = "signed-receipt-protocol";

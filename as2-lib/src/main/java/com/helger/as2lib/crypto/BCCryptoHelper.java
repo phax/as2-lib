@@ -43,7 +43,6 @@ import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.PrivilegedAction;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -153,13 +152,9 @@ public final class BCCryptoHelper implements ICryptoHelper
                             org.bouncycastle.mail.smime.handlers.x_pkcs7_mime.class.getName ());
     aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=" +
                             org.bouncycastle.mail.smime.handlers.multipart_signed.class.getName ());
-    AccessControllerHelper.run (new PrivilegedAction <Object> ()
-    {
-      public Object run ()
-      {
-        CommandMap.setDefaultCommandMap (aCommandMap);
-        return null;
-      }
+    AccessControllerHelper.run ( () -> {
+      CommandMap.setDefaultCommandMap (aCommandMap);
+      return null;
     });
   }
 
@@ -288,11 +283,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
 
     // No need to canonicalize here - see issue #12
-    final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-    final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ());
-    aPart.getDataHandler ().writeTo (aOS);
-    aOS.close ();
-    aDOS.close ();
+    try (final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
+        final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ()))
+    {
+      aPart.getDataHandler ().writeTo (aOS);
+    }
 
     // Build result digest array
     final byte [] aMIC = aMessageDigest.digest ();

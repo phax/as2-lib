@@ -106,28 +106,28 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     {
       final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
       final File aResendFile = IOHelper.getUniqueFile (aResendDir, getFilename ());
-      final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile));
-
-      String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
-      if (sResendAction == null)
+      try (final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile)))
       {
-        s_aLogger.warn ("The resending method is missing - default to message sending!");
-        sResendAction = IProcessorSenderModule.DO_SEND;
-      }
+        String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+        if (sResendAction == null)
+        {
+          s_aLogger.warn ("The resending method is missing - default to message sending!");
+          sResendAction = IProcessorSenderModule.DO_SEND;
+        }
 
-      String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
-      if (sRetries == null)
-      {
-        s_aLogger.warn ("The resending retry count is missing - default to " +
-                        IProcessorResenderModule.DEFAULT_RETRIES +
-                        "!");
-        sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
-      }
+        String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+        if (sRetries == null)
+        {
+          s_aLogger.warn ("The resending retry count is missing - default to " +
+                          IProcessorResenderModule.DEFAULT_RETRIES +
+                          "!");
+          sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
+        }
 
-      aOOS.writeObject (sResendAction);
-      aOOS.writeObject (sRetries);
-      aOOS.writeObject (aMsg);
-      aOOS.close ();
+        aOOS.writeObject (sResendAction);
+        aOOS.writeObject (sRetries);
+        aOOS.writeObject (aMsg);
+      }
 
       s_aLogger.info ("Message put in resend queue" + aMsg.getLoggingText ());
     }
@@ -177,18 +177,13 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     {
       try
       {
-        final ObjectInputStream aOIS = new ObjectInputStream (new FileInputStream (aFile));
         String sResendAction;
         String sRetries;
-        try
+        try (final ObjectInputStream aOIS = new ObjectInputStream (new FileInputStream (aFile)))
         {
           sResendAction = (String) aOIS.readObject ();
           sRetries = (String) aOIS.readObject ();
           aMsg = (IMessage) aOIS.readObject ();
-        }
-        finally
-        {
-          aOIS.close ();
         }
 
         // Decrement retries
