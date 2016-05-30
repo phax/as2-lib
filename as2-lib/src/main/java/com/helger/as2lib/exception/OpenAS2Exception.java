@@ -32,9 +32,6 @@
  */
 package com.helger.as2lib.exception;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -42,7 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.lang.ClassHelper;
 
 /**
@@ -56,7 +54,7 @@ public class OpenAS2Exception extends Exception
   public static final String SOURCE_FILE = "file";
   private static final Logger s_aLogger = LoggerFactory.getLogger (OpenAS2Exception.class);
 
-  private Map <String, Object> m_aSources;
+  private final ICommonsOrderedMap <String, Object> m_aSources = new CommonsLinkedHashMap<> ();
 
   public OpenAS2Exception ()
   {
@@ -80,21 +78,19 @@ public class OpenAS2Exception extends Exception
 
   @Nonnull
   @ReturnsMutableCopy
-  public final Map <String, Object> getAllSources ()
+  public final ICommonsOrderedMap <String, Object> getAllSources ()
   {
-    return CollectionHelper.newMap (m_aSources);
+    return m_aSources.getClone ();
   }
 
   @Nullable
   public final Object getSource (@Nullable final String sID)
   {
-    return m_aSources == null ? null : m_aSources.get (sID);
+    return m_aSources.get (sID);
   }
 
   public final void addSource (@Nonnull final String sID, @Nullable final Object aSource)
   {
-    if (m_aSources == null)
-      m_aSources = new LinkedHashMap <String, Object> ();
     m_aSources.put (sID, aSource);
   }
 
@@ -115,7 +111,7 @@ public class OpenAS2Exception extends Exception
                     (bTerminated ? "terminated" : "caught") +
                     ": " +
                     getMessage () +
-                    (m_aSources == null ? "" : "; sources: " + m_aSources),
+                    (m_aSources.isEmpty () ? "" : "; sources: " + m_aSources),
                     getCause ());
   }
 }

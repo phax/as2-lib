@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.disposition;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -50,6 +49,8 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -78,7 +79,7 @@ public class DispositionOptions
   private String m_sProtocolImportance;
   private String m_sProtocol;
   private String m_sMICAlgImportance;
-  private final List <ECryptoAlgorithmSign> m_aMICAlgs = new ArrayList <ECryptoAlgorithmSign> ();
+  private final ICommonsList <ECryptoAlgorithmSign> m_aMICAlgs = new CommonsArrayList<> ();
 
   public DispositionOptions ()
   {}

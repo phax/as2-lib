@@ -35,20 +35,20 @@ package com.helger.as2lib.cert;
 import java.security.Key;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.Map;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.collection.ext.ICommonsMap;
 
 /**
  * Certificate factory with support for alias handling
- * 
+ *
  * @author unknown
  */
 public interface IAliasedCertificateFactory extends ICertificateFactory
 {
   X509Certificate getCertificate (String sAlias) throws OpenAS2Exception;
 
-  Map <String, Certificate> getCertificates () throws OpenAS2Exception;
+  ICommonsMap <String, Certificate> getCertificates () throws OpenAS2Exception;
 
   void addCertificate (String sAlias, X509Certificate aCert, boolean bOverwrite) throws OpenAS2Exception;
 

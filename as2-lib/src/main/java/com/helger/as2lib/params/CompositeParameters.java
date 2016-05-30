@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.params;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -43,13 +42,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.lang.ClassHelper;
 
 public class CompositeParameters extends AbstractParameterParser
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (CompositeParameters.class);
 
-  private Map <String, AbstractParameterParser> m_aParameterParsers;
+  private ICommonsMap <String, AbstractParameterParser> m_aParameterParsers;
   private boolean m_bIgnoreMissingParsers;
 
   public CompositeParameters (final boolean bIgnoreMissingParsers)
@@ -146,7 +147,7 @@ public class CompositeParameters extends AbstractParameterParser
     return "";
   }
 
-  public void setParameterParsers (@Nullable final Map <String, AbstractParameterParser> aParameterParsers)
+  public void setParameterParsers (@Nullable final ICommonsMap <String, AbstractParameterParser> aParameterParsers)
   {
     m_aParameterParsers = aParameterParsers;
   }
@@ -156,7 +157,7 @@ public class CompositeParameters extends AbstractParameterParser
   protected final Map <String, AbstractParameterParser> getParameterParsers ()
   {
     if (m_aParameterParsers == null)
-      m_aParameterParsers = new HashMap <String, AbstractParameterParser> ();
+      m_aParameterParsers = new CommonsHashMap<> ();
     return m_aParameterParsers;
   }
 }

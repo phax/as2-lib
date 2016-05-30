@@ -38,9 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -61,6 +59,10 @@ import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsMap;
 
 /**
  * An asynchronous, persisting, file based, polling resender module. Upon
@@ -192,7 +194,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         // Transmit the message
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 
-        final Map <String, Object> aOptions = new HashMap <String, Object> ();
+        final ICommonsMap <String, Object> aOptions = new CommonsHashMap<> ();
         aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
         getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
@@ -230,7 +232,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
    */
   @Nonnull
   @ReturnsMutableCopy
-  protected List <File> scanDirectory () throws InvalidParameterException
+  protected ICommonsList <File> scanDirectory () throws InvalidParameterException
   {
     final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
 
@@ -243,7 +245,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
                                            aResendDir.getAbsolutePath ());
     }
 
-    final List <File> ret = new ArrayList <File> ();
+    final ICommonsList <File> ret = new CommonsArrayList<> ();
     if (aFiles.length > 0)
       for (final File aCurrentFile : aFiles)
         if (aCurrentFile.exists () && aCurrentFile.isFile () && aCurrentFile.canWrite () && isTimeToSend (aCurrentFile))

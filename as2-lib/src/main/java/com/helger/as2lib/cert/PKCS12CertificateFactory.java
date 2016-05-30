@@ -43,8 +43,6 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,6 +65,8 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
@@ -162,13 +162,13 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, Certificate> getCertificates () throws OpenAS2Exception
+  public ICommonsOrderedMap <String, Certificate> getCertificates () throws OpenAS2Exception
   {
     final KeyStore aKeyStore = getKeyStore ();
 
     try
     {
-      final Map <String, Certificate> aCerts = new LinkedHashMap <String, Certificate> ();
+      final ICommonsOrderedMap <String, Certificate> aCerts = new CommonsLinkedHashMap<> ();
       final Enumeration <String> aAliases = aKeyStore.aliases ();
       while (aAliases.hasMoreElements ())
       {

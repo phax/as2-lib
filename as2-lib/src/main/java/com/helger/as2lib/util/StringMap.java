@@ -33,13 +33,10 @@
 package com.helger.as2lib.util;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -50,9 +47,12 @@ import com.helger.commons.CGlobal;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.IteratorHelper;
 import com.helger.commons.collection.attr.AttributeValueConverter;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.ext.ICommonsOrderedSet;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.state.EChange;
@@ -71,17 +71,17 @@ public class StringMap implements IStringMap, Serializable
   /**
    * attribute storage.
    */
-  private final Map <String, String> m_aAttrs;
+  private final ICommonsOrderedMap <String, String> m_aAttrs;
 
   public StringMap ()
   {
-    m_aAttrs = new LinkedHashMap <String, String> ();
+    m_aAttrs = new CommonsLinkedHashMap<> ();
   }
 
   public StringMap (@Nonnull final Map <String, String> aMap)
   {
     ValueEnforcer.notNull (aMap, "Map");
-    m_aAttrs = CollectionHelper.newOrderedMap (aMap);
+    m_aAttrs = new CommonsLinkedHashMap<> (aMap);
   }
 
   public StringMap (@Nonnull final IStringMap aCont)
@@ -99,9 +99,9 @@ public class StringMap implements IStringMap, Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAllAttributes ()
+  public ICommonsOrderedMap <String, String> getAllAttributes ()
   {
-    return CollectionHelper.newOrderedMap (m_aAttrs);
+    return m_aAttrs.getClone ();
   }
 
   @Nullable
@@ -288,16 +288,16 @@ public class StringMap implements IStringMap, Serializable
 
   @Nonnull
   @ReturnsMutableCopy
-  public Set <String> getAllAttributeNames ()
+  public ICommonsOrderedSet <String> getAllAttributeNames ()
   {
-    return CollectionHelper.newOrderedSet (m_aAttrs.keySet ());
+    return m_aAttrs.copyOfKeySet ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Collection <String> getAllAttributeValues ()
+  public ICommonsList <String> getAllAttributeValues ()
   {
-    return CollectionHelper.newList (m_aAttrs.values ());
+    return m_aAttrs.copyOfValues ();
   }
 
   @Nonnegative

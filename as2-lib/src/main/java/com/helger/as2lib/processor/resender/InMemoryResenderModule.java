@@ -32,9 +32,6 @@
  */
 package com.helger.as2lib.processor.resender;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -49,7 +46,10 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsMap;
 
 /**
  * An asynchronous, in-memory, polling based resender module. Upon
@@ -65,7 +65,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   private static final Logger s_aLogger = LoggerFactory.getLogger (InMemoryResenderModule.class);
 
   @GuardedBy ("m_aRWLock")
-  private final List <ResendItem> m_aItems = new ArrayList <ResendItem> ();
+  private final ICommonsList <ResendItem> m_aItems = new CommonsArrayList<> ();
 
   @Override
   public boolean canHandle (@Nonnull final String sAction,
@@ -103,15 +103,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
 
     // Build the item and add it to the vector
     final ResendItem aItem = new ResendItem (sResendAction, nRetries, aMsg, getResendDelayMS ());
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
-      m_aItems.add (aItem);
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    m_aRWLock.writeLocked ( () -> m_aItems.add (aItem));
 
     s_aLogger.info ("Message put in resend queue" + aMsg.getLoggingText ());
   }
@@ -131,20 +123,12 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       // Transmit the message
       s_aLogger.info ("Loaded message for resend" + aMsg.getLoggingText ());
 
-      final Map <String, Object> aOptions = new HashMap <String, Object> ();
+      final ICommonsMap <String, Object> aOptions = new CommonsHashMap<> ();
       aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRemainingRetries);
       getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
       // Finally remove from list
-      m_aRWLock.writeLock ().lock ();
-      try
-      {
-        m_aItems.remove (aItem);
-      }
-      finally
-      {
-        m_aRWLock.writeLock ().unlock ();
-      }
+      m_aRWLock.writeLocked ( () -> m_aItems.remove (aItem));
     }
     catch (final OpenAS2Exception ex)
     {
@@ -159,18 +143,8 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     try
     {
       // Determine all items to be re-send
-      final List <ResendItem> aResendItems = new ArrayList <ResendItem> ();
-      m_aRWLock.readLock ().lock ();
-      try
-      {
-        for (final ResendItem aItem : m_aItems)
-          if (aItem.isTimeToSend ())
-            aResendItems.add (aItem);
-      }
-      finally
-      {
-        m_aRWLock.readLock ().unlock ();
-      }
+      final ICommonsList <ResendItem> aResendItems = new CommonsArrayList<> ();
+      m_aRWLock.readLocked ( () -> m_aItems.findAll (ResendItem::isTimeToSend, aResendItems::add));
 
       // Resend all selected items
       for (final ResendItem aResendItem : aResendItems)
@@ -186,15 +160,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   @Nonnegative
   public int getResendItemCount ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aItems.size ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aItems.size ());
   }
 
   /**
@@ -205,32 +171,16 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     final int nItems = getResendItemCount ();
     if (nItems > 0)
     {
-      m_aRWLock.writeLock ().lock ();
-      try
-      {
-        m_aItems.clear ();
-      }
-      finally
-      {
-        m_aRWLock.writeLock ().unlock ();
-      }
+      m_aRWLock.writeLocked ( () -> m_aItems.clear ());
       s_aLogger.info ("Removed " + nItems + " items from InMemoryResenderModule");
     }
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <ResendItem> getAllResendItems ()
+  public ICommonsList <ResendItem> getAllResendItems ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return CollectionHelper.newList (m_aItems);
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aItems.getClone ());
   }
 
   @Override

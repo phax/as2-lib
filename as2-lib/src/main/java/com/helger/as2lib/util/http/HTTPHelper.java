@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -60,6 +59,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.charset.CCharset;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -106,9 +107,9 @@ public final class HTTPHelper
 
   @Nonnull
   @ReturnsMutableCopy
-  public static List <String> getAllHTTPHeaderLines (@Nonnull final InternetHeaders aHeaders)
+  public static ICommonsList <String> getAllHTTPHeaderLines (@Nonnull final InternetHeaders aHeaders)
   {
-    final List <String> ret = new ArrayList <String> ();
+    final ICommonsList <String> ret = new CommonsArrayList<> ();
     final Enumeration <?> aEnum = aHeaders.getAllHeaderLines ();
     while (aEnum.hasMoreElements ())
       ret.add ((String) aEnum.nextElement ());

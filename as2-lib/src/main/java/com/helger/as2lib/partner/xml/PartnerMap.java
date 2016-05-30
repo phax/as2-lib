@@ -32,11 +32,6 @@
  */
 package com.helger.as2lib.partner.xml;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -44,7 +39,10 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.ext.ICommonsOrderedSet;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -56,7 +54,7 @@ import com.helger.commons.string.ToStringGenerator;
 @NotThreadSafe
 public final class PartnerMap implements IPartnerMap
 {
-  private final Map <String, Partner> m_aMap = new LinkedHashMap <String, Partner> ();
+  private final ICommonsOrderedMap <String, Partner> m_aMap = new CommonsLinkedHashMap<> ();
 
   public PartnerMap ()
   {}
@@ -75,14 +73,13 @@ public final class PartnerMap implements IPartnerMap
   public void setPartners (@Nonnull final PartnerMap aPartners)
   {
     ValueEnforcer.notNull (aPartners, "Partners");
-    m_aMap.clear ();
-    m_aMap.putAll (aPartners.m_aMap);
+    m_aMap.setAll (aPartners.m_aMap);
   }
 
   @Nonnull
   public EChange removePartner (@Nullable final String sPartnerName)
   {
-    return EChange.valueOf (m_aMap.remove (sPartnerName) != null);
+    return m_aMap.removeObject (sPartnerName);
   }
 
   @Nullable
@@ -93,16 +90,16 @@ public final class PartnerMap implements IPartnerMap
 
   @Nonnull
   @ReturnsMutableCopy
-  public Set <String> getAllPartnerNames ()
+  public ICommonsOrderedSet <String> getAllPartnerNames ()
   {
-    return CollectionHelper.newOrderedSet (m_aMap.keySet ());
+    return m_aMap.copyOfKeySet ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <Partner> getAllPartners ()
+  public ICommonsList <Partner> getAllPartners ()
   {
-    return CollectionHelper.newList (m_aMap.values ());
+    return m_aMap.copyOfValues ();
   }
 
   @Override

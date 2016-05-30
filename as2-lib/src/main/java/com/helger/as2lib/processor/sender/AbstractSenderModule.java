@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor.sender;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -47,6 +46,8 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.string.StringParser;
 
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
@@ -140,7 +141,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
       return false;
     }
 
-    final Map <String, Object> aOptions = new HashMap <String, Object> ();
+    final ICommonsMap <String, Object> aOptions = new CommonsHashMap<> ();
     aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
     aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
     aOptions.put (IProcessorResenderModule.OPTION_RESEND_ACTION, sResendAction);

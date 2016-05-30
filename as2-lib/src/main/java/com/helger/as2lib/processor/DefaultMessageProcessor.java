@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.processor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -50,7 +48,8 @@ import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.state.EChange;
 
 @NotThreadSafe
@@ -58,7 +57,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultMessageProcessor.class);
 
-  private final List <IProcessorModule> m_aModules = new ArrayList <IProcessorModule> ();
+  private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList<> ();
 
   public void addModule (@Nonnull final IProcessorModule aModule)
   {
@@ -82,9 +81,9 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IProcessorModule> getAllModules ()
+  public ICommonsList <IProcessorModule> getAllModules ()
   {
-    return CollectionHelper.newList (m_aModules);
+    return m_aModules.getClone ();
   }
 
   @Nullable
@@ -99,10 +98,10 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
 
   @Nonnull
   @ReturnsMutableCopy
-  public <T extends IProcessorModule> List <T> getAllModulesOfClass (@Nonnull final Class <T> aClass)
+  public <T extends IProcessorModule> ICommonsList <T> getAllModulesOfClass (@Nonnull final Class <T> aClass)
   {
     ValueEnforcer.notNull (aClass, "Class");
-    final List <T> ret = new ArrayList <T> ();
+    final ICommonsList <T> ret = new CommonsArrayList<> ();
     for (final IProcessorModule aModule : m_aModules)
       if (aClass.isAssignableFrom (aModule.getClass ()))
         ret.add (aClass.cast (aModule));
@@ -111,9 +110,9 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <IProcessorActiveModule> getAllActiveModules ()
+  public ICommonsList <IProcessorActiveModule> getAllActiveModules ()
   {
-    final List <IProcessorActiveModule> ret = new ArrayList <IProcessorActiveModule> ();
+    final ICommonsList <IProcessorActiveModule> ret = new CommonsArrayList<> ();
     for (final IProcessorModule aModule : getAllModules ())
       if (aModule instanceof IProcessorActiveModule)
         ret.add ((IProcessorActiveModule) aModule);
@@ -127,7 +126,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("DefaultMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
 
-    final List <Throwable> aCauses = new ArrayList <Throwable> ();
+    final ICommonsList <Throwable> aCauses = new CommonsArrayList<> ();
     boolean bModuleFound = false;
 
     for (final IProcessorModule aModule : getAllModules ())
@@ -147,7 +146,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
         }
       }
 
-    if (!aCauses.isEmpty ())
+    if (aCauses.isNotEmpty ())
       throw new ProcessorException (this, aCauses);
     if (!bModuleFound)
       throw new NoModuleException (sAction, aMsg, aOptions);

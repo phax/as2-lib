@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.util;
 
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -49,6 +48,8 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.IMicroQName;
@@ -125,7 +126,7 @@ public final class XMLHelper
     ValueEnforcer.notNull (sNodeKeyName, "NodeKeyName");
     ValueEnforcer.notNull (sNodeValueName, "NodeValueName");
 
-    final Map <String, String> ret = new LinkedHashMap <String, String> ();
+    final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap<> ();
     int nIndex = 0;
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {

@@ -36,8 +36,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Enumeration;
-import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,6 +56,8 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.charset.CCharset;
+import com.helger.commons.collection.ext.CommonsTreeMap;
+import com.helger.commons.collection.ext.ICommonsSortedMap;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -193,7 +193,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   @Nonempty
   public final String getHeadersDebugFormatted ()
   {
-    final Map <String, String> aMap = new TreeMap <String, String> ();
+    final ICommonsSortedMap <String, String> aMap = new CommonsTreeMap<> ();
     final Enumeration <?> aHeaders = m_aHeaders.getAllHeaders ();
     while (aHeaders.hasMoreElements ())
     {

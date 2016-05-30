@@ -32,14 +32,13 @@
  */
 package com.helger.as2lib.partner.xml;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsOrderedSet;
 
 /**
  * Read-only interface to manage the mapping from name to partner (represented
@@ -54,9 +53,9 @@ public interface IPartnerMap
 
   @Nonnull
   @ReturnsMutableCopy
-  Set <String> getAllPartnerNames ();
+  ICommonsOrderedSet <String> getAllPartnerNames ();
 
   @Nonnull
   @ReturnsMutableCopy
-  List <? extends IPartner> getAllPartners ();
+  ICommonsList <? extends IPartner> getAllPartners ();
 }

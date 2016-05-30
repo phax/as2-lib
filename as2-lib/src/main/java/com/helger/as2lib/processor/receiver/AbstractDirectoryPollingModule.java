@@ -35,7 +35,6 @@ package com.helger.as2lib.processor.receiver;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -63,6 +62,8 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
@@ -81,10 +82,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractDirectoryPollingModule.class);
 
-  private Map <String, Long> m_aTrackedFiles;
+  private ICommonsMap <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws OpenAS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -117,7 +119,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     final File [] aFiles = aDir.listFiles ();
     if (aFiles == null)
     {
-      throw new InvalidParameterException ("Error getting list of files in directory", this, ATTR_OUTBOX_DIRECTORY, aDir.getAbsolutePath ());
+      throw new InvalidParameterException ("Error getting list of files in directory",
+                                           this,
+                                           ATTR_OUTBOX_DIRECTORY,
+                                           aDir.getAbsolutePath ());
     }
 
     // iterator through each entry, and start tracking new files
@@ -243,12 +248,20 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
        */
       if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.getAttribute (CFileAttribute.MA_STATUS)))
       {
-        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING), aMsg.getAttribute (CFileAttribute.MA_PENDING_FILENAME));
+        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
+                                            aMsg.getAttribute (CFileAttribute.MA_PENDING_FILENAME));
         final FileIOError aIOErr = IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
-          throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " + aPendingFile + " - " + aIOErr.toString ());
+          throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
+                                      aPendingFile +
+                                      " - " +
+                                      aIOErr.toString ());
 
-        s_aLogger.info ("copied " + aFile.getAbsolutePath () + " to pending folder : " + aPendingFile.getAbsolutePath () + aMsg.getLoggingText ());
+        s_aLogger.info ("copied " +
+                        aFile.getAbsolutePath () +
+                        " to pending folder : " +
+                        aPendingFile.getAbsolutePath () +
+                        aMsg.getLoggingText ());
       }
 
       // If the Sent Directory option is set, move the transmitted file to
@@ -258,15 +271,21 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)), aFile.getName ());
+          aSentFile = new File (IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
+                                aFile.getName ());
           aSentFile = IOHelper.moveFile (aFile, aSentFile, false, true);
 
-          s_aLogger.info ("moved " + aFile.getAbsolutePath () + " to " + aSentFile.getAbsolutePath () + aMsg.getLoggingText ());
+          s_aLogger.info ("moved " +
+                          aFile.getAbsolutePath () +
+                          " to " +
+                          aSentFile.getAbsolutePath () +
+                          aMsg.getLoggingText ());
 
         }
         catch (final IOException ex)
         {
-          final OpenAS2Exception se = new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile);
+          final OpenAS2Exception se = new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " +
+                                                            aSentFile);
           se.initCause (ex);
         }
       }
@@ -340,7 +359,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (new DataHandler (aByteSource));
 
       // Headers must be set AFTER the DataHandler
-      final String sEncodeType = aMsg.getPartnership ().getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
+      final String sEncodeType = aMsg.getPartnership ()
+                                     .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
       aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
 
       // below statement is not filename related, just want to make it
@@ -383,10 +403,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
   @Nonnull
   @ReturnsMutableObject ("design")
-  public Map <String, Long> getAllTrackedFiles ()
+  public ICommonsMap <String, Long> getAllTrackedFiles ()
   {
     if (m_aTrackedFiles == null)
-      m_aTrackedFiles = new HashMap <String, Long> ();
+      m_aTrackedFiles = new CommonsHashMap<> ();
     return m_aTrackedFiles;
   }
 }

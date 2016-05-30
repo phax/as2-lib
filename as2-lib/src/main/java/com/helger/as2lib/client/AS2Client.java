@@ -33,8 +33,6 @@
 package com.helger.as2lib.client;
 
 import java.net.Proxy;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -62,6 +60,8 @@ import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.factory.IFactory;
 
@@ -322,7 +322,7 @@ public class AS2Client
         beforeSend (aSettings, aSession, aMsg);
 
         // Build options map for "handle"
-        final Map <String, Object> aHandleOptions = new HashMap <String, Object> ();
+        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap<> ();
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 

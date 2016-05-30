@@ -32,16 +32,17 @@
  */
 package com.helger.as2lib.util;
 
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.ext.ICommonsOrderedSet;
 import com.helger.commons.lang.ICloneable;
 
 public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry <String, String>>
@@ -50,7 +51,7 @@ public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry
 
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, String> getAllAttributes ();
+  ICommonsOrderedMap <String, String> getAllAttributes ();
 
   @Nullable
   String getAttributeAsString (@Nullable String sName);
@@ -80,11 +81,11 @@ public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry
 
   @Nonnull
   @ReturnsMutableCopy
-  Set <String> getAllAttributeNames ();
+  ICommonsOrderedSet <String> getAllAttributeNames ();
 
   @Nonnull
   @ReturnsMutableCopy
-  Collection <String> getAllAttributeValues ();
+  ICommonsList <String> getAllAttributeValues ();
 
   @Nonnegative
   int getAttributeCount ();

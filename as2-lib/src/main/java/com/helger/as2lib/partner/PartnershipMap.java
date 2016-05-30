@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.partner;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +44,8 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 
@@ -56,7 +57,7 @@ import com.helger.commons.state.EChange;
 @NotThreadSafe
 public final class PartnershipMap implements IPartnershipMap
 {
-  private final Map <String, Partnership> m_aMap = new LinkedHashMap <String, Partnership> ();
+  private final ICommonsOrderedMap <String, Partnership> m_aMap = new CommonsLinkedHashMap<> ();
 
   public PartnershipMap ()
   {}
@@ -71,8 +72,7 @@ public final class PartnershipMap implements IPartnershipMap
   public void setPartnerships (@Nonnull final PartnershipMap aPartnerships)
   {
     ValueEnforcer.notNull (aPartnerships, "Partnerships");
-    m_aMap.clear ();
-    m_aMap.putAll (aPartnerships.m_aMap);
+    m_aMap.setAll (aPartnerships.m_aMap);
   }
 
   /**
@@ -111,7 +111,7 @@ public final class PartnershipMap implements IPartnershipMap
 
   /**
    * Remove the provided partnership.
-   * 
+   *
    * @param aPartnership
    *        The partnership to be removed. May not be <code>null</code>.
    * @return {@link EChange#CHANGED} if removal was successful,

@@ -33,9 +33,6 @@
 package com.helger.as2lib.session;
 
 import java.net.Proxy;
-import java.security.PrivilegedAction;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
@@ -52,6 +49,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsHashMap;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -70,7 +69,7 @@ public class AS2Session implements IAS2Session
   public static final boolean DEFAULT_CRYPTO_SIGN_INCLUDE_CERTIFICATE_IN_BODY_PART = true;
   public static final boolean DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART = true;
 
-  private final Map <String, IDynamicComponent> m_aComponents = new HashMap <String, IDynamicComponent> ();
+  private final ICommonsMap <String, IDynamicComponent> m_aComponents = new CommonsHashMap<> ();
   private boolean m_bCryptoSignIncludeCertificateInBodyPart = DEFAULT_CRYPTO_SIGN_INCLUDE_CERTIFICATE_IN_BODY_PART;
   private boolean m_bCryptoVerifyUseCertificateInBodyPart = DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART;
   private Proxy m_aHttpProxy;
@@ -88,13 +87,9 @@ public class AS2Session implements IAS2Session
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
     aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
                             DispositionDataContentHandler.class.getName ());
-    AccessControllerHelper.run (new PrivilegedAction <Object> ()
-    {
-      public Object run ()
-      {
-        CommandMap.setDefaultCommandMap (aCommandMap);
-        return null;
-      }
+    AccessControllerHelper.run ( () -> {
+      CommandMap.setDefaultCommandMap (aCommandMap);
+      return null;
     });
   }
 
@@ -135,7 +130,7 @@ public class AS2Session implements IAS2Session
 
   @Nonnull
   @ReturnsMutableCopy
-  public final Map <String, IDynamicComponent> getAllComponents ()
+  public final ICommonsMap <String, IDynamicComponent> getAllComponents ()
   {
     return CollectionHelper.newMap (m_aComponents);
   }
