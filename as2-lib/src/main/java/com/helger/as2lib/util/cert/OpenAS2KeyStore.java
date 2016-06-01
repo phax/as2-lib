@@ -38,7 +38,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,6 +45,7 @@ import javax.annotation.Nullable;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.ICommonsList;
 
 public class OpenAS2KeyStore implements ICertificateStore
 {
@@ -64,7 +64,7 @@ public class OpenAS2KeyStore implements ICertificateStore
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <String> getAliases () throws CertificateException
+  public ICommonsList <String> getAliases () throws CertificateException
   {
     try
     {

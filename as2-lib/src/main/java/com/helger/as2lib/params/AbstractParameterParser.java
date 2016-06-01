@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.params;
 
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -42,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -94,7 +94,7 @@ public abstract class AbstractParameterParser
                              @Nullable final String sDelimiters,
                              @Nonnull final String sValue) throws OpenAS2Exception
   {
-    final List <String> aKeys = StringHelper.getExploded (',', sFormat);
+    final ICommonsList <String> aKeys = StringHelper.getExploded (',', sFormat);
 
     final StringTokenizer aValueTokens = new StringTokenizer (sValue, sDelimiters, false);
     for (final String sKey : aKeys)

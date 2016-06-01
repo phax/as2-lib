@@ -40,7 +40,8 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.lang.StackTraceHelper;
 
@@ -52,10 +53,10 @@ import com.helger.commons.lang.StackTraceHelper;
 public class ProcessorException extends OpenAS2Exception
 {
   private final IMessageProcessor m_aProcessor;
-  private final List <Throwable> m_aCauses;
+  private final ICommonsList <Throwable> m_aCauses;
 
   @Nonnull
-  private static String _getMessage (@Nonnull @Nonempty final List <Throwable> aCauses)
+  private static String _getMessage (@Nonnull @Nonempty final Iterable <Throwable> aCauses)
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
@@ -75,7 +76,7 @@ public class ProcessorException extends OpenAS2Exception
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
     m_aProcessor = aProcessor;
-    m_aCauses = CollectionHelper.newList (aCauses);
+    m_aCauses = new CommonsArrayList<> (aCauses);
   }
 
   @Nonnull
@@ -85,27 +86,14 @@ public class ProcessorException extends OpenAS2Exception
   }
 
   /**
-   * @return A list of all causing exceptions
-   * @deprecated Use {@link #getAllCauses()} instead
-   */
-  @Deprecated
-  @Nonnull
-  @Nonempty
-  @ReturnsMutableCopy
-  public final List <Throwable> getCauses ()
-  {
-    return getAllCauses ();
-  }
-
-  /**
    * @return A list of all causing exceptions. Never <code>null</code> nor
    *         empty.
    */
   @Nonnull
   @Nonempty
   @ReturnsMutableCopy
-  public final List <Throwable> getAllCauses ()
+  public final ICommonsList <Throwable> getAllCauses ()
   {
-    return CollectionHelper.newList (m_aCauses);
+    return m_aCauses.getClone ();
   }
 }

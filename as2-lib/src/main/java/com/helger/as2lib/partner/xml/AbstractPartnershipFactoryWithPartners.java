@@ -32,9 +32,6 @@
  */
 package com.helger.as2lib.partner.xml;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -42,6 +39,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.partner.AbstractPartnershipFactory;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.state.EChange;
 
 /**
@@ -105,58 +104,26 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
   @Nullable
   public Partner getPartnerOfName (@Nullable final String sPartnerName)
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners.getPartnerOfName (sPartnerName);
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartners.getPartnerOfName (sPartnerName));
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Set <String> getAllPartnerNames ()
+  public ICommonsSet <String> getAllPartnerNames ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners.getAllPartnerNames ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartners.getAllPartnerNames ());
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <Partner> getAllPartners ()
+  public ICommonsList <Partner> getAllPartners ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners.getAllPartners ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartners.getAllPartners ());
   }
 
   @Nonnull
   public IPartnerMap getPartnerMap ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartners;
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartners);
   }
 }

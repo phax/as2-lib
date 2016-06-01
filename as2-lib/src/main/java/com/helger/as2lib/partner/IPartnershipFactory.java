@@ -32,9 +32,6 @@
  */
 package com.helger.as2lib.partner;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -43,13 +40,15 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.state.EChange;
 
 /**
  * This is the base interface for a partnership factory (it is more manager but
  * who cares). It consists of partnerships represented by {@link Partnership}
  * objects.
- * 
+ *
  * @author original author unknown
  * @author joseph mcverry
  * @author Philip Helger
@@ -114,7 +113,7 @@ public interface IPartnershipFactory extends IDynamicComponent
    */
   @Nonnull
   @ReturnsMutableCopy
-  Set <String> getAllPartnershipNames ();
+  ICommonsSet <String> getAllPartnershipNames ();
 
   /**
    * @return A list of all contained partnerships. Never <code>null</code> but
@@ -122,7 +121,7 @@ public interface IPartnershipFactory extends IDynamicComponent
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <Partnership> getAllPartnerships ();
+  ICommonsList <Partnership> getAllPartnerships ();
 
   /**
    * Looks up and fills in any header info for a specific msg's partnership.

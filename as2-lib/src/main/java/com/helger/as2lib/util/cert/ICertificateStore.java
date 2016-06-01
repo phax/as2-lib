@@ -34,12 +34,12 @@ package com.helger.as2lib.util.cert;
 
 import java.security.Key;
 import java.security.cert.Certificate;
-import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 
 /**
  * Base interface for a certificate store handling.
@@ -50,7 +50,7 @@ public interface ICertificateStore
 {
   @Nonnull
   @ReturnsMutableCopy
-  List <String> getAliases () throws CertificateException;
+  ICommonsList <String> getAliases () throws CertificateException;
 
   @Nullable
   Certificate getCertificate (@Nullable String sAlias) throws CertificateException;

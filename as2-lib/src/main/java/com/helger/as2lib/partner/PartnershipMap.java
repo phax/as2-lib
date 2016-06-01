@@ -32,9 +32,7 @@
  */
 package com.helger.as2lib.partner;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,9 +41,10 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.ext.ICommonsOrderedSet;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 
@@ -182,15 +181,15 @@ public final class PartnershipMap implements IPartnershipMap
 
   @Nonnull
   @ReturnsMutableCopy
-  public Set <String> getAllPartnershipNames ()
+  public ICommonsOrderedSet <String> getAllPartnershipNames ()
   {
-    return CollectionHelper.newOrderedSet (m_aMap.keySet ());
+    return m_aMap.copyOfKeySet ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <Partnership> getAllPartnerships ()
+  public ICommonsList <Partnership> getAllPartnerships ()
   {
-    return CollectionHelper.newList (m_aMap.values ());
+    return m_aMap.copyOfValues ();
   }
 }

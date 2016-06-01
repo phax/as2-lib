@@ -32,18 +32,17 @@
  */
 package com.helger.as2lib.partner;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsSet;
 
 /**
  * Read-only interface for managing the name to {@link Partnership} mapping.
- * 
+ *
  * @author Philip Helger
  */
 public interface IPartnershipMap
@@ -56,9 +55,9 @@ public interface IPartnershipMap
 
   @Nonnull
   @ReturnsMutableCopy
-  Set <String> getAllPartnershipNames ();
+  ICommonsSet <String> getAllPartnershipNames ();
 
   @Nonnull
   @ReturnsMutableCopy
-  List <Partnership> getAllPartnerships ();
+  ICommonsList <Partnership> getAllPartnerships ();
 }

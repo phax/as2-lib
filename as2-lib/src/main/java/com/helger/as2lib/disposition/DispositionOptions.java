@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.disposition;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -48,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.StringHelper;
@@ -208,7 +206,7 @@ public class DispositionOptions
     m_aMICAlgs.clear ();
     if (StringHelper.hasText (sMICAlgs))
     {
-      final List <String> aMICAlgs = StringHelper.getExploded (',', sMICAlgs.trim ());
+      final ICommonsList <String> aMICAlgs = StringHelper.getExploded (',', sMICAlgs.trim ());
       for (final String sMICAlg : aMICAlgs)
       {
         // trim and lowercase
@@ -271,9 +269,9 @@ public class DispositionOptions
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <ECryptoAlgorithmSign> getAllMICAlgs ()
+  public ICommonsList <ECryptoAlgorithmSign> getAllMICAlgs ()
   {
-    return CollectionHelper.newList (m_aMICAlgs);
+    return m_aMICAlgs.getClone ();
   }
 
   /**
@@ -283,7 +281,7 @@ public class DispositionOptions
   @Nullable
   public ECryptoAlgorithmSign getFirstMICAlg ()
   {
-    return CollectionHelper.getFirstElement (m_aMICAlgs);
+    return m_aMICAlgs.getFirst ();
   }
 
   /**
@@ -301,7 +299,7 @@ public class DispositionOptions
    */
   public boolean hasMICAlg ()
   {
-    return !m_aMICAlgs.isEmpty ();
+    return m_aMICAlgs.isNotEmpty ();
   }
 
   /**
@@ -314,14 +312,7 @@ public class DispositionOptions
     if (m_aMICAlgs.isEmpty ())
       return null;
 
-    final StringBuilder aSB = new StringBuilder ();
-    for (final ECryptoAlgorithmSign eMICAlg : m_aMICAlgs)
-    {
-      if (aSB.length () > 0)
-        aSB.append (", ");
-      aSB.append (eMICAlg.getID ());
-    }
-    return aSB.toString ();
+    return StringHelper.getImploded (", ", m_aMICAlgs, ECryptoAlgorithmSign::getID);
   }
 
   @Nonnull

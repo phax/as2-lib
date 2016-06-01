@@ -32,15 +32,14 @@
  */
 package com.helger.as2lib.partner.xml;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.state.EChange;
 
 /**
@@ -92,12 +91,12 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
    */
   @Nonnull
   @ReturnsMutableCopy
-  Set <String> getAllPartnerNames ();
+  ICommonsSet <String> getAllPartnerNames ();
 
   /**
    * @return An (unordered) list of all contained partner data.
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <? extends IPartner> getAllPartners ();
+  ICommonsList <? extends IPartner> getAllPartners ();
 }

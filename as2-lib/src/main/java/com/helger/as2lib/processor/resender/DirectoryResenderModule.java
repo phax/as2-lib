@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -259,7 +258,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     try
     {
       // get a list of files that need to be sent now
-      final List <File> aSendFiles = scanDirectory ();
+      final ICommonsList <File> aSendFiles = scanDirectory ();
 
       // iterator through and send each file
       for (final File aCurrentFile : aSendFiles)

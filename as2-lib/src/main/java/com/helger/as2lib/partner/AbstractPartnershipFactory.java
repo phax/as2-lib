@@ -32,9 +32,6 @@
  */
 package com.helger.as2lib.partner;
 
-import java.util.List;
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -53,6 +50,8 @@ import com.helger.commons.annotation.ELockType;
 import com.helger.commons.annotation.IsLocked;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -112,59 +111,27 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nullable
   public Partnership getPartnershipByName (@Nullable final String sName)
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartnerships.getPartnershipByName (sName);
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartnerships.getPartnershipByName (sName));
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public Set <String> getAllPartnershipNames ()
+  public ICommonsSet <String> getAllPartnershipNames ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartnerships.getAllPartnershipNames ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartnerships.getAllPartnershipNames ());
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <Partnership> getAllPartnerships ()
+  public ICommonsList <Partnership> getAllPartnerships ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartnerships.getAllPartnerships ();
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartnerships.getAllPartnerships ());
   }
 
   @Nonnull
   public IPartnershipMap getPartnershipMap ()
   {
-    m_aRWLock.readLock ().lock ();
-    try
-    {
-      return m_aPartnerships;
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    return m_aRWLock.readLocked ( () -> m_aPartnerships);
   }
 
   protected final void setPartnerships (@Nonnull final PartnershipMap aPartnerships) throws OpenAS2Exception

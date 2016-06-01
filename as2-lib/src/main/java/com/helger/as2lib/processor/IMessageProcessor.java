@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnegative;
@@ -45,6 +44,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.state.EChange;
 
 /**
@@ -68,18 +68,18 @@ public interface IMessageProcessor extends IDynamicComponent
 
   @Nonnull
   @ReturnsMutableCopy
-  List <IProcessorModule> getAllModules ();
+  ICommonsList <IProcessorModule> getAllModules ();
 
   @Nullable
   <T extends IProcessorModule> T getModuleOfClass (@Nonnull Class <T> aClass);
 
   @Nonnull
   @ReturnsMutableCopy
-  <T extends IProcessorModule> List <T> getAllModulesOfClass (@Nonnull Class <T> aClass);
+  <T extends IProcessorModule> ICommonsList <T> getAllModulesOfClass (@Nonnull Class <T> aClass);
 
   @Nonnull
   @ReturnsMutableCopy
-  List <IProcessorActiveModule> getAllActiveModules ();
+  ICommonsList <IProcessorActiveModule> getAllActiveModules ();
 
   void startActiveModules ();
 
