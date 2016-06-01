@@ -114,7 +114,8 @@ public final class DispositionType
       throw new DispositionException (this, null);
 
     if (m_sStatusModifier != null)
-      if (m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_ERROR) || m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_WARNING))
+      if (m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_ERROR) ||
+          m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_WARNING))
         throw new DispositionException (this, null);
   }
 
@@ -179,7 +180,11 @@ public final class DispositionType
   @Nonnull
   public static DispositionType createSuccess ()
   {
-    return new DispositionType (ACTION_AUTOMATIC_ACTION, MDNACTION_MDN_SENT_AUTOMATICALLY, STATUS_PROCESSED, null, null);
+    return new DispositionType (ACTION_AUTOMATIC_ACTION,
+                                MDNACTION_MDN_SENT_AUTOMATICALLY,
+                                STATUS_PROCESSED,
+                                null,
+                                null);
   }
 
   /**

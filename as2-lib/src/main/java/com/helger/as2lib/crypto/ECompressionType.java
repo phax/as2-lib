@@ -49,7 +49,7 @@ import com.helger.commons.lang.EnumHelper;
  */
 public enum ECompressionType implements IHasID <String>
 {
- /** Use ZLIB compression. */
+  /** Use ZLIB compression. */
   ZLIB ("zlib")
   {
     @Override

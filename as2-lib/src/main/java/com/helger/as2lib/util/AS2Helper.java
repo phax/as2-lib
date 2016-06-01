@@ -275,8 +275,7 @@ public final class AS2Helper
       aMDN.setHeader (CAS2Header.HEADER_SUBJECT, "Your Requested MDN Response");
     }
     aMDN.setText (new MessageParameters (aMsg).format (sText));
-    aMDN.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA,
-                       CAS2Info.NAME_VERSION +
+    aMDN.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, CAS2Info.NAME_VERSION +
                                                         "@" +
                                                         aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
                                                         ":" +

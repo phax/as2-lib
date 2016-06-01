@@ -58,12 +58,16 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   }
 
   @OverrideOnDemand
-  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return false;
   }
 
-  public void handle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+  public void handle (@Nonnull final String sAction,
+                      @Nonnull final IMessage aMsg,
+                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     throw new OpenAS2UnsupportedException ("Active modules don't handle anything by default");
   }

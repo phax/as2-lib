@@ -54,7 +54,9 @@ import com.helger.commons.state.EChange;
  */
 public interface IMessageProcessor extends IDynamicComponent
 {
-  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
+  void handle (@Nonnull String sAction,
+               @Nonnull IMessage aMsg,
+               @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
 
   void addModule (@Nonnull IProcessorModule aModule);
 

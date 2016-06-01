@@ -63,7 +63,8 @@ public class ProcessorException extends OpenAS2Exception
     return aSB.toString ();
   }
 
-  public ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <Throwable> aCauses)
+  public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
+                             @Nonnull @Nonempty final List <Throwable> aCauses)
   {
     super ("Processor '" +
            ClassHelper.getClassLocalName (aProcessor) +

@@ -55,7 +55,9 @@ public class DispositionDataContentHandler implements DataContentHandler
 
   static
   {
-    ADF1 = new ActivationDataFlavor (MimeBodyPart.class, "message/disposition-notification", "Disposition Notification");
+    ADF1 = new ActivationDataFlavor (MimeBodyPart.class,
+                                     "message/disposition-notification",
+                                     "Disposition Notification");
     ADFS = new DataFlavor [] { ADF1 };
   }
 
