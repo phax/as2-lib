@@ -32,6 +32,8 @@
  */
 package com.helger.as2lib.client;
 
+import java.time.Duration;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -51,6 +53,7 @@ public class AS2ClientResponse
   private String m_sOriginalMessageID;
   private Throwable m_aThrowable;
   private IMessageMDN m_aMDN;
+  private Duration m_aExecutionDuration;
 
   public AS2ClientResponse ()
   {}
@@ -117,6 +120,23 @@ public class AS2ClientResponse
     return m_aMDN == null ? null : m_aMDN.getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
   }
 
+  public void setExecutionTime (@Nonnull final Duration aExecutionDuration)
+  {
+    ValueEnforcer.notNull (aExecutionDuration, "ExecutionDuration");
+    m_aExecutionDuration = aExecutionDuration;
+  }
+
+  @Nullable
+  public Duration getExecutionDuration ()
+  {
+    return m_aExecutionDuration;
+  }
+
+  public boolean hasExecutionDuration ()
+  {
+    return m_aExecutionDuration != null;
+  }
+
   @Nonnull
   public String getAsString ()
   {
@@ -132,6 +152,8 @@ public class AS2ClientResponse
       aSB.append ("Error message: ").append (m_aThrowable.getMessage ()).append ('\n');
     if (getMDNText () != null)
       aSB.append ("MDN Text: ").append (getMDNText ()).append ('\n');
+    if (hasExecutionDuration ())
+      aSB.append ("Sending duration: ").append (m_aExecutionDuration.toString ()).append ('\n');
     return aSB.toString ();
   }
 }

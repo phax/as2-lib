@@ -64,6 +64,7 @@ import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.factory.IFactory;
+import com.helger.commons.timing.StopWatch;
 
 /**
  * A simple client that allows for sending AS2 Messages and retrieving of
@@ -288,6 +289,7 @@ public class AS2Client
   {
     final AS2ClientResponse aResponse = createResponse ();
     IMessage aMsg = null;
+    final StopWatch aSW = StopWatch.createdStarted ();
     try
     {
       final Partnership aPartnership = buildPartnership (aSettings);
@@ -357,6 +359,7 @@ public class AS2Client
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Response retrieved: " + aResponse.getAsString ());
 
+    aResponse.setExecutionTime (aSW.stopAndGetDuration ());
     return aResponse;
   }
 }
