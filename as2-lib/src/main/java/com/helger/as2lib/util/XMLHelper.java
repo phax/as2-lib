@@ -116,17 +116,17 @@ public final class XMLHelper
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static Map <String, String> mapAttributeNodes (@Nonnull final IMicroElement aNode,
-                                                        @Nonnull final String sNodeName,
-                                                        @Nonnull final String sNodeKeyName,
-                                                        @Nonnull final String sNodeValueName) throws OpenAS2Exception
+  public static ICommonsOrderedMap <String, String> mapAttributeNodes (@Nonnull final IMicroElement aNode,
+                                                                       @Nonnull final String sNodeName,
+                                                                       @Nonnull final String sNodeKeyName,
+                                                                       @Nonnull final String sNodeValueName) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aNode, "Node");
     ValueEnforcer.notNull (sNodeName, "NodeName");
     ValueEnforcer.notNull (sNodeKeyName, "NodeKeyName");
     ValueEnforcer.notNull (sNodeValueName, "NodeValueName");
 
-    final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap<> ();
+    final ICommonsOrderedMap <String, String> ret = new CommonsLinkedHashMap <> ();
     int nIndex = 0;
     for (final IMicroElement eChild : aNode.getAllChildElements (sNodeName))
     {

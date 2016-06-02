@@ -33,7 +33,6 @@
 package com.helger.as2lib.partner.xml;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
@@ -41,6 +40,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -74,7 +74,7 @@ public class Partner implements IPartner
 
   @Nonnull
   @ReturnsMutableCopy
-  public Map <String, String> getAllAttributes ()
+  public ICommonsMap <String, String> getAllAttributes ()
   {
     return m_aAttrs.getAllAttributes ();
   }

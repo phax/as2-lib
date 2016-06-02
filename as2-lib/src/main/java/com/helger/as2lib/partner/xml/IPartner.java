@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.name.IHasName;
 
 /**
@@ -52,5 +53,5 @@ public interface IPartner extends IHasName, Iterable <Map.Entry <String, String>
    */
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, String> getAllAttributes ();
+  ICommonsMap <String, String> getAllAttributes ();
 }

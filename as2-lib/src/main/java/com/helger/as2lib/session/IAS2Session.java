@@ -33,7 +33,6 @@
 package com.helger.as2lib.session;
 
 import java.net.Proxy;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,6 +43,7 @@ import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsMap;
 
 /**
  * This interface provides configuration and resource information, and a means
@@ -90,7 +90,7 @@ public interface IAS2Session
    */
   @Nonnull
   @ReturnsMutableCopy
-  Map <String, IDynamicComponent> getAllComponents ();
+  ICommonsMap <String, IDynamicComponent> getAllComponents ();
 
   /**
    * Short-cut method to retrieve a certificate factory.

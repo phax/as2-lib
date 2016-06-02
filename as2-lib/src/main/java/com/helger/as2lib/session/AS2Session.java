@@ -48,7 +48,6 @@ import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
@@ -69,7 +68,7 @@ public class AS2Session implements IAS2Session
   public static final boolean DEFAULT_CRYPTO_SIGN_INCLUDE_CERTIFICATE_IN_BODY_PART = true;
   public static final boolean DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART = true;
 
-  private final ICommonsMap <String, IDynamicComponent> m_aComponents = new CommonsHashMap<> ();
+  private final ICommonsMap <String, IDynamicComponent> m_aComponents = new CommonsHashMap <> ();
   private boolean m_bCryptoSignIncludeCertificateInBodyPart = DEFAULT_CRYPTO_SIGN_INCLUDE_CERTIFICATE_IN_BODY_PART;
   private boolean m_bCryptoVerifyUseCertificateInBodyPart = DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART;
   private Proxy m_aHttpProxy;
@@ -132,7 +131,7 @@ public class AS2Session implements IAS2Session
   @ReturnsMutableCopy
   public final ICommonsMap <String, IDynamicComponent> getAllComponents ()
   {
-    return CollectionHelper.newMap (m_aComponents);
+    return m_aComponents.getClone ();
   }
 
   @Nonnull

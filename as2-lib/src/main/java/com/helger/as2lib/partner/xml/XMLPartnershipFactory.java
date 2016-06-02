@@ -53,6 +53,7 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.XMLHelper;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.microdom.IMicroDocument;
 import com.helger.commons.microdom.IMicroElement;
@@ -151,10 +152,10 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final String sNodeName = "attribute";
     final String sNodeKeyName = "name";
     final String sNodeValueName = "value";
-    final Map <String, String> aAttributes = XMLHelper.mapAttributeNodes (aNode,
-                                                                          sNodeName,
-                                                                          sNodeKeyName,
-                                                                          sNodeValueName);
+    final ICommonsOrderedMap <String, String> aAttributes = XMLHelper.mapAttributeNodes (aNode,
+                                                                                         sNodeName,
+                                                                                         sNodeKeyName,
+                                                                                         sNodeValueName);
     aPartnership.addAllAttributes (aAttributes);
   }
 

@@ -79,16 +79,6 @@ public class CompositeParameters extends AbstractParameterParser
 
   /**
    * @return <code>true</code> to ignore missing parameters
-   * @deprecated Use {@link #isIgnoreMissingParsers()} instead
-   */
-  @Deprecated
-  public boolean getIgnoreMissingParsers ()
-  {
-    return isIgnoreMissingParsers ();
-  }
-
-  /**
-   * @return <code>true</code> to ignore missing parameters
    */
   public boolean isIgnoreMissingParsers ()
   {
@@ -154,10 +144,10 @@ public class CompositeParameters extends AbstractParameterParser
 
   @Nonnull
   @ReturnsMutableObject ("by design")
-  protected final Map <String, AbstractParameterParser> getParameterParsers ()
+  protected final ICommonsMap <String, AbstractParameterParser> getParameterParsers ()
   {
     if (m_aParameterParsers == null)
-      m_aParameterParsers = new CommonsHashMap<> ();
+      m_aParameterParsers = new CommonsHashMap <> ();
     return m_aParameterParsers;
   }
 }
