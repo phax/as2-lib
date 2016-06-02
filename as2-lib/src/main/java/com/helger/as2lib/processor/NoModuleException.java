@@ -42,7 +42,6 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.ICommonsMap;
 
 public class NoModuleException extends OpenAS2Exception
