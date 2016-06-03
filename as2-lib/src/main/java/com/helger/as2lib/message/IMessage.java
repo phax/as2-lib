@@ -79,7 +79,6 @@ public interface IMessage extends IBaseMessage
   @Nullable
   MimeBodyPart getData ();
 
-  @Nonnull
   void setData (@Nonnull MimeBodyPart aData);
 
   @Nullable

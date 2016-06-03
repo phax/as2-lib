@@ -90,7 +90,6 @@ public class AS2Client
    * @param aAS2SenderModuleFactory
    *        The factory to be used. May not be <code>null</code>.
    */
-  @Nonnull
   public void setAS2SenderModuleFactory (@Nonnull final IFactory <AS2SenderModule> aAS2SenderModuleFactory)
   {
     m_aAS2SenderModuleFactory = ValueEnforcer.notNull (aAS2SenderModuleFactory, "AS2SenderModuleFactory");
@@ -324,7 +323,7 @@ public class AS2Client
         beforeSend (aSettings, aSession, aMsg);
 
         // Build options map for "handle"
-        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap<> ();
+        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap <> ();
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 
