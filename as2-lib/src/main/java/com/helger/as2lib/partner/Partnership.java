@@ -148,7 +148,7 @@ public class Partnership implements Serializable
    */
   public void addSenderIDs (@Nullable final Map <String, String> aMap)
   {
-    m_aSenderIDs.addAttributes (aMap);
+    m_aSenderIDs.setAttributes (aMap);
   }
 
   /**
@@ -316,7 +316,7 @@ public class Partnership implements Serializable
    */
   public void addReceiverIDs (@Nullable final Map <String, String> aMap)
   {
-    m_aReceiverIDs.addAttributes (aMap);
+    m_aReceiverIDs.setAttributes (aMap);
   }
 
   /**
@@ -841,7 +841,7 @@ public class Partnership implements Serializable
    */
   public void addAllAttributes (@Nullable final Map <String, String> aAttributes)
   {
-    m_aAttributes.addAttributes (aAttributes);
+    m_aAttributes.setAttributes (aAttributes);
   }
 
   /**
@@ -874,7 +874,7 @@ public class Partnership implements Serializable
    */
   protected boolean compareIDs (@Nonnull final IStringMap aIDs, @Nonnull final IStringMap aCompareTo)
   {
-    if (aIDs.containsNoAttribute ())
+    if (aIDs.isEmpty ())
       return false;
 
     for (final Map.Entry <String, String> aEntry : aIDs)

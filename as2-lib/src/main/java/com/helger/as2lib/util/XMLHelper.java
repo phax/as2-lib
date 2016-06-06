@@ -52,7 +52,6 @@ import com.helger.commons.collection.ext.CommonsLinkedHashMap;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.lang.GenericReflection;
 import com.helger.commons.microdom.IMicroElement;
-import com.helger.commons.microdom.IMicroQName;
 
 @Immutable
 public final class XMLHelper
@@ -79,10 +78,7 @@ public final class XMLHelper
     ValueEnforcer.notNull (aElement, "Element");
 
     final StringMap ret = new StringMap ();
-    final Map <IMicroQName, String> aAttrs = aElement.getAllQAttributes ();
-    if (aAttrs != null)
-      for (final Map.Entry <IMicroQName, String> aEntry : aAttrs.entrySet ())
-        ret.setAttribute (aEntry.getKey ().getName ().toLowerCase (Locale.US), aEntry.getValue ());
+    aElement.forAllAttributes ( (ns, name, value) -> ret.setAttribute (name.toLowerCase (Locale.US), value));
     return ret;
   }
 

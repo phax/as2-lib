@@ -32,63 +32,9 @@
  */
 package com.helger.as2lib.util;
 
-import java.util.Enumeration;
-import java.util.Map;
+import com.helger.commons.collection.attr.IAttributeContainer;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
-import com.helger.commons.collection.ext.ICommonsOrderedSet;
-import com.helger.commons.lang.ICloneable;
-
-public interface IStringMap extends ICloneable <IStringMap>, Iterable <Map.Entry <String, String>>
+public interface IStringMap extends IAttributeContainer <String, String>
 {
-  boolean containsAttribute (@Nullable String sName);
-
-  @Nonnull
-  @ReturnsMutableCopy
-  ICommonsOrderedMap <String, String> getAllAttributes ();
-
-  @Nullable
-  String getAttributeAsString (@Nullable String sName);
-
-  @Nullable
-  String getAttributeAsString (@Nullable String sName, @Nullable String sDefault);
-
-  int getAttributeAsInt (@Nullable String sName);
-
-  int getAttributeAsInt (@Nullable String sName, int nDefault);
-
-  long getAttributeAsLong (@Nullable String sName);
-
-  long getAttributeAsLong (@Nullable String sName, long nDefault);
-
-  double getAttributeAsDouble (@Nullable String sName);
-
-  double getAttributeAsDouble (@Nullable String sName, double dDefault);
-
-  boolean getAttributeAsBoolean (@Nullable String sName);
-
-  boolean getAttributeAsBoolean (@Nullable String sName, boolean bDefault);
-
-  @Nonnull
-  @ReturnsMutableCopy
-  Enumeration <String> getAttributeNames ();
-
-  @Nonnull
-  @ReturnsMutableCopy
-  ICommonsOrderedSet <String> getAllAttributeNames ();
-
-  @Nonnull
-  @ReturnsMutableCopy
-  ICommonsList <String> getAllAttributeValues ();
-
-  @Nonnegative
-  int getAttributeCount ();
-
-  boolean containsNoAttribute ();
+  /* empty */
 }

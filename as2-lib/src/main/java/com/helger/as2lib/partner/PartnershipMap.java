@@ -56,7 +56,7 @@ import com.helger.commons.state.EChange;
 @NotThreadSafe
 public final class PartnershipMap implements IPartnershipMap
 {
-  private final ICommonsOrderedMap <String, Partnership> m_aMap = new CommonsLinkedHashMap<> ();
+  private final ICommonsOrderedMap <String, Partnership> m_aMap = new CommonsLinkedHashMap <> ();
 
   public PartnershipMap ()
   {}
@@ -141,7 +141,7 @@ public final class PartnershipMap implements IPartnershipMap
   private static boolean _arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs,
                                                 @Nonnull final IStringMap aPartnerIDs)
   {
-    if (aSearchIDs.containsNoAttribute ())
+    if (aSearchIDs.isEmpty ())
       return false;
 
     for (final Map.Entry <String, String> aSearchEntry : aSearchIDs)
