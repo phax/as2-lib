@@ -32,10 +32,15 @@
  */
 package com.helger.as2lib;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.security.SecureRandom;
+import java.util.Random;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.helger.commons.random.RandomHelper;
+import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.SystemProperties;
 
@@ -55,7 +60,10 @@ public final class AS2GlobalSettings
   public static final boolean DEFAULT_USE_SECURE_RANDOM = StringParser.parseBool (SystemProperties.getPropertyValueOrNull ("AS2.useSecureRandom"),
                                                                                   true);
 
-  private static final AtomicBoolean s_aUseSecureRandom = new AtomicBoolean (DEFAULT_USE_SECURE_RANDOM);
+  static
+  {
+    RandomHelper.setUseSecureRandom (DEFAULT_USE_SECURE_RANDOM);
+  }
 
   private AS2GlobalSettings ()
   {}
@@ -68,17 +76,31 @@ public final class AS2GlobalSettings
    * @param bUseSecureRandom
    *        <code>true</code> to enable it, <code>false</code> to disable it.
    */
+  @Deprecated
   public static void setUseSecureRandom (final boolean bUseSecureRandom)
   {
-    s_aUseSecureRandom.set (bUseSecureRandom);
+    RandomHelper.setUseSecureRandom (bUseSecureRandom);
   }
 
   /**
    * @return <code>true</code> if SecureRandom is used where possible,
    *         <code>false</code> to use Random or the like.
    */
+  @Deprecated
   public static boolean isUseSecureRandom ()
   {
-    return s_aUseSecureRandom.get ();
+    return RandomHelper.isUseSecureRandom ();
+  }
+
+  @Nonnull
+  public static Random getRandom ()
+  {
+    return RandomHelper.getRandom ();
+  }
+
+  @Nullable
+  public static SecureRandom getSecureRandom ()
+  {
+    return RandomHelper.isUseSecureRandom () ? VerySecureRandom.getInstance () : null;
   }
 }

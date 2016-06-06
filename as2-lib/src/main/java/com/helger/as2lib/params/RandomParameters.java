@@ -38,20 +38,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.AS2GlobalSettings;
-import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringHelper;
 
 public class RandomParameters extends AbstractParameterParser
 {
-  private static final Random s_aRandom;
-
-  static
-  {
-    if (AS2GlobalSettings.isUseSecureRandom ())
-      s_aRandom = VerySecureRandom.getInstance ();
-    else
-      s_aRandom = new Random ();
-  }
+  private static final Random s_aRandom = AS2GlobalSettings.getRandom ();
 
   @Override
   @Deprecated
