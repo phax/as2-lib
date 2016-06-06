@@ -34,7 +34,6 @@ package com.helger.as2lib;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -42,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.lang.NonBlockingProperties;
 
 /**
  * Global information constants.
@@ -64,7 +64,7 @@ public final class CAS2Info
     String sProjectVersion = "undefined";
     try
     {
-      final Properties p = new Properties ();
+      final NonBlockingProperties p = new NonBlockingProperties ();
       final InputStream aIS = ClassPathResource.getInputStream ("as2-lib-version.properties");
       if (aIS != null)
       {
