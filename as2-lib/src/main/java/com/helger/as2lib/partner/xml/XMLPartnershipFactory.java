@@ -55,12 +55,12 @@ import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.XMLHelper;
 import com.helger.commons.collection.ext.ICommonsOrderedMap;
 import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.microdom.IMicroDocument;
-import com.helger.commons.microdom.IMicroElement;
-import com.helger.commons.microdom.MicroDocument;
-import com.helger.commons.microdom.serialize.MicroReader;
-import com.helger.commons.microdom.serialize.MicroWriter;
 import com.helger.commons.string.StringHelper;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.IMicroElement;
+import com.helger.xml.microdom.MicroDocument;
+import com.helger.xml.microdom.serialize.MicroReader;
+import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
  * original author unknown this release added logic to store partnerships and

@@ -70,8 +70,10 @@
     <dependencies>
       <dependency>
         <groupId>com.helger</groupId>
-        <artifactId>ph-commons</artifactId>
+        <artifactId>ph-commons-parent-pom</artifactId>
         <version>8.0.0-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>

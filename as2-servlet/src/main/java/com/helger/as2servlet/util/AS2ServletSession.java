@@ -34,9 +34,9 @@ import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.XMLHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.microdom.IMicroDocument;
-import com.helger.commons.microdom.IMicroElement;
-import com.helger.commons.microdom.serialize.MicroReader;
+import com.helger.xml.microdom.IMicroDocument;
+import com.helger.xml.microdom.IMicroElement;
+import com.helger.xml.microdom.serialize.MicroReader;
 
 /**
  * A special {@link AS2Session} that loads its configuration from a file.
