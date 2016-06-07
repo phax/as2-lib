@@ -49,10 +49,10 @@ import javax.net.ssl.TrustManager;
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
-import com.helger.as2lib.util.http.DoNothingTrustManager;
-import com.helger.as2lib.util.http.HostnameVerifierAlwaysTrue;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.ws.HostnameVerifierVerifyAll;
+import com.helger.commons.ws.TrustManagerTrustAll;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
@@ -79,7 +79,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     final SecureRandom aSecureRandom = AS2GlobalSettings.getSecureRandom ();
     // If aSecureRandom stays null it is also okay
 
-    aSSLCtx.init (null, new TrustManager [] { new DoNothingTrustManager () }, aSecureRandom);
+    aSSLCtx.init (null, new TrustManager [] { new TrustManagerTrustAll () }, aSecureRandom);
     return aSSLCtx;
   }
 
@@ -95,7 +95,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   @OverrideOnDemand
   protected HostnameVerifier createHostnameVerifier ()
   {
-    return new HostnameVerifierAlwaysTrue ();
+    return new HostnameVerifierVerifyAll ();
   }
 
   @Nonnull

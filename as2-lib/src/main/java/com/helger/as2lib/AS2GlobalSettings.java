@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import com.helger.commons.random.RandomHelper;
-import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.SystemProperties;
 
@@ -101,6 +100,6 @@ public final class AS2GlobalSettings
   @Nullable
   public static SecureRandom getSecureRandom ()
   {
-    return RandomHelper.isUseSecureRandom () ? VerySecureRandom.getInstance () : null;
+    return RandomHelper.getSecureRandom ();
   }
 }
