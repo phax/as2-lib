@@ -54,6 +54,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.LoggingFileOperationCallback;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableLong;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
 
 @Immutable
@@ -231,7 +232,8 @@ public final class IOHelper
   public static String getFilenameFromMessageID (@Nonnull final String sMessageID)
   {
     // Remove angle brackets manually
-    final String s = sMessageID.replace ("<", "").replace (">", "");
+    String s = StringHelper.removeAll (sMessageID, '<');
+    s = StringHelper.removeAll (s, '>');
     return FilenameHelper.getAsSecureValidASCIIFilename (s);
   }
 }
