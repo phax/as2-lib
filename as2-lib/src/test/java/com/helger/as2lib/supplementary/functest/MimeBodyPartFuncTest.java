@@ -37,7 +37,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.activation.DataHandler;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
@@ -51,13 +50,13 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StringInputStream;
 import com.helger.commons.string.StringHelper;
+import com.helger.mail.datasource.ByteArrayDataSource;
 
 /**
  * Special tests to see how {@link MimeBodyPart} works :)
@@ -154,7 +153,7 @@ public final class MimeBodyPartFuncTest
     final String sReceivedContentType = aReceivedContentType.toString ();
 
     final MimeBodyPart aReceivedPart = new MimeBodyPart ();
-    aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null)));
+    aReceivedPart.setDataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null).getAsDataHandler ());
     aReceivedPart.setHeader ("x-received", "true");
 
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();

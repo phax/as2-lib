@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
@@ -63,9 +64,10 @@ public class AS2ClientRequest
   private final String m_sSubject;
   // Set either text or filename or stream
   // Precedence: byte[] before text
-  private byte [] m_aData;
-  private String m_sText;
-  private Charset m_aCharset;
+  private byte [] m_aDataByteArray;
+  private String m_sDataText;
+  private Charset m_aDataCharset;
+  private DataHandler m_aDataHandler;
   private String m_sFilename;
 
   /**
@@ -196,18 +198,30 @@ public class AS2ClientRequest
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final byte [] aData)
   {
-    m_aData = ValueEnforcer.notNull (aData, "Data");
-    m_sText = null;
-    m_aCharset = null;
+    m_aDataByteArray = ValueEnforcer.notNull (aData, "Data");
+    m_sDataText = null;
+    m_aDataCharset = null;
+    m_aDataHandler = null;
     return this;
   }
 
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final String sText, @Nullable final Charset aCharset)
   {
-    m_aData = null;
-    m_sText = ValueEnforcer.notNull (sText, "Text");
-    m_aCharset = aCharset;
+    m_aDataByteArray = null;
+    m_sDataText = ValueEnforcer.notNull (sText, "Text");
+    m_aDataCharset = aCharset;
+    m_aDataHandler = null;
+    return this;
+  }
+
+  @Nonnull
+  public AS2ClientRequest setData (@Nonnull final DataHandler aDataHandler)
+  {
+    m_aDataByteArray = null;
+    m_sDataText = null;
+    m_aDataCharset = null;
+    m_aDataHandler = ValueEnforcer.notNull (aDataHandler, "DataHandler");
     return this;
   }
 
@@ -230,20 +244,25 @@ public class AS2ClientRequest
 
   public void applyDataOntoMimeBodyPart (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
-    if (m_aData != null)
+    if (m_aDataByteArray != null)
     {
       // Set content with a specific MIME type
-      aPart.setContent (m_aData, m_sContentType);
+      aPart.setContent (m_aDataByteArray, m_sContentType);
     }
     else
-      if (m_sText != null)
+      if (m_sDataText != null)
       {
         // Set text with an optional charset
         // Sets the "text/plain" content-type internally!
-        aPart.setText (m_sText, m_aCharset == null ? null : m_aCharset.name ());
+        aPart.setText (m_sDataText, m_aDataCharset == null ? null : m_aDataCharset.name ());
       }
       else
-        throw new IllegalStateException ("No data specified in AS2 client request!");
+        if (m_aDataHandler != null)
+        {
+          aPart.setDataHandler (m_aDataHandler);
+        }
+        else
+          throw new IllegalStateException ("No data specified in AS2 client request!");
 
     // Set as filename as well
     if (m_sFilename != null)

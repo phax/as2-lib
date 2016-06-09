@@ -40,7 +40,6 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
 
-import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
@@ -70,13 +69,13 @@ import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
-import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
+import com.helger.mail.datasource.ByteArrayDataSource;
 
 public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 {
@@ -126,7 +125,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMsg.setData (aReceivedPart);
 
       // MimeBodyPart receivedPart = new MimeBodyPart();
-      aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null)));
+      aReceivedPart.setDataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null).getAsDataHandler ());
       // Must be set AFTER the DataHandler!
       aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
 

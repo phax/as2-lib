@@ -37,7 +37,6 @@ import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
-import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
@@ -77,13 +76,13 @@ import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
-import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.timing.StopWatch;
+import com.helger.mail.datasource.ByteArrayDataSource;
 
 public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
@@ -364,7 +363,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         final String sReceivedContentType = aReceivedContentType.toString ();
 
         final MimeBodyPart aReceivedPart = new MimeBodyPart ();
-        aReceivedPart.setDataHandler (new DataHandler (new ByteArrayDataSource (aMsgData, sReceivedContentType, null)));
+        aReceivedPart.setDataHandler (new ByteArrayDataSource (aMsgData,
+                                                               sReceivedContentType,
+                                                               null).getAsDataHandler ());
 
         // Header must be set AFTER the DataHandler!
         aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);

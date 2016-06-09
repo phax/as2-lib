@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
@@ -59,7 +58,6 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
-import com.helger.as2lib.util.javamail.ByteArrayDataSource;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.ext.CommonsHashMap;
@@ -68,6 +66,7 @@ import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
+import com.helger.mail.datasource.ByteArrayDataSource;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractActivePollingModule
 {
@@ -356,7 +355,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
       final ByteArrayDataSource aByteSource = new ByteArrayDataSource (aData, sContentType, null);
       final MimeBodyPart aBody = new MimeBodyPart ();
-      aBody.setDataHandler (new DataHandler (aByteSource));
+      aBody.setDataHandler (aByteSource.getAsDataHandler ());
 
       // Headers must be set AFTER the DataHandler
       final String sEncodeType = aMsg.getPartnership ()
@@ -406,7 +405,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   public ICommonsMap <String, Long> getAllTrackedFiles ()
   {
     if (m_aTrackedFiles == null)
-      m_aTrackedFiles = new CommonsHashMap<> ();
+      m_aTrackedFiles = new CommonsHashMap <> ();
     return m_aTrackedFiles;
   }
 }
