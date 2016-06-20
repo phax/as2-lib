@@ -15,8 +15,6 @@
  */
 package com.helger.as2lib.partner.mongodb;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bson.Document;
@@ -34,8 +32,10 @@ import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.collection.ext.CommonsArrayList;
+import com.helger.commons.collection.ext.CommonsHashMap;
 import com.helger.commons.collection.ext.CommonsHashSet;
 import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.state.EChange;
 import com.mongodb.client.MongoCollection;
@@ -194,14 +194,14 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   private static Partnership toPartnership (final Document document) {
     final Partnership partnership = new Partnership (document.getString (NAME_KEY));
     final Document senderIDs = (Document) document.get (SENDER_IDS);
-    final Map <String, String> senders = new HashMap<> (senderIDs.size ());
+    final ICommonsMap <String, String> senders = new CommonsHashMap<> (senderIDs.size ());
     for (final Entry <String, Object> e : senderIDs.entrySet ()) {
       senders.put (e.getKey (), e.getValue ().toString ());
     }
     partnership.addSenderIDs (senders);
 
     final Document receiverIDs = (Document) document.get (RECEIVER_IDS);
-    final Map <String, String> receivers = new HashMap<> (receiverIDs.size ());
+    final ICommonsMap <String, String> receivers = new CommonsHashMap<> (receiverIDs.size ());
     for (final Entry <String, Object> e : receiverIDs.entrySet ()) {
       receivers.put (e.getKey (), e.getValue ().toString ());
     }
@@ -209,7 +209,7 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
 
     final Document attributes = (Document) document.get (ATTRIBUTES);
     if (attributes != null) {
-      final Map <String, String> att = new HashMap<> (receiverIDs.size ());
+      final ICommonsMap <String, String> att = new CommonsHashMap<> (receiverIDs.size ());
       for (final Entry <String, Object> e : attributes.entrySet ()) {
         att.put (e.getKey (), e.getValue ().toString ());
       }
