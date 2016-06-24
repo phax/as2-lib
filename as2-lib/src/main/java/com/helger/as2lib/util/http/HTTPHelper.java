@@ -496,7 +496,7 @@ public final class HTTPHelper
   }
 
   /**
-   * Copy headers from an Http connection to an InternetHeaders object
+   * Copy headers from an HTTP connection to an InternetHeaders object
    *
    * @param aConn
    *        Connection - source. May not be <code>null</code>.
