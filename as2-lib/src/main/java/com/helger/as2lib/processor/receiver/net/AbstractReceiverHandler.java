@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2InputStreamProvider;
@@ -51,6 +50,8 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.codec.IDecoder;
 import com.helger.commons.codec.IdentityCodec;
 import com.helger.commons.string.StringHelper;
+import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.mail.cte.IContentTransferEncoding;
 
 /**
  * Abstract base class for Message and MDN receive handlers.
@@ -92,13 +93,13 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
                                                                 .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ()));
     if (StringHelper.hasText (sContentTransferEncoding))
     {
-      final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
-      if (eCTE == null)
+      final IContentTransferEncoding aCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
+      if (aCTE == null)
         s_aLogger.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
       else
       {
         // Decode data if necessary
-        final IDecoder <byte [], byte []> aDecoder = eCTE.createDecoder ();
+        final IDecoder <byte [], byte []> aDecoder = aCTE.createDecoder ();
         if (!(aDecoder instanceof IdentityCodec <?>))
         {
           // Remember original length before continuing

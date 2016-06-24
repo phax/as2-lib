@@ -75,7 +75,6 @@ import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
-import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -90,6 +89,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 public class AS2SenderModule extends AbstractHttpSenderModule
 {

@@ -97,7 +97,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -111,6 +110,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle.
@@ -284,7 +284,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ()))
+         final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ()))
     {
       aPart.getDataHandler ().writeTo (aOS);
     }

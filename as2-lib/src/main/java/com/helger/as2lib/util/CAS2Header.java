@@ -35,6 +35,7 @@ package com.helger.as2lib.util;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.CAS2Info;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 @Immutable
 public final class CAS2Header

@@ -48,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.charset.CCharset;
@@ -56,6 +55,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StringInputStream;
 import com.helger.commons.string.StringHelper;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
 
 /**

@@ -55,7 +55,6 @@ import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.EContentTransferEncoding;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableObject;
@@ -66,6 +65,7 @@ import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractActivePollingModule
@@ -405,7 +405,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   public ICommonsMap <String, Long> getAllTrackedFiles ()
   {
     if (m_aTrackedFiles == null)
-      m_aTrackedFiles = new CommonsHashMap <> ();
+      m_aTrackedFiles = new CommonsHashMap<> ();
     return m_aTrackedFiles;
   }
 }
