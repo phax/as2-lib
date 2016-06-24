@@ -58,6 +58,7 @@ import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.commons.timing.StopWatch;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
@@ -99,15 +100,15 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     {
       s_aLogger.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-      aConn.setRequestProperty (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-      aConn.setRequestProperty (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+      final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn);
+      aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+      aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
       final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaders ();
       while (aHeaders.hasMoreElements ())
       {
         final Header aHeader = (Header) aHeaders.nextElement ();
-        final String sHeaderValue = aHeader.getValue ().replace ('\t', ' ').replace ('\n', ' ').replace ('\r', ' ');
-        aConn.setRequestProperty (aHeader.getName (), sHeaderValue);
+        aHeaderWrapper.setHttpHeader (aHeader.getName (), aHeader.getValue ());
       }
 
       // Note: closing this stream causes connection abort errors on some AS2

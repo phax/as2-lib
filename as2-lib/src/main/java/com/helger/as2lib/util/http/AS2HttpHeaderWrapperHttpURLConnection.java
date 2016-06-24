@@ -57,6 +57,17 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
 
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    m_aConn.setRequestProperty (sName, sValue);
+    if (sValue != null)
+    {
+      // Avoid having header values spanning multiple lines!
+      // This has been deprecated by RFC 7230 and Jetty 9.3 refuses to parse
+      // these
+      // requests with HTTP 400 by default
+      final String sHeaderValue = sValue.replace ('\t', ' ').replace ('\n', ' ').replace ('\r', ' ');
+
+      m_aConn.setRequestProperty (sName, sHeaderValue);
+    }
+    else
+      m_aConn.setRequestProperty (sName, "");
   }
 }

@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.processor.sender;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -86,6 +87,7 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
@@ -93,6 +95,9 @@ import com.helger.mail.cte.EContentTransferEncoding;
 
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
+  /** Must be false in production! */
+  private static final boolean DEBUG_DUMP_OUTGOING_HTTP = false;
+
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
   private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
@@ -600,7 +605,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
-                             @Nonnull final MimeBodyPart aSecuredData,
+                             @Nonnull final MimeBodyPart aSecuredMimePart,
                              @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
   {
     final Partnership aPartnership = aMsg.getPartnership ();
@@ -619,25 +624,47 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                    getSession ().getHttpProxy ());
     try
     {
+      s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
+
       updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn), aMsg);
 
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
 
-      s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
-
       // Note: closing this stream causes connection abort errors on some AS2
       // servers
-      final OutputStream aMsgOS = aConn.getOutputStream ();
+      OutputStream aMsgOS = aConn.getOutputStream ();
+
+      // This stream dumps the HTTP
+      OutputStream aDebugOS = null;
+      if (DEBUG_DUMP_OUTGOING_HTTP)
+      {
+        aDebugOS = StreamHelper.getBuffered (FileHelper.getOutputStream (new File ("as2-sent-data",
+                                                                                   Long.toString (System.currentTimeMillis ()) +
+                                                                                                    ".rawhttp")));
+        final OutputStream aFinalDebugOS = aDebugOS;
+        aMsgOS = new WrappedOutputStream (aMsgOS)
+        {
+          @Override
+          public final void write (final int b) throws IOException
+          {
+            super.write (b);
+            aFinalDebugOS.write (b);
+          }
+        };
+      }
 
       // Transfer the data
-      final InputStream aMsgIS = aSecuredData.getInputStream ();
+      final InputStream aMsgIS = aSecuredMimePart.getInputStream ();
 
       final StopWatch aSW = StopWatch.createdStarted ();
       // Main transmission - closes InputStream
       final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
       aSW.stop ();
       s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+
+      // Close debug OS
+      StreamHelper.close (aDebugOS);
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
