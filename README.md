@@ -22,29 +22,31 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
-  * 2016-05-09 Version 2.2.8
+  * Version 3.0.0 - 2016-xx-yy
+    * JDK 8 is now required  
+  * Version 2.2.8 - 2016-05-09
     * Improved AS2 client https customization and API
-  * 2016-04-27 Version 2.2.7
+  * Version 2.2.7 - 2016-04-27 
     * Added per partnership attribute `rfc3851_micalgs` to determine to use RFC 3851 MIC algorithm names instead of the default RFC 5751 MIC algorithm names (issue #18)
     * Fixed problem with special character escaping in MDN context (issue #19)
-  * 2016-03-02 Version 2.2.6
+  * Version 2.2.6 - 2016-03-02
     * Added support for dumping HTTP requests when using `as2-servlet` 
-  * 2015-12-01 Version 2.2.5
+  * Version 2.2.5 - 2015-12-01 
     * Added a validity check so that expired certificates can no longer be used to sign, verify and encrypt messages. Decrypt is still possible.
     * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings. (issue #17)
     * Fixed potential endless loop when a retry count was specified at a partnership (issue #16) 
-  * 2015-11-11 Version 2.2.4
+  * Version 2.2.4 - 2015-11-11
     * Fixed a minor issue where details of a ProcessingException were not passed into the MDN text
-  * 2015-10-22 Version 2.2.3
+  * Version 2.2.3 - 2015-10-22
     * Improved API for handling MDN errors (as2-lib issue #11)  
     * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
     * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
     * The new sub-project `as2-servlet` is now contained
-  * 2015-10-19 Version 2.2.2
+  * Version 2.2.2 - 2015-10-19
     * Updated to Bouncy Castle 1.53 (as2-lib issue #10)
-  * 2015-10-08 Version 2.2.1
+  * Version 2.2.1 - 2015-10-08
     * Extended API and some debug logging added
-  * 2015-09-27 Version 2.2.0
+  * Version 2.2.0 - 2015-09-27
     * added system properties (see below) for configuration and debugging purposes
     * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
     * added the following new partnership attributes:
@@ -57,7 +59,7 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
       * `disable_decompress` [receiver side] to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
       * `sign_include_cert_in_body_part` [sender side] to determine whether the certificate used for signing should be included in the signed content part (when `true`) or not (when `false`). The default value is `true`.
       * Added the sub-project `as2-partnership-mongodb` - thanks to @jochenberger for contributing it
-  * 2015-08-20 Version 2.1.0
+  * Version 2.1.0 - 2015-08-20
     * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
     * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
 
