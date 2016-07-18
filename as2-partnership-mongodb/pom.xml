@@ -29,7 +29,6 @@
   <description>A MongoDB based partnership factory implementation</description>
   <url>https://github.com/phax/as2-lib/as2-partnership-mongodb</url>
   <inceptionYear>2015</inceptionYear>
-
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,14 +36,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <developers>
     <developer>
       <id>jochenberger</id>
       <url>https://github.com/jochenberger</url>
     </developer>
   </developers>
-
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -55,7 +52,6 @@
       <artifactId>mongodb-driver</artifactId>
       <version>3.2.2</version>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
@@ -67,7 +63,7 @@
       <version>1.50.5</version>
       <scope>test</scope>
     </dependency>
-        <!-- Mandatory dependencies for using Spock -->
+    <!-- Mandatory dependencies for using Spock -->
     <dependency>
       <groupId>org.spockframework</groupId>
       <artifactId>spock-core</artifactId>
@@ -75,7 +71,7 @@
       <scope>test</scope>
     </dependency>
     <!-- Optional dependencies for using Spock -->
-    <dependency> 
+    <dependency>
       <!-- use a specific Groovy version rather than the one specified by spock-core -->
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
@@ -83,7 +79,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -92,12 +87,8 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>
-              com.helger.as2lib.partner.mongodb.*
-            </Export-Package>
-            <Import-Package>
-              !javax.annotation.*,*
-            </Import-Package>
+            <Export-Package>com.helger.as2lib.partner.mongodb.*</Export-Package>
+            <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2015-2016 Philip Helger (www.helger.com)
@@ -29,7 +30,6 @@
   <description>AS2 receival servlet</description>
   <url>https://github.com/phax/as2-lib/as2-servlet</url>
   <inceptionYear>2015</inceptionYear>
-  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,30 +37,26 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
- 
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>as2-lib</artifactId>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
@@ -69,12 +65,8 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>
-              com.helger.as2servlet.*
-            </Export-Package>
-            <Import-Package>
-              !javax.annotation.*,*
-            </Import-Package>
+            <Export-Package>com.helger.as2servlet.*</Export-Package>
+            <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

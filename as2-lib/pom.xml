@@ -46,7 +46,6 @@
   <description>Open AS2 fork - library part</description>
   <url>https://github.com/phax/as2-lib/as2-lib</url>
   <inceptionYear>2013</inceptionYear>
-  
   <licenses>
     <license>
       <name>BSD</name>
@@ -54,7 +53,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -72,14 +70,12 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk15on</artifactId>
     </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
-
   <build>
     <resources>
       <!-- Don't specify the targetPath because this leads to a broken JAR file 
@@ -99,7 +95,6 @@
         </excludes>
       </resource>
     </resources>
-
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -107,12 +102,10 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>
-              com.helger.as2lib.*
-            </Export-Package>
-            <Import-Package>
-              !javax.annotation.*,*
-            </Import-Package>
+            <Export-Package>com.helger.as2lib.*</Export-Package>
+            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
+            <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.as2lib.config.ThirdPartyModuleProvider_as2_lib</Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
