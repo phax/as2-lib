@@ -33,6 +33,7 @@
 package com.helger.as2lib.params;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.DateHelper;
 
@@ -47,7 +48,7 @@ public class DateParameters extends AbstractParameterParser
 
   @Override
   @Nonnull
-  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
+  public String getParameter (@Nullable final String sKey) throws InvalidParameterException
   {
     if (sKey == null)
       throw new InvalidParameterException ("Invalid key", this, sKey, null);

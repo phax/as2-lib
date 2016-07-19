@@ -60,7 +60,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
   @Nonnull
   public X509Certificate getCertificate (@Nonnull final IMessage aMsg,
-                                         @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                         @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     final String sAlias = getAlias (aMsg.getPartnership (), ePartnershipType);
     return internalGetCertificate (sAlias, ePartnershipType);
@@ -68,7 +68,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
   @Nullable
   public X509Certificate getCertificateOrNull (@Nonnull final IMessage aMsg,
-                                               @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                               @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     try
     {
@@ -83,7 +83,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
   @Nonnull
   public X509Certificate getCertificate (@Nonnull final IMessageMDN aMDN,
-                                         @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                         @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     final String sAlias = getAlias (aMDN.getPartnership (), ePartnershipType);
     return internalGetCertificate (sAlias, ePartnershipType);
@@ -91,7 +91,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
   @Nullable
   public X509Certificate getCertificateOrNull (@Nonnull final IMessageMDN aMDN,
-                                               @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                               @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     try
     {

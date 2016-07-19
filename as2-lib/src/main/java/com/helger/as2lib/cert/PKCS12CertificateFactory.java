@@ -155,7 +155,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
   }
 
   @Nonnull
-  public X509Certificate getCertificate (@Nonnull final String sAlias) throws OpenAS2Exception
+  public X509Certificate getCertificate (@Nullable final String sAlias) throws OpenAS2Exception
   {
     return internalGetCertificate (sAlias, null);
   }

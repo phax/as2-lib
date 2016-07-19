@@ -145,7 +145,7 @@ public final class DispositionType
   }
 
   @Nonnull
-  public static DispositionType createFromString (@Nonnull final String sDisposition) throws OpenAS2Exception
+  public static DispositionType createFromString (@Nullable final String sDisposition) throws OpenAS2Exception
   {
     if (sDisposition == null)
       throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition);

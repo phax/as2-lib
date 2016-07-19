@@ -53,7 +53,7 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 
   String getFilename () throws InvalidParameterException;
 
-  void setPassword (char [] aPassword);
+  void setPassword (@Nonnull char [] aPassword);
 
   char [] getPassword () throws InvalidParameterException;
 
