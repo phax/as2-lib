@@ -70,7 +70,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
   {
     if (aModule == null)
       return EChange.UNCHANGED;
-    return EChange.valueOf (m_aModules.remove (aModule));
+    return m_aModules.removeObject (aModule);
   }
 
   @Nonnegative
@@ -90,10 +90,7 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
   public <T extends IProcessorModule> T getModuleOfClass (@Nonnull final Class <T> aClass)
   {
     ValueEnforcer.notNull (aClass, "Class");
-    for (final IProcessorModule aModule : m_aModules)
-      if (aClass.isAssignableFrom (aModule.getClass ()))
-        return aClass.cast (aModule);
-    return null;
+    return m_aModules.findFirstMapped (x -> aClass.isAssignableFrom (x.getClass ()), x -> aClass.cast (x));
   }
 
   @Nonnull
@@ -101,22 +98,14 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
   public <T extends IProcessorModule> ICommonsList <T> getAllModulesOfClass (@Nonnull final Class <T> aClass)
   {
     ValueEnforcer.notNull (aClass, "Class");
-    final ICommonsList <T> ret = new CommonsArrayList<> ();
-    for (final IProcessorModule aModule : m_aModules)
-      if (aClass.isAssignableFrom (aModule.getClass ()))
-        ret.add (aClass.cast (aModule));
-    return ret;
+    return m_aModules.getAllInstanceOf (aClass);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <IProcessorActiveModule> getAllActiveModules ()
   {
-    final ICommonsList <IProcessorActiveModule> ret = new CommonsArrayList<> ();
-    for (final IProcessorModule aModule : getAllModules ())
-      if (aModule instanceof IProcessorActiveModule)
-        ret.add ((IProcessorActiveModule) aModule);
-    return ret;
+    return m_aModules.getAllInstanceOf (IProcessorActiveModule.class);
   }
 
   public void handle (@Nonnull final String sAction,
