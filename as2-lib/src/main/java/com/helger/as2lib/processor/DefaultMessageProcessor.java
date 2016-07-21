@@ -34,7 +34,6 @@ package com.helger.as2lib.processor;
 
 import java.util.Map;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -44,69 +43,14 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.state.EChange;
 
 @NotThreadSafe
 public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultMessageProcessor.class);
-
-  private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList<> ();
-
-  public void addModule (@Nonnull final IProcessorModule aModule)
-  {
-    ValueEnforcer.notNull (aModule, "Module");
-    m_aModules.add (aModule);
-  }
-
-  @Nonnull
-  public EChange removeModule (@Nullable final IProcessorModule aModule)
-  {
-    if (aModule == null)
-      return EChange.UNCHANGED;
-    return m_aModules.removeObject (aModule);
-  }
-
-  @Nonnegative
-  public int getModuleCount ()
-  {
-    return m_aModules.size ();
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsList <IProcessorModule> getAllModules ()
-  {
-    return m_aModules.getClone ();
-  }
-
-  @Nullable
-  public <T extends IProcessorModule> T getModuleOfClass (@Nonnull final Class <T> aClass)
-  {
-    ValueEnforcer.notNull (aClass, "Class");
-    return m_aModules.findFirstMapped (x -> aClass.isAssignableFrom (x.getClass ()), x -> aClass.cast (x));
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public <T extends IProcessorModule> ICommonsList <T> getAllModulesOfClass (@Nonnull final Class <T> aClass)
-  {
-    ValueEnforcer.notNull (aClass, "Class");
-    return m_aModules.getAllInstanceOf (aClass);
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public ICommonsList <IProcessorActiveModule> getAllActiveModules ()
-  {
-    return m_aModules.getAllInstanceOf (IProcessorActiveModule.class);
-  }
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
@@ -139,31 +83,5 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
       throw new ProcessorException (this, aCauses);
     if (!bModuleFound)
       throw new NoModuleException (sAction, aMsg, aOptions);
-  }
-
-  public void startActiveModules ()
-  {
-    for (final IProcessorActiveModule aModule : getAllActiveModules ())
-      try
-      {
-        aModule.start ();
-      }
-      catch (final OpenAS2Exception ex)
-      {
-        ex.terminate ();
-      }
-  }
-
-  public void stopActiveModules ()
-  {
-    for (final IProcessorActiveModule aModule : getAllActiveModules ())
-      try
-      {
-        aModule.stop ();
-      }
-      catch (final OpenAS2Exception ex)
-      {
-        ex.terminate ();
-      }
   }
 }
