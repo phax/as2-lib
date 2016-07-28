@@ -43,9 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.processor.module.IProcessorModule;
-import com.helger.commons.collection.ext.CommonsArrayList;
-import com.helger.commons.collection.ext.ICommonsList;
 
 @NotThreadSafe
 public class DefaultMessageProcessor extends AbstractMessageProcessor
@@ -59,29 +56,6 @@ public class DefaultMessageProcessor extends AbstractMessageProcessor
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("DefaultMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
 
-    final ICommonsList <Throwable> aCauses = new CommonsArrayList<> ();
-    boolean bModuleFound = false;
-
-    for (final IProcessorModule aModule : getAllModules ())
-      if (aModule.canHandle (sAction, aMsg, aOptions))
-      {
-        try
-        {
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("  handling with module " + aModule);
-
-          bModuleFound = true;
-          aModule.handle (sAction, aMsg, aOptions);
-        }
-        catch (final OpenAS2Exception ex)
-        {
-          aCauses.add (ex);
-        }
-      }
-
-    if (aCauses.isNotEmpty ())
-      throw new ProcessorException (this, aCauses);
-    if (!bModuleFound)
-      throw new NoModuleException (sAction, aMsg, aOptions);
+    executeAction (sAction, aMsg, aOptions);
   }
 }

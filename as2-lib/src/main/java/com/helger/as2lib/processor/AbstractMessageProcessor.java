@@ -32,12 +32,18 @@
  */
 package com.helger.as2lib.processor;
 
+import java.util.Map;
+
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.ValueEnforcer;
@@ -55,6 +61,8 @@ import com.helger.commons.state.EChange;
  */
 public abstract class AbstractMessageProcessor extends AbstractDynamicComponent implements IMessageProcessor
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractMessageProcessor.class);
+
   private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList<> ();
 
   public void addModule (@Nonnull final IProcessorModule aModule)
@@ -131,4 +139,35 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
         ex.terminate ();
       }
   }
+
+  protected final void executeAction (@Nonnull final String sAction,
+                                      @Nonnull final IMessage aMsg,
+                                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+  {
+    final ICommonsList <Throwable> aCauses = new CommonsArrayList<> ();
+    boolean bModuleFound = false;
+
+    for (final IProcessorModule aModule : getAllModules ())
+      if (aModule.canHandle (sAction, aMsg, aOptions))
+      {
+        try
+        {
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug ("  handling action '" + sAction + "' with module " + aModule);
+
+          bModuleFound = true;
+          aModule.handle (sAction, aMsg, aOptions);
+        }
+        catch (final OpenAS2Exception ex)
+        {
+          aCauses.add (ex);
+        }
+      }
+
+    if (aCauses.isNotEmpty ())
+      throw new ProcessorException (this, aCauses);
+    if (!bModuleFound)
+      throw new NoModuleException (sAction, aMsg, aOptions);
+  }
+
 }
