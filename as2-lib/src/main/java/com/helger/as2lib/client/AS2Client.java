@@ -52,6 +52,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.DefaultMessageProcessor;
+import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.resender.ImmediateResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
@@ -236,8 +237,7 @@ public class AS2Client
   @OverrideOnDemand
   protected void initMessageProcessor (@Nonnull final AS2Session aSession) throws OpenAS2Exception
   {
-    // Use a self-filling in-memory partnership factory
-    final DefaultMessageProcessor aMessageProcessor = new DefaultMessageProcessor ();
+    final IMessageProcessor aMessageProcessor = new DefaultMessageProcessor ();
     aSession.setMessageProcessor (aMessageProcessor);
   }
 
@@ -323,7 +323,7 @@ public class AS2Client
         beforeSend (aSettings, aSession, aMsg);
 
         // Build options map for "handle"
-        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap <> ();
+        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap<> ();
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 

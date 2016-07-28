@@ -51,7 +51,7 @@ import com.helger.commons.callback.exception.IExceptionCallback;
 /**
  * An implementation of {@link AbstractMessageProcessor} that uses a separate
  * thread for performing the main actions.
- * 
+ *
  * @author Philip Helger
  */
 @NotThreadSafe
@@ -93,12 +93,20 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
           // Block until the first object is in the queue
           final HandleObject aCurrentObject = m_aQueue.poll (1, TimeUnit.SECONDS);
           if (aCurrentObject != null)
-            executeAction (aCurrentObject.m_sAction, aCurrentObject.m_aMsg, aCurrentObject.m_aOptions);
+            AsyncMessageProcessor.this.executeAction (aCurrentObject.m_sAction,
+                                                      aCurrentObject.m_aMsg,
+                                                      aCurrentObject.m_aOptions);
         }
         catch (final InterruptedException ex)
         {
           s_aLogger.error ("Error taking elements from queue - queue has been interrupted!!!");
           break;
+        }
+        catch (final NoModuleException ex)
+        {
+          if (aExceptionCB != null)
+            aExceptionCB.onException (ex);
+          // No need to log
         }
         catch (final Throwable t)
         {

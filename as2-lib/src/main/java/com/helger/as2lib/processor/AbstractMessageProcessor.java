@@ -145,9 +145,10 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
                                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final ICommonsList <Throwable> aCauses = new CommonsArrayList<> ();
-    boolean bModuleFound = false;
+    IProcessorModule aModuleFound = null;
 
-    for (final IProcessorModule aModule : getAllModules ())
+    final ICommonsList <IProcessorModule> aAllModules = getAllModules ();
+    for (final IProcessorModule aModule : aAllModules)
       if (aModule.canHandle (sAction, aMsg, aOptions))
       {
         try
@@ -155,7 +156,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
           if (s_aLogger.isDebugEnabled ())
             s_aLogger.debug ("  handling action '" + sAction + "' with module " + aModule);
 
-          bModuleFound = true;
+          aModuleFound = aModule;
           aModule.handle (sAction, aMsg, aOptions);
         }
         catch (final OpenAS2Exception ex)
@@ -166,8 +167,14 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
 
     if (aCauses.isNotEmpty ())
       throw new ProcessorException (this, aCauses);
-    if (!bModuleFound)
+    if (aModuleFound == null)
+    {
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug ("  no modules found for '" + sAction + "'; modules are: " + aAllModules);
       throw new NoModuleException (sAction, aMsg, aOptions);
-  }
+    }
 
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("  action '" + sAction + "' was handled by module " + aModuleFound);
+  }
 }

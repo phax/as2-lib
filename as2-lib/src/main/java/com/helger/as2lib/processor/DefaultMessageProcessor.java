@@ -44,6 +44,12 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 
+/**
+ * This is the default implementation of {@link IMessageProcessor}. It handles
+ * all actions synchronously.
+ * 
+ * @author Philip Helger
+ */
 @NotThreadSafe
 public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
