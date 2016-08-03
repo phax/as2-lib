@@ -60,6 +60,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.commons.timing.StopWatch;
+import com.helger.http.EHTTPMethod;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
@@ -88,12 +89,12 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     final boolean bOutput = true;
     final boolean bInput = true;
     final boolean bUseCaches = false;
-    final String sRequestMethod = "POST";
+    final EHTTPMethod eRequestMethod = EHTTPMethod.POST;
     final HttpURLConnection aConn = getConnection (sUrl,
                                                    bOutput,
                                                    bInput,
                                                    bUseCaches,
-                                                   sRequestMethod,
+                                                   eRequestMethod,
                                                    getSession ().getHttpProxy ());
 
     try

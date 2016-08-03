@@ -53,6 +53,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.ws.HostnameVerifierVerifyAll;
 import com.helger.commons.ws.TrustManagerTrustAll;
+import com.helger.http.EHTTPMethod;
 
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
@@ -103,7 +104,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
                                           final boolean bOutput,
                                           final boolean bInput,
                                           final boolean bUseCaches,
-                                          @Nonnull @Nonempty final String sRequestMethod,
+                                          @Nonnull final EHTTPMethod eRequestMethod,
                                           @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
     try
@@ -114,7 +115,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setDoOutput (bOutput);
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
-      aConn.setRequestMethod (sRequestMethod);
+      aConn.setRequestMethod (eRequestMethod.getName ());
       aConn.setConnectTimeout (getAttributeAsInt (ATTR_CONNECT_TIMEOUT, 60000));
       aConn.setReadTimeout (getAttributeAsInt (ATTR_READ_TIMEOUT, 60000));
 

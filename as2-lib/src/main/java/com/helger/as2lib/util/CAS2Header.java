@@ -35,7 +35,7 @@ package com.helger.as2lib.util;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.http.CHTTPHeader;
 
 @Immutable
 public final class CAS2Header
@@ -43,12 +43,12 @@ public final class CAS2Header
   public static final String HEADER_AS2_FROM = "AS2-From";
   public static final String HEADER_AS2_TO = "AS2-To";
   public static final String HEADER_AS2_VERSION = "AS2-Version";
-  public static final String HEADER_CONNECTION = "Connection";
-  public static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
-  public static final String HEADER_CONTENT_LENGTH = "Content-Length";
+  public static final String HEADER_CONNECTION = CHTTPHeader.CONNECTION;
+  public static final String HEADER_CONTENT_DISPOSITION = CHTTPHeader.CONTENT_DISPOSITION;
+  public static final String HEADER_CONTENT_LENGTH = CHTTPHeader.CONTENT_LENGTH;
   public static final String HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
-  public static final String HEADER_CONTENT_TYPE = "Content-Type";
-  public static final String HEADER_DATE = "Date";
+  public static final String HEADER_CONTENT_TYPE = CHTTPHeader.CONTENT_TYPE;
+  public static final String HEADER_DATE = CHTTPHeader.DATE;
   public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = "Disposition-Notification-Options";
   public static final String HEADER_DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
   public static final String HEADER_FROM = "From";
@@ -58,8 +58,8 @@ public final class CAS2Header
   public static final String HEADER_RECIPIENT_ADDRESS = "Recipient-Address";
   public static final String HEADER_SERVER = "Server";
   public static final String HEADER_SUBJECT = "Subject";
-  public static final String HEADER_TRANSFER_ENCODING = "Transfer-Encoding";
-  public static final String HEADER_USER_AGENT = "User-Agent";
+  public static final String HEADER_TRANSFER_ENCODING = CHTTPHeader.TRANSFER_ENCODING;
+  public static final String HEADER_USER_AGENT = CHTTPHeader.USER_AGENT;
   /** Defined by RFC 6017 */
   public static final String HEADER_EDIINT_FEATURES = "EDIINT-Features";
 
@@ -78,9 +78,6 @@ public final class CAS2Header
    * RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
    */
   public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
-  /** Default Content-Transfer-Encoding is "8bit" which means binary. */
-  @Deprecated
-  public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = EContentTransferEncoding.AS2_DEFAULT.getID ();
 
   private CAS2Header ()
   {}
