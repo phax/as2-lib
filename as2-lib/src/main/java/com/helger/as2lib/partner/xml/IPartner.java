@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.ext.ICommonsIterable;
 import com.helger.commons.collection.ext.ICommonsMap;
 import com.helger.commons.name.IHasName;
 
@@ -46,7 +47,7 @@ import com.helger.commons.name.IHasName;
  * @author Philip Helger
  * @since 2.2.0
  */
-public interface IPartner extends IHasName, Iterable <Map.Entry <String, String>>
+public interface IPartner extends IHasName, ICommonsIterable <Map.Entry <String, String>>
 {
   /**
    * @return All contained attributes. Neither <code>null</code> nor empty.
