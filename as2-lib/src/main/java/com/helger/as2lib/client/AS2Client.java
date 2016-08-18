@@ -85,8 +85,8 @@ public class AS2Client
 
   /**
    * Set the factory to create {@link AS2SenderModule} objects internally. By
-   * default a new instance of AS2SenderModule is created so you don't need to
-   * call this method.
+   * default a new instance of {@link AS2SenderModule} is created so you don't
+   * need to call this method.
    *
    * @param aAS2SenderModuleFactory
    *        The factory to be used. May not be <code>null</code>.
@@ -269,12 +269,15 @@ public class AS2Client
   }
 
   /**
+   * Callback method that is invoked before the main sending. This may be used
+   * to customize the message.
+   *
    * @param aSettings
-   *        Client settings
+   *        Client settings. Never <code>null</code>.
    * @param aSession
-   *        Current session
+   *        Current session. Never <code>null</code>.
    * @param aMsg
-   *        Current message
+   *        Current message. Never <code>null</code>.
    */
   @OverrideOnDemand
   protected void beforeSend (@Nonnull final AS2ClientSettings aSettings,
@@ -282,10 +285,22 @@ public class AS2Client
                              @Nonnull final IMessage aMsg)
   {}
 
+  /**
+   * Send the AS2 message synchronously
+   * 
+   * @param aSettings
+   *        The settings to be used. May not be <code>null</code>.
+   * @param aRequest
+   *        The request data to be send. May not be <code>null</code>.
+   * @return The response object. Never <code>null</code>.
+   */
   @Nonnull
   public AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings,
                                             @Nonnull final AS2ClientRequest aRequest)
   {
+    ValueEnforcer.notNull (aSettings, "ClientSettings");
+    ValueEnforcer.notNull (aRequest, "ClientRequest");
+
     final AS2ClientResponse aResponse = createResponse ();
     IMessage aMsg = null;
     final StopWatch aSW = StopWatch.createdStarted ();
