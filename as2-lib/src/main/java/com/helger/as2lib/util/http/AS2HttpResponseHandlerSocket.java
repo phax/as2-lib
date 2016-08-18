@@ -43,9 +43,11 @@ import javax.annotation.WillNotClose;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.http.EHTTPVersion;
 
 /**
  * An implementation of {@link IAS2HttpResponseHandler} that writes an HTTP 1.1
@@ -62,7 +64,18 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
     m_aSocket = ValueEnforcer.notNull (aSocket, "Socket");
   }
 
+  /**
+   * @return The HTTP version to use. May not be <code>null</code>.
+   */
   @Nonnull
+  @OverrideOnDemand
+  public EHTTPVersion getHTTPVersion ()
+  {
+    return EHTTPVersion.HTTP_11;
+  }
+
+  @Nonnull
+  @OverrideOnDemand
   public OutputStream createOutputStream () throws IOException
   {
     return StreamHelper.getBuffered (m_aSocket.getOutputStream ());
@@ -70,7 +83,7 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
                                 @Nonnull final InternetHeaders aHeaders,
-                                @Nonnull @WillNotClose final NonBlockingByteArrayOutputStream aData) throws IOException
+                                @Nonnull @WillNotClose final IWriteToStream aData) throws IOException
   {
     ValueEnforcer.isGT0 (nHttpResponseCode, "HttpResponseCode");
     ValueEnforcer.notNull (aHeaders, "Headers");
@@ -79,7 +92,8 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
     try (final OutputStream aOS = createOutputStream ())
     {
       // Send HTTP version and response code
-      final String sHttpStatusLine = "HTTP/1.1 " +
+      final String sHttpStatusLine = getHTTPVersion ().getName () +
+                                     " " +
                                      Integer.toString (nHttpResponseCode) +
                                      " " +
                                      HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
