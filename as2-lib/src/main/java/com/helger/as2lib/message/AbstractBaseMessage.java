@@ -47,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -161,12 +160,6 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nullable
-  public final String getHeader (@Nonnull final String sKey)
-  {
-    return getHeader (sKey, ", ");
-  }
-
-  @Nullable
   public final String getHeader (@Nonnull final String sKey, @Nullable final String sDelimiter)
   {
     return m_aHeaders.getHeader (sKey, sDelimiter);
@@ -201,22 +194,6 @@ public abstract class AbstractBaseMessage implements IBaseMessage
       aMap.put (aHeader.getName (), aHeader.getValue ());
     }
     return aMap.toString ();
-  }
-
-  public final void setMessageID (@Nullable final String sMessageID)
-  {
-    setHeader (CAS2Header.HEADER_MESSAGE_ID, sMessageID);
-  }
-
-  @Nullable
-  public final String getMessageID ()
-  {
-    return getHeader (CAS2Header.HEADER_MESSAGE_ID);
-  }
-
-  public final void updateMessageID ()
-  {
-    setMessageID (generateMessageID ());
   }
 
   public final void setPartnership (@Nonnull final Partnership aPartnership)
