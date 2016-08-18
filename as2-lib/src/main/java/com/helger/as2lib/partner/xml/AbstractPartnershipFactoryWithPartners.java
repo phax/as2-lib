@@ -58,47 +58,29 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
 
   protected final void setPartners (@Nonnull final PartnerMap aPartners) throws OpenAS2Exception
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    m_aRWLock.writeLockedThrowing ( () -> {
       m_aPartners.setPartners (aPartners);
       markAsChanged ();
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   public void addPartner (@Nonnull final Partner aNewPartner) throws OpenAS2Exception
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    m_aRWLock.writeLockedThrowing ( () -> {
       m_aPartners.addPartner (aNewPartner);
       markAsChanged ();
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   @Nonnull
   public EChange removePartner (@Nullable final String sPartnerName) throws OpenAS2Exception
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    return m_aRWLock.writeLockedThrowing ( () -> {
       if (m_aPartners.removePartner (sPartnerName).isUnchanged ())
         return EChange.UNCHANGED;
       markAsChanged ();
       return EChange.CHANGED;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   @Nullable

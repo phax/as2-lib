@@ -87,9 +87,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
 
-    m_aRWLock.readLock ().lock ();
-    try
-    {
+    return m_aRWLock.readLockedThrowing ( () -> {
       Partnership aRealPartnership = m_aPartnerships.getPartnershipByName (aPartnership.getName ());
       if (aRealPartnership == null)
       {
@@ -101,11 +99,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
       if (aRealPartnership == null)
         throw new PartnershipNotFoundException (aPartnership);
       return aRealPartnership;
-    }
-    finally
-    {
-      m_aRWLock.readLock ().unlock ();
-    }
+    });
   }
 
   @Nullable
@@ -136,50 +130,32 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
 
   protected final void setPartnerships (@Nonnull final PartnershipMap aPartnerships) throws OpenAS2Exception
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    m_aRWLock.writeLockedThrowing ( () -> {
       m_aPartnerships.setPartnerships (aPartnerships);
       markAsChanged ();
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   @Nonnull
   public final EChange addPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    return m_aRWLock.writeLockedThrowing ( () -> {
       if (m_aPartnerships.addPartnership (aPartnership).isUnchanged ())
         return EChange.UNCHANGED;
       markAsChanged ();
       return EChange.CHANGED;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   @Nonnull
   public final EChange removePartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
   {
-    m_aRWLock.writeLock ().lock ();
-    try
-    {
+    return m_aRWLock.writeLockedThrowing ( () -> {
       if (m_aPartnerships.removePartnership (aPartnership).isUnchanged ())
         return EChange.UNCHANGED;
       markAsChanged ();
       return EChange.CHANGED;
-    }
-    finally
-    {
-      m_aRWLock.writeLock ().unlock ();
-    }
+    });
   }
 
   public final void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
