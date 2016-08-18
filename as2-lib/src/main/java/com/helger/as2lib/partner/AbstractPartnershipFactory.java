@@ -50,6 +50,7 @@ import com.helger.commons.annotation.ELockType;
 import com.helger.commons.annotation.IsLocked;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.callback.IThrowingCallable;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.collection.ext.ICommonsSet;
 import com.helger.commons.state.EChange;
@@ -87,7 +88,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
 
-    return m_aRWLock.readLockedThrowing ( () -> {
+    return m_aRWLock.readLockedThrowing ((IThrowingCallable <Partnership, OpenAS2Exception>) () -> {
       Partnership aRealPartnership = m_aPartnerships.getPartnershipByName (aPartnership.getName ());
       if (aRealPartnership == null)
       {
