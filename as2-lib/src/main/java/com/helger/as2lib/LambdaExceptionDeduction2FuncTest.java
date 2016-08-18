@@ -14,29 +14,15 @@ import java.nio.charset.StandardCharsets;
 public class LambdaExceptionDeduction2FuncTest
 {
   @FunctionalInterface
-  public static interface IBaseGetter <T>
+  public static interface IThrowingGetter <EX extends Exception>
   {
-    T get () throws Exception;
-  }
-
-  @FunctionalInterface
-  public static interface IThrowingGetter <T, EX extends Exception> extends IBaseGetter <T>
-  {
-    T get () throws EX;
-  }
-
-  public static <T, EX extends Exception> T execLogged (final IThrowingGetter <T, EX> aGetter) throws EX
-  {
-    final T ret = aGetter.get ();
-    System.out.println ("Returned: " + ret);
-    return ret;
+    String get () throws EX;
   }
 
   public static void main (final String [] args) throws IOException
   {
     final InputStream aIS = new ByteArrayInputStream ("abc".getBytes (StandardCharsets.UTF_8));
-    final IThrowingGetter <String, IOException> aGetter = () -> Character.toString ((char) aIS.read ());
-    // Expected outcome: ab
-    System.out.println (execLogged (aGetter) + execLogged (aGetter));
+    final IThrowingGetter <IOException> aGetter = () -> Character.toString ((char) aIS.read ());
+    aGetter.get ();
   }
 }

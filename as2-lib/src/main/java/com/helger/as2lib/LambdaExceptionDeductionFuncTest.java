@@ -25,18 +25,10 @@ public class LambdaExceptionDeductionFuncTest
     String get () throws EX;
   }
 
-  @FunctionalInterface
-  public static interface ICreator <EX extends Exception>
-  {
-    IThrowingGetter <EX> create ();
-  }
-
   public static void main (final String [] args) throws IOException
   {
     final InputStream aIS = new ByteArrayInputStream ("abc".getBytes (StandardCharsets.UTF_8));
     final IThrowingGetter <IOException> aGetter = () -> Character.toString ((char) aIS.read ());
-    final ICreator <IOException> aCreator = () -> aGetter;
-    // Expected outcome: ab
-    System.out.println (aCreator.create ().get () + aCreator.create ().get ());
+    aGetter.get ();
   }
 }
