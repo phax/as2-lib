@@ -14,7 +14,13 @@ import java.nio.charset.StandardCharsets;
 public class LambdaExceptionDeductionFuncTest
 {
   @FunctionalInterface
-  public static interface IThrowingGetter <EX extends Exception>
+  public static interface IBaseGetter
+  {
+    String get () throws Exception;
+  }
+
+  @FunctionalInterface
+  public static interface IThrowingGetter <EX extends Exception> extends IBaseGetter
   {
     String get () throws EX;
   }
