@@ -39,6 +39,7 @@ import java.util.Enumeration;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
@@ -69,7 +70,7 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
                                 @Nonnull final InternetHeaders aHeaders,
-                                @Nonnull final NonBlockingByteArrayOutputStream aData) throws IOException
+                                @Nonnull @WillNotClose final NonBlockingByteArrayOutputStream aData) throws IOException
   {
     ValueEnforcer.isGT0 (nHttpResponseCode, "HttpResponseCode");
     ValueEnforcer.notNull (aHeaders, "Headers");

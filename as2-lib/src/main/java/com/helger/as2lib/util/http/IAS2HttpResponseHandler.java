@@ -36,6 +36,7 @@ import java.io.IOException;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -43,7 +44,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 /**
  * Abstract HTTP response handler. This abstraction layer may be used to either
  * write to a socket directly or to e.g. send an HTTP response via a servlet.
- * 
+ *
  * @author Philip Helger
  */
 public interface IAS2HttpResponseHandler
@@ -53,7 +54,7 @@ public interface IAS2HttpResponseHandler
    * output is written.
    *
    * @param nHttpResponseCode
-   *        The HTTP response code. E.g. 200 for "HTTP OK".
+   *        The HTTP response code. E.g. 200 for "HTTP OK". Must be &gt; 0.
    * @param aHeaders
    *        Headers to use. May not be <code>null</code>.
    * @param aData
@@ -64,5 +65,5 @@ public interface IAS2HttpResponseHandler
    */
   void sendHttpResponse (@Nonnegative int nHttpResponseCode,
                          @Nonnull InternetHeaders aHeaders,
-                         @Nonnull NonBlockingByteArrayOutputStream aData) throws IOException;
+                         @Nonnull @WillNotClose NonBlockingByteArrayOutputStream aData) throws IOException;
 }

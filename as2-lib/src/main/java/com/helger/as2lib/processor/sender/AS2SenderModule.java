@@ -94,6 +94,11 @@ import com.helger.commons.timing.StopWatch;
 import com.helger.http.EHTTPMethod;
 import com.helger.mail.cte.EContentTransferEncoding;
 
+/**
+ * AS2 sender module to send AS2 messages out.
+ *
+ * @author Philip Helger
+ */
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
   /** Must be false in production! */
@@ -643,6 +648,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aDebugOS = StreamHelper.getBuffered (FileHelper.getOutputStream (new File ("as2-sent-data",
                                                                                    Long.toString (System.currentTimeMillis ()) +
                                                                                                     ".rawhttp")));
+
+        // Overwrite the used OutputStream to additionally log to the debug
+        // OutputStream
         final OutputStream aFinalDebugOS = aDebugOS;
         aMsgOS = new WrappedOutputStream (aMsgOS)
         {
@@ -664,16 +672,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aSW.stop ();
       s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
-      // Close debug OS
+      // Close debug OS (if used)
       StreamHelper.close (aDebugOS);
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
+      // Accept most of 2xx HTTP response codes
       if (nResponseCode != HttpURLConnection.HTTP_OK &&
           nResponseCode != HttpURLConnection.HTTP_CREATED &&
           nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
-          nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
-          nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
+          nResponseCode != HttpURLConnection.HTTP_NO_CONTENT &&
+          nResponseCode != HttpURLConnection.HTTP_PARTIAL)
       {
         s_aLogger.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
         throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());

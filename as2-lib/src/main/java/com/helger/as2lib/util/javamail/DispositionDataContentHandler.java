@@ -45,6 +45,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.io.stream.StreamHelper;
 
@@ -78,22 +79,24 @@ public class DispositionDataContentHandler implements DataContentHandler
     return null;
   }
 
+  @Nonnull
+  @ReturnsMutableCopy
   public DataFlavor [] getTransferDataFlavors ()
   {
     return ArrayHelper.getCopy (ADFS);
   }
 
-  public void writeTo (final Object obj, final String mimeType, final OutputStream os) throws IOException
+  public void writeTo (final Object obj, final String sMimeType, @Nonnull final OutputStream aOS) throws IOException
   {
     if (obj instanceof MimeBodyPart)
     {
       try
       {
-        ((MimeBodyPart) obj).writeTo (os);
+        ((MimeBodyPart) obj).writeTo (aOS);
       }
       catch (final MessagingException me)
       {
-        throw new IOException (me.getMessage ());
+        throw new IOException (me);
       }
     }
     else
@@ -101,22 +104,23 @@ public class DispositionDataContentHandler implements DataContentHandler
       {
         try
         {
-          ((MimeMultipart) obj).writeTo (os);
+          ((MimeMultipart) obj).writeTo (aOS);
         }
         catch (final MessagingException me)
         {
-          throw new IOException (me.getMessage ());
+          throw new IOException (me);
         }
       }
       else
         if (obj instanceof byte [])
         {
-          os.write ((byte []) obj);
+          aOS.write ((byte []) obj);
         }
         else
           if (obj instanceof String)
           {
-            os.write (((String) obj).getBytes ());
+            // TODO uses system charset
+            aOS.write (((String) obj).getBytes ());
           }
           else
           {

@@ -63,7 +63,6 @@ import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 
@@ -411,8 +410,7 @@ public final class HTTPHelper
     } while (aDestinationFile.exists ());
 
     s_aLogger.info ("Dumping HTTP request to file " + aDestinationFile.getAbsolutePath ());
-    final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile);
-    try
+    try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       for (final String sHeaderLine : aHeaderLines)
         aOS.write ((sHeaderLine + EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
@@ -426,10 +424,6 @@ public final class HTTPHelper
     catch (final IOException ex)
     {
       s_aLogger.error ("Failed to dump HTTP request to file " + aDestinationFile.getAbsolutePath (), ex);
-    }
-    finally
-    {
-      StreamHelper.close (aOS);
     }
   }
 
@@ -483,16 +477,28 @@ public final class HTTPHelper
     // Don't close the IS here!
   }
 
+  /**
+   * Send a simple HTTP response that only contains the HTTP status code and the
+   * respective descriptive text.
+   * 
+   * @param aResponseHandler
+   *        The response handler to be used.
+   * @param nResponseCode
+   *        The HTTP response code to use.
+   * @throws IOException
+   *         In case sending fails for whatever reason
+   */
   public static void sendSimpleHTTPResponse (@Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                              @Nonnegative final int nResponseCode) throws IOException
   {
-    final InternetHeaders aHeaders = new InternetHeaders ();
-    final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
-    aData.write ((Integer.toString (nResponseCode) +
-                  " " +
-                  getHTTPResponseMessage (nResponseCode) +
-                  EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-    aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
+    try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
+    {
+      final String sHTTPLine = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + EOL;
+      aData.write (sHTTPLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+
+      final InternetHeaders aHeaders = new InternetHeaders ();
+      aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
+    }
   }
 
   /**

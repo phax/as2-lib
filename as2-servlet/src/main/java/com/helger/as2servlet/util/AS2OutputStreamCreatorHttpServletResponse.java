@@ -22,6 +22,7 @@ import java.util.Enumeration;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
 import javax.mail.Header;
 import javax.mail.internet.InternetHeaders;
 import javax.servlet.http.HttpServletResponse;
@@ -47,7 +48,9 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
     m_aHttpResponse = ValueEnforcer.notNull (aHttpResponse, "HttpResponse");
   }
 
-  public void sendHttpResponse (@Nonnegative final int nHttpResponseCode, @Nonnull final InternetHeaders aHeaders, @Nonnull final NonBlockingByteArrayOutputStream aData) throws IOException
+  public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
+                                @Nonnull final InternetHeaders aHeaders,
+                                @Nonnull @WillNotClose final NonBlockingByteArrayOutputStream aData) throws IOException
   {
     // Set status code
     m_aHttpResponse.setStatus (nHttpResponseCode);
@@ -59,7 +62,10 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
       final Header aHeader = (Header) aHeaderEnum.nextElement ();
       // HTTPResponse cannot deal with newlines in header values and this
       // happens e.g. for Content-Type!
-      m_aHttpResponse.addHeader (aHeader.getName (), new String (StringHelper.replaceMultiple (aHeader.getValue (), new char [] { '\r', '\n', '\t' }, ' ')));
+      m_aHttpResponse.addHeader (aHeader.getName (),
+                                 new String (StringHelper.replaceMultiple (aHeader.getValue (),
+                                                                           new char [] { '\r', '\n', '\t' },
+                                                                           ' ')));
     }
 
     // Write response body
