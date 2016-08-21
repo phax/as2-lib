@@ -22,8 +22,9 @@ Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
 
 #News and noteworthy
 
-  * Version 3.0.0 - 2016-xx-yy
+  * Version 3.0.0 - 2016-08-21
     * JDK 8 is now required  
+    * Using ph-commons 8.4.x
   * Version 2.2.8 - 2016-05-09
     * Improved AS2 client https customization and API
   * Version 2.2.7 - 2016-04-27 
