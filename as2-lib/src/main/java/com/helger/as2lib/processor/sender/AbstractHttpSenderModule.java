@@ -86,7 +86,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 
   /**
    * Get the hostname verifier to be used. By default an instance of
-   * {@link HostnameVerifierAlwaysTrue} is returned. Override this method to
+   * {@link HostnameVerifierVerifyAll} is returned. Override this method to
    * change this default behavior.
    *
    * @return The hostname verifier to be used. If the returned value is
