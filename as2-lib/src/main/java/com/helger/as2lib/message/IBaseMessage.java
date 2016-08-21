@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.Nonempty;
@@ -66,7 +67,10 @@ public interface IBaseMessage extends Serializable
   void setAttributes (@Nullable IStringMap aAttributes);
 
   @Nullable
-  String getHeader (@Nonnull String sKey);
+  default String getHeader (@Nonnull final String sKey)
+  {
+    return getHeader (sKey, ", ");
+  }
 
   @Nullable
   String getHeader (@Nonnull String sKey, @Nullable String sDelimiter);
@@ -115,7 +119,10 @@ public interface IBaseMessage extends Serializable
    * @return Special message ID header
    */
   @Nullable
-  String getMessageID ();
+  default String getMessageID ()
+  {
+    return getHeader (CAS2Header.HEADER_MESSAGE_ID);
+  }
 
   /**
    * Set special message ID header
@@ -123,7 +130,10 @@ public interface IBaseMessage extends Serializable
    * @param sMessageID
    *        Message ID
    */
-  void setMessageID (@Nullable String sMessageID);
+  default void setMessageID (@Nullable final String sMessageID)
+  {
+    setHeader (CAS2Header.HEADER_MESSAGE_ID, sMessageID);
+  }
 
   @Nonnull
   String generateMessageID ();
@@ -131,7 +141,10 @@ public interface IBaseMessage extends Serializable
   /**
    * Shortcut for <code>setMessageID (generateMessageID ())</code>
    */
-  void updateMessageID ();
+  default void updateMessageID ()
+  {
+    setMessageID (generateMessageID ());
+  }
 
   @Nonnull
   @ReturnsMutableObject ("Design")

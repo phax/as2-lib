@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
 import javax.mail.internet.InternetHeaders;
 
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.IWriteToStream;
 
 /**
  * Abstract HTTP response handler. This abstraction layer may be used to either
@@ -47,6 +47,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
  *
  * @author Philip Helger
  */
+@FunctionalInterface
 public interface IAS2HttpResponseHandler
 {
   /**
@@ -65,5 +66,5 @@ public interface IAS2HttpResponseHandler
    */
   void sendHttpResponse (@Nonnegative int nHttpResponseCode,
                          @Nonnull InternetHeaders aHeaders,
-                         @Nonnull @WillNotClose NonBlockingByteArrayOutputStream aData) throws IOException;
+                         @Nonnull @WillNotClose IWriteToStream aData) throws IOException;
 }

@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 
@@ -50,7 +50,7 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
                                 @Nonnull final InternetHeaders aHeaders,
-                                @Nonnull @WillNotClose final NonBlockingByteArrayOutputStream aData) throws IOException
+                                @Nonnull @WillNotClose final IWriteToStream aData) throws IOException
   {
     // Set status code
     m_aHttpResponse.setStatus (nHttpResponseCode);
@@ -60,12 +60,13 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
     while (aHeaderEnum.hasMoreElements ())
     {
       final Header aHeader = (Header) aHeaderEnum.nextElement ();
+
       // HTTPResponse cannot deal with newlines in header values and this
       // happens e.g. for Content-Type!
-      m_aHttpResponse.addHeader (aHeader.getName (),
-                                 new String (StringHelper.replaceMultiple (aHeader.getValue (),
-                                                                           new char [] { '\r', '\n', '\t' },
-                                                                           ' ')));
+      final StringBuilder aCleanedValue = new StringBuilder ();
+      StringHelper.replaceMultipleTo (aHeader.getValue (), new char [] { '\r', '\n', '\t' }, ' ', aCleanedValue);
+
+      m_aHttpResponse.addHeader (aHeader.getName (), aCleanedValue.toString ());
     }
 
     // Write response body
