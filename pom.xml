@@ -65,20 +65,24 @@
       <url>http://www.helger.com</url>
     </developer>
   </developers>
+  
+  <properties>
+    <bc.version>1.55</bc.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>8.4.0</version>
+        <version>8.5.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>8.6.0</version>
+        <version>8.6.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -86,7 +90,7 @@
       <dependency>
         <groupId>org.bouncycastle</groupId>
         <artifactId>bcmail-jdk15on</artifactId>
-        <version>1.55</version>
+        <version>${bc.version}</version>
       </dependency>
 
       <dependency>
