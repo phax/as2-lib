@@ -36,9 +36,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +44,7 @@ import java.util.StringTokenizer;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
@@ -61,7 +60,6 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -84,21 +82,17 @@ public final class HTTPHelper
   public static final String EOL = "\r\n";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
-  private static final File s_aHttpDumpDirectory;
+  private static IHTTPIncomingDumper s_aHttpDumper = null;
 
   static
   {
     final String sHttpDumpDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
     if (StringHelper.hasText (sHttpDumpDirectory))
     {
-      s_aHttpDumpDirectory = new File (sHttpDumpDirectory);
-      IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aHttpDumpDirectory);
-      s_aLogger.info ("Using directory " +
-                      s_aHttpDumpDirectory.getAbsolutePath () +
-                      " to dump all incoming HTTP requests to.");
+      final File aDumpDirectory = new File (sHttpDumpDirectory);
+      IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
+      setHTTPIncomingDumper (new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
     }
-    else
-      s_aHttpDumpDirectory = null;
   }
 
   private HTTPHelper ()
@@ -394,37 +388,26 @@ public final class HTTPHelper
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
-  public static void dumpHttpRequest (@Nonnull final List <String> aHeaderLines, @Nonnull final byte [] aPayload)
+  @Nullable
+  public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
-    if (s_aHttpDumpDirectory == null)
-      return;
+    return s_aHttpDumper;
+  }
 
-    // Ensure a unique filename
-    File aDestinationFile;
-    int nIndex = 0;
-    do
-    {
-      aDestinationFile = new File (s_aHttpDumpDirectory,
-                                   "as2-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".http");
-      nIndex++;
-    } while (aDestinationFile.exists ());
+  public static void setHTTPIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpDumper)
+  {
+    s_aHttpDumper = aHttpDumper;
+    if (aHttpDumper != null)
+      s_aLogger.info ("Using the following handler to dump incoming requests: " + aHttpDumper);
+    else
+      s_aLogger.info ("Incoming request dumping is disabled.");
+  }
 
-    s_aLogger.info ("Dumping HTTP request to file " + aDestinationFile.getAbsolutePath ());
-    try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
-    {
-      for (final String sHeaderLine : aHeaderLines)
-        aOS.write ((sHeaderLine + EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-
-      // empty line
-      aOS.write (EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
-
-      // Add payload
-      aOS.write (aPayload);
-    }
-    catch (final IOException ex)
-    {
-      s_aLogger.error ("Failed to dump HTTP request to file " + aDestinationFile.getAbsolutePath (), ex);
-    }
+  public static void dumpHttpRequest (@Nonnull final ICommonsList <String> aHeaderLines,
+                                      @Nonnull final byte [] aPayload)
+  {
+    if (s_aHttpDumper != null)
+      s_aHttpDumper.dumpIncomingRequest (aHeaderLines, aPayload);
   }
 
   /**
@@ -480,7 +463,7 @@ public final class HTTPHelper
   /**
    * Send a simple HTTP response that only contains the HTTP status code and the
    * respective descriptive text.
-   * 
+   *
    * @param aResponseHandler
    *        The response handler to be used.
    * @param nResponseCode
