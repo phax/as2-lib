@@ -237,7 +237,8 @@ public class AS2ReceiveServlet extends HttpServlet
     final byte [] aMsgData = HTTPHelper.readHttpPayload (aHttpRequest.getInputStream (), aResponseHandler, aMsg);
 
     // Dump on demand
-    HTTPHelper.dumpHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.getHeaders ()), aMsgData);
+    if (HTTPHelper.isHTTPIncomingDumpEnabled ())
+      HTTPHelper.dumpIncomingHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.getHeaders ()), aMsgData, aMsg);
 
     // Call main handling method
     handeIncomingMessage (aHttpRequest, aHttpResponse, aMsgData, aMsg, aResponseHandler);

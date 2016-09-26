@@ -32,31 +32,71 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.util.List;
+import java.io.File;
+import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.message.IBaseMessage;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Base interface to dump incoming HTTP requests
+ * Directory based outgoing HTTP dumper.
  *
  * @author Philip Helger
  */
-public interface IHTTPIncomingDumper
+public class HTTPOutgoingDumperDirectoryBased implements IHTTPOutgoingDumper
 {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPOutgoingDumperDirectoryBased.class);
+
+  private final File m_aDumpDirectory;
+
+  public HTTPOutgoingDumperDirectoryBased (@Nonnull final File aDumpDirectory)
+  {
+    ValueEnforcer.notNull (aDumpDirectory, "DumpDirectory");
+    ValueEnforcer.isTrue (FileHelper.existsDir (aDumpDirectory),
+                          () -> "DumpDirectory " + aDumpDirectory + " does not exist!");
+    m_aDumpDirectory = aDumpDirectory;
+  }
+
+  @Nonnull
+  public File getDumpDirectory ()
+  {
+    return m_aDumpDirectory;
+  }
+
   /**
-   * Dump an incoming HTTP request.
+   * The filename to be used to store the request in the folder provided in the
+   * constructor.
    *
-   * @param aHeaderLines
-   *        All headers lines. Use ISO-8859-1 to convert to bytes.
-   * @param aPayload
-   *        The payload byte array.
    * @param aMsg
-   *        The message stub. May be <code>null</code> for legacy reasons.
+   *        The message to be send.
+   * @return The local filename without any path. May not be <code>null</code>.
    */
-  void dumpIncomingRequest (@Nonnull List <String> aHeaderLines,
-                            @Nonnull byte [] aPayload,
-                            @Nullable IBaseMessage aMsg);
+  @Nonnull
+  protected String getStoreFilename (@Nonnull final IBaseMessage aMsg)
+  {
+    return "as2-outgoing-" + Long.toString (System.currentTimeMillis ()) + ".http";
+  }
+
+  @Nullable
+  public OutputStream dumpOutgoingRequest (@Nonnull final IBaseMessage aMsg)
+  {
+    final File aDestinationFile = new File (m_aDumpDirectory, getStoreFilename (aMsg));
+    s_aLogger.info ("Dumping outgoing HTTP request to file " + aDestinationFile.getAbsolutePath ());
+    return StreamHelper.getBuffered (FileHelper.getOutputStream (aDestinationFile));
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("DumpDirectory", m_aDumpDirectory).toString ();
+  }
 }

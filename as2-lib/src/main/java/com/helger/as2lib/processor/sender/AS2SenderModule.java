@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.processor.sender;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,6 +79,7 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
+import com.helger.as2lib.util.http.IHTTPOutgoingDumper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CCharset;
@@ -101,9 +101,6 @@ import com.helger.mail.cte.EContentTransferEncoding;
  */
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
-  /** Must be false in production! */
-  private static final boolean DEBUG_DUMP_OUTGOING_HTTP = false;
-
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
   private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2SenderModule.class);
@@ -495,6 +492,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         StreamHelper.close (aMDNStream);
       }
 
+      if (HTTPHelper.isHTTPIncomingDumpEnabled ())
+        HTTPHelper.dumpIncomingHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.getHeaders ()),
+                                            aMDNStream.toByteArray (),
+                                            aMDN);
+
       if (s_aLogger.isTraceEnabled ())
       {
         // Debug print the whole MDN stream
@@ -643,24 +645,25 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // This stream dumps the HTTP
       OutputStream aDebugOS = null;
-      if (DEBUG_DUMP_OUTGOING_HTTP)
+      final IHTTPOutgoingDumper aHttpDumper = HTTPHelper.getHTTPOutgoingDumper ();
+      if (aHttpDumper != null)
       {
-        aDebugOS = StreamHelper.getBuffered (FileHelper.getOutputStream (new File ("as2-sent-data",
-                                                                                   Long.toString (System.currentTimeMillis ()) +
-                                                                                                    ".rawhttp")));
-
-        // Overwrite the used OutputStream to additionally log to the debug
-        // OutputStream
-        final OutputStream aFinalDebugOS = aDebugOS;
-        aMsgOS = new WrappedOutputStream (aMsgOS)
+        aDebugOS = aHttpDumper.dumpOutgoingRequest (aMsg);
+        if (aDebugOS != null)
         {
-          @Override
-          public final void write (final int b) throws IOException
+          // Overwrite the used OutputStream to additionally log to the debug
+          // OutputStream
+          final OutputStream aFinalDebugOS = aDebugOS;
+          aMsgOS = new WrappedOutputStream (aMsgOS)
           {
-            super.write (b);
-            aFinalDebugOS.write (b);
-          }
-        };
+            @Override
+            public final void write (final int b) throws IOException
+            {
+              super.write (b);
+              aFinalDebugOS.write (b);
+            }
+          };
+        }
       }
 
       // Transfer the data

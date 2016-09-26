@@ -51,6 +51,7 @@ import javax.mail.internet.InternetHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
@@ -82,7 +83,8 @@ public final class HTTPHelper
   public static final String EOL = "\r\n";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
-  private static IHTTPIncomingDumper s_aHttpDumper = null;
+  private static IHTTPIncomingDumper s_aHTTPIncomingDumper = null;
+  private static IHTTPOutgoingDumper s_aHTTPOutgoingDumper = null;
 
   static
   {
@@ -388,26 +390,80 @@ public final class HTTPHelper
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
+  public static boolean isHTTPIncomingDumpEnabled ()
+  {
+    return getHTTPIncomingDumper () != null;
+  }
+
   @Nullable
   public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
-    return s_aHttpDumper;
+    return s_aHTTPIncomingDumper;
   }
 
   public static void setHTTPIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpDumper)
   {
-    s_aHttpDumper = aHttpDumper;
+    s_aHTTPIncomingDumper = aHttpDumper;
     if (aHttpDumper != null)
       s_aLogger.info ("Using the following handler to dump incoming requests: " + aHttpDumper);
     else
       s_aLogger.info ("Incoming request dumping is disabled.");
   }
 
+  public static boolean isHTTPOutgoingDumpEnabled ()
+  {
+    return getHTTPOutgoingDumper () != null;
+  }
+
+  @Nullable
+  public static IHTTPOutgoingDumper getHTTPOutgoingDumper ()
+  {
+    return s_aHTTPOutgoingDumper;
+  }
+
+  public static void setHTTPOutgoingDumper (@Nullable final IHTTPOutgoingDumper aHttpDumper)
+  {
+    s_aHTTPOutgoingDumper = aHttpDumper;
+    if (aHttpDumper != null)
+      s_aLogger.info ("Using the following handler to dump outgoing requests: " + aHttpDumper);
+    else
+      s_aLogger.info ("Outgoing request dumping is disabled.");
+  }
+
+  /**
+   * @param aHeaderLines
+   *        Header lines.
+   * @param aPayload
+   *        Received payload.
+   * @deprecated Use
+   *             {@link #dumpIncomingHttpRequest(ICommonsList,byte[],IBaseMessage)}
+   *             instead
+   */
+  @Deprecated
   public static void dumpHttpRequest (@Nonnull final ICommonsList <String> aHeaderLines,
                                       @Nonnull final byte [] aPayload)
   {
-    if (s_aHttpDumper != null)
-      s_aHttpDumper.dumpIncomingRequest (aHeaderLines, aPayload);
+    dumpIncomingHttpRequest (aHeaderLines, aPayload, (IBaseMessage) null);
+  }
+
+  /**
+   * Dump an incoming HTTP request using the globally set HTTP dumper.
+   *
+   * @param aHeaderLines
+   *        Header lines.
+   * @param aPayload
+   *        Received payload.
+   * @param aMsg
+   *        The message stub. May be <code>null</code> for legacy reasons.
+   * @see #getHTTPIncomingDumper()
+   * @see #setHTTPIncomingDumper(IHTTPIncomingDumper)
+   */
+  public static void dumpIncomingHttpRequest (@Nonnull final ICommonsList <String> aHeaderLines,
+                                              @Nonnull final byte [] aPayload,
+                                              @Nullable final IBaseMessage aMsg)
+  {
+    if (s_aHTTPIncomingDumper != null)
+      s_aHTTPIncomingDumper.dumpIncomingRequest (aHeaderLines, aPayload, aMsg);
   }
 
   /**
@@ -453,7 +509,8 @@ public final class HTTPHelper
     final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
 
     // Dump on demand
-    dumpHttpRequest (getAllHTTPHeaderLines (aHeaders), aPayload);
+    if (isHTTPIncomingDumpEnabled ())
+      dumpIncomingHttpRequest (getAllHTTPHeaderLines (aHeaders), aPayload, aMsg);
 
     return aPayload;
 

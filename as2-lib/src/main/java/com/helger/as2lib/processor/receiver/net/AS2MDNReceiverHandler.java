@@ -375,6 +375,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       StreamHelper.close (aMDNStream);
     }
 
+    if (HTTPHelper.isHTTPIncomingDumpEnabled ())
+      HTTPHelper.dumpIncomingHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.getHeaders ()),
+                                          aMDNStream.toByteArray (),
+                                          aMDN);
+
     MimeBodyPart aPart = null;
     if (aMDNStream != null)
       try

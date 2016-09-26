@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.util.List;
+import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,23 +40,21 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.message.IBaseMessage;
 
 /**
- * Base interface to dump incoming HTTP requests
+ * Base interface to dump outgoing HTTP requests
  *
  * @author Philip Helger
  */
-public interface IHTTPIncomingDumper
+public interface IHTTPOutgoingDumper
 {
   /**
-   * Dump an incoming HTTP request.
+   * Create an {@link OutputStream} to which an outgoing request should be
+   * dumped.
    *
-   * @param aHeaderLines
-   *        All headers lines. Use ISO-8859-1 to convert to bytes.
-   * @param aPayload
-   *        The payload byte array.
    * @param aMsg
-   *        The message stub. May be <code>null</code> for legacy reasons.
+   *        The message that is going to be send.
+   * @return The {@link OutputStream} to which the request should be dumped, or
+   *         <code>null</code> if no dumping is required.
    */
-  void dumpIncomingRequest (@Nonnull List <String> aHeaderLines,
-                            @Nonnull byte [] aPayload,
-                            @Nullable IBaseMessage aMsg);
+  @Nullable
+  OutputStream dumpOutgoingRequest (@Nonnull IBaseMessage aMsg);
 }

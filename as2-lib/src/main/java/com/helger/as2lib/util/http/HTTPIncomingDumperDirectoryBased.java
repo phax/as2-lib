@@ -35,21 +35,22 @@ package com.helger.as2lib.util.http;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.message.IBaseMessage;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Directory based HTTP dumper.
+ * Directory based incoming HTTP dumper.
  *
  * @author Philip Helger
  */
@@ -84,23 +85,15 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
   @Nonnull
   protected String getStoreFilename (final int nIndex)
   {
-    return "as2-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".http";
+    return "as2-incoming-" + Long.toString (System.currentTimeMillis ()) + "-" + nIndex + ".http";
   }
 
-  public void dumpIncomingRequest (@Nonnull final List <String> aHeaderLines, @Nonnull final byte [] aPayload)
+  protected void writeToFile (@Nonnull final File aDestinationFile,
+                              @Nonnull final List <String> aHeaderLines,
+                              @Nonnull final byte [] aPayload,
+                              @Nullable final IBaseMessage aMsg)
   {
-    // Ensure a unique filename
-    File aDestinationFile;
-    int nIndex = 0;
-    do
-    {
-      aDestinationFile = new File (m_aDumpDirectory, getStoreFilename (nIndex));
-      nIndex++;
-      if (nIndex > 100)
-        throw new IllegalStateException ("Avoid endless loop to store message!");
-    } while (aDestinationFile.exists ());
-
-    s_aLogger.info ("Dumping HTTP request to file " + aDestinationFile.getAbsolutePath ());
+    s_aLogger.info ("Dumping incoming HTTP request to file " + aDestinationFile.getAbsolutePath ());
     try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       for (final String sHeaderLine : aHeaderLines)
@@ -114,8 +107,30 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     }
     catch (final IOException ex)
     {
-      s_aLogger.error ("Failed to dump HTTP request to file " + aDestinationFile.getAbsolutePath (), ex);
+      s_aLogger.error ("Failed to dump HTTP request to file " +
+                       aDestinationFile.getAbsolutePath () +
+                       " and message stub " +
+                       aMsg,
+                       ex);
     }
+  }
+
+  public void dumpIncomingRequest (@Nonnull final List <String> aHeaderLines,
+                                   @Nonnull final byte [] aPayload,
+                                   @Nullable final IBaseMessage aMsg)
+  {
+    // Ensure a unique filename
+    File aDestinationFile;
+    int nIndex = 0;
+    do
+    {
+      aDestinationFile = new File (m_aDumpDirectory, getStoreFilename (nIndex));
+      nIndex++;
+      if (nIndex > 100)
+        throw new IllegalStateException ("Avoid endless loop to store message!");
+    } while (aDestinationFile.exists ());
+
+    writeToFile (aDestinationFile, aHeaderLines, aPayload, aMsg);
   }
 
   @Override
