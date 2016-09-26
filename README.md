@@ -15,39 +15,39 @@ This project is used in my following other projects:
   * **[as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet)** - integration into the Servlet specifications and for use with the [PEPPOL](http://www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling.
   * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](http://www.peppol.eu) AS2 messages.
 
-Versions <= 1.1.0 are compatible with ph-commons < 6.0.
-Versions >= 2.0.0 are compatible with ph-commons >= 6.0.
-
-`as2-lib` is licensed under the FreeBSD License. The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
+`as2-lib` is licensed under the FreeBSD License.
+The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
 
 #News and noteworthy
 
-  * Version 3.0.0 - 2016-08-21
+  * v3.0.1
+    * Made incoming HTTP request dumping customizable
+  * v3.0.0 - 2016-08-21
     * JDK 8 is now required  
     * Using ph-commons 8.4.x
-  * Version 2.2.8 - 2016-05-09
+  * v2.2.8 - 2016-05-09
     * Improved AS2 client https customization and API
-  * Version 2.2.7 - 2016-04-27 
+  * v2.2.7 - 2016-04-27 
     * Added per partnership attribute `rfc3851_micalgs` to determine to use RFC 3851 MIC algorithm names instead of the default RFC 5751 MIC algorithm names (issue #18)
     * Fixed problem with special character escaping in MDN context (issue #19)
-  * Version 2.2.6 - 2016-03-02
+  * v2.2.6 - 2016-03-02
     * Added support for dumping HTTP requests when using `as2-servlet` 
-  * Version 2.2.5 - 2015-12-01 
+  * v2.2.5 - 2015-12-01 
     * Added a validity check so that expired certificates can no longer be used to sign, verify and encrypt messages. Decrypt is still possible.
     * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings. (issue #17)
     * Fixed potential endless loop when a retry count was specified at a partnership (issue #16) 
-  * Version 2.2.4 - 2015-11-11
+  * v2.2.4 - 2015-11-11
     * Fixed a minor issue where details of a ProcessingException were not passed into the MDN text
-  * Version 2.2.3 - 2015-10-22
+  * v2.2.3 - 2015-10-22
     * Improved API for handling MDN errors (as2-lib issue #11)  
     * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
     * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
     * The new sub-project `as2-servlet` is now contained
-  * Version 2.2.2 - 2015-10-19
+  * v2.2.2 - 2015-10-19
     * Updated to Bouncy Castle 1.53 (as2-lib issue #10)
-  * Version 2.2.1 - 2015-10-08
+  * v2.2.1 - 2015-10-08
     * Extended API and some debug logging added
-  * Version 2.2.0 - 2015-09-27
+  * v2.2.0 - 2015-09-27
     * added system properties (see below) for configuration and debugging purposes
     * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
     * added the following new partnership attributes:
@@ -70,7 +70,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>2.2.8</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -79,7 +79,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>2.2.8</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -88,7 +88,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>2.2.8</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
