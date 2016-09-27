@@ -390,17 +390,35 @@ public final class HTTPHelper
     throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
+  /**
+   * @return <code>true</code> if a dumper for incoming HTTP requests is
+   *         installed, <code>false</code> otherwise
+   * @since 3.0.1
+   */
   public static boolean isHTTPIncomingDumpEnabled ()
   {
     return getHTTPIncomingDumper () != null;
   }
 
+  /**
+   * @return the dumper for incoming HTTP requests or <code>null</code> if none
+   *         is present
+   * @since 3.0.1
+   */
   @Nullable
   public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
     return s_aHTTPIncomingDumper;
   }
 
+  /**
+   * Set the dumper for incoming HTTP requests or <code>null</code> if none
+   * should be used
+   *
+   * @param aHttpDumper
+   *        The dumper to be used. May be <code>null</code>.
+   * @since 3.0.1
+   */
   public static void setHTTPIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpDumper)
   {
     s_aHTTPIncomingDumper = aHttpDumper;
@@ -410,17 +428,35 @@ public final class HTTPHelper
       s_aLogger.info ("Incoming request dumping is disabled.");
   }
 
+  /**
+   * @return <code>true</code> if a dumper for outgoing HTTP requests is
+   *         installed, <code>false</code> otherwise
+   * @since 3.0.1
+   */
   public static boolean isHTTPOutgoingDumpEnabled ()
   {
     return getHTTPOutgoingDumper () != null;
   }
 
+  /**
+   * @return the dumper for outgoing HTTP requests or <code>null</code> if none
+   *         is present
+   * @since 3.0.1
+   */
   @Nullable
   public static IHTTPOutgoingDumper getHTTPOutgoingDumper ()
   {
     return s_aHTTPOutgoingDumper;
   }
 
+  /**
+   * Set the dumper for outgoing HTTP requests or <code>null</code> if none
+   * should be used
+   *
+   * @param aHttpDumper
+   *        The dumper to be used. May be <code>null</code>.
+   * @since 3.0.1
+   */
   public static void setHTTPOutgoingDumper (@Nullable final IHTTPOutgoingDumper aHttpDumper)
   {
     s_aHTTPOutgoingDumper = aHttpDumper;

@@ -51,6 +51,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Directory based outgoing HTTP dumper.
  *
  * @author Philip Helger
+ * @since 3.0.1
  */
 public class HTTPOutgoingDumperDirectoryBased implements IHTTPOutgoingDumper
 {

@@ -43,6 +43,7 @@ import com.helger.as2lib.message.IBaseMessage;
  * Base interface to dump outgoing HTTP requests
  *
  * @author Philip Helger
+ * @since 3.0.1
  */
 public interface IHTTPOutgoingDumper
 {

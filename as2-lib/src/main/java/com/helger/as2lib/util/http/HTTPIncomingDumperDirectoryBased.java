@@ -53,6 +53,7 @@ import com.helger.commons.string.ToStringGenerator;
  * Directory based incoming HTTP dumper.
  *
  * @author Philip Helger
+ * @since 3.0.1
  */
 public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
 {
