@@ -20,8 +20,8 @@ The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license.
 
 #News and noteworthy
 
-  * v3.0.1
-    * Made incoming HTTP request dumping customizable
+  * v3.0.1 - 2016-09-27
+    * Made incoming HTTP request dumping customizable (#26)
   * v3.0.0 - 2016-08-21
     * JDK 8 is now required  
     * Using ph-commons 8.4.x
@@ -70,7 +70,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
@@ -79,7 +79,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
@@ -88,7 +88,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
 </dependency>
 ```
 
