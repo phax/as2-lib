@@ -50,6 +50,7 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Locale;
 
 import javax.activation.CommandMap;
@@ -73,6 +74,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
@@ -488,8 +490,16 @@ public final class BCCryptoHelper implements ICryptoHelper
     X509Certificate aRealX509Cert = aX509Cert;
     if (bUseCertificateInBodyPart)
     {
-      // get all certificates contained in the body part
-      final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (null);
+      // get signing certificates contained in the body part
+      SignerId aSignerID = null;
+      final Collection <SignerInformation> aSignerCerts = aSignedParser.getSignerInfos ().getSigners ();
+      final Iterator <SignerInformation> aSignerCertIterator = aSignerCerts.iterator ();
+      if (aSignerCertIterator.hasNext ())
+      {
+        final SignerInformation aSigner = aSignerCertIterator.next ();
+        aSignerID = aSigner.getSID ();
+      }
+      final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (aSignerID);
       if (!aContainedCerts.isEmpty ())
       {
         // For PEPPOL the certificate is passed in
