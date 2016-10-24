@@ -45,6 +45,7 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
+import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.ValueEnforcer;
 
 /**
@@ -75,6 +76,10 @@ public class AS2ClientSettings
                                                          "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** By default no retry happens. */
   public static final int DEFAULT_RETRY_COUNT = IProcessorResenderModule.DEFAULT_RETRIES;
+  /** Default connection timeout: 60 seconds */
+  public static final int DEFAULT_CONNECT_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_CONNECT_TIMEOUT_MS;
+  /** Default read timeout: 60 seconds */
+  public static final int DEFAULT_READ_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_READ_TIMEOUT_MS;
 
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
@@ -98,6 +103,8 @@ public class AS2ClientSettings
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
 
   private int m_nRetryCount = DEFAULT_RETRY_COUNT;
+  private int m_nConnectTimeoutMS = DEFAULT_CONNECT_TIMEOUT_MS;
+  private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
 
   public AS2ClientSettings ()
   {}
@@ -534,5 +541,57 @@ public class AS2ClientSettings
   public int getRetryCount ()
   {
     return m_nRetryCount;
+  }
+
+  /**
+   * Set the connection timeout in milliseconds.
+   * 
+   * @param nConnectTimeoutMS
+   *        Connect timeout milliseconds.
+   * @return this for chaining
+   * @see #getConnectTimeoutMS()
+   * @since 3.0.2
+   */
+  @Nonnull
+  public AS2ClientSettings setConnectTimeoutMS (final int nConnectTimeoutMS)
+  {
+    m_nConnectTimeoutMS = nConnectTimeoutMS;
+    return this;
+  }
+
+  /**
+   * @return The connection timeout in milliseconds. The default value is
+   *         {@link #DEFAULT_CONNECT_TIMEOUT_MS}.
+   * @since 3.0.2
+   */
+  public int getConnectTimeoutMS ()
+  {
+    return m_nConnectTimeoutMS;
+  }
+
+  /**
+   * Set the read timeout in milliseconds.
+   * 
+   * @param nReadTimeoutMS
+   *        Read timeout milliseconds.
+   * @return this for chaining
+   * @see #getReadTimeoutMS()
+   * @since 3.0.2
+   */
+  @Nonnull
+  public AS2ClientSettings setReadTimeoutMS (final int nReadTimeoutMS)
+  {
+    m_nReadTimeoutMS = nReadTimeoutMS;
+    return this;
+  }
+
+  /**
+   * @return The read timeout in milliseconds. The default value is
+   *         {@link #DEFAULT_READ_TIMEOUT_MS}.
+   * @since 3.0.2
+   */
+  public int getReadTimeoutMS ()
+  {
+    return m_nReadTimeoutMS;
   }
 }

@@ -56,6 +56,7 @@ import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.resender.ImmediateResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
+import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.StringMap;
@@ -242,7 +243,7 @@ public class AS2Client
   }
 
   /**
-   * Create an empty response object that is too be filled.
+   * Create an empty response object that is to be filled.
    *
    * @return The empty response object and never <code>null</code>.
    */
@@ -287,7 +288,7 @@ public class AS2Client
 
   /**
    * Send the AS2 message synchronously
-   * 
+   *
    * @param aSettings
    *        The settings to be used. May not be <code>null</code>.
    * @param aRequest
@@ -309,6 +310,10 @@ public class AS2Client
       final Partnership aPartnership = buildPartnership (aSettings);
 
       aMsg = createMessage (aPartnership, aRequest);
+      // Set connect and read timeout
+      aMsg.setAttribute (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT,
+                         Integer.toString (aSettings.getConnectTimeoutMS ()));
+      aMsg.setAttribute (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, Integer.toString (aSettings.getReadTimeoutMS ()));
       aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
       if (s_aLogger.isDebugEnabled ())
