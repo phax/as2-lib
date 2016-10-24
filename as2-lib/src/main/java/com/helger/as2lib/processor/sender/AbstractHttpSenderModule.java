@@ -55,12 +55,21 @@ import com.helger.commons.ws.HostnameVerifierVerifyAll;
 import com.helger.commons.ws.TrustManagerTrustAll;
 import com.helger.http.EHTTPMethod;
 
+/**
+ * Abstract HTTP based sender module
+ * 
+ * @author Philip Helger
+ */
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 {
-  /** Connection timeout in milliseconds */
+  /** Attribute name for connection timeout in milliseconds */
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
-  /** Read timeout in milliseconds */
+  /** Attribute name for read timeout in milliseconds */
   public static final String ATTR_READ_TIMEOUT = "readtimeout";
+  /** Default connection timeout: 60 seconds */
+  public static final int DEFAULT_CONNECT_TIMEOUT_MS = 60_000;
+  /** Default read timeout: 60 seconds */
+  public static final int DEFAULT_READ_TIMEOUT_MS = 60_000;
 
   /**
    * Create the {@link SSLContext} to be used for https connections. By default
@@ -116,8 +125,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
       aConn.setRequestMethod (eRequestMethod.getName ());
-      aConn.setConnectTimeout (getAttributeAsInt (ATTR_CONNECT_TIMEOUT, 60000));
-      aConn.setReadTimeout (getAttributeAsInt (ATTR_READ_TIMEOUT, 60000));
+      aConn.setConnectTimeout (getAttributeAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS));
+      aConn.setReadTimeout (getAttributeAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS));
 
       if (aConn instanceof HttpsURLConnection)
       {
