@@ -20,6 +20,9 @@ The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license.
 
 #News and noteworthy
 
+  * v3.0.2 - 2016-xx-yy
+    * Improved signature validation certificate selection (#28) - thanks @rklyne
+    * Made connect and read timeout configurable in `AS2ClientSettings` (#23)
   * v3.0.1 - 2016-09-27
     * Made incoming HTTP request dumping customizable (#26)
   * v3.0.0 - 2016-08-21
