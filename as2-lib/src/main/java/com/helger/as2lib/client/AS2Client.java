@@ -79,6 +79,7 @@ public class AS2Client
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
   private IFactory <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
                                                                                             true);
+  // proxy is not serializable
   private Proxy m_aHttpProxy;
 
   public AS2Client ()

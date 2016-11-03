@@ -33,6 +33,7 @@
 package com.helger.as2lib.client;
 
 import java.io.File;
+import java.io.Serializable;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
@@ -54,7 +55,7 @@ import com.helger.commons.ValueEnforcer;
  * @author oleo Date: May 12, 2010 Time: 5:16:57 PM
  * @author Philip Helger
  */
-public class AS2ClientSettings
+public class AS2ClientSettings implements Serializable
 {
   /**
    * The default MDN options to be used.
@@ -545,7 +546,7 @@ public class AS2ClientSettings
 
   /**
    * Set the connection timeout in milliseconds.
-   * 
+   *
    * @param nConnectTimeoutMS
    *        Connect timeout milliseconds.
    * @return this for chaining
@@ -571,7 +572,7 @@ public class AS2ClientSettings
 
   /**
    * Set the read timeout in milliseconds.
-   * 
+   *
    * @param nReadTimeoutMS
    *        Read timeout milliseconds.
    * @return this for chaining
