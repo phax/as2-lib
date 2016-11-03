@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * This class contains the basic content that was received from an AS2 server as
@@ -55,9 +56,20 @@ public class AS2ClientResponse
   private IMessageMDN m_aMDN;
   private Duration m_aExecutionDuration;
 
+  /**
+   * Default constructor.
+   */
   public AS2ClientResponse ()
   {}
 
+  /**
+   * Set the message ID of the message that was sent out. Any existing value
+   * will be overwritten.
+   *
+   * @param sOriginalMessageID
+   *        The original AS2 message ID. May not be <code>null</code>.
+   * @see com.helger.as2lib.message.IMessage#getMessageID()
+   */
   public void setOriginalMessageID (@Nonnull final String sOriginalMessageID)
   {
     ValueEnforcer.notNull (sOriginalMessageID, "OriginalMessageID");
@@ -65,7 +77,9 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The message ID of the original AS2 message.
+   * @return The message ID of the original AS2 message. May be
+   *         <code>null</code> if not set (but never <code>null</code> when
+   *         using in conjunction with {@link AS2Client}).
    */
   @Nullable
   public String getOriginalMessageID ()
@@ -73,70 +87,155 @@ public class AS2ClientResponse
     return m_sOriginalMessageID;
   }
 
-  public void setException (@Nonnull final Throwable t)
+  /**
+   * Set an exception that occurred. Any existing value will be overwritten.
+   *
+   * @param aThrowable
+   *        The raised exception. May not be <code>null</code>.
+   */
+  public void setException (@Nonnull final Throwable aThrowable)
   {
-    ValueEnforcer.notNull (t, "Throwable");
-    m_aThrowable = t;
+    ValueEnforcer.notNull (aThrowable, "Throwable");
+    m_aThrowable = aThrowable;
   }
 
+  /**
+   * @return <code>true</code> if an exception is present, <code>false</code>
+   *         otherwise.
+   */
   public boolean hasException ()
   {
     return m_aThrowable != null;
   }
 
+  /**
+   * @return The stored exception. May be <code>null</code> if none is present.
+   *         This usually means that an MDN is present.
+   * @see #hasException()
+   * @see #getMDN()
+   */
   @Nullable
   public Throwable getException ()
   {
     return m_aThrowable;
   }
 
+  /**
+   * Set the retrieved MDN. Any existing value will be overwritten.
+   *
+   * @param aMDN
+   *        The MDN retrieved. May not be <code>null</code>.
+   */
   public void setMDN (@Nonnull final IMessageMDN aMDN)
   {
     ValueEnforcer.notNull (aMDN, "MDN");
     m_aMDN = aMDN;
   }
 
+  /**
+   * @return <code>true</code> if an MDN is present, <code>false</code>
+   *         otherwise.
+   */
+  public boolean hasMDN ()
+  {
+    return m_aMDN != null;
+  }
+
+  /**
+   * @return The stored MDN. May be <code>null</code> if none is present.
+   *         Usually this means that an exception is present.
+   * @see #hasMDN()
+   * @see #getException()
+   */
   @Nullable
   public IMessageMDN getMDN ()
   {
     return m_aMDN;
   }
 
+  /**
+   * @return The message ID of the MDN if present, or <code>null</code> if no
+   *         MDN is present.
+   * @see #hasMDN()
+   */
   @Nullable
   public String getMDNMessageID ()
   {
     return m_aMDN == null ? null : m_aMDN.getMessageID ();
   }
 
+  /**
+   * @return The text of the MDN if present, or <code>null</code> if no MDN is
+   *         present.
+   * @see #hasMDN()
+   */
   @Nullable
   public String getMDNText ()
   {
     return m_aMDN == null ? null : m_aMDN.getText ();
   }
 
+  /**
+   * @return The disposition of the MDN if present, or <code>null</code> if no
+   *         MDN is present.
+   * @see #hasMDN()
+   */
   @Nullable
   public String getMDNDisposition ()
   {
     return m_aMDN == null ? null : m_aMDN.getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
   }
 
+  /**
+   * Set the execution duration of the client request. Any existing value will
+   * be overwritten.
+   *
+   * @param aExecutionDuration
+   *        The duration to be set. May not be <code>null</code>.
+   * @deprecated Use {@link #setExecutionDuration(Duration)} instead
+   */
+  @Deprecated
   public void setExecutionTime (@Nonnull final Duration aExecutionDuration)
+  {
+    setExecutionDuration (aExecutionDuration);
+  }
+
+  /**
+   * Set the execution duration of the client request. Any existing value will
+   * be overwritten.
+   *
+   * @param aExecutionDuration
+   *        The duration to be set. May not be <code>null</code>.
+   */
+  public void setExecutionDuration (@Nonnull final Duration aExecutionDuration)
   {
     ValueEnforcer.notNull (aExecutionDuration, "ExecutionDuration");
     m_aExecutionDuration = aExecutionDuration;
   }
 
+  /**
+   * @return <code>true</code> if an execution duration is present,
+   *         <code>false</code> otherwise.
+   */
+  public boolean hasExecutionDuration ()
+  {
+    return m_aExecutionDuration != null;
+  }
+
+  /**
+   * @return The execution duration or <code>null</code> if not present. When
+   *         using {@link AS2Client} the execution time is always set.
+   */
   @Nullable
   public Duration getExecutionDuration ()
   {
     return m_aExecutionDuration;
   }
 
-  public boolean hasExecutionDuration ()
-  {
-    return m_aExecutionDuration != null;
-  }
-
+  /**
+   * @return The whole client response in a single string for debugging
+   *         purposes.
+   */
   @Nonnull
   public String getAsString ()
   {
@@ -155,5 +254,15 @@ public class AS2ClientResponse
     if (hasExecutionDuration ())
       aSB.append ("Sending duration: ").append (m_aExecutionDuration.toString ()).append ('\n');
     return aSB.toString ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("OriginalMessageID", m_sOriginalMessageID)
+                                       .append ("Throwable", m_aThrowable)
+                                       .append ("MDN", m_aMDN)
+                                       .append ("ExecutionDuration", m_aExecutionDuration)
+                                       .toString ();
   }
 }

@@ -378,7 +378,7 @@ public class AS2Client
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Response retrieved: " + aResponse.getAsString ());
 
-    aResponse.setExecutionTime (aSW.stopAndGetDuration ());
+    aResponse.setExecutionDuration (aSW.stopAndGetDuration ());
     return aResponse;
   }
 }

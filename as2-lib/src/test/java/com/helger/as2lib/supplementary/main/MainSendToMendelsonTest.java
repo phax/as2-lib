@@ -75,7 +75,7 @@ public final class MainSendToMendelsonTest
       GlobalDebug.setDebugModeDirect (false);
 
     Proxy aHttpProxy = null;
-    if (true)
+    if (false)
       aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.12", 8080));
 
     // Start client configuration
@@ -86,7 +86,9 @@ public final class MainSendToMendelsonTest
     aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key1");
 
     // Fixed receiver - key alias must be "mendelsontestAS2"
-    aSettings.setReceiverData ("mendelsontestAS2", "mendelsontestAS2", "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
+    aSettings.setReceiverData ("mendelsontestAS2",
+                               "mendelsontestAS2",
+                               "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
     final X509Certificate aReceiverCertificate = KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key2.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
@@ -106,11 +108,13 @@ public final class MainSendToMendelsonTest
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), CCharset.CHARSET_ISO_8859_1_OBJ);
+    aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"),
+                      CCharset.CHARSET_ISO_8859_1_OBJ);
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message
-    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings,
+                                                                                                    aRequest);
     if (aResponse.hasException ())
       s_aLogger.info (aResponse.getAsString ());
 
