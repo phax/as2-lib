@@ -141,10 +141,9 @@ The following system properties are available for global customization
 
 For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTest.java as a working example on how to send an arbitrary file to the Mendelson test server.
 
-The client basically separates between per-partnership settings (class `AS2ClientSettings`) and the content to be transmitted (class `AS2ClientRequest`). The glue that holds all of this together is the class `AS2Client` that takes the settings and the request, adds the possibility to define an HTTP(S) proxy server, and does the synchronous sending.
+The client basically separates between per-partnership settings (class `AS2ClientSettings`) and the content to be transmitted (class `AS2ClientRequest`). The glue that holds all of this together is the class `AS2Client` that takes the settings and the request, adds the possibility to define an HTTP(S) proxy server, and does the synchronous sending. The settings and the main client are thought to be reusable, whereas the request data is to be changed for every request. 
 
 The response of a client request is defined by class `AS2ClientResponse`. It stores the original message ID, the received MDN/the occurred exception and the execution duration. The interpretation of the received MDN is up to the user.
-
 
 ##as2-partnership-mongodb
 This is an implementation of interface `com.helger.as2lib.partner.IPartnershipFactory` from as2-lib using MongoDB as the backend.
