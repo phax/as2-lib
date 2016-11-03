@@ -15,8 +15,9 @@ This project is used in my following other projects:
   * **[as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet)** - integration into the Servlet specifications and for use with the [PEPPOL](http://www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling.
   * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](http://www.peppol.eu) AS2 messages.
 
-`as2-lib` is licensed under the FreeBSD License.
+The subproject `as2-lib` is licensed under the FreeBSD License.
 The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
+The subproject `as2-servlet` is licensed under the Apache 2 license. 
 
 #News and noteworthy
 
@@ -98,21 +99,9 @@ For the receive servlet, add the following to your `pom.xml`:
 #Building
 This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
 
-The `as2-lib` sub-project requires at least Java 1.6 and should be without problems. It is licensed under the FreeBSD license (as OpenAS2).
+All projects require Java 1.8 for building and running.
 
-The `as2-partnership-mongodb` sub-project requires at least Java 1.8 and upon installing it the first time it downloads an embedded MongoDB from the official web site and extracts it. If this makes problems specify the `-DskipTests=true` parameter when calling Maven.
-
-The `as2-servlet` sub-project requires at least Java 1.6 and should be without problems. It is licensed under the Apache 2 license (as OpenAS2).
-
-
-If you only have Java 1.6 or 1.7 available perform the following commands to build only `as2-lib` (assuming you are in the root directory of this project):
-```
-mvn clean install -N
-cd as2-lib
-mvn clean install
-```
-
-This installs the parent POM first (`-N` means *not recursive*) and afterwards `as2-lib` is build as usual.
+The `as2-partnership-mongodb` sub-project downloads an embedded MongoDB from the official web site and extracts it for testing. If this makes problems specify the `-DskipTests=true` commandline parameter when invoking Maven.
 
 ##as2-lib
 ###Package structure
@@ -146,9 +135,19 @@ The following system properties are available for global customization
   * boolean `AS2.useSecureRandom` - since 2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
   * String `AS2.httpDumpDirectory` - since 2.2.0 - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectory=/var/dump/as2-http`). The filename starts with "as2-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
   * String `AS2.dumpDecryptedDirectory` - since 2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
+  
+###AS2 client
+`as2-lib` ships with a powerful client to send AS2 messages. It can easily be embedded in standalone Java applications and does not require any server part. All the necessary classes are in the package `com.helger.as2lib.client`.
+
+For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTest.java as a working example on how to send an arbitrary file to the Mendelson test server.
+
+The client basically separates between per-partnership settings (class `AS2ClientSettings`) and the content to be transmitted (class `AS2ClientRequest`). The glue that holds all of this together is the class `AS2Client` that takes the settings and the request, adds the possibility to define an HTTP(S) proxy server, and does the synchronous sending.
+
+The response of a client request is defined by class `AS2ClientResponse`. It stores the original message ID, the received MDN/the occurred exception and the execution duration. The interpretation of the received MDN is up to the user.
+
 
 ##as2-partnership-mongodb
-This is an implementation of interface `com.helger.as2lib.partner.IPartnershipFactory` from as2-lib using MongoDB as the backend. It requires Java 1.8 for building and running.
+This is an implementation of interface `com.helger.as2lib.partner.IPartnershipFactory` from as2-lib using MongoDB as the backend.
 Tests are done with Groovy and Spock.
 
 This sub-project is licensed under the Apache 2 License.
