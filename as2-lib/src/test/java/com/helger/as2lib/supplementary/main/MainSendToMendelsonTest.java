@@ -105,6 +105,8 @@ public final class MainSendToMendelsonTest
     aSettings.setCompress (ECompressionType.ZLIB, false);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
+    aSettings.setConnectTimeoutMS (10_000);
+    aSettings.setReadTimeoutMS (10_000);
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");

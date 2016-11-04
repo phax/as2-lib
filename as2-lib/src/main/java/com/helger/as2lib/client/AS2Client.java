@@ -311,10 +311,6 @@ public class AS2Client
       final Partnership aPartnership = buildPartnership (aSettings);
 
       aMsg = createMessage (aPartnership, aRequest);
-      // Set connect and read timeout
-      aMsg.setAttribute (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT,
-                         Integer.toString (aSettings.getConnectTimeoutMS ()));
-      aMsg.setAttribute (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, Integer.toString (aSettings.getReadTimeoutMS ()));
       aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
       if (s_aLogger.isDebugEnabled ())
@@ -353,6 +349,12 @@ public class AS2Client
         // feature
         final AS2SenderModule aSender = m_aAS2SenderModuleFactory.get ();
         aSender.initDynamicComponent (aSession, null);
+        // Set connect and read timeout
+        aSender.setAttribute (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT,
+                              Integer.toString (aSettings.getConnectTimeoutMS ()));
+        aSender.setAttribute (AbstractHttpSenderModule.ATTR_READ_TIMEOUT,
+                              Integer.toString (aSettings.getReadTimeoutMS ()));
+
         aSession.getMessageProcessor ().addModule (aSender);
 
         aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);
