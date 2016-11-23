@@ -5,6 +5,9 @@
 [![Join the chat at https://gitter.im/phax/as2-lib](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/phax/as2-lib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 AS2 is a transport protocol specified in [RFC 4130](http://www.ietf.org/rfc/rfc4130.txt).
+The MDN is specified in [RFC 3798](http://www.ietf.org/rfc/rfc3798.txt).
+Algorithm names are defined in [RFC 5751](https://www.ietf.org/rfc/rfc5751.txt) which superseedes [RFC 3851](https://www.ietf.org/rfc/rfc3851.txt);
+
 This library is a fork of [OpenAS2](http://sourceforge.net/projects/openas2/) which did not 
 release updates since 2010 (as per August 2015 they are on GitHub at https://github.com/OpenAS2/OpenAs2App). I than split the project into a common library part (this project)
 and a [server part](https://github.com/phax/as2-server) which contains a stand alone server. This project also contains a simple AS2 client which can be used to send messages to other AS2 servers.
