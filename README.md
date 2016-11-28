@@ -24,7 +24,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 #News and noteworthy
 
-  * v3.0.2 - 2016-xx-yy
+  * v3.0.2 - 2016-11-28
     * Improved signature validation certificate selection (#28) - thanks @rklyne
     * Made connect and read timeout configurable in `AS2ClientSettings` (#23)
   * v3.0.1 - 2016-09-27
@@ -77,7 +77,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
 </dependency>
 ```
 
@@ -86,7 +86,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
 </dependency>
 ```
 
@@ -95,7 +95,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>3.0.1</version>
+  <version>3.0.2</version>
 </dependency>
 ```
 
