@@ -18,7 +18,7 @@ package com.helger.as2servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -39,7 +39,9 @@ import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.as2servlet.util.AS2ServletSession;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.string.StringHelper;
+import com.helger.servlet.request.RequestHelper;
 
 /**
  * This is the main servlet that takes AS2 messages and processes them. This
@@ -218,16 +220,11 @@ public class AS2ReceiveServlet extends HttpServlet
     aMsg.setAttribute (HTTPHelper.MA_HTTP_REQ_URL, aHttpRequest.getRequestURI ());
 
     // Add all request headers to the AS2 message
-    final Enumeration <?> eHeaders = aHttpRequest.getHeaderNames ();
-    while (eHeaders.hasMoreElements ())
+    for (final Map.Entry <String, ICommonsList <String>> aEntry : RequestHelper.getRequestHeaderMap (aHttpRequest))
     {
-      final String sName = (String) eHeaders.nextElement ();
-      final Enumeration <?> eHeaderValues = aHttpRequest.getHeaders (sName);
-      while (eHeaderValues.hasMoreElements ())
-      {
-        final String sValue = (String) eHeaderValues.nextElement ();
+      final String sName = aEntry.getKey ();
+      for (final String sValue : aEntry.getValue ())
         aMsg.addHeader (sName, sValue);
-      }
     }
 
     // Build the handler that performs the response handling

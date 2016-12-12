@@ -44,6 +44,10 @@
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
+      <artifactId>ph-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
       <artifactId>as2-lib</artifactId>
     </dependency>
     <dependency>
