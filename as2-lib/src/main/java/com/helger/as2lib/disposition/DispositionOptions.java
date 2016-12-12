@@ -77,7 +77,7 @@ public class DispositionOptions
   private String m_sProtocolImportance;
   private String m_sProtocol;
   private String m_sMICAlgImportance;
-  private final ICommonsList <ECryptoAlgorithmSign> m_aMICAlgs = new CommonsArrayList<> ();
+  private final ICommonsList <ECryptoAlgorithmSign> m_aMICAlgs = new CommonsArrayList <> ();
 
   public DispositionOptions ()
   {}
@@ -312,7 +312,7 @@ public class DispositionOptions
     if (m_aMICAlgs.isEmpty ())
       return null;
 
-    return StringHelper.getImploded (", ", m_aMICAlgs, ECryptoAlgorithmSign::getID);
+    return StringHelper.getImplodedMapped (", ", m_aMICAlgs, ECryptoAlgorithmSign::getID);
   }
 
   @Nonnull
