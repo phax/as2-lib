@@ -24,8 +24,8 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 #News and noteworthy
 
-  * v3.0.3
-    * Binds to ph-commons 8.5.6
+  * v3.0.3 - 2017-01-24
+    * Binds to ph-commons 8.6.x
     * Binds to ph-web 8.7.0
     * Updated to BouncyCastle 1.56
   * v3.0.2 - 2016-11-28
