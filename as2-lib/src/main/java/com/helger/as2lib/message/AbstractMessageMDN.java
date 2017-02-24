@@ -127,7 +127,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
                             .append ("message", m_aMessage != null ? m_aMessage.getMessageID () : null)
                             .append ("data", m_aData)
                             .append ("text", m_sText)
-                            .toString ();
+                            .getToString ();
   }
 
   private void readObject (final ObjectInputStream aOIS) throws IOException, ClassNotFoundException

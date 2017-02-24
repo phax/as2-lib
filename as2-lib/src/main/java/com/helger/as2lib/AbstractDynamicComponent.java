@@ -94,6 +94,6 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   public String toString ()
   {
     // do not add "session" - this may lead to an endless loop
-    return ToStringGenerator.getDerived (super.toString ()).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).getToString ();
   }
 }

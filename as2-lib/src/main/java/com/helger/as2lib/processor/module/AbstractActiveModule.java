@@ -117,6 +117,6 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("running", m_bRunning).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("running", m_bRunning).getToString ();
   }
 }

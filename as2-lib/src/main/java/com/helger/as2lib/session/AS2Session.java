@@ -192,6 +192,6 @@ public class AS2Session implements IAS2Session
                                        .append ("CryptoVerifyUseCertificateInBodyPart",
                                                 m_bCryptoVerifyUseCertificateInBodyPart)
                                        .append ("HttpProxy", m_aHttpProxy)
-                                       .toString ();
+                                       .getToString ();
   }
 }

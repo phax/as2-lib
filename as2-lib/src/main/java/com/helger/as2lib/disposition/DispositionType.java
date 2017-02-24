@@ -141,7 +141,7 @@ public final class DispositionType
                                        .append ("status", m_sStatus)
                                        .append ("statusDescription", m_sStatusDescription)
                                        .append ("statusModified", m_sStatusModifier)
-                                       .toString ();
+                                       .getToString ();
   }
 
   @Nonnull

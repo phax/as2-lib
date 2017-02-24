@@ -35,6 +35,7 @@ package com.helger.as2lib.util.http;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -45,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -98,10 +98,10 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       for (final String sHeaderLine : aHeaderLines)
-        aOS.write ((sHeaderLine + HTTPHelper.EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+        aOS.write ((sHeaderLine + HTTPHelper.EOL).getBytes (StandardCharsets.ISO_8859_1));
 
       // empty line
-      aOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
 
       // Add payload
       aOS.write (aPayload);
@@ -137,6 +137,6 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("DumpDirectory", m_aDumpDirectory).toString ();
+    return new ToStringGenerator (this).append ("DumpDirectory", m_aDumpDirectory).getToString ();
   }
 }

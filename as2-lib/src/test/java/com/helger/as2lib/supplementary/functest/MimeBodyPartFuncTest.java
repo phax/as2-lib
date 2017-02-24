@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
@@ -50,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.base64.Base64;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StringInputStream;
@@ -74,7 +74,7 @@ public final class MimeBodyPartFuncTest
 
     // Build message content
     final MimeBodyPart aPart = new MimeBodyPart ();
-    aPart.setText (sTestMsg, CCharset.CHARSET_ISO_8859_1);
+    aPart.setText (sTestMsg, StandardCharsets.ISO_8859_1.name ());
     aPart.addHeader ("x-custom", "junit");
     aPart.addHeader (CAS2Header.HEADER_CONTENT_TYPE, "text/plain");
     aPart.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, EContentTransferEncoding._8BIT.getID ());
@@ -84,7 +84,7 @@ public final class MimeBodyPartFuncTest
     aPart.writeTo (aBAOS);
     StreamHelper.close (aBAOS);
 
-    final String sMsgPart = aBAOS.getAsString (CCharset.CHARSET_ISO_8859_1_OBJ);
+    final String sMsgPart = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     if (false)
       s_aLogger.info (sMsgPart);
 
@@ -98,11 +98,11 @@ public final class MimeBodyPartFuncTest
   public void testWriteContentTransferEncodingBase64 () throws MessagingException, IOException
   {
     final String sTestMsg = "Test message\nLine 2\n\nLine 4\nEOF";
-    final String sEncodedMsg = Base64.safeEncode (sTestMsg, CCharset.CHARSET_ISO_8859_1_OBJ);
+    final String sEncodedMsg = Base64.safeEncode (sTestMsg, StandardCharsets.ISO_8859_1);
 
     // Build message content
     final MimeBodyPart aPart = new MimeBodyPart ();
-    aPart.setText (sTestMsg, CCharset.CHARSET_ISO_8859_1);
+    aPart.setText (sTestMsg, StandardCharsets.ISO_8859_1.name ());
     aPart.addHeader ("x-custom", "junit");
     aPart.addHeader (CAS2Header.HEADER_CONTENT_TYPE, "text/plain");
     aPart.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, EContentTransferEncoding.BASE64.getID ());
@@ -112,7 +112,7 @@ public final class MimeBodyPartFuncTest
     aPart.writeTo (aBAOS);
     StreamHelper.close (aBAOS);
 
-    final String sMsgPart = aBAOS.getAsString (CCharset.CHARSET_ISO_8859_1_OBJ);
+    final String sMsgPart = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     if (false)
       s_aLogger.info (sMsgPart);
 
@@ -136,7 +136,7 @@ public final class MimeBodyPartFuncTest
                          HTTPHelper.EOL +
                          "VGVzdCBtZXNzYWdlCkxpbmUgMgoKTGluZSA0CkVPRg==" +
                          HTTPHelper.EOL;
-    InputStream aIS = new StringInputStream (sHTTP, CCharset.CHARSET_ISO_8859_1_OBJ);
+    InputStream aIS = new StringInputStream (sHTTP, StandardCharsets.ISO_8859_1);
 
     // Parse all HTTP headers from stream
     final InternetHeaders aHeaders = new InternetHeaders (aIS);
@@ -160,7 +160,7 @@ public final class MimeBodyPartFuncTest
     aReceivedPart.writeTo (aBAOS);
     StreamHelper.close (aBAOS);
 
-    final String sMsgPart = aBAOS.getAsString (CCharset.CHARSET_ISO_8859_1_OBJ);
+    final String sMsgPart = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     if (true)
       s_aLogger.info (sMsgPart);
   }

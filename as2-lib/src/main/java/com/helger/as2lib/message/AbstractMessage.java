@@ -196,7 +196,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("data", m_aData).append ("MDN", m_aMDN).toString ();
+    return new ToStringGenerator (this).append ("data", m_aData).append ("MDN", m_aMDN).getToString ();
   }
 
   private void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException

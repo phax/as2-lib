@@ -35,6 +35,7 @@ package com.helger.as2lib.supplementary.main;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
 import org.slf4j.Logger;
@@ -49,7 +50,6 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.cert.KeyStoreHelper;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
 
@@ -110,8 +110,7 @@ public final class MainSendToMendelsonTest
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"),
-                      CCharset.CHARSET_ISO_8859_1_OBJ);
+    aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message

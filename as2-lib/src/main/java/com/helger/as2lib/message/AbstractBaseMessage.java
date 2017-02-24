@@ -35,6 +35,7 @@ package com.helger.as2lib.message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
@@ -54,7 +55,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.ext.CommonsTreeMap;
 import com.helger.commons.collection.ext.ICommonsSortedMap;
 import com.helger.commons.string.ToStringGenerator;
@@ -104,10 +104,10 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     final Enumeration <?> en = m_aHeaders.getAllHeaderLines ();
     while (en.hasMoreElements ())
     {
-      aOOS.write (((String) en.nextElement () + HTTPHelper.EOL).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aOOS.write (((String) en.nextElement () + HTTPHelper.EOL).getBytes (StandardCharsets.ISO_8859_1));
     }
 
-    aOOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+    aOOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
 
     // write partnership info
     aOOS.writeObject (m_aPartnership);
@@ -186,7 +186,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   @Nonempty
   public final String getHeadersDebugFormatted ()
   {
-    final ICommonsSortedMap <String, String> aMap = new CommonsTreeMap<> ();
+    final ICommonsSortedMap <String, String> aMap = new CommonsTreeMap <> ();
     final Enumeration <?> aHeaders = m_aHeaders.getAllHeaders ();
     while (aHeaders.hasMoreElements ())
     {
@@ -215,6 +215,6 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     return new ToStringGenerator (this).append ("attributes", m_aAttributes)
                                        .append ("headers", m_aHeaders)
                                        .append ("partnership", m_aPartnership)
-                                       .toString ();
+                                       .getToString ();
   }
 }

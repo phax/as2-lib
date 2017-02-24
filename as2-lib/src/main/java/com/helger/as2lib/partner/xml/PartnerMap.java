@@ -54,7 +54,7 @@ import com.helger.commons.string.ToStringGenerator;
 @NotThreadSafe
 public final class PartnerMap implements IPartnerMap
 {
-  private final ICommonsOrderedMap <String, Partner> m_aMap = new CommonsLinkedHashMap<> ();
+  private final ICommonsOrderedMap <String, Partner> m_aMap = new CommonsLinkedHashMap <> ();
 
   public PartnerMap ()
   {}
@@ -105,6 +105,6 @@ public final class PartnerMap implements IPartnerMap
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("Map", m_aMap).toString ();
+    return new ToStringGenerator (this).append ("Map", m_aMap).getToString ();
   }
 }

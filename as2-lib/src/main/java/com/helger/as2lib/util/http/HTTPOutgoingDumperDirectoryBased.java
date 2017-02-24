@@ -98,6 +98,6 @@ public class HTTPOutgoingDumperDirectoryBased implements IHTTPOutgoingDumper
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("DumpDirectory", m_aDumpDirectory).toString ();
+    return new ToStringGenerator (this).append ("DumpDirectory", m_aDumpDirectory).getToString ();
   }
 }

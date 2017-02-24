@@ -348,7 +348,7 @@ public class DispositionOptions
                                        .append ("Protocol", m_sProtocol)
                                        .append ("MICAlgImportance", m_sMICAlgImportance)
                                        .append ("MICAlgs", m_aMICAlgs)
-                                       .toString ();
+                                       .getToString ();
   }
 
   /**

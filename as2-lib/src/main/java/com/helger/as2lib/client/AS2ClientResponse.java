@@ -264,6 +264,6 @@ public class AS2ClientResponse implements Serializable
                                        .append ("Throwable", m_aThrowable)
                                        .append ("MDN", m_aMDN)
                                        .append ("ExecutionDuration", m_aExecutionDuration)
-                                       .toString ();
+                                       .getToString ();
   }
 }

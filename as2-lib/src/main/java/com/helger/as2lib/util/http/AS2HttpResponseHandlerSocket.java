@@ -35,6 +35,7 @@ package com.helger.as2lib.util.http;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
 import javax.annotation.Nonnegative;
@@ -44,7 +45,6 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.http.EHTTPVersion;
@@ -98,18 +98,18 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
                                      " " +
                                      HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
                                      HTTPHelper.EOL;
-      aOS.write (sHttpStatusLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aOS.write (sHttpStatusLine.getBytes (StandardCharsets.ISO_8859_1));
 
       // Add response headers
       final Enumeration <?> aHeaderLines = aHeaders.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {
         final String sHeader = (String) aHeaderLines.nextElement () + HTTPHelper.EOL;
-        aOS.write (sHeader.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+        aOS.write (sHeader.getBytes (StandardCharsets.ISO_8859_1));
       }
 
       // Empty line as separator
-      aOS.write (HTTPHelper.EOL.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
 
       // Write body
       aData.writeTo (aOS);

@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +59,6 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -104,7 +104,7 @@ public final class HTTPHelper
   @ReturnsMutableCopy
   public static ICommonsList <String> getAllHTTPHeaderLines (@Nonnull final InternetHeaders aHeaders)
   {
-    final ICommonsList <String> ret = new CommonsArrayList<> ();
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
     final Enumeration <?> aEnum = aHeaders.getAllHeaderLines ();
     while (aEnum.hasMoreElements ())
       ret.add ((String) aEnum.nextElement ());
@@ -570,7 +570,7 @@ public final class HTTPHelper
     try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
     {
       final String sHTTPLine = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + EOL;
-      aData.write (sHTTPLine.getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aData.write (sHTTPLine.getBytes (StandardCharsets.ISO_8859_1));
 
       final InternetHeaders aHeaders = new InternetHeaders ();
       aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);

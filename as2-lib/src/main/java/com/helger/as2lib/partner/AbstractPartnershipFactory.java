@@ -195,6 +195,6 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("Partnerships", m_aPartnerships).toString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("Partnerships", m_aPartnerships).getToString ();
   }
 }

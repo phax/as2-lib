@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;
@@ -82,7 +83,6 @@ import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.as2lib.util.http.IHTTPOutgoingDumper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -177,7 +177,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
       aFOS = FileHelper.getOutputStream (sPendingFolder + "/" + sMsgFilename);
-      aFOS.write ((sMIC + "\n" + sPendingFilename).getBytes (CCharset.CHARSET_ISO_8859_1_OBJ));
+      aFOS.write ((sMIC + "\n" + sPendingFilename).getBytes (StandardCharsets.ISO_8859_1));
 
       // remember
       aMsg.setAttribute (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
@@ -500,7 +500,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (s_aLogger.isTraceEnabled ())
       {
         // Debug print the whole MDN stream
-        s_aLogger.trace ("Retrieved MDN stream data:\n" + aMDNStream.getAsString (CCharset.CHARSET_ISO_8859_1_OBJ));
+        s_aLogger.trace ("Retrieved MDN stream data:\n" + aMDNStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
       final MimeBodyPart aPart = new MimeBodyPart (aMDN.getHeaders (), aMDNStream.toByteArray ());
