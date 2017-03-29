@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.cert;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -168,7 +169,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
     try
     {
-      final ICommonsOrderedMap <String, Certificate> aCerts = new CommonsLinkedHashMap<> ();
+      final ICommonsOrderedMap <String, Certificate> aCerts = new CommonsLinkedHashMap <> ();
       final Enumeration <String> aAliases = aKeyStore.aliases ();
       while (aAliases.hasMoreElements ())
       {
@@ -347,7 +348,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
-    final InputStream aFIS = FileHelper.getInputStream (sFilename);
+    final InputStream aFIS = FileHelper.getInputStream (new File (sFilename));
     load (aFIS, aPassword);
   }
 
@@ -424,7 +425,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
-    final OutputStream fOut = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
+    final OutputStream fOut = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
     save (fOut, aPassword);
   }
 

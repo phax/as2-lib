@@ -100,7 +100,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     try
     {
-      load (FileHelper.getInputStream (getFilename ()));
+      load (FileHelper.getInputStream (new File (getFilename ())));
     }
     catch (final Exception ex)
     {

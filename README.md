@@ -1,4 +1,4 @@
-#as2-lib
+# as2-lib
 
 [![Build Status](https://travis-ci.org/phax/as2-lib.svg?branch=master)](https://travis-ci.org/phax/as2-lib)
 ﻿
@@ -22,7 +22,7 @@ The subproject `as2-lib` is licensed under the FreeBSD License.
 The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
 The subproject `as2-servlet` is licensed under the Apache 2 license. 
 
-#News and noteworthy
+# News and noteworthy
 
   * v3.0.3 - 2017-01-24
     * Binds to ph-commons 8.6.x
@@ -75,9 +75,9 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
     * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
     * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
 
-#Maven usage
+# Maven usage
 Add the following to your `pom.xml` to use this artifact:
-```
+```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
@@ -86,7 +86,7 @@ Add the following to your `pom.xml` to use this artifact:
 ```
 
 For the MongoDB partnership factory, add the following to your `pom.xml`:
-```
+```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
@@ -95,7 +95,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 ```
 
 For the receive servlet, add the following to your `pom.xml`:
-```
+```xmö
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
@@ -103,15 +103,15 @@ For the receive servlet, add the following to your `pom.xml`:
 </dependency>
 ```
 
-#Building
+# Building
 This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
 
 All projects require Java 1.8 for building and running.
 
 The `as2-partnership-mongodb` sub-project downloads an embedded MongoDB from the official web site and extracts it for testing. If this makes problems specify the `-DskipTests=true` commandline parameter when invoking Maven.
 
-##as2-lib
-###Package structure
+## as2-lib
+### Package structure
 This library manages the package `com.helger.as2lib` and all sub-packages:
 
   * com.helger.as2lib - contains the global AS2 settings
@@ -136,14 +136,14 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.util.http - utility classes for HTTP connection handling
   * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
 
-###System Properties
+### System Properties
 The following system properties are available for global customization
 
   * boolean `AS2.useSecureRandom` - since 2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
   * String `AS2.httpDumpDirectory` - since 2.2.0 - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectory=/var/dump/as2-http`). The filename starts with "as2-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
   * String `AS2.dumpDecryptedDirectory` - since 2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
   
-###AS2 client
+### AS2 client
 `as2-lib` ships with a powerful client to send AS2 messages. It can easily be embedded in standalone Java applications and does not require any server part. All the necessary classes are in the package `com.helger.as2lib.client`.
 
 For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTest.java as a working example on how to send an arbitrary file to the Mendelson test server.
@@ -152,25 +152,25 @@ The client basically separates between per-partnership settings (class `AS2Clien
 
 The response of a client request is defined by class `AS2ClientResponse`. It stores the original message ID, the received MDN/the occurred exception and the execution duration. The interpretation of the received MDN is up to the user.
 
-##as2-partnership-mongodb
+## as2-partnership-mongodb
 This is an implementation of interface `com.helger.as2lib.partner.IPartnershipFactory` from as2-lib using MongoDB as the backend.
 Tests are done with Groovy and Spock.
 
 This sub-project is licensed under the Apache 2 License.
 
-##as2-servlet
+## as2-servlet
 A stand alone servlet that takes AS2 requests and handles them via a `AS2ServletReceiverModule`.
 
 This sub-project is licensed under the Apache 2 License.
 
-###Usage
+### Usage
 To use this project you have to do the following - all described in more detail below:
   1. Add the `as2-servlet` project as a dependency to your project - e.g. via Maven
   2. Modify your `WEB-INF/web.xml` file so that it references the `com.helger.as2servlet.AS2ReceiveServlet`.
   3. Create an AS2 configuration file and store it in a folder that is fully writable to your project. The details of the configuration files are described below.
   4. Create a key store file (e.g.) called `server-certs.p12` located in the same folder as the configuration file. The keystore type must be `PKCS12`. It must at least contain your private key. The path and the password of the keystore must be set in the AS2 configuration file.
 
-###WEB-INF/web.xml configuration  
+### WEB-INF/web.xml configuration  
 Example `WEB-INF/web.xml` configuration:
 ```xml
   <servlet>
@@ -191,7 +191,7 @@ As you can see, a configuration file called `as2-server-data/as2-server-config.x
 In this example the servlet is mapped to the path `/as2` meaning that messages must be targeted to this URL (e.g. `https://myserver/as2`). 
 
 
-###AS2 Configuration file
+### AS2 Configuration file
 A special XML configuration file must be used to configure the AS2 handling. It contains:
   * a reference to the keystore to be used (in element `certificates`)
   * a reference to a partnership factory (storing the exchange combinations) (in element `partnerships`)

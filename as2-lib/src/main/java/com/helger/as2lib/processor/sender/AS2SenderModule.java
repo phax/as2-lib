@@ -32,9 +32,11 @@
  */
 package com.helger.as2lib.processor.sender;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -155,7 +157,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    */
   protected void storePendingInfo (@Nonnull final AS2Message aMsg, @Nonnull final String sMIC) throws OpenAS2Exception
   {
-    OutputStream aFOS = null;
     try
     {
       if (s_aLogger.isDebugEnabled ())
@@ -176,9 +177,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
-      aFOS = FileHelper.getOutputStream (sPendingFolder + "/" + sMsgFilename);
-      aFOS.write ((sMIC + "\n" + sPendingFilename).getBytes (StandardCharsets.ISO_8859_1));
-
+      try (final Writer aWriter = FileHelper.getWriter (new File (sPendingFolder + "/" + sMsgFilename),
+                                                        StandardCharsets.ISO_8859_1))
+      {
+        aWriter.write (sMIC + "\n" + sPendingFilename);
+      }
       // remember
       aMsg.setAttribute (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
       aMsg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
@@ -188,10 +191,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       throw we;
-    }
-    finally
-    {
-      StreamHelper.close (aFOS);
     }
   }
 

@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.util.cert;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -66,7 +67,7 @@ public final class KeyStoreHelper
                                               @Nonnull final char [] aPassword,
                                               @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
   {
-    final InputStream aIS = FileHelper.getInputStream (sFilename);
+    final InputStream aIS = FileHelper.getInputStream (new File (sFilename));
     if (aIS == null)
       throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
 
@@ -85,7 +86,7 @@ public final class KeyStoreHelper
                                     @Nonnull final String sFilename,
                                     @Nonnull final char [] aPassword) throws GeneralSecurityException, IOException
   {
-    final OutputStream aOS = FileHelper.getOutputStream (sFilename, EAppend.TRUNCATE);
+    final OutputStream aOS = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
     if (aOS == null)
       throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for writing");
 
@@ -102,7 +103,7 @@ public final class KeyStoreHelper
   @Nonnull
   public static X509Certificate readX509Certificate (@Nonnull final String sFilename) throws CertificateException
   {
-    final InputStream aIS = FileHelper.getInputStream (sFilename);
+    final InputStream aIS = FileHelper.getInputStream (new File (sFilename));
     if (aIS == null)
       throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
 
