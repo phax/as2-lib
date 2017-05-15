@@ -67,7 +67,7 @@
   </developers>
   
   <properties>
-    <bc.version>1.56</bc.version>
+    <bc.version>1.57</bc.version>
   </properties>
 
   <dependencyManagement>
