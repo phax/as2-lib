@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
+import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.callback.exception.IExceptionCallback;
 
 /**
@@ -59,8 +60,9 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
 {
   private static final class HandleObject
   {
-    public String m_sAction;
+    private final String m_sAction;
     private final IMessage m_aMsg;
+    @CodingStyleguideUnaware
     private final Map <String, Object> m_aOptions;
 
     public HandleObject (@Nonnull final String sAction,
@@ -75,7 +77,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (AsyncMessageProcessor.class);
 
-  private final BlockingQueue <HandleObject> m_aQueue = new LinkedBlockingQueue<> ();
+  private final BlockingQueue <HandleObject> m_aQueue = new LinkedBlockingQueue <> ();
 
   public AsyncMessageProcessor ()
   {
