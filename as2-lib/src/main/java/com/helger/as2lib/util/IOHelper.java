@@ -74,7 +74,7 @@ public final class IOHelper
   @Nonnegative
   public static long copy (@Nonnull @WillClose final InputStream aIS, @Nonnull @WillNotClose final OutputStream aOS)
   {
-    final MutableLong aML = new MutableLong ();
+    final MutableLong aML = new MutableLong (0);
     StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aML);
     return aML.longValue ();
   }
