@@ -124,7 +124,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
    *        The message to be resend. May be an AS2 message or an MDN.
    * @param aCause
    *        The error cause.
-   * @param nTries
+   * @param nTriesLeft
    *        The number of retries left.
    * @return <code>true</code> if the message was scheduled for re-sending.
    * @throws OpenAS2Exception
@@ -133,9 +133,9 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
   protected final boolean doResend (@Nonnull final String sResendAction,
                                     @Nonnull final IMessage aMsg,
                                     @Nullable final OpenAS2Exception aCause,
-                                    final int nTries) throws OpenAS2Exception
+                                    final int nTriesLeft) throws OpenAS2Exception
   {
-    if (nTries <= 0)
+    if (nTriesLeft <= 0)
     {
       s_aLogger.info ("Retry count exceeded - no more retries for" + aMsg.getLoggingText ());
       return false;
@@ -145,7 +145,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     aOptions.put (IProcessorResenderModule.OPTION_CAUSE, aCause);
     aOptions.put (IProcessorResenderModule.OPTION_INITIAL_SENDER, this);
     aOptions.put (IProcessorResenderModule.OPTION_RESEND_ACTION, sResendAction);
-    aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTries));
+    aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTriesLeft));
     getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
 
     s_aLogger.info ("Scheduled message for resending" + aMsg.getLoggingText ());
