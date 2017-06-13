@@ -48,6 +48,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
+import com.helger.http.CHTTPHeader;
 
 /**
  * This class represents the content of an AS2 client request.
@@ -256,6 +257,10 @@ public class AS2ClientRequest
         // Set text with an optional charset
         // Sets the "text/plain" content-type internally!
         aPart.setText (m_sDataText, m_aDataCharset == null ? null : m_aDataCharset.name ());
+
+        // Set forced content-type
+        if (m_sContentType != null)
+          aPart.setHeader (CHTTPHeader.CONTENT_TYPE, m_sContentType);
       }
       else
         if (m_aDataHandler != null)

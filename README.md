@@ -24,6 +24,9 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+  * v3.0.4 - work in progress
+    * AS2 client allows different content type even if text source is used
+    * Updated to BouncyCastle 1.57
   * v3.0.3 - 2017-01-24
     * Binds to ph-commons 8.6.x
     * Binds to ph-web 8.7.0
