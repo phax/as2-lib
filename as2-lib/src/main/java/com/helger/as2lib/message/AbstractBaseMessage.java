@@ -40,7 +40,6 @@ import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
@@ -52,11 +51,8 @@ import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.ext.CommonsTreeMap;
-import com.helger.commons.collection.ext.ICommonsSortedMap;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -180,20 +176,6 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public final InternetHeaders getHeaders ()
   {
     return m_aHeaders;
-  }
-
-  @Nonnull
-  @Nonempty
-  public final String getHeadersDebugFormatted ()
-  {
-    final ICommonsSortedMap <String, String> aMap = new CommonsTreeMap <> ();
-    final Enumeration <?> aHeaders = m_aHeaders.getAllHeaders ();
-    while (aHeaders.hasMoreElements ())
-    {
-      final Header aHeader = (Header) aHeaders.nextElement ();
-      aMap.put (aHeader.getName (), aHeader.getValue ());
-    }
-    return aMap.toString ();
   }
 
   public final void setPartnership (@Nonnull final Partnership aPartnership)

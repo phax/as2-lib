@@ -18,15 +18,14 @@ package com.helger.as2servlet.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Enumeration;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
-import javax.mail.Header;
 import javax.mail.internet.InternetHeaders;
 import javax.servlet.http.HttpServletResponse;
 
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.IWriteToStream;
@@ -56,12 +55,8 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
     m_aHttpResponse.setStatus (nHttpResponseCode);
 
     // Add headers
-    final Enumeration <?> aHeaderEnum = aHeaders.getAllHeaders ();
-    while (aHeaderEnum.hasMoreElements ())
-    {
-      final Header aHeader = (Header) aHeaderEnum.nextElement ();
-      m_aHttpResponse.addHeader (aHeader.getName (), HTTPStringHelper.getUnifiedHTTPHeaderValue (aHeader.getValue ()));
-    }
+    IOHelper.forEachHeader (aHeaders,
+                            (k, v) -> m_aHttpResponse.addHeader (k, HTTPStringHelper.getUnifiedHTTPHeaderValue (v)));
 
     // Write response body
     final OutputStream aOS = StreamHelper.getBuffered (m_aHttpResponse.getOutputStream ());

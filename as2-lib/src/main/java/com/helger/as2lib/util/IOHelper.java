@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -43,6 +45,8 @@ import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
+import javax.mail.Header;
+import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.receiver.InvalidMessageException;
@@ -235,5 +239,16 @@ public final class IOHelper
     String s = StringHelper.removeAll (sMessageID, '<');
     s = StringHelper.removeAll (s, '>');
     return FilenameHelper.getAsSecureValidASCIIFilename (s);
+  }
+
+  public static void forEachHeader (@Nonnull final InternetHeaders aHeaders,
+                                    @Nonnull final BiConsumer <String, String> aConsumer)
+  {
+    final Enumeration <?> aEnum = aHeaders.getAllHeaders ();
+    while (aEnum.hasMoreElements ())
+    {
+      final Header aHeader = (Header) aEnum.nextElement ();
+      aConsumer.accept (aHeader.getName (), aHeader.getValue ());
+    }
   }
 }

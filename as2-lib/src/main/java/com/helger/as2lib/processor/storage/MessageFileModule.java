@@ -35,6 +35,7 @@ package com.helger.as2lib.processor.storage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -56,6 +57,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.system.SystemHelper;
 
 /**
  * Store message content and optionally message headers and attributes to a file
@@ -121,7 +123,14 @@ public class MessageFileModule extends AbstractStorageModule
   }
 
   @Nonnull
+  @Deprecated
   protected InputStream getHeaderStream (@Nonnull final IMessage aMsg)
+  {
+    return getHeaderStream (aMsg, SystemHelper.getSystemCharset ());
+  }
+
+  @Nonnull
+  protected InputStream getHeaderStream (@Nonnull final IMessage aMsg, @Nonnull final Charset aCharset)
   {
     final StringBuilder aSB = new StringBuilder ();
 
@@ -144,7 +153,6 @@ public class MessageFileModule extends AbstractStorageModule
       aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (HTTPHelper.EOL);
     }
 
-    // TODO which charset?
-    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes ());
+    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes (aCharset));
   }
 }

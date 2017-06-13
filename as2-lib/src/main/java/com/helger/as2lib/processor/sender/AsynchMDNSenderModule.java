@@ -36,12 +36,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.util.Enumeration;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.Header;
 import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
@@ -109,12 +107,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
-      final Enumeration <?> aHeaders = aMdn.getHeaders ().getAllHeaders ();
-      while (aHeaders.hasMoreElements ())
-      {
-        final Header aHeader = (Header) aHeaders.nextElement ();
-        aHeaderWrapper.setHttpHeader (aHeader.getName (), aHeader.getValue ());
-      }
+      aMdn.forEachHeader ( (k, v) -> aHeaderWrapper.setHttpHeader (k, v));
 
       // Note: closing this stream causes connection abort errors on some AS2
       // servers

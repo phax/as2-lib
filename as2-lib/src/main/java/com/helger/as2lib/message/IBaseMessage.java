@@ -33,6 +33,7 @@
 package com.helger.as2lib.message;
 
 import java.io.Serializable;
+import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,11 +41,14 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
+import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.collection.ext.CommonsLinkedHashMap;
+import com.helger.commons.collection.ext.ICommonsOrderedMap;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -79,9 +83,37 @@ public interface IBaseMessage extends Serializable
   @ReturnsMutableObject ("design")
   InternetHeaders getHeaders ();
 
+  /**
+   * Iterate each header.
+   *
+   * @param aConsumer
+   *        Consumer to be invoked. May not be <code>null</code>.
+   * @since 3.0.4
+   */
+  default void forEachHeader (@Nonnull final BiConsumer <String, String> aConsumer)
+  {
+    IOHelper.forEachHeader (getHeaders (), aConsumer);
+  }
+
+  /**
+   * @return A map of all headers. Never <code>null</code>.
+   * @since 3.0.4
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  default ICommonsOrderedMap <String, String> getAllHeaders ()
+  {
+    final ICommonsOrderedMap <String, String> aMap = new CommonsLinkedHashMap <> ();
+    forEachHeader ( (k, v) -> aMap.put (k, v));
+    return aMap;
+  }
+
   @Nonnull
   @Nonempty
-  String getHeadersDebugFormatted ();
+  default String getHeadersDebugFormatted ()
+  {
+    return getAllHeaders ().toString ();
+  }
 
   /**
    * Set a generic header. If it already exist it will be overwritten.
