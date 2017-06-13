@@ -48,7 +48,9 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.string.StringHelper;
 import com.helger.http.CHTTPHeader;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
  * This class represents the content of an AS2 client request.
@@ -71,10 +73,13 @@ public class AS2ClientRequest
   // DataHandler is not Serializable
   private DataHandler m_aDataHandler;
   private String m_sFilename;
+  private EContentTransferEncoding m_eCTE;
+  private String m_sContentDescription;
 
   /**
    * @param sSubject
-   *        The subject to use. May neither be <code>null</code> nor empty.
+   *        The subject to use. May neither be <code>null</code> nor empty. Has
+   *        no impact on the MIME part creation. Just declarative.
    */
   public AS2ClientRequest (@Nonnull @Nonempty final String sSubject)
   {
@@ -244,12 +249,45 @@ public class AS2ClientRequest
     return this;
   }
 
+  /**
+   * Set the optional Content-Transfer-Encoding to be used. By default it is
+   * determined by the data type that defines the body.
+   *
+   * @param eCTE
+   *        CTE to be used. May be <code>null</code> in which case the default
+   *        CTE is used.
+   * @return this for chaining
+   * @since 3.0.4
+   */
+  @Nonnull
+  public AS2ClientRequest setContentTransferEncoding (@Nullable final EContentTransferEncoding eCTE)
+  {
+    m_eCTE = eCTE;
+    return this;
+  }
+
+  /**
+   * Set the optional Content-Description header to be used. By default non is
+   * present.
+   *
+   * @param sDescription
+   *        Content description to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 3.0.4
+   */
+  @Nonnull
+  public AS2ClientRequest setContentDescription (@Nullable final String sDescription)
+  {
+    m_sContentDescription = sDescription;
+    return this;
+  }
+
   public void applyDataOntoMimeBodyPart (@Nonnull final MimeBodyPart aPart) throws MessagingException
   {
     if (m_aDataByteArray != null)
     {
       // Set content with a specific MIME type
-      aPart.setContent (m_aDataByteArray, m_sContentType);
+      aPart.setDataHandler (new DataHandler (m_aDataByteArray, m_sContentType));
     }
     else
       if (m_sDataText != null)
@@ -273,5 +311,12 @@ public class AS2ClientRequest
     // Set as filename as well
     if (m_sFilename != null)
       aPart.setFileName (m_sFilename);
+
+    // Set Content-Transfer-Encoding
+    if (m_eCTE != null)
+      aPart.setHeader (CHTTPHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
+
+    if (StringHelper.hasText (m_sContentDescription))
+      aPart.setHeader ("Content-Description", m_sContentDescription);
   }
 }
