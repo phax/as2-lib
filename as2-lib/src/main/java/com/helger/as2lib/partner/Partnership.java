@@ -484,40 +484,109 @@ public class Partnership implements Serializable
     return setAttribute (CPartnershipIDs.PA_AS2_URL, sValue);
   }
 
+  /**
+   * @return The URL to send the async MDN to. May be <code>null</code>.
+   * @see #getAS2ReceiptDeliveryOption()
+   */
   @Nullable
   public String getAS2MDNTo ()
   {
     return getAttribute (CPartnershipIDs.PA_AS2_MDN_TO);
   }
 
+  /**
+   * Set the URL to send the async MDN to. When setting it, also set it with
+   * {@link #setAS2ReceiptDeliveryOption(String)}.
+   *
+   * @param sValue
+   *        The async MDN URL. May be <code>null</code>.
+   * @return {@link EChange}.
+   * @see #setAS2ReceiptDeliveryOption(String)
+   */
   @Nonnull
   public EChange setAS2MDNTo (@Nullable final String sValue)
   {
     return setAttribute (CPartnershipIDs.PA_AS2_MDN_TO, sValue);
   }
 
+  /**
+   * @return The MDN options corresponding to the
+   *         <code>Disposition-Notification-Options</code> header. May be
+   *         <code>null</code>.
+   */
   @Nullable
   public String getAS2MDNOptions ()
   {
     return getAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS);
   }
 
+  /**
+   * Set the MDN options corresponding to the
+   * <code>Disposition-Notification-Options</code> header.
+   *
+   * @param sValue
+   *        The value to be set. May be <code>null</code>.
+   * @return {@link EChange}
+   */
   @Nonnull
   public EChange setAS2MDNOptions (@Nullable final String sValue)
   {
     return setAttribute (CPartnershipIDs.PA_AS2_MDN_OPTIONS, sValue);
   }
 
+  /**
+   * @return The return URL for async MDN when sending messages. May be
+   *         <code>null</code>.
+   * @deprecated Use {@link #getAS2ReceiptDeliveryOption()} instead
+   */
+  @Deprecated
   @Nullable
   public String getAS2ReceiptOption ()
   {
-    return getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION);
+    return getAS2ReceiptDeliveryOption ();
   }
 
+  /**
+   * @return The return URL for async MDN when sending messages. May be
+   *         <code>null</code>.
+   * @see #getAS2MDNTo()
+   * @since 3.0.4
+   */
+  @Nullable
+  public String getAS2ReceiptDeliveryOption ()
+  {
+    return getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_DELIVERY_OPTION);
+  }
+
+  /**
+   * Set the return URL for async MDN when sending messages.
+   *
+   * @param sValue
+   *        The async MDN url. May be <code>null</code>.
+   * @return {@link EChange}
+   * @deprecated Use {@link #setAS2ReceiptDeliveryOption(String)} instead
+   */
+  @Deprecated
   @Nonnull
   public EChange setAS2ReceiptOption (@Nullable final String sValue)
   {
-    return setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_OPTION, sValue);
+    return setAS2ReceiptDeliveryOption (sValue);
+  }
+
+  /**
+   * Set the return URL for async MDN when sending messages. When setting it,
+   * also set it with {@link #setAS2MDNTo(String)}.
+   *
+   * @param sValue
+   *        The async MDN url. May be <code>null</code>.
+   * @return {@link EChange}
+   * @see #setAS2MDNTo(String)
+   * @since 3.0.4
+   */
+  @Nonnull
+  public EChange setAS2ReceiptDeliveryOption (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_AS2_RECEIPT_DELIVERY_OPTION, sValue);
   }
 
   @Nullable

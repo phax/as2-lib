@@ -286,7 +286,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                           aMsg.getLoggingText ());
 
           // trigger explicit sending
-          aSession.getMessageProcessor ().handle (IProcessorSenderModule.DO_SENDMDN, aMsg, null);
+          aSession.getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND_ASYNC_MDN, aMsg, null);
         }
         else
         {

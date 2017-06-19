@@ -38,6 +38,12 @@ public interface IProcessorSenderModule extends IProcessorModule
 {
   /** Action name for sending a regular AS2Message */
   String DO_SEND = "send";
-  /** Action name for sending an MDN message */
-  String DO_SENDMDN = "sendmdn";
+  /** Action name for sending an asynchronous MDN message */
+  String DO_SEND_ASYNC_MDN = "sendmdn";
+  /**
+   * Action name for sending an asynchronous MDN message. Use DO_SEND_ASYNC_MDN
+   * instead.
+   */
+  @Deprecated
+  String DO_SENDMDN = DO_SEND_ASYNC_MDN;
 }

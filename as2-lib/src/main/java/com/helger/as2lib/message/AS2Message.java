@@ -113,7 +113,7 @@ public class AS2Message extends AbstractMessage
     final Partnership aPartnership = getPartnership ();
     // Same as regular MDN + PA_AS2_RECEIPT_OPTION
     final boolean bRequesting = (aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null) &&
-                                aPartnership.getAS2ReceiptOption () != null;
+                                aPartnership.getAS2ReceiptDeliveryOption () != null;
     if (bRequesting)
       return true;
 
@@ -128,6 +128,7 @@ public class AS2Message extends AbstractMessage
   @Nullable
   public String getAsyncMDNurl ()
   {
+    // Only this field determines where to send the async MDN to
     return getHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION);
   }
 }

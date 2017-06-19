@@ -121,6 +121,15 @@ public class AS2Client
     return this;
   }
 
+  /**
+   * Create a new {@link Partnership} object that is later used for message
+   * creation. If you override this method, please ensure to call this class'
+   * version of the method first.
+   *
+   * @param aSettings
+   *        The current client settings. Never <code>null</code>.
+   * @return Non-<code>null</code> Partnership.
+   */
   @Nonnull
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
@@ -142,12 +151,21 @@ public class AS2Client
     aPartnership.setMessageIDFormat (aSettings.getMessageIDFormat ());
 
     // We want a sync MDN:
-    aPartnership.setAS2MDNOptions (aSettings.getMDNOptions ());
-    if (false)
-      aPartnership.setAS2MDNTo ("http://localhost:10080");
+    if (aSettings.hasMDNOptions ())
+      aPartnership.setAS2MDNOptions (aSettings.getMDNOptions ());
 
-    // We don't want an async MDN:
-    aPartnership.setAS2ReceiptOption (null);
+    if (aSettings.isAsyncMDNRequested ())
+    {
+      // We want an async MDN
+      aPartnership.setAS2MDNTo (aSettings.getAsyncMDNUrl ());
+      aPartnership.setAS2ReceiptDeliveryOption (aSettings.getAsyncMDNUrl ());
+    }
+    else
+    {
+      // We want an sync MDN
+      aPartnership.setAS2MDNTo (null);
+      aPartnership.setAS2ReceiptDeliveryOption (null);
+    }
 
     if (aSettings.getCompressionType () != null)
     {
@@ -340,7 +358,7 @@ public class AS2Client
         beforeSend (aSettings, aSession, aMsg);
 
         // Build options map for "handle"
-        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap<> ();
+        final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap <> ();
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 

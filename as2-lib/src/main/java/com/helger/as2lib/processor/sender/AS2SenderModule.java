@@ -256,7 +256,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Calculated MIC: '" + sMIC + "'");
 
-    if (aPartnership.getAS2ReceiptOption () != null)
+    if (aPartnership.getAS2ReceiptDeliveryOption () != null)
     {
       // if yes : PA_AS2_RECEIPT_OPTION != null
       // then keep the original mic & message id.
@@ -405,6 +405,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return aDataBP;
   }
 
+  /**
+   * Update the HTTP headers based on the provided message, before sending takes
+   * place.
+   *
+   * @param aConn
+   *        The connection abstraction. Never <code>null</code>.
+   * @param aMsg
+   *        The message to be send. Never <code>null</code>.
+   */
   protected void updateHttpHeaders (@Nonnull final IAS2HttpHeaderWrapper aConn, @Nonnull final IMessage aMsg)
   {
     final Partnership aPartnership = aMsg.getPartnership ();
@@ -427,27 +436,26 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
                          aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
 
-    // Determine where to send the MDN to
+    // Determine where to send the MDN to (legacy field)
     final String sDispTo = aPartnership.getAS2MDNTo ();
     if (sDispTo != null)
       aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
 
-    final String sDispositionOptions = aPartnership.getAS2MDNOptions ();
-    if (sDispositionOptions != null)
-      aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionOptions);
+    // MDN requirements
+    final String sDispositionNotificationOptions = aPartnership.getAS2MDNOptions ();
+    if (sDispositionNotificationOptions != null)
+      aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionNotificationOptions);
 
-    // Asynch MDN 2007-03-12
-    final String sReceiptOption = aPartnership.getAS2ReceiptOption ();
-    if (sReceiptOption != null)
-      aConn.setHttpHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptOption);
+    // Async MDN 2007-03-12
+    final String sReceiptDeliveryOption = aPartnership.getAS2ReceiptDeliveryOption ();
+    if (sReceiptDeliveryOption != null)
+      aConn.setHttpHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptDeliveryOption);
 
     // As of 2007-06-01
     final String sContententDisposition = aMsg.getContentDisposition ();
     if (sContententDisposition != null)
       aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContententDisposition);
   }
-  // Asynch MDN 2007-03-12
-  // added originalmic
 
   /**
    * @param aMsg
@@ -698,7 +706,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         if (aMsg.isRequestingMDN ())
         {
           // Check if the AsyncMDN is required
-          if (aPartnership.getAS2ReceiptOption () == null)
+          if (aPartnership.getAS2ReceiptDeliveryOption () == null)
           {
             // go ahead to receive sync MDN
             receiveSyncMDN (aMsg, aConn, sMIC);

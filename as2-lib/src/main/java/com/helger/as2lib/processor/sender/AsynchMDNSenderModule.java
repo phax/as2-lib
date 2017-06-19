@@ -75,7 +75,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
                             @Nonnull final IMessage aMsg,
                             @Nullable final Map <String, Object> aOptions)
   {
-    return sAction.equals (IProcessorSenderModule.DO_SENDMDN) && aMsg instanceof AS2Message;
+    return sAction.equals (IProcessorSenderModule.DO_SEND_ASYNC_MDN) && aMsg instanceof AS2Message;
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
@@ -204,7 +204,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         // Resend if the HTTP Response has an error code
         ex.terminate ();
 
-        if (!doResend (IProcessorSenderModule.DO_SENDMDN, aMsg, ex, nRetries))
+        if (!doResend (IProcessorSenderModule.DO_SEND_ASYNC_MDN, aMsg, ex, nRetries))
           throw ex;
       }
       catch (final IOException ex)
@@ -214,7 +214,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
         wioe.terminate ();
 
-        if (!doResend (IProcessorSenderModule.DO_SENDMDN, aMsg, wioe, nRetries))
+        if (!doResend (IProcessorSenderModule.DO_SEND_ASYNC_MDN, aMsg, wioe, nRetries))
           throw wioe;
       }
       catch (final Exception ex)

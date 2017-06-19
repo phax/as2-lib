@@ -48,6 +48,7 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Settings object for a message delivery.
@@ -101,6 +102,7 @@ public class AS2ClientSettings implements Serializable
   private ECompressionType m_eCompressionType;
   private boolean m_bCompressBeforeSigning = true;
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
+  private String m_sAsyncMDNUrl;
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
 
   private int m_nRetryCount = DEFAULT_RETRY_COUNT;
@@ -449,17 +451,19 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Set the MDN options to be used.
+   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding
+   * to the 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
    * @param sMDNOptions
    *        The <code>Disposition-Notification-Options</code> String to be used.
-   *        May not be <code>null</code>.
+   *        May be <code>null</code>.
    * @return this for chaining
+   * @see #setMDNOptions(DispositionOptions)
    */
   @Nonnull
-  public AS2ClientSettings setMDNOptions (@Nonnull final String sMDNOptions)
+  public AS2ClientSettings setMDNOptions (@Nullable final String sMDNOptions)
   {
-    m_sMDNOptions = ValueEnforcer.notNull (sMDNOptions, "MDNOptions");
+    m_sMDNOptions = sMDNOptions;
     return this;
   }
 
@@ -470,6 +474,7 @@ public class AS2ClientSettings implements Serializable
    *        The <code>Disposition-Notification-Options</code> structured object
    *        to be used. May not be <code>null</code>.
    * @return this for chaining
+   * @see #setMDNOptions(String)
    */
   @Nonnull
   public AS2ClientSettings setMDNOptions (@Nonnull final DispositionOptions aDispositionOptions)
@@ -479,16 +484,68 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
+   * Get the current MDN options. Since 3.0.4 the MDN options (corresponding to
+   * the 'Disposition-Notification-Options' header) may be <code>null</code>.
+   *
    * @return The MDN options (<code>Disposition-Notification-Options</code>
-   *         header) to be used. Never <code>null</code>. The default is defined
-   *         in {@link #DEFAULT_MDN_OPTIONS}.
+   *         header) to be used. May be <code>null</code>. The default is
+   *         defined in {@link #DEFAULT_MDN_OPTIONS}.
    * @see #setMDNOptions(DispositionOptions)
    * @see #setMDNOptions(String)
    */
-  @Nonnull
+  @Nullable
   public String getMDNOptions ()
   {
     return m_sMDNOptions;
+  }
+
+  /**
+   * @return <code>true</code> if MDN options are specified (the default),
+   *         <code>false</code> if not.
+   * @since 3.0.4
+   */
+  public boolean hasMDNOptions ()
+  {
+    return StringHelper.hasText (m_sMDNOptions);
+  }
+
+  /**
+   * Set the asynchronous MDN URL to be used.
+   *
+   * @param sAsyncMDNUrl
+   *        May be <code>null</code> in which case a synchronous MDN is
+   *        requested (which is also the default).
+   * @return this for chaining
+   * @since 3.0.4
+   */
+  @Nonnull
+  public AS2ClientSettings setAsyncMDNUrl (@Nullable final String sAsyncMDNUrl)
+  {
+    m_sAsyncMDNUrl = sAsyncMDNUrl;
+    return this;
+  }
+
+  /**
+   * @return The URL for the asynchronous MDN. If this is <code>null</code> than
+   *         a synchronous MDN is requested. By default a synchronous MDN is
+   *         requested.
+   * @since 3.0.4
+   */
+  @Nullable
+  public String getAsyncMDNUrl ()
+  {
+    return m_sAsyncMDNUrl;
+  }
+
+  /**
+   * @return <code>true</code> if an asynchronous MDN is requested,
+   *         <code>false</code> if not (default).
+   * @since 3.0.4
+   * @see #getAsyncMDNUrl()
+   */
+  public boolean isAsyncMDNRequested ()
+  {
+    return StringHelper.hasText (m_sAsyncMDNUrl);
   }
 
   /**

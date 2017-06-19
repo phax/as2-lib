@@ -40,28 +40,30 @@ import com.helger.http.CHTTPHeader;
 @Immutable
 public final class CAS2Header
 {
-  public static final String HEADER_AS2_FROM = "AS2-From";
-  public static final String HEADER_AS2_TO = "AS2-To";
-  public static final String HEADER_AS2_VERSION = "AS2-Version";
+  public static final String HEADER_AS2_FROM = CHTTPHeader.AS2_FROM;
+  public static final String HEADER_AS2_TO = CHTTPHeader.AS2_TO;
+  public static final String HEADER_AS2_VERSION = CHTTPHeader.AS2_VERSION;
   public static final String HEADER_CONNECTION = CHTTPHeader.CONNECTION;
   public static final String HEADER_CONTENT_DISPOSITION = CHTTPHeader.CONTENT_DISPOSITION;
   public static final String HEADER_CONTENT_LENGTH = CHTTPHeader.CONTENT_LENGTH;
-  public static final String HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
+  public static final String HEADER_CONTENT_TRANSFER_ENCODING = CHTTPHeader.CONTENT_TRANSFER_ENCODING;
   public static final String HEADER_CONTENT_TYPE = CHTTPHeader.CONTENT_TYPE;
   public static final String HEADER_DATE = CHTTPHeader.DATE;
-  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = "Disposition-Notification-Options";
-  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = "Disposition-Notification-To";
-  public static final String HEADER_FROM = "From";
-  public static final String HEADER_MESSAGE_ID = "Message-ID";
-  public static final String HEADER_MIME_VERSION = "Mime-Version";
-  public static final String HEADER_RECEIPT_DELIVERY_OPTION = "Receipt-Delivery-Option";
-  public static final String HEADER_RECIPIENT_ADDRESS = "Recipient-Address";
-  public static final String HEADER_SERVER = "Server";
-  public static final String HEADER_SUBJECT = "Subject";
+  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = CHTTPHeader.DISPOSITION_NOTIFICATION_OPTIONS;
+  /** The URL where the async MDN should be send to - limited to RFC 2822 */
+  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = CHTTPHeader.DISPOSITION_NOTIFICATION_TO;
+  public static final String HEADER_FROM = CHTTPHeader.FROM;
+  public static final String HEADER_MESSAGE_ID = CHTTPHeader.MESSAGE_ID;
+  public static final String HEADER_MIME_VERSION = CHTTPHeader.MIME_VERSION;
+  /** The URL where the async MDN should be send to */
+  public static final String HEADER_RECEIPT_DELIVERY_OPTION = CHTTPHeader.RECEIPT_DELIVERY_OPTION;
+  public static final String HEADER_RECIPIENT_ADDRESS = CHTTPHeader.RECIPIENT_ADDRESS;
+  public static final String HEADER_SERVER = CHTTPHeader.SERVER;
+  public static final String HEADER_SUBJECT = CHTTPHeader.SUBJECT;
   public static final String HEADER_TRANSFER_ENCODING = CHTTPHeader.TRANSFER_ENCODING;
   public static final String HEADER_USER_AGENT = CHTTPHeader.USER_AGENT;
   /** Defined by RFC 6017 */
-  public static final String HEADER_EDIINT_FEATURES = "EDIINT-Features";
+  public static final String HEADER_EDIINT_FEATURES = CHTTPHeader.EDIINT_FEATURES;
 
   public static final String DEFAULT_CONNECTION = "close, TE";
   public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender";
