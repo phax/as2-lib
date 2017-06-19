@@ -30,15 +30,16 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
     * Updated to BouncyCastle 1.57
     * The receiving modules got a new attribute `errorstorebody` to indicate whether the body of a failed message should also be stored or not (default is `false`)
     * The receiving modules `errordir` directory can now handle parameters (date and msg)
+    * AS2 client can now request and asynchronous MDN (issue #31)
   * v3.0.3 - 2017-01-24
     * Binds to ph-commons 8.6.x
     * Binds to ph-web 8.7.0
     * Updated to BouncyCastle 1.56
   * v3.0.2 - 2016-11-28
     * Improved signature validation certificate selection (#28) - thanks @rklyne
-    * Made connect and read timeout configurable in `AS2ClientSettings` (#23)
+    * Made connect and read timeout configurable in `AS2ClientSettings` (issue #23)
   * v3.0.1 - 2016-09-27
-    * Made incoming HTTP request dumping customizable (#26)
+    * Made incoming HTTP request dumping customizable (issue #26)
   * v3.0.0 - 2016-08-21
     * JDK 8 is now required  
     * Using ph-commons 8.4.x
