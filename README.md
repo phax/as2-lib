@@ -28,6 +28,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
     * AS2 client allows different content type even if text source is used
     * AS2 client allows to specify Content-Transfer-Encoding
     * Updated to BouncyCastle 1.57
+    * The receiving modules got a new attribute `errorstorebody` to indicate whether the body of a failed message should also be stored or not (default is `false`)
   * v3.0.3 - 2017-01-24
     * Binds to ph-commons 8.6.x
     * Binds to ph-web 8.7.0

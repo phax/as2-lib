@@ -72,6 +72,8 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   public static final String ATTR_ERROR_FORMAT = "errorformat";
   public static final String DEFAULT_ERROR_FORMAT = "$date.yyyyMMddhhmmss$";
+  // Since 3.0.4
+  public static final String ATTR_ERROR_STORE_BODY = "errorstorebody";
 
   // Macros for responses
   public static final String MSG_SENDER = "$" + MessageParameters.KEY_SENDER + "." + CPartnershipIDs.PID_AS2 + "$";
@@ -178,6 +180,8 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final String sErrorDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
       final File aMsgErrorFile = IOHelper.getUniqueFile (IOHelper.getDirectoryFile (sErrorDirectory),
                                                          FilenameHelper.getAsSecureValidFilename (sErrorFilename));
+      // Default false for backwards compatibility reason
+      final boolean bStoreBody = getAttributeAsBoolean (ATTR_ERROR_STORE_BODY, false);
 
       final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
       try
@@ -186,7 +190,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
         aFOS.write (sMsgText.getBytes ());
 
         // Enable this line, to also store the body of the source message
-        if (false)
+        if (bStoreBody)
           StreamHelper.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
       }
       finally
