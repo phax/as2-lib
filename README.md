@@ -24,7 +24,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-  * v3.0.4 - work in progress
+  * v3.0.4 - 2017-06-19
     * AS2 client allows different content type even if text source is used
     * AS2 client allows to specify Content-Transfer-Encoding
     * Updated to BouncyCastle 1.57
@@ -87,7 +87,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.4</version>
 </dependency>
 ```
 
@@ -96,7 +96,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.4</version>
 </dependency>
 ```
 
@@ -105,7 +105,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.4</version>
 </dependency>
 ```
 
@@ -213,7 +213,8 @@ Complete example configuration file:
   <!-- [required] The keystore to be used -->
   <certificates classname="com.helger.as2lib.cert.PKCS12CertificateFactory" 
                 filename="%home%/server-certs.p12"
-                password="peppol" />
+                password="mypassword" />
+                
   <!-- [required] The pro-forma partnership factory -->                  
   <partnerships classname="com.helger.as2servlet.util.AS2ServletPartnershipFactory"
                 filename="%home%/server-partnerships.xml"
@@ -223,26 +224,32 @@ Complete example configuration file:
   <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
              pendingMDN="%home%/pendingMDN"
              pendingMDNinfo="%home%/pendinginfoMDN">
+
     <!-- [optional] Store sent MDNs to a file -->
     <module classname="com.helger.as2lib.processor.storage.MDNFileModule"
             filename="%home%/mdn/$date.yyyy$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
             protocol="as2"
             tempdir="%home%/temp"/>
+
     <!-- [optional] Store received messages and headers to a file -->
     <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
             filename="%home%/inbox/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
             header="%home%/inbox/msgheaders/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
             protocol="as2"
             tempdir="%home%/temp"/>
+
     <!-- [required] The main receiver module that performs the message parsing.
          This module also sends synchronous MDNs back.
          Note: the port attribute is required but can be ignored in our case!
-     -->            
+         Note: the 'errordir' attribute allows parameters since v3.0.4 only!
+         Note: the 'errorstorebody' attribute was added with v3.0.4! 
+    -->
     <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"      
             port="10080"
-            errordir="%home%/inbox/error"
-            errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>
-            
+            errordir="%home%/inbox/error/$date.yyyy$/$date.MM$"
+            errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"
+            errorstorebody="false"/>
+
     <!-- To process the documents further than just storing them to disk, implement
          class AbstractProcessorModule and register the module here.
          See the phax/as2-peppol-servlet project on how to handle e.g. SBDH documents 
