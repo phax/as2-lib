@@ -177,7 +177,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                                                                          .add ("msg", new MessageParameters (aMsg));
 
       final String sErrorFilename = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
-      final String sErrorDirectory = getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
+      final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
       final File aMsgErrorFile = IOHelper.getUniqueFile (IOHelper.getDirectoryFile (sErrorDirectory),
                                                          FilenameHelper.getAsSecureValidFilename (sErrorFilename));
       // Default false for backwards compatibility reason
