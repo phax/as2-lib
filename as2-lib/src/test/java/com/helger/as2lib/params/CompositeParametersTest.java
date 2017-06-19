@@ -69,6 +69,9 @@ public final class CompositeParametersTest
     sName = aParams.format ("any$date.yyyyMMddhhmmss$else");
     assertEquals ("any" + sNow + "else", sName);
 
+    sName = aParams.format ("$date.yyyyMMddhhmmss$$date.yyyyMMddhhmmss$");
+    assertEquals (sNow + sNow, sName);
+
     // No placeholders
     assertEquals ("sender.as2_id, receiver.as2_id, headers.message-id",
                   aParams.format ("sender.as2_id, receiver.as2_id, headers.message-id"));
