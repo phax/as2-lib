@@ -373,6 +373,10 @@ public class AS2Client
         aSender.setAttribute (AbstractHttpSenderModule.ATTR_READ_TIMEOUT,
                               Integer.toString (aSettings.getReadTimeoutMS ()));
 
+        // Add all custom headers
+        final IMessage aFinalMsg = aMsg;
+        aSettings.customHeaders ().forEachSingleHeader ( (k, v) -> aFinalMsg.addHeader (k, v));
+
         aSession.getMessageProcessor ().addModule (aSender);
 
         aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);

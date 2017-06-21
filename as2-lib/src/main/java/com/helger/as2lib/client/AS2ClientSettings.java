@@ -48,7 +48,9 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.string.StringHelper;
+import com.helger.http.HTTPHeaderMap;
 
 /**
  * Settings object for a message delivery.
@@ -108,6 +110,8 @@ public class AS2ClientSettings implements Serializable
   private int m_nRetryCount = DEFAULT_RETRY_COUNT;
   private int m_nConnectTimeoutMS = DEFAULT_CONNECT_TIMEOUT_MS;
   private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
+
+  private final HTTPHeaderMap m_aCustomHeaders = new HTTPHeaderMap ();
 
   public AS2ClientSettings ()
   {}
@@ -651,5 +655,16 @@ public class AS2ClientSettings implements Serializable
   public int getReadTimeoutMS ()
   {
     return m_nReadTimeoutMS;
+  }
+
+  /**
+   * @return The mutable custom header map. Never <code>null</code>.
+   * @since 3.0.5
+   */
+  @Nonnull
+  @ReturnsMutableObject ("Design")
+  public HTTPHeaderMap customHeaders ()
+  {
+    return m_aCustomHeaders;
   }
 }
