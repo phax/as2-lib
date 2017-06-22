@@ -32,33 +32,52 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.io.OutputStream;
+import java.io.IOException;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import com.helger.as2lib.message.IBaseMessage;
 
 /**
  * Base interface to dump outgoing HTTP requests
  *
  * @author Philip Helger
- * @since 3.0.1
+ * @since 3.1.0 - totally redesigned
  */
-public interface IHTTPOutgoingDumper
+public interface IHTTPOutgoingDumper extends AutoCloseable
 {
-  default void dumpOutgoingHeader (final String aName, final String aUnifiedValue)
+  /**
+   * Get notified on all outgoing HTTP headers. For HTTP headers usually the
+   * ISO-8859-1 charset is used.
+   *
+   * @param sName
+   *        HTTP header name. Never <code>null</code>.
+   * @param sValue
+   *        HTTP header value. Never <code>null</code>.
+   */
+  void dumpHeader (@Nonnull String sName, @Nonnull String sValue);
+
+  /**
+   * Called after all headers were emitted.
+   */
+  default void finishedHeaders ()
   {}
 
   /**
-   * Create an {@link OutputStream} to which an outgoing request should be
-   * dumped.
+   * Dump a single payload byte. May not throw an IOException!
    *
-   * @param aMsg
-   *        The message that is going to be send.
-   * @return The {@link OutputStream} to which the request should be dumped, or
-   *         <code>null</code> if no dumping is required.
+   * @param nByte
+   *        Current byte
    */
-  @Nullable
-  OutputStream dumpOutgoingRequest (@Nonnull IBaseMessage aMsg);
+  void dumpPayload (int nByte);
+
+  /**
+   * Called after the payload was emitted.
+   */
+  default void finishedPayload ()
+  {}
+
+  /**
+   * Close the dumper.
+   */
+  default void close () throws IOException
+  {}
 }

@@ -59,7 +59,6 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IHTTPOutgoingDumper;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.timing.StopWatch;
 import com.helger.http.EHTTPMethod;
@@ -99,52 +98,48 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
                                                    eRequestMethod,
                                                    getSession ().getHttpProxy ());
 
-    try
+    try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
       s_aLogger.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-      final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn);
+      final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn,
+                                                                                                              aOutgoingDumper);
       aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
       aMdn.forEachHeader ( (k, v) -> aHeaderWrapper.setHttpHeader (k, v));
+
+      if (aOutgoingDumper != null)
+        aOutgoingDumper.finishedHeaders ();
 
       // Note: closing this stream causes connection abort errors on some AS2
       // servers
       OutputStream aMsgOS = aConn.getOutputStream ();
 
       // This stream dumps the HTTP
-      OutputStream aDebugOS = null;
-      final IHTTPOutgoingDumper aHttpDumper = HTTPHelper.getHTTPOutgoingDumper ();
-      if (aHttpDumper != null)
+      if (aOutgoingDumper != null)
       {
-        aDebugOS = aHttpDumper.dumpOutgoingRequest (aMdn);
-        if (aDebugOS != null)
+        aMsgOS = new WrappedOutputStream (aMsgOS)
         {
-          // Overwrite the used OutputStream to additionally log to the debug
-          // OutputStream
-          final OutputStream aFinalDebugOS = aDebugOS;
-          aMsgOS = new WrappedOutputStream (aMsgOS)
+          @Override
+          public final void write (final int b) throws IOException
           {
-            @Override
-            public final void write (final int b) throws IOException
-            {
-              super.write (b);
-              aFinalDebugOS.write (b);
-            }
-          };
-        }
+            super.write (b);
+            aOutgoingDumper.dumpPayload (b);
+          }
+        };
       }
 
       // Transfer the data
       final InputStream aMessageIS = aMdn.getData ().getInputStream ();
       final StopWatch aSW = StopWatch.createdStarted ();
       final long nBytes = IOHelper.copy (aMessageIS, aMsgOS);
+
+      if (aOutgoingDumper != null)
+        aOutgoingDumper.finishedPayload ();
+
       aSW.stop ();
       s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-
-      // Close debug OS (if used)
-      StreamHelper.close (aDebugOS);
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();

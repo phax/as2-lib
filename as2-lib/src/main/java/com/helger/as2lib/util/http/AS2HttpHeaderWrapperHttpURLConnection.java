@@ -58,6 +58,15 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
     this (aConn, null);
   }
 
+  /**
+   * Constructor with debug support
+   *
+   * @param aConn
+   *        The HTTP URL connection to use. May not be <code>null</code>.
+   * @param aOutgoingDumper
+   *        An optional outgoing dumper, that will also receive all the headers.
+   *        May be <code>null</code>.
+   */
   public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final HttpURLConnection aConn,
                                                 @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
   {
@@ -69,9 +78,8 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
   {
     final String sUnifiedValue = HTTPStringHelper.getUnifiedHTTPHeaderValue (sValue);
     m_aConn.setRequestProperty (sName, sUnifiedValue);
+
     if (m_aOutgoingDumper != null)
-    {
-      m_aOutgoingDumper.dumpOutgoingHeader (sName, sUnifiedValue);
-    }
+      m_aOutgoingDumper.dumpHeader (sName, sUnifiedValue);
   }
 }

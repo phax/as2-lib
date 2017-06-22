@@ -82,6 +82,7 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
+import com.helger.as2lib.util.http.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.IHTTPOutgoingDumper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -503,10 +504,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         StreamHelper.close (aMDNStream);
       }
 
-      if (HTTPHelper.isHTTPIncomingDumpEnabled ())
-        HTTPHelper.dumpIncomingHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.getHeaders ()),
-                                            aMDNStream.toByteArray (),
-                                            aMDN);
+      final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+      if (aIncomingDumper != null)
+        aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.getHeaders ()),
+                                             aMDNStream.toByteArray (),
+                                             aMDN);
 
       if (s_aLogger.isTraceEnabled ())
       {
@@ -641,12 +643,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                    bUseCaches,
                                                    eRequestMethod,
                                                    getSession ().getHttpProxy ());
-    try
+    try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
       s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
-      final IHTTPOutgoingDumper aOutogingDumper = HTTPHelper.getHTTPOutgoingDumper ();
 
-      updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn, aOutogingDumper), aMsg);
+      updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn, aOutgoingDumper), aMsg);
+
+      if (aOutgoingDumper != null)
+        aOutgoingDumper.finishedHeaders ();
 
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
@@ -656,25 +660,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       OutputStream aMsgOS = aConn.getOutputStream ();
 
       // This stream dumps the HTTP
-      OutputStream aDebugOS = null;
-      if (aOutogingDumper != null)
+      if (aOutgoingDumper != null)
       {
-        aDebugOS = aOutogingDumper.dumpOutgoingRequest (aMsg);
-        if (aDebugOS != null)
+        // Overwrite the used OutputStream to additionally log to the debug
+        // OutputStream
+        aMsgOS = new WrappedOutputStream (aMsgOS)
         {
-          // Overwrite the used OutputStream to additionally log to the debug
-          // OutputStream
-          final OutputStream aFinalDebugOS = aDebugOS;
-          aMsgOS = new WrappedOutputStream (aMsgOS)
+          @Override
+          public final void write (final int b) throws IOException
           {
-            @Override
-            public final void write (final int b) throws IOException
-            {
-              super.write (b);
-              aFinalDebugOS.write (b);
-            }
-          };
-        }
+            super.write (b);
+            aOutgoingDumper.dumpPayload (b);
+          }
+        };
       }
 
       // Transfer the data
@@ -684,11 +682,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Main transmission - closes InputStream
       final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
 
+      if (aOutgoingDumper != null)
+        aOutgoingDumper.finishedPayload ();
+
       aSW.stop ();
       s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-
-      // Close debug OS (if used)
-      StreamHelper.close (aDebugOS);
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();

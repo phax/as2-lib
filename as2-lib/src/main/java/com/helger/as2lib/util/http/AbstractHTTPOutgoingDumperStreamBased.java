@@ -32,54 +32,100 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillCloseWhenClosed;
 
-import com.helger.as2lib.message.IBaseMessage;
-import com.helger.commons.io.file.FileHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Directory based outgoing HTTP dumper.
+ * Abstract outgoing HTTP dumper using an {@link OutputStream} for operations.
  *
  * @author Philip Helger
- * @since 3.0.1
+ * @since 3.1.0
  */
-public class HTTPOutgoingDumperDirectoryBased extends AbstractHTTPOutgoingDumperStreamBased
+public abstract class AbstractHTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 {
-  private final File m_aDumpFile;
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractHTTPOutgoingDumperStreamBased.class);
+
+  private final OutputStream m_aOS;
 
   /**
-   * @param aDumpDirectory
-   *        Base directory
-   * @param aMsg
-   *        Message to be dumped
+   * @param aOS
+   *        The output stream to dump to. May not be <code>null</code>.
    */
-  public HTTPOutgoingDumperDirectoryBased (@Nonnull final File aDumpDirectory, @Nonnull final IBaseMessage aMsg)
+  public AbstractHTTPOutgoingDumperStreamBased (@Nonnull @WillCloseWhenClosed final OutputStream aOS)
   {
-    this (new File (aDumpDirectory, "as2-outgoing-" + Long.toString (System.currentTimeMillis ()) + ".http"));
+    ValueEnforcer.notNull (aOS, "OutputStream");
+    m_aOS = aOS;
   }
 
-  /**
-   * @param aDumpFile
-   *        The file to dump to.
-   */
-  public HTTPOutgoingDumperDirectoryBased (@Nonnull final File aDumpFile)
+  protected final OutputStream getWrappedOS ()
   {
-    super (FileHelper.getBufferedOutputStream (aDumpFile));
-    m_aDumpFile = aDumpFile;
+    return m_aOS;
   }
 
-  @Nonnull
-  public File getDumpFile ()
+  private void _write (final int nByte)
   {
-    return m_aDumpFile;
+    try
+    {
+      m_aOS.write (nByte);
+    }
+    catch (final IOException ex)
+    {
+      s_aLogger.error ("Error dumping byte", ex);
+    }
+  }
+
+  private void _write (@Nonnull final byte [] aBytes)
+  {
+    try
+    {
+      m_aOS.write (aBytes, 0, aBytes.length);
+    }
+    catch (final IOException ex)
+    {
+      s_aLogger.error ("Error dumping bytes", ex);
+    }
+  }
+
+  public void dumpHeader (@Nonnull final String sName, @Nonnull final String sValue)
+  {
+    _write ((sName + "=" + sValue + "\r\n").getBytes (StandardCharsets.ISO_8859_1));
+  }
+
+  public void finishedHeaders ()
+  {
+    _write ('\r');
+    _write ('\n');
+  }
+
+  public void dumpPayload (final int nByte)
+  {
+    _write (nByte);
+  }
+
+  public void finishedPayload ()
+  {
+    StreamHelper.flush (m_aOS);
+  }
+
+  public void close ()
+  {
+    StreamHelper.close (m_aOS);
   }
 
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("DumpFile", m_aDumpFile).getToString ();
+    return new ToStringGenerator (this).append ("OutputStream", m_aOS).getToString ();
   }
 }

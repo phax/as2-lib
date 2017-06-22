@@ -24,8 +24,9 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-  * v3.0.5 - work in progress
+  * v3.1.0 - work in progress
     * AS2 client can now handle custom HTTP headers
+    * Reworked dumping API to really dump everything
   * v3.0.4 - 2017-06-19
     * AS2 client allows different content type even if text source is used
     * AS2 client allows to specify Content-Transfer-Encoding

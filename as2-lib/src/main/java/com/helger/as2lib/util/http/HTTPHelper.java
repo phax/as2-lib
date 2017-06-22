@@ -49,9 +49,6 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.CAS2Header;
@@ -61,6 +58,8 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ext.CommonsArrayList;
 import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.function.IFunction;
+import com.helger.commons.function.ISupplier;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -82,9 +81,8 @@ public final class HTTPHelper
   /* End of line MUST be \r and \n */
   public static final String EOL = "\r\n";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
-  private static IHTTPIncomingDumper s_aHTTPIncomingDumper = null;
-  private static IHTTPOutgoingDumper s_aHTTPOutgoingDumper = null;
+  private static ISupplier <? extends IHTTPIncomingDumper> s_aHTTPIncomingDumperFactory = () -> null;
+  private static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> s_aHTTPOutgoingDumperFactory = x -> null;
 
   static
   {
@@ -93,7 +91,7 @@ public final class HTTPHelper
     {
       final File aDumpDirectory = new File (sHttpDumpDirectory);
       IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
-      setHTTPIncomingDumper (new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
+      setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
     }
   }
 
@@ -391,16 +389,6 @@ public final class HTTPHelper
   }
 
   /**
-   * @return <code>true</code> if a dumper for incoming HTTP requests is
-   *         installed, <code>false</code> otherwise
-   * @since 3.0.1
-   */
-  public static boolean isHTTPIncomingDumpEnabled ()
-  {
-    return getHTTPIncomingDumper () != null;
-  }
-
-  /**
    * @return the dumper for incoming HTTP requests or <code>null</code> if none
    *         is present
    * @since 3.0.1
@@ -408,98 +396,46 @@ public final class HTTPHelper
   @Nullable
   public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
-    return s_aHTTPIncomingDumper;
+    return s_aHTTPIncomingDumperFactory.get ();
   }
 
   /**
-   * Set the dumper for incoming HTTP requests or <code>null</code> if none
-   * should be used
+   * Set the factory for creating dumper for incoming HTTP requests.
    *
-   * @param aHttpDumper
-   *        The dumper to be used. May be <code>null</code>.
-   * @since 3.0.1
+   * @param aHttpDumperFactory
+   *        The dumper factory to be used. May not be <code>null</code>.
+   * @since 3.1.0
    */
-  public static void setHTTPIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpDumper)
+  public static void setHTTPIncomingDumperFactory (@Nonnull final ISupplier <? extends IHTTPIncomingDumper> aHttpDumperFactory)
   {
-    s_aHTTPIncomingDumper = aHttpDumper;
-    if (aHttpDumper != null)
-      s_aLogger.info ("Using the following handler to dump incoming requests: " + aHttpDumper);
-    else
-      s_aLogger.info ("Incoming request dumping is disabled.");
+    ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
+    s_aHTTPIncomingDumperFactory = aHttpDumperFactory;
   }
 
   /**
-   * @return <code>true</code> if a dumper for outgoing HTTP requests is
-   *         installed, <code>false</code> otherwise
-   * @since 3.0.1
-   */
-  public static boolean isHTTPOutgoingDumpEnabled ()
-  {
-    return getHTTPOutgoingDumper () != null;
-  }
-
-  /**
+   * @param aMsg
+   *        The message for which a dumper should be created.
    * @return the dumper for outgoing HTTP requests or <code>null</code> if none
-   *         is present
+   *         is present. Must be closed afterwards!
    * @since 3.0.1
    */
   @Nullable
-  public static IHTTPOutgoingDumper getHTTPOutgoingDumper ()
+  public static IHTTPOutgoingDumper getHTTPOutgoingDumper (@Nonnull final IBaseMessage aMsg)
   {
-    return s_aHTTPOutgoingDumper;
+    return s_aHTTPOutgoingDumperFactory.apply (aMsg);
   }
 
   /**
-   * Set the dumper for outgoing HTTP requests or <code>null</code> if none
-   * should be used
+   * Set the factory for creating dumper for outgoing HTTP requests
    *
-   * @param aHttpDumper
-   *        The dumper to be used. May be <code>null</code>.
-   * @since 3.0.1
+   * @param aHttpDumperFactory
+   *        The dumper factory to be used. May not be <code>null</code>.
+   * @since 3.1.0
    */
-  public static void setHTTPOutgoingDumper (@Nullable final IHTTPOutgoingDumper aHttpDumper)
+  public static void setHTTPOutgoingDumperFactory (@Nullable final IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> aHttpDumperFactory)
   {
-    s_aHTTPOutgoingDumper = aHttpDumper;
-    if (aHttpDumper != null)
-      s_aLogger.info ("Using the following handler to dump outgoing requests: " + aHttpDumper);
-    else
-      s_aLogger.info ("Outgoing request dumping is disabled.");
-  }
-
-  /**
-   * @param aHeaderLines
-   *        Header lines.
-   * @param aPayload
-   *        Received payload.
-   * @deprecated Use
-   *             {@link #dumpIncomingHttpRequest(ICommonsList,byte[],IBaseMessage)}
-   *             instead
-   */
-  @Deprecated
-  public static void dumpHttpRequest (@Nonnull final ICommonsList <String> aHeaderLines,
-                                      @Nonnull final byte [] aPayload)
-  {
-    dumpIncomingHttpRequest (aHeaderLines, aPayload, (IBaseMessage) null);
-  }
-
-  /**
-   * Dump an incoming HTTP request using the globally set HTTP dumper.
-   *
-   * @param aHeaderLines
-   *        Header lines.
-   * @param aPayload
-   *        Received payload.
-   * @param aMsg
-   *        The message stub. May be <code>null</code> for legacy reasons.
-   * @see #getHTTPIncomingDumper()
-   * @see #setHTTPIncomingDumper(IHTTPIncomingDumper)
-   */
-  public static void dumpIncomingHttpRequest (@Nonnull final ICommonsList <String> aHeaderLines,
-                                              @Nonnull final byte [] aPayload,
-                                              @Nullable final IBaseMessage aMsg)
-  {
-    if (s_aHTTPIncomingDumper != null)
-      s_aHTTPIncomingDumper.dumpIncomingRequest (aHeaderLines, aPayload, aMsg);
+    ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
+    s_aHTTPOutgoingDumperFactory = aHttpDumperFactory;
   }
 
   /**
@@ -545,8 +481,9 @@ public final class HTTPHelper
     final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
 
     // Dump on demand
-    if (isHTTPIncomingDumpEnabled ())
-      dumpIncomingHttpRequest (getAllHTTPHeaderLines (aHeaders), aPayload, aMsg);
+    final IHTTPIncomingDumper aIncomingDumper = getHTTPIncomingDumper ();
+    if (aIncomingDumper != null)
+      aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders), aPayload, aMsg);
 
     return aPayload;
 

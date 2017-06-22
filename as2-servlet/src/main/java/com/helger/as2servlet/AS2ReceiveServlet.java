@@ -35,6 +35,7 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IHTTPIncomingDumper;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.as2servlet.util.AS2ServletSession;
@@ -234,8 +235,9 @@ public class AS2ReceiveServlet extends HttpServlet
     final byte [] aMsgData = HTTPHelper.readHttpPayload (aHttpRequest.getInputStream (), aResponseHandler, aMsg);
 
     // Dump on demand
-    if (HTTPHelper.isHTTPIncomingDumpEnabled ())
-      HTTPHelper.dumpIncomingHttpRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.getHeaders ()), aMsgData, aMsg);
+    final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+    if (aIncomingDumper != null)
+      aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.getHeaders ()), aMsgData, aMsg);
 
     // Call main handling method
     handeIncomingMessage (aHttpRequest, aHttpResponse, aMsgData, aMsg, aResponseHandler);
