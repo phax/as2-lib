@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.http;
+package com.helger.as2lib.util.dump;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -52,17 +52,18 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  * @since 3.1.0
  */
-public abstract class AbstractHTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
+public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractHTTPOutgoingDumperStreamBased.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPOutgoingDumperStreamBased.class);
 
   private final OutputStream m_aOS;
+  private int m_nHeaders = 0;
 
   /**
    * @param aOS
    *        The output stream to dump to. May not be <code>null</code>.
    */
-  public AbstractHTTPOutgoingDumperStreamBased (@Nonnull @WillCloseWhenClosed final OutputStream aOS)
+  public HTTPOutgoingDumperStreamBased (@Nonnull @WillCloseWhenClosed final OutputStream aOS)
   {
     ValueEnforcer.notNull (aOS, "OutputStream");
     m_aOS = aOS;
@@ -100,12 +101,16 @@ public abstract class AbstractHTTPOutgoingDumperStreamBased implements IHTTPOutg
   public void dumpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
     _write ((sName + "=" + sValue + "\r\n").getBytes (StandardCharsets.ISO_8859_1));
+    m_nHeaders++;
   }
 
   public void finishedHeaders ()
   {
-    _write ('\r');
-    _write ('\n');
+    if (m_nHeaders > 0)
+    {
+      _write ('\r');
+      _write ('\n');
+    }
   }
 
   public void dumpPayload (final int nByte)

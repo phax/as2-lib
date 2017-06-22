@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.http;
+package com.helger.as2lib.util.dump;
 
 import java.io.IOException;
 
@@ -45,8 +45,8 @@ import javax.annotation.Nonnull;
 public interface IHTTPOutgoingDumper extends AutoCloseable
 {
   /**
-   * Get notified on all outgoing HTTP headers. For HTTP headers usually the
-   * ISO-8859-1 charset is used.
+   * Get notified on a single outgoing HTTP headers. For HTTP headers usually
+   * the ISO-8859-1 charset is used.
    *
    * @param sName
    *        HTTP header name. Never <code>null</code>.

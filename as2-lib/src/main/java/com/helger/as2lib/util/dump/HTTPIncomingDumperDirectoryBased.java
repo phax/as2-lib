@@ -30,7 +30,7 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.http;
+package com.helger.as2lib.util.dump;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IBaseMessage;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.string.ToStringGenerator;

@@ -30,34 +30,56 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.http;
+package com.helger.as2lib.util.dump;
 
-import java.util.List;
+import java.io.File;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.helger.as2lib.message.IBaseMessage;
+import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Base interface to dump incoming HTTP requests
+ * Directory based outgoing HTTP dumper.
  *
  * @author Philip Helger
  * @since 3.0.1
  */
-public interface IHTTPIncomingDumper
+public class HTTPOutgoingDumperFileBased extends HTTPOutgoingDumperStreamBased
 {
+  private final File m_aDumpFile;
+
   /**
-   * Dump an incoming HTTP request.
-   *
-   * @param aHeaderLines
-   *        All headers lines. Use ISO-8859-1 to convert to bytes.
-   * @param aPayload
-   *        The payload byte array.
+   * @param aDumpDirectory
+   *        Base directory
    * @param aMsg
-   *        The message stub. May be <code>null</code> for legacy reasons.
+   *        Message to be dumped
    */
-  void dumpIncomingRequest (@Nonnull List <String> aHeaderLines,
-                            @Nonnull byte [] aPayload,
-                            @Nullable IBaseMessage aMsg);
+  public HTTPOutgoingDumperFileBased (@Nonnull final File aDumpDirectory, @Nonnull final IBaseMessage aMsg)
+  {
+    this (new File (aDumpDirectory, "as2-outgoing-" + Long.toString (System.currentTimeMillis ()) + ".http"));
+  }
+
+  /**
+   * @param aDumpFile
+   *        The file to dump to.
+   */
+  public HTTPOutgoingDumperFileBased (@Nonnull final File aDumpFile)
+  {
+    super (FileHelper.getBufferedOutputStream (aDumpFile));
+    m_aDumpFile = aDumpFile;
+  }
+
+  @Nonnull
+  public File getDumpFile ()
+  {
+    return m_aDumpFile;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return ToStringGenerator.getDerived (super.toString ()).append ("DumpFile", m_aDumpFile).getToString ();
+  }
 }
