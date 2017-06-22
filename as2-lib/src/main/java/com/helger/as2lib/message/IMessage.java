@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.annotation.Nonempty;
 
 /**
@@ -51,7 +52,10 @@ public interface IMessage extends IBaseMessage
    * @return Sender ID
    */
   @Nullable
-  String getAS2From ();
+  default String getAS2From ()
+  {
+    return getHeader (CAS2Header.HEADER_AS2_FROM);
+  }
 
   /**
    * Shortcut for <code>getHeader (CAS2Header.HEADER_AS2_TO)</code>
@@ -59,22 +63,43 @@ public interface IMessage extends IBaseMessage
    * @return Receiver ID
    */
   @Nullable
-  String getAS2To ();
+  default String getAS2To ()
+  {
+    return getHeader (CAS2Header.HEADER_AS2_TO);
+  }
 
   @Nullable
-  String getContentType ();
+  default String getContentType ()
+  {
+    return getHeader (CAS2Header.HEADER_CONTENT_TYPE);
+  }
 
-  void setContentType (@Nullable String sContentType);
+  default void setContentType (@Nullable final String sContentType)
+  {
+    setHeader (CAS2Header.HEADER_CONTENT_TYPE, sContentType);
+  }
 
   @Nullable
-  String getContentDisposition ();
+  default String getContentDisposition ()
+  {
+    return getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION);
+  }
 
-  void setContentDisposition (@Nullable String sContentDisposition);
+  default void setContentDisposition (@Nullable final String sContentDisposition)
+  {
+    setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisposition);
+  }
 
   @Nullable
-  String getSubject ();
+  default String getSubject ()
+  {
+    return getHeader (CAS2Header.HEADER_SUBJECT);
+  }
 
-  void setSubject (@Nullable String sSubject);
+  default void setSubject (@Nullable final String sSubject)
+  {
+    setHeader (CAS2Header.HEADER_SUBJECT, sSubject);
+  }
 
   @Nullable
   MimeBodyPart getData ();

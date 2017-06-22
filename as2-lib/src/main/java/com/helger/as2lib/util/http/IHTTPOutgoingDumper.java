@@ -47,6 +47,9 @@ import com.helger.as2lib.message.IBaseMessage;
  */
 public interface IHTTPOutgoingDumper
 {
+  default void dumpOutgoingHeader (final String aName, final String aUnifiedValue)
+  {}
+
   /**
    * Create an {@link OutputStream} to which an outgoing request should be
    * dumped.

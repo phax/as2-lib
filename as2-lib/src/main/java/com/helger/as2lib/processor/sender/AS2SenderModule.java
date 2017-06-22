@@ -418,6 +418,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final Partnership aPartnership = aMsg.getPartnership ();
 
+    // Set all custom headers first (so that they are overridden with the
+    // mandatory ones in here)
+    aMsg.forEachHeader ( (k, v) -> aConn.setHttpHeader (k, v));
+
     aConn.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aConn.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
@@ -640,8 +644,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     try
     {
       s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
+      final IHTTPOutgoingDumper aOutogingDumper = HTTPHelper.getHTTPOutgoingDumper ();
 
-      updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn), aMsg);
+      updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn, aOutogingDumper), aMsg);
 
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
@@ -652,10 +657,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // This stream dumps the HTTP
       OutputStream aDebugOS = null;
-      final IHTTPOutgoingDumper aHttpDumper = HTTPHelper.getHTTPOutgoingDumper ();
-      if (aHttpDumper != null)
+      if (aOutogingDumper != null)
       {
-        aDebugOS = aHttpDumper.dumpOutgoingRequest (aMsg);
+        aDebugOS = aOutogingDumper.dumpOutgoingRequest (aMsg);
         if (aDebugOS != null)
         {
           // Overwrite the used OutputStream to additionally log to the debug
@@ -679,6 +683,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final StopWatch aSW = StopWatch.createdStarted ();
       // Main transmission - closes InputStream
       final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
+
       aSW.stop ();
       s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 

@@ -35,6 +35,7 @@ package com.helger.as2lib.util.http;
 import java.net.HttpURLConnection;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
@@ -50,14 +51,27 @@ import com.helger.http.HTTPStringHelper;
 public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHeaderWrapper
 {
   private final HttpURLConnection m_aConn;
+  private final IHTTPOutgoingDumper m_aOutgoingDumper;
 
   public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final HttpURLConnection aConn)
   {
+    this (aConn, null);
+  }
+
+  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final HttpURLConnection aConn,
+                                                @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
+  {
     m_aConn = ValueEnforcer.notNull (aConn, "Connection");
+    m_aOutgoingDumper = aOutgoingDumper;
   }
 
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    m_aConn.setRequestProperty (sName, HTTPStringHelper.getUnifiedHTTPHeaderValue (sValue));
+    final String sUnifiedValue = HTTPStringHelper.getUnifiedHTTPHeaderValue (sValue);
+    m_aConn.setRequestProperty (sName, sUnifiedValue);
+    if (m_aOutgoingDumper != null)
+    {
+      m_aOutgoingDumper.dumpOutgoingHeader (sName, sUnifiedValue);
+    }
   }
 }
