@@ -24,7 +24,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-  * v3.1.0 - work in progress
+  * v3.1.0 - 2017-07-27
     * AS2 client can now handle custom HTTP headers
     * Reworked dumping API to create new dumpers per request
     * Dumping API was moved into a separate package.
@@ -92,7 +92,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>3.0.4</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 
@@ -101,7 +101,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>3.0.4</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 
@@ -110,7 +110,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>3.0.4</version>
+  <version>3.1.0</version>
 </dependency>
 ```
 
