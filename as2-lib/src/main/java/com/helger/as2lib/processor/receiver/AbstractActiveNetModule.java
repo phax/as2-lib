@@ -60,6 +60,7 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.concurrent.BasicThreadFactory;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
@@ -132,9 +133,10 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   {
     try
     {
-      final String sAddress = getAttributeAsString (ATTR_ADDRESS);
-      final int nPort = getAttributeAsInt (ATTR_PORT, 0);
+      final String sAddress = getAsString (ATTR_ADDRESS);
+      final int nPort = getAsInt (ATTR_PORT, 0);
       m_aMainThread = new MainThread (this, sAddress, nPort);
+      m_aMainThread.setUncaughtExceptionHandler (BasicThreadFactory.getDefaultUncaughtExceptionHandler ());
       m_aMainThread.start ();
     }
     catch (final IOException ioe)
@@ -176,12 +178,12 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sErrorFilename = aParams.format (getAttributeAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
+      final String sErrorFilename = aParams.format (getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
       final File aMsgErrorFile = IOHelper.getUniqueFile (IOHelper.getDirectoryFile (sErrorDirectory),
                                                          FilenameHelper.getAsSecureValidFilename (sErrorFilename));
       // Default false for backwards compatibility reason
-      final boolean bStoreBody = getAttributeAsBoolean (ATTR_ERROR_STORE_BODY, false);
+      final boolean bStoreBody = getAsBoolean (ATTR_ERROR_STORE_BODY, false);
 
       final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
       try

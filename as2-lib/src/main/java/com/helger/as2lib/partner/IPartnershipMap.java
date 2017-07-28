@@ -37,8 +37,8 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsSet;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsSet;
 
 /**
  * Read-only interface for managing the name to {@link Partnership} mapping.

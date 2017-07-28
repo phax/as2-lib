@@ -35,7 +35,7 @@ package com.helger.as2lib.util;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.http.CHTTPHeader;
+import com.helger.commons.http.CHTTPHeader;
 
 @Immutable
 public final class CAS2Header

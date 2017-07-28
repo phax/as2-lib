@@ -164,10 +164,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         s_aLogger.debug ("Original MIC is '" + sMIC + "'" + aMsg.getLoggingText ());
 
       final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
-                                                                                               .getAttributeAsString (ATTR_PENDINGMDNINFO));
+                                                                                               .getAsString (ATTR_PENDINGMDNINFO));
       final String sMsgFilename = IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
       final String sPendingFilename = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
-                                                                                                 .getAttributeAsString (ATTR_PENDINGMDN)) +
+                                                                                                 .getAsString (ATTR_PENDINGMDN)) +
                                       "/" +
                                       sMsgFilename;
 
@@ -358,13 +358,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
 
       // Main signing
-      aDataBP = AS2Helper.getCryptoHelper ()
-                         .sign (aDataBP,
-                                aSenderCert,
-                                aSenderKey,
-                                eSignAlgorithm,
-                                bIncludeCertificateInSignedContent,
-                                bUseRFC3851MICAlg);
+      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP,
+                                                   aSenderCert,
+                                                   aSenderKey,
+                                                   eSignAlgorithm,
+                                                   bIncludeCertificateInSignedContent,
+                                                   bUseRFC3851MICAlg);
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Signed data with " +

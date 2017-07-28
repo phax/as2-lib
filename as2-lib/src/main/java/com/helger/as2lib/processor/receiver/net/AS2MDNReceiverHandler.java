@@ -278,7 +278,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final String sOrigMessageID = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
       final String sPendingInfoFile = getModule ().getSession ()
                                                   .getMessageProcessor ()
-                                                  .getAttributeAsString (ATTR_PENDINGMDNINFO) +
+                                                  .getAsString (ATTR_PENDINGMDNINFO) +
                                       "/" +
                                       IOHelper.getFilenameFromMessageID (sOrigMessageID);
       final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile));
@@ -328,7 +328,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       s_aLogger.info ("delete pendinginfo file : " +
                       aPendingInfoFile.getName () +
                       " from pending folder : " +
-                      getModule ().getSession ().getMessageProcessor ().getAttributeAsString (ATTR_PENDINGMDN) +
+                      getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
                       aMsg.getLoggingText ());
       aPendingInfoFile.delete ();
 

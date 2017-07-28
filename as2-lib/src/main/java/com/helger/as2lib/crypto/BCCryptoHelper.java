@@ -104,8 +104,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.ext.CommonsArrayList;
-import com.helger.commons.collection.ext.ICommonsList;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NullOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -173,21 +173,6 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (aIS != null)
       aKeyStore.load (aIS, aPassword);
     return aKeyStore;
-  }
-
-  @Nonnull
-  @Deprecated
-  public KeyStore loadKeyStore (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws Exception
-  {
-    final InputStream aIS = FileHelper.getInputStream (sFilename);
-    try
-    {
-      return loadKeyStore (aIS, aPassword);
-    }
-    finally
-    {
-      StreamHelper.close (aIS);
-    }
   }
 
   public boolean isEncrypted (@Nonnull final MimeBodyPart aPart) throws MessagingException
@@ -434,7 +419,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // create a CertStore containing the certificates we want carried
     // in the signature
-    final ICommonsList <X509Certificate> aCertList = new CommonsArrayList<> (aX509Cert);
+    final ICommonsList <X509Certificate> aCertList = new CommonsArrayList <> (aX509Cert);
     final JcaCertStore aCertStore = new JcaCertStore (aCertList);
 
     // create some smime capabilities in case someone wants to respond

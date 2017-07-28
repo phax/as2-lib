@@ -49,8 +49,8 @@ import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.http.HTTPHeaderMap;
 import com.helger.commons.string.StringHelper;
-import com.helger.http.HTTPHeaderMap;
 
 /**
  * Settings object for a message delivery.

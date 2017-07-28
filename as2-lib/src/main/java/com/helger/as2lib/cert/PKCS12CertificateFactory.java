@@ -66,8 +66,8 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.ext.CommonsLinkedHashMap;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.CommonsLinkedHashMap;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
@@ -186,7 +186,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setFilename (@Nullable final String sFilename)
   {
-    setAttribute (ATTR_FILENAME, sFilename);
+    putIn (ATTR_FILENAME, sFilename);
   }
 
   @Nonnull
@@ -205,7 +205,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setPassword (@Nonnull final char [] aPassword)
   {
-    setAttribute (ATTR_PASSWORD, new String (aPassword));
+    putIn (ATTR_PASSWORD, new String (aPassword));
   }
 
   @Nonnull
@@ -216,12 +216,12 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
 
   public void setSaveChangesToFile (final boolean bSaveChangesToFile)
   {
-    setAttribute (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile);
+    putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile);
   }
 
   public boolean isSaveChangesToFile ()
   {
-    return getAttributeAsBoolean (ATTR_SAVE_CHANGES_TO_FILE, DEFAULT_SAVE_CHANGES_TO_FILE);
+    return getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE, DEFAULT_SAVE_CHANGES_TO_FILE);
   }
 
   /**

@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -60,7 +60,7 @@ public class Partner implements IPartner
   public Partner (@Nonnull final IStringMap aAttrs)
   {
     m_aAttrs = new StringMap (aAttrs);
-    if (!m_aAttrs.containsAttribute (PARTNER_NAME))
+    if (!m_aAttrs.containsKey (PARTNER_NAME))
       throw new IllegalArgumentException ("The provided attributes are missing the required '" +
                                           PARTNER_NAME +
                                           "' attribute!");
@@ -69,20 +69,20 @@ public class Partner implements IPartner
   @Nonnull
   public String getName ()
   {
-    return m_aAttrs.getAttributeAsString (PARTNER_NAME);
+    return m_aAttrs.getAsString (PARTNER_NAME);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsMap <String, String> getAllAttributes ()
   {
-    return m_aAttrs.getAllAttributes ();
+    return m_aAttrs.getClone ();
   }
 
   @Nonnull
   public Iterator <Entry <String, String>> iterator ()
   {
-    return m_aAttrs.iterator ();
+    return m_aAttrs.entrySet ().iterator ();
   }
 
   @Override

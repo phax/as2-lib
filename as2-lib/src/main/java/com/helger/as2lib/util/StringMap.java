@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.attr.MapBasedAttributeContainer;
+import com.helger.commons.collection.attr.AttributeContainer;
 import com.helger.commons.state.EChange;
 
 /**
@@ -48,7 +48,7 @@ import com.helger.commons.state.EChange;
  * @author Philip Helger
  */
 @NotThreadSafe
-public class StringMap extends MapBasedAttributeContainer <String, String> implements IStringMap
+public class StringMap extends AttributeContainer <String, String> implements IStringMap
 {
   public StringMap ()
   {
@@ -66,15 +66,21 @@ public class StringMap extends MapBasedAttributeContainer <String, String> imple
   }
 
   @Nonnull
-  public EChange setAttribute (@Nonnull final String sName, final boolean bValue)
+  public EChange putIn (@Nonnull final String sName, final boolean bValue)
   {
-    return setAttribute (sName, Boolean.toString (bValue));
+    return putIn (sName, Boolean.toString (bValue));
   }
 
   @Nonnull
-  public EChange setAttribute (@Nonnull final String sName, final int nValue)
+  public EChange putIn (@Nonnull final String sName, final int nValue)
   {
-    return setAttribute (sName, Integer.toString (nValue));
+    return putIn (sName, Integer.toString (nValue));
+  }
+
+  @Nonnull
+  public EChange putIn (@Nonnull final String sName, final long nValue)
+  {
+    return putIn (sName, Long.toString (nValue));
   }
 
   @Override

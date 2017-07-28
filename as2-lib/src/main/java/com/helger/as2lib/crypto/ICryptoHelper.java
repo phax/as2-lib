@@ -75,23 +75,6 @@ public interface ICryptoHelper
   KeyStore loadKeyStore (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws Exception;
 
   /**
-   * Load a key store from the specified file.
-   *
-   * @param sFilename
-   *        The filename to load the key store from. May not be
-   *        <code>null</code>.
-   * @param aPassword
-   *        The password to be used for loading. May not be <code>null</code>.
-   * @return The loaded key store and never <code>null</code>.
-   * @throws Exception
-   *         In case loading fails.
-   * @deprecated Use the version with the InputStream - it is more generic
-   */
-  @Nonnull
-  @Deprecated
-  KeyStore loadKeyStore (@Nonnull String sFilename, @Nonnull char [] aPassword) throws Exception;
-
-  /**
    * Check if the passed MIME body part is encrypted. The default implementation
    * checks if the base type of the content type is "application/pkcs7-mime" and
    * if the parameter "smime-type" has the value "enveloped-data".

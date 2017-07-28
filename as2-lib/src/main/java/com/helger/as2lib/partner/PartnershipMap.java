@@ -41,10 +41,10 @@ import javax.annotation.concurrent.NotThreadSafe;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsLinkedHashMap;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
-import com.helger.commons.collection.ext.ICommonsOrderedSet;
+import com.helger.commons.collection.impl.CommonsLinkedHashMap;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.ICommonsOrderedSet;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 
@@ -144,10 +144,10 @@ public final class PartnershipMap implements IPartnershipMap
     if (aSearchIDs.isEmpty ())
       return false;
 
-    for (final Map.Entry <String, String> aSearchEntry : aSearchIDs)
+    for (final Map.Entry <String, String> aSearchEntry : aSearchIDs.entrySet ())
     {
       final String sSearchValue = aSearchEntry.getValue ();
-      final String sPartnerValue = aPartnerIDs.getAttributeAsString (aSearchEntry.getKey ());
+      final String sPartnerValue = aPartnerIDs.getAsString (aSearchEntry.getKey ());
       if (!EqualsHelper.equals (sSearchValue, sPartnerValue))
         return false;
     }

@@ -65,12 +65,12 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
 
   public void setInterval (final int nSeconds)
   {
-    setAttribute (ATTR_POLLING_INTERVAL, nSeconds);
+    putIn (ATTR_POLLING_INTERVAL, nSeconds);
   }
 
   public int getInterval ()
   {
-    return getAttributeAsInt (ATTR_POLLING_INTERVAL, 0);
+    return getAsInt (ATTR_POLLING_INTERVAL, 0);
   }
 
   public abstract void poll ();

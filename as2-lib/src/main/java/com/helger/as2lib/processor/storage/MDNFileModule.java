@@ -121,7 +121,7 @@ public class MDNFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aSB.append ("Attributes:" + HTTPHelper.EOL);
-    for (final Map.Entry <String, String> aEntry : aMdn.getAllAttributes ())
+    for (final Map.Entry <String, String> aEntry : aMdn.getAllAttributes ().entrySet ())
     {
       aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (HTTPHelper.EOL);
     }

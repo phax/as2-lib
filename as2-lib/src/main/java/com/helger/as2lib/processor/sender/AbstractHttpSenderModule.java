@@ -57,7 +57,7 @@ import com.helger.http.EHTTPMethod;
 
 /**
  * Abstract HTTP based sender module
- * 
+ *
  * @author Philip Helger
  */
 public abstract class AbstractHttpSenderModule extends AbstractSenderModule
@@ -125,8 +125,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
       aConn.setRequestMethod (eRequestMethod.getName ());
-      aConn.setConnectTimeout (getAttributeAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS));
-      aConn.setReadTimeout (getAttributeAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS));
+      aConn.setConnectTimeout (getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS));
+      aConn.setReadTimeout (getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS));
 
       if (aConn instanceof HttpsURLConnection)
       {

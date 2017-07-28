@@ -48,8 +48,8 @@ import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.ToStringGenerator;
 

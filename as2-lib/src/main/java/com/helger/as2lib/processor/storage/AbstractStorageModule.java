@@ -74,7 +74,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     if (!sAction.equals (m_sModuleAction))
       return false;
 
-    final String sModProtocol = getAttributeAsString (ATTR_PROTOCOL);
+    final String sModProtocol = getAsString (ATTR_PROTOCOL);
     if (sModProtocol == null)
       return false;
     return sModProtocol.equals (aMsg.getProtocol ());
@@ -120,7 +120,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected void store (@Nonnull final File aMsgFile, @Nonnull @WillClose final InputStream aIS) throws IOException
   {
-    final String sTempDirname = getAttributeAsString (ATTR_TEMPDIR);
+    final String sTempDirname = getAsString (ATTR_TEMPDIR);
     if (sTempDirname != null)
     {
       // write the data to a temporary directory first

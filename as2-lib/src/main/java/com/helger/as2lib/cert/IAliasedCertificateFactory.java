@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 
 /**
  * Certificate factory with support for alias handling

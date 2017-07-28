@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -57,7 +58,6 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.system.SystemHelper;
 
 /**
  * Store message content and optionally message headers and attributes to a file
@@ -95,13 +95,13 @@ public class MessageFileModule extends AbstractStorageModule
     }
 
     // Store message headers and attributes
-    final String sHeaderFilename = getAttributeAsString (ATTR_HEADER);
+    final String sHeaderFilename = getAsString (ATTR_HEADER);
     if (sHeaderFilename != null)
     {
       try
       {
         final File aHeaderFile = getFile (aMsg, sHeaderFilename, sAction);
-        final InputStream aIS = getHeaderStream (aMsg);
+        final InputStream aIS = getHeaderStream (aMsg, StandardCharsets.ISO_8859_1);
         store (aHeaderFile, aIS);
         s_aLogger.info ("stored headers to " + aHeaderFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
@@ -123,13 +123,6 @@ public class MessageFileModule extends AbstractStorageModule
   }
 
   @Nonnull
-  @Deprecated
-  protected InputStream getHeaderStream (@Nonnull final IMessage aMsg)
-  {
-    return getHeaderStream (aMsg, SystemHelper.getSystemCharset ());
-  }
-
-  @Nonnull
   protected InputStream getHeaderStream (@Nonnull final IMessage aMsg, @Nonnull final Charset aCharset)
   {
     final StringBuilder aSB = new StringBuilder ();
@@ -148,7 +141,7 @@ public class MessageFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aSB.append ("Attributes:" + HTTPHelper.EOL);
-    for (final Map.Entry <String, String> attrEntry : aMsg.getAllAttributes ())
+    for (final Map.Entry <String, String> attrEntry : aMsg.getAllAttributes ().entrySet ())
     {
       aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (HTTPHelper.EOL);
     }

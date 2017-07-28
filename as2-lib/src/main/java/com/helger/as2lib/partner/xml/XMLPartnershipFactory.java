@@ -53,7 +53,7 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.XMLHelper;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.xml.microdom.IMicroDocument;
@@ -79,7 +79,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
   public void setFilename (final String filename)
   {
-    setAttribute (ATTR_FILENAME, filename);
+    putIn (ATTR_FILENAME, filename);
   }
 
   public String getFilename () throws InvalidParameterException
@@ -184,7 +184,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final IStringMap aPartnerAttrs = XMLHelper.getAllAttrsWithLowercaseName (ePartner);
 
     // check for a partner name, and look up in partners list if one is found
-    final String sPartnerName = aPartnerAttrs.getAttributeAsString (PARTNER_NAME);
+    final String sPartnerName = aPartnerAttrs.getAsString (PARTNER_NAME);
     if (sPartnerName != null)
     {
       // Resolve name from existing partners
@@ -210,9 +210,9 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     // copy all other (existing) attributes to the partner id map - overwrite
     // the ones present in the partner element
     if (bIsSender)
-      aPartnership.addSenderIDs (aPartnerAttrs.getAllAttributes ());
+      aPartnership.addSenderIDs (aPartnerAttrs);
     else
-      aPartnership.addReceiverIDs (aPartnerAttrs.getAllAttributes ());
+      aPartnership.addReceiverIDs (aPartnerAttrs);
   }
 
   @Nonnull
@@ -223,7 +223,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final IStringMap aPartnershipAttrs = XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
                                                                                              PARTNERSHIP_NAME);
 
-    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAttributeAsString (PARTNERSHIP_NAME));
+    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAsString (PARTNERSHIP_NAME));
 
     // load the sender and receiver information
     loadPartnerIDs (ePartnership, aAllPartners, aPartnership, true);
@@ -258,7 +258,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     final String sFilename = getFilename ();
 
-    if (!containsAttribute (ATTR_DISABLE_BACKUP))
+    if (!containsKey (ATTR_DISABLE_BACKUP))
     {
       final File aBackupFile = _getUniqueBackupFile (sFilename);
 
@@ -283,14 +283,14 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
       ePartnership.setAttribute (PARTNERSHIP_NAME, aPartnership.getName ());
 
       final IMicroElement eSender = ePartnership.appendElement ("sender");
-      for (final Map.Entry <String, String> aAttr : aPartnership.getAllSenderIDs ())
+      for (final Map.Entry <String, String> aAttr : aPartnership.getAllSenderIDs ().entrySet ())
         eSender.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
       final IMicroElement eReceiver = ePartnership.appendElement ("receiver");
-      for (final Map.Entry <String, String> aAttr : aPartnership.getAllReceiverIDs ())
+      for (final Map.Entry <String, String> aAttr : aPartnership.getAllReceiverIDs ().entrySet ())
         eReceiver.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
-      for (final Map.Entry <String, String> aAttr : aPartnership.getAllAttributes ())
+      for (final Map.Entry <String, String> aAttr : aPartnership.getAllAttributes ().entrySet ())
         ePartnership.appendElement ("attribute")
                     .setAttribute ("name", aAttr.getKey ())
                     .setAttribute ("value", aAttr.getValue ());

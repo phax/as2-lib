@@ -111,13 +111,13 @@ public abstract class AbstractBaseMessage implements IBaseMessage
 
   public final boolean containsAttribute (@Nullable final String sKey)
   {
-    return m_aAttributes.containsAttribute (sKey);
+    return m_aAttributes.containsKey (sKey);
   }
 
   @Nullable
   public final String getAttribute (@Nullable final String sKey)
   {
-    return m_aAttributes.getAttributeAsString (sKey);
+    return m_aAttributes.getAsString (sKey);
   }
 
   @Nonnull
@@ -131,14 +131,14 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Setting message attribute: '" + sKey + "' = '" + sValue + "'");
-    m_aAttributes.setAttribute (sKey, sValue);
+    m_aAttributes.putIn (sKey, sValue);
   }
 
   public final void setAttributes (@Nullable final IStringMap aAttributes)
   {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Setting message attributes: " + aAttributes);
-    m_aAttributes.setAttributes (aAttributes != null ? aAttributes.getAllAttributes () : null);
+    m_aAttributes.putAllIn (aAttributes);
   }
 
   public final void setHeader (@Nonnull final String sKey, @Nullable final String sValue)

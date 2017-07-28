@@ -15,7 +15,7 @@
  */
 package com.helger.as2lib.partner.mongodb;
 
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -31,12 +31,12 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
-import com.helger.commons.collection.ext.CommonsArrayList;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.CommonsHashSet;
-import com.helger.commons.collection.ext.ICommonsList;
-import com.helger.commons.collection.ext.ICommonsMap;
-import com.helger.commons.collection.ext.ICommonsSet;
+import com.helger.commons.collection.impl.CommonsArrayList;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.CommonsHashSet;
+import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.state.EChange;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
@@ -120,10 +120,10 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
 
   private Partnership getPartnershipByID (final IStringMap allSenderIDs, final IStringMap allReceiverIDs) {
     Document filter = new Document ();
-    for (final Entry <String, String> entry : allSenderIDs) {
+    for (final Map.Entry <String, String> entry : allSenderIDs.entrySet ()) {
       filter.append (SENDER_IDS + "." + entry.getKey (), entry.getValue ());
     }
-    for (final Entry <String, String> entry : allReceiverIDs) {
+    for (final Map.Entry <String, String> entry : allReceiverIDs.entrySet ()) {
       filter.append (RECEIVER_IDS + "." + entry.getKey (), entry.getValue ());
     }
 
@@ -135,10 +135,10 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
     // try the other way around, maybe we're receiving a response
     // TODO is this really a good idea?
     filter = new Document ();
-    for (final Entry <String, String> entry : allSenderIDs) {
+    for (final Map.Entry <String, String> entry : allSenderIDs.entrySet ()) {
       filter.append (RECEIVER_IDS + "." + entry.getKey (), entry.getValue ());
     }
-    for (final Entry <String, String> entry : allReceiverIDs) {
+    for (final Map.Entry <String, String> entry : allReceiverIDs.entrySet ()) {
       filter.append (SENDER_IDS + "." + entry.getKey (), entry.getValue ());
     }
 
@@ -165,17 +165,17 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
 
   @Override
   public ICommonsSet <String> getAllPartnershipNames () {
-    return partnerships.distinct (NAME_KEY, String.class).into (new CommonsHashSet<> ());
+    return partnerships.distinct (NAME_KEY, String.class).into (new CommonsHashSet <> ());
   }
 
   @Override
   public ICommonsList <Partnership> getAllPartnerships () {
-    return partnerships.find ().map (MongoDBPartnershipFactory::toPartnership).into (new CommonsArrayList<> ());
+    return partnerships.find ().map (MongoDBPartnershipFactory::toPartnership).into (new CommonsArrayList <> ());
   }
 
   private static Document toDocument (final IStringMap stringMap) {
     final Document document = new Document ();
-    for (final Entry <String, String> entry : stringMap) {
+    for (final Map.Entry <String, String> entry : stringMap.entrySet ()) {
       document.put (entry.getKey (), entry.getValue ());
     }
     return document;
@@ -194,23 +194,23 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   private static Partnership toPartnership (final Document document) {
     final Partnership partnership = new Partnership (document.getString (NAME_KEY));
     final Document senderIDs = (Document) document.get (SENDER_IDS);
-    final ICommonsMap <String, String> senders = new CommonsHashMap<> (senderIDs.size ());
-    for (final Entry <String, Object> e : senderIDs.entrySet ()) {
+    final ICommonsMap <String, String> senders = new CommonsHashMap <> (senderIDs.size ());
+    for (final Map.Entry <String, Object> e : senderIDs.entrySet ()) {
       senders.put (e.getKey (), e.getValue ().toString ());
     }
     partnership.addSenderIDs (senders);
 
     final Document receiverIDs = (Document) document.get (RECEIVER_IDS);
-    final ICommonsMap <String, String> receivers = new CommonsHashMap<> (receiverIDs.size ());
-    for (final Entry <String, Object> e : receiverIDs.entrySet ()) {
+    final ICommonsMap <String, String> receivers = new CommonsHashMap <> (receiverIDs.size ());
+    for (final Map.Entry <String, Object> e : receiverIDs.entrySet ()) {
       receivers.put (e.getKey (), e.getValue ().toString ());
     }
     partnership.addReceiverIDs (receivers);
 
     final Document attributes = (Document) document.get (ATTRIBUTES);
     if (attributes != null) {
-      final ICommonsMap <String, String> att = new CommonsHashMap<> (receiverIDs.size ());
-      for (final Entry <String, Object> e : attributes.entrySet ()) {
+      final ICommonsMap <String, String> att = new CommonsHashMap <> (receiverIDs.size ());
+      for (final Map.Entry <String, Object> e : attributes.entrySet ()) {
         att.put (e.getKey (), e.getValue ().toString ());
       }
       partnership.addAllAttributes (att);

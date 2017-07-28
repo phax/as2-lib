@@ -88,9 +88,9 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
   {
     super.initDynamicComponent (aSession, aParameters);
 
-    if (containsAttribute (ATTR_POLLING_INTERVAL_SECONDS))
+    if (containsKey (ATTR_POLLING_INTERVAL_SECONDS))
     {
-      m_nPollingMS = getAttributeAsLong (ATTR_POLLING_INTERVAL_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
+      m_nPollingMS = getAsLong (ATTR_POLLING_INTERVAL_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
       if (m_nPollingMS < 1)
         throw new OpenAS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " +
                                     m_nPollingMS);
@@ -105,7 +105,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
   @Nonnegative
   protected final long getResendDelayMS () throws InvalidParameterException
   {
-    if (!containsAttribute (ATTR_RESEND_DELAY_SECONDS))
+    if (!containsKey (ATTR_RESEND_DELAY_SECONDS))
       return DEFAULT_RESEND_DELAY_MS;
     return getAttributeAsIntRequired (ATTR_RESEND_DELAY_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
   }

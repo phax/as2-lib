@@ -60,7 +60,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   @Nonnull
   public final String getAttributeAsStringRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
-    final String sValue = getAttributeAsString (sKey);
+    final String sValue = getAsString (sKey);
     if (sValue == null)
       throw new InvalidParameterException ("Parameter not found", this, sKey, null);
     return sValue;
@@ -68,7 +68,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
 
   public final int getAttributeAsIntRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
-    final int nValue = getAttributeAsInt (sKey, Integer.MIN_VALUE);
+    final int nValue = getAsInt (sKey, Integer.MIN_VALUE);
     if (nValue == Integer.MIN_VALUE)
       throw new InvalidParameterException ("Parameter not found", this, sKey, null);
     return nValue;
@@ -87,7 +87,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
                                     @Nullable final IStringMap aParameters) throws OpenAS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
-    setAttributes (aParameters != null ? aParameters.getAllAttributes () : null);
+    putAllIn (aParameters);
   }
 
   @Override

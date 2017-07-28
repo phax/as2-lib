@@ -125,13 +125,13 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   public String getAsString ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ().getAllAttributes ());
-    aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ().getAllAttributes ());
+    aSB.append ("Message From:").append (getPartnership ().getAllSenderIDs ());
+    aSB.append ("\nTo:").append (getPartnership ().getAllReceiverIDs ());
 
     aSB.append ("\nHeaders:")
        .append (getHeadersDebugFormatted ())
        .append ("\nAttributes:")
-       .append (getAllAttributes ().getAllAttributes ());
+       .append (getAllAttributes ());
 
     final IMessageMDN aMDN = getMDN ();
     if (aMDN != null)

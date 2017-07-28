@@ -64,7 +64,11 @@ import com.helger.commons.timing.StopWatch;
 @Immutable
 public final class IOHelper
 {
-  private static final FileOperationManager s_aFOM = new FileOperationManager (new LoggingFileOperationCallback ());
+  private static final FileOperationManager s_aFOM = new FileOperationManager ();
+  static
+  {
+    s_aFOM.callbacks ().add (new LoggingFileOperationCallback ());
+  }
 
   private IOHelper ()
   {}

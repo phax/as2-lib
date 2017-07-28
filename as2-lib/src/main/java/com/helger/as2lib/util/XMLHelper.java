@@ -48,8 +48,8 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.ext.CommonsLinkedHashMap;
-import com.helger.commons.collection.ext.ICommonsOrderedMap;
+import com.helger.commons.collection.impl.CommonsLinkedHashMap;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.lang.GenericReflection;
 import com.helger.xml.microdom.IMicroElement;
 
@@ -78,7 +78,7 @@ public final class XMLHelper
     ValueEnforcer.notNull (aElement, "Element");
 
     final StringMap ret = new StringMap ();
-    aElement.forAllAttributes ( (ns, name, value) -> ret.setAttribute (name.toLowerCase (Locale.US), value));
+    aElement.forAllAttributes ( (ns, name, value) -> ret.putIn (name.toLowerCase (Locale.US), value));
     return ret;
   }
 
@@ -89,7 +89,7 @@ public final class XMLHelper
   {
     final StringMap aAttributes = getAllAttrsWithLowercaseName (aElement);
     for (final String sRequiredAttribute : aRequiredAttributes)
-      if (!aAttributes.containsAttribute (sRequiredAttribute))
+      if (!aAttributes.containsKey (sRequiredAttribute))
         throw new OpenAS2Exception (aElement.getTagName () +
                                     " is missing required attribute '" +
                                     sRequiredAttribute +
@@ -148,15 +148,14 @@ public final class XMLHelper
   private static void _updateDirectories (@Nonnull final StringMap aAttributes,
                                           @Nullable final String sBaseDirectory) throws OpenAS2Exception
   {
-    for (final Map.Entry <String, String> attrEntry : aAttributes)
+    for (final Map.Entry <String, String> attrEntry : aAttributes.entrySet ())
     {
       final String sValue = attrEntry.getValue ();
       if (sValue.startsWith (DOLLAR_HOME_DOLLAR))
       {
         if (sBaseDirectory == null)
           throw new OpenAS2Exception ("Base directory isn't set");
-        aAttributes.setAttribute (attrEntry.getKey (),
-                                  sBaseDirectory + sValue.substring (DOLLAR_HOME_DOLLAR.length ()));
+        aAttributes.putIn (attrEntry.getKey (), sBaseDirectory + sValue.substring (DOLLAR_HOME_DOLLAR.length ()));
       }
     }
   }

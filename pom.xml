@@ -25,7 +25,7 @@
     <version>1.9.3</version>
   </parent>
   <artifactId>as2-lib-parent-pom</artifactId>
-  <version>3.1.1-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>as2-lib-parent-pom</name>
   <description>Base POM to build the as2-lib projects</description>
@@ -75,14 +75,14 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>8.6.6</version>
+        <version>9.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>8.8.2</version>
+        <version>9.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

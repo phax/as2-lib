@@ -45,11 +45,11 @@ import javax.mail.internet.MimeBodyPart;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.http.CHTTPHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.string.StringHelper;
-import com.helger.http.CHTTPHeader;
 import com.helger.mail.cte.EContentTransferEncoding;
 
 /**

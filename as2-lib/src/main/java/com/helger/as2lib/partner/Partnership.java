@@ -97,7 +97,7 @@ public class Partnership implements Serializable
    */
   public void setSenderID (@Nonnull final String sKey, @Nullable final String sValue)
   {
-    m_aSenderIDs.setAttribute (sKey, sValue);
+    m_aSenderIDs.putIn (sKey, sValue);
   }
 
   /**
@@ -148,7 +148,7 @@ public class Partnership implements Serializable
    */
   public void addSenderIDs (@Nullable final Map <String, String> aMap)
   {
-    m_aSenderIDs.setAttributes (aMap);
+    m_aSenderIDs.putAllIn (aMap);
   }
 
   /**
@@ -162,7 +162,7 @@ public class Partnership implements Serializable
   @Nullable
   public String getSenderID (@Nullable final String sKey)
   {
-    return m_aSenderIDs.getAttributeAsString (sKey);
+    return m_aSenderIDs.getAsString (sKey);
   }
 
   /**
@@ -208,7 +208,7 @@ public class Partnership implements Serializable
    */
   public boolean containsSenderID (@Nullable final String sKey)
   {
-    return m_aSenderIDs.containsAttribute (sKey);
+    return m_aSenderIDs.containsKey (sKey);
   }
 
   /**
@@ -265,7 +265,7 @@ public class Partnership implements Serializable
    */
   public void setReceiverID (@Nonnull final String sKey, @Nullable final String sValue)
   {
-    m_aReceiverIDs.setAttribute (sKey, sValue);
+    m_aReceiverIDs.putIn (sKey, sValue);
   }
 
   /**
@@ -316,7 +316,7 @@ public class Partnership implements Serializable
    */
   public void addReceiverIDs (@Nullable final Map <String, String> aMap)
   {
-    m_aReceiverIDs.setAttributes (aMap);
+    m_aReceiverIDs.putAllIn (aMap);
   }
 
   /**
@@ -330,7 +330,7 @@ public class Partnership implements Serializable
   @Nullable
   public String getReceiverID (@Nullable final String sKey)
   {
-    return m_aReceiverIDs.getAttributeAsString (sKey);
+    return m_aReceiverIDs.getAsString (sKey);
   }
 
   /**
@@ -376,7 +376,7 @@ public class Partnership implements Serializable
    */
   public boolean containsReceiverID (@Nullable final String sKey)
   {
-    return m_aReceiverIDs.containsAttribute (sKey);
+    return m_aReceiverIDs.containsKey (sKey);
   }
 
   /**
@@ -436,7 +436,7 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
   {
-    return m_aAttributes.setAttribute (sKey, sValue);
+    return m_aAttributes.putIn (sKey, sValue);
   }
 
   /**
@@ -451,7 +451,7 @@ public class Partnership implements Serializable
   @Nullable
   public String getAttribute (@Nullable final String sKey)
   {
-    return m_aAttributes.getAttributeAsString (sKey);
+    return m_aAttributes.getAsString (sKey);
   }
 
   /**
@@ -469,7 +469,7 @@ public class Partnership implements Serializable
   @Nullable
   public String getAttribute (@Nullable final String sKey, @Nullable final String sDefault)
   {
-    return m_aAttributes.getAttributeAsString (sKey, sDefault);
+    return m_aAttributes.getAsString (sKey, sDefault);
   }
 
   @Nullable
@@ -615,7 +615,7 @@ public class Partnership implements Serializable
 
   public boolean isBlockErrorMDN ()
   {
-    return m_aAttributes.containsAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN);
+    return m_aAttributes.containsKey (CPartnershipIDs.PA_BLOCK_ERROR_MDN);
   }
 
   @Nonnull
@@ -869,7 +869,7 @@ public class Partnership implements Serializable
    */
   public boolean isRFC3851MICAlgs ()
   {
-    return m_aAttributes.getAttributeAsBoolean (CPartnershipIDs.PA_RFC3851_MICALGS, false);
+    return m_aAttributes.getAsBoolean (CPartnershipIDs.PA_RFC3851_MICALGS, false);
   }
 
   /**
@@ -910,7 +910,7 @@ public class Partnership implements Serializable
    */
   public void addAllAttributes (@Nullable final Map <String, String> aAttributes)
   {
-    m_aAttributes.setAttributes (aAttributes);
+    m_aAttributes.putAllIn (aAttributes);
   }
 
   /**
@@ -946,10 +946,10 @@ public class Partnership implements Serializable
     if (aIDs.isEmpty ())
       return false;
 
-    for (final Map.Entry <String, String> aEntry : aIDs)
+    for (final Map.Entry <String, String> aEntry : aIDs.entrySet ())
     {
       final String sCurrentValue = aEntry.getValue ();
-      final String sCompareValue = aCompareTo.getAttributeAsString (aEntry.getKey ());
+      final String sCompareValue = aCompareTo.getAsString (aEntry.getKey ());
       if (!EqualsHelper.equals (sCurrentValue, sCompareValue))
         return false;
     }
@@ -972,9 +972,9 @@ public class Partnership implements Serializable
     if (aPartnership != this)
     {
       m_sName = aPartnership.getName ();
-      m_aSenderIDs.setAttributes (aPartnership.m_aSenderIDs);
-      m_aReceiverIDs.setAttributes (aPartnership.m_aReceiverIDs);
-      m_aAttributes.setAttributes (aPartnership.m_aAttributes);
+      m_aSenderIDs.putAllIn (aPartnership.m_aSenderIDs);
+      m_aReceiverIDs.putAllIn (aPartnership.m_aReceiverIDs);
+      m_aAttributes.putAllIn (aPartnership.m_aAttributes);
     }
   }
 

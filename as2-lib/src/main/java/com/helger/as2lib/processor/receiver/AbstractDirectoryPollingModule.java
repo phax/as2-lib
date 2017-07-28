@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,9 +57,8 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
@@ -159,7 +157,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
   protected void trackFile (@Nonnull final File aFile)
   {
-    final Map <String, Long> aTrackedFiles = getAllTrackedFiles ();
+    final Map <String, Long> aTrackedFiles = trackedFiles ();
     final String sFilePath = aFile.getAbsolutePath ();
     if (!aTrackedFiles.containsKey (sFilePath))
       aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
@@ -170,10 +168,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     // clone the trackedFiles map, iterator through the clone and modify the
     // original to avoid iterator exceptions
     // is there a better way to do this?
-    final Map <String, Long> aTrackedFiles = getAllTrackedFiles ();
+    final ICommonsMap <String, Long> aTrackedFiles = trackedFiles ();
 
     // We need to operate on a copy
-    for (final Entry <String, Long> aFileEntry : CollectionHelper.newMap (aTrackedFiles).entrySet ())
+    for (final Map.Entry <String, Long> aFileEntry : aTrackedFiles.getClone ().entrySet ())
     {
       // get the file and it's stored length
       final File aFile = new File (aFileEntry.getKey ());
@@ -265,7 +263,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
       // If the Sent Directory option is set, move the transmitted file to
       // the sent directory
-      if (containsAttribute (ATTR_SENT_DIRECTORY))
+      if (containsKey (ATTR_SENT_DIRECTORY))
       {
         File aSentFile = null;
         try
@@ -318,22 +316,22 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   {
     final MessageParameters aParams = new MessageParameters (aMsg);
 
-    final String sDefaults = getAttributeAsString (ATTR_DEFAULTS);
+    final String sDefaults = getAsString (ATTR_DEFAULTS);
     if (sDefaults != null)
       aParams.setParameters (sDefaults);
 
     final String sFilename = aFile.getName ();
-    final String sFormat = getAttributeAsString (ATTR_FORMAT);
+    final String sFormat = getAsString (ATTR_FORMAT);
     if (sFormat != null)
     {
-      final String sDelimiters = getAttributeAsString (ATTR_DELIMITERS, ".-");
+      final String sDelimiters = getAsString (ATTR_DELIMITERS, ".-");
       aParams.setParameters (sFormat, sDelimiters, sFilename);
     }
 
     try
     {
       final byte [] aData = SimpleFileIO.getAllFileBytes (aFile);
-      String sContentType = getAttributeAsString (ATTR_MIMETYPE);
+      String sContentType = getAsString (ATTR_MIMETYPE);
       if (sContentType == null)
       {
         // Default to application/octet-stream
@@ -369,7 +367,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
-      final String sSendFilename = getAttributeAsString (ATTR_SENDFILENAME);
+      final String sSendFilename = getAsString (ATTR_SENDFILENAME);
       if ("true".equals (sSendFilename))
       {
         final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);
@@ -401,11 +399,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   }
 
   @Nonnull
-  @ReturnsMutableObject ("design")
-  public ICommonsMap <String, Long> getAllTrackedFiles ()
+  @ReturnsMutableObject
+  public ICommonsMap <String, Long> trackedFiles ()
   {
     if (m_aTrackedFiles == null)
-      m_aTrackedFiles = new CommonsHashMap<> ();
+      m_aTrackedFiles = new CommonsHashMap <> ();
     return m_aTrackedFiles;
   }
 }

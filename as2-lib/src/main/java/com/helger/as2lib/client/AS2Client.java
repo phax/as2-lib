@@ -62,10 +62,10 @@ import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.ext.CommonsHashMap;
-import com.helger.commons.collection.ext.ICommonsMap;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.factory.FactoryNewInstance;
-import com.helger.commons.factory.IFactory;
+import com.helger.commons.functional.ISupplier;
 import com.helger.commons.timing.StopWatch;
 
 /**
@@ -77,8 +77,8 @@ import com.helger.commons.timing.StopWatch;
 public class AS2Client
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
-  private IFactory <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
-                                                                                            true);
+  private ISupplier <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
+                                                                                             true);
   // proxy is not serializable
   private Proxy m_aHttpProxy;
 
@@ -93,7 +93,7 @@ public class AS2Client
    * @param aAS2SenderModuleFactory
    *        The factory to be used. May not be <code>null</code>.
    */
-  public void setAS2SenderModuleFactory (@Nonnull final IFactory <AS2SenderModule> aAS2SenderModuleFactory)
+  public void setAS2SenderModuleFactory (@Nonnull final ISupplier <AS2SenderModule> aAS2SenderModuleFactory)
   {
     m_aAS2SenderModuleFactory = ValueEnforcer.notNull (aAS2SenderModuleFactory, "AS2SenderModuleFactory");
   }
@@ -225,9 +225,9 @@ public class AS2Client
   {
     // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
-    aParams.setAttribute (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
-    aParams.setAttribute (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
-    aParams.setAttribute (PKCS12CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
+    aParams.putIn (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
+    aParams.putIn (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
+    aParams.putIn (PKCS12CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
 
     final PKCS12CertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
@@ -368,10 +368,8 @@ public class AS2Client
         final AS2SenderModule aSender = m_aAS2SenderModuleFactory.get ();
         aSender.initDynamicComponent (aSession, null);
         // Set connect and read timeout
-        aSender.setAttribute (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT,
-                              Integer.toString (aSettings.getConnectTimeoutMS ()));
-        aSender.setAttribute (AbstractHttpSenderModule.ATTR_READ_TIMEOUT,
-                              Integer.toString (aSettings.getReadTimeoutMS ()));
+        aSender.putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
+        aSender.putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
 
         // Add all custom headers
         final IMessage aFinalMsg = aMsg;
