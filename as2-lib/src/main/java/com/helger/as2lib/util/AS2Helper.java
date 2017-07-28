@@ -144,12 +144,14 @@ public final class AS2Helper
     final MimeBodyPart aReportPart = new MimeBodyPart ();
     {
       final InternetHeaders aReportValues = new InternetHeaders ();
-      aReportValues.setHeader (HEADER_REPORTING_UA, aMdn.getAttribute (AS2MessageMDN.MDNA_REPORTING_UA));
-      aReportValues.setHeader (HEADER_ORIGINAL_RECIPIENT, aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
-      aReportValues.setHeader (HEADER_FINAL_RECIPIENT, aMdn.getAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
-      aReportValues.setHeader (HEADER_ORIGINAL_MESSAGE_ID, aMdn.getAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
-      aReportValues.setHeader (HEADER_DISPOSITION, aMdn.getAttribute (AS2MessageMDN.MDNA_DISPOSITION));
-      aReportValues.setHeader (HEADER_RECEIVED_CONTENT_MIC, aMdn.getAttribute (AS2MessageMDN.MDNA_MIC));
+      aReportValues.setHeader (HEADER_REPORTING_UA, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_REPORTING_UA));
+      aReportValues.setHeader (HEADER_ORIGINAL_RECIPIENT,
+                               aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
+      aReportValues.setHeader (HEADER_FINAL_RECIPIENT, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
+      aReportValues.setHeader (HEADER_ORIGINAL_MESSAGE_ID,
+                               aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
+      aReportValues.setHeader (HEADER_DISPOSITION, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION));
+      aReportValues.setHeader (HEADER_RECEIVED_CONTENT_MIC, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_MIC));
 
       final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
       final StringBuilder aReportData = new StringBuilder ();
@@ -244,15 +246,15 @@ public final class AS2Helper
     aMDN.setHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMDN.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
     aMDN.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aMDN.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getPartnership ().getReceiverAS2ID ());
-    aMDN.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getPartnership ().getSenderAS2ID ());
+    aMDN.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());
+    aMDN.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.partnership ().getSenderAS2ID ());
 
     // get the MDN partnership info
-    aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-    aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+    aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
     // Set the appropriate keystore aliases
-    aMDN.getPartnership ().setSenderX509Alias (aMsg.getPartnership ().getReceiverX509Alias ());
-    aMDN.getPartnership ().setReceiverX509Alias (aMsg.getPartnership ().getSenderX509Alias ());
+    aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
+    aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
     // Update the partnership
     try
     {
@@ -264,8 +266,8 @@ public final class AS2Helper
       // was the reason for sending the MDN :)
     }
 
-    aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.getPartnership ().getReceiverEmail ());
-    final String sSubject = aMDN.getPartnership ().getMDNSubject ();
+    aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.partnership ().getReceiverEmail ());
+    final String sSubject = aMDN.partnership ().getMDNSubject ();
     if (sSubject != null)
     {
       aMDN.setHeader (CAS2Header.HEADER_SUBJECT, new MessageParameters (aMsg).format (sSubject));
@@ -275,15 +277,17 @@ public final class AS2Helper
       aMDN.setHeader (CAS2Header.HEADER_SUBJECT, "Your Requested MDN Response");
     }
     aMDN.setText (new MessageParameters (aMsg).format (sText));
-    aMDN.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, CAS2Info.NAME_VERSION +
-                                                        "@" +
-                                                        aMsg.getAttribute (CNetAttribute.MA_DESTINATION_IP) +
-                                                        ":" +
-                                                        aMsg.getAttribute (CNetAttribute.MA_DESTINATION_PORT));
-    aMDN.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
-    aMDN.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT, "rfc822; " + aMsg.getPartnership ().getReceiverAS2ID ());
-    aMDN.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
-    aMDN.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
+    aMDN.attrs ()
+        .putIn (AS2MessageMDN.MDNA_REPORTING_UA,
+                CAS2Info.NAME_VERSION +
+                                                 "@" +
+                                                 aMsg.attrs ().getAsString (CNetAttribute.MA_DESTINATION_IP) +
+                                                 ":" +
+                                                 aMsg.attrs ().getAsString (CNetAttribute.MA_DESTINATION_PORT));
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, "rfc822; " + aMsg.partnership ().getReceiverAS2ID ());
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
     final String sDispositionOptions = aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
@@ -292,15 +296,15 @@ public final class AS2Helper
     {
       // If the source message was signed or encrypted, include the headers -
       // see message sending for details
-      final boolean bIncludeHeadersInMIC = aMsg.getPartnership ().getSigningAlgorithm () != null ||
-                                           aMsg.getPartnership ().getEncryptAlgorithm () != null ||
-                                           aMsg.getPartnership ().getCompressionType () != null;
+      final boolean bIncludeHeadersInMIC = aMsg.partnership ().getSigningAlgorithm () != null ||
+                                           aMsg.partnership ().getEncryptAlgorithm () != null ||
+                                           aMsg.partnership ().getCompressionType () != null;
 
       sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
                                               aDispositionOptions.getFirstMICAlg (),
                                               bIncludeHeadersInMIC);
     }
-    aMDN.setAttribute (AS2MessageMDN.MDNA_MIC, sMIC);
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, sMIC);
 
     boolean bSignMDN = false;
     boolean bIncludeCertificateInSignedContent = false;
@@ -312,7 +316,7 @@ public final class AS2Helper
         bSignMDN = true;
 
         // Include certificate in signed content?
-        final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ()
+        final ETriState eIncludeCertificateInSignedContent = aMsg.partnership ()
                                                                  .getIncludeCertificateInSignedContent ();
         if (eIncludeCertificateInSignedContent.isDefined ())
         {
@@ -327,7 +331,7 @@ public final class AS2Helper
       }
     }
 
-    final boolean bUseOldRFC3851MicAlgs = aMsg.getPartnership ().isRFC3851MICAlgs ();
+    final boolean bUseOldRFC3851MicAlgs = aMsg.partnership ().isRFC3851MICAlgs ();
 
     createMDNData (aSession,
                    aMDN,
@@ -355,9 +359,9 @@ public final class AS2Helper
     MimeBodyPart aMainPart = aMdn.getData ();
     final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
-    final boolean bDisableVerify = aMsg.getPartnership ().isDisableVerify ();
+    final boolean bDisableVerify = aMsg.partnership ().isDisableVerify ();
     final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMainPart);
-    final boolean bForceVerify = aMsg.getPartnership ().isForceVerify ();
+    final boolean bForceVerify = aMsg.partnership ().isForceVerify ();
     if (bMsgIsSigned && bDisableVerify)
     {
       s_aLogger.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
@@ -373,7 +377,7 @@ public final class AS2Helper
 
         aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bUseCertificateInBodyPart, bForceVerify);
         // Remember that message was signed and verified
-        aMdn.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
+        aMdn.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
         s_aLogger.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());
       }
 
@@ -395,15 +399,15 @@ public final class AS2Helper
           if (aReportPart.isMimeType ("message/disposition-notification"))
           {
             final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
-            aMdn.setAttribute (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
-                               aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                               aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
-                               aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
-            aMdn.setAttribute (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
+            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
+            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
+                                 aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
+                                 aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
+                                 aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
+            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }
           else
             s_aLogger.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());

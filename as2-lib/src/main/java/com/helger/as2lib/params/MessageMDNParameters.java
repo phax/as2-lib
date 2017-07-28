@@ -81,7 +81,7 @@ public class MessageMDNParameters extends AbstractParameterParser
         m_aTarget.setText (sValue);
       else
         if (sArea.equals (KEY_ATTRIBUTES))
-          m_aTarget.setAttribute (sAreaValue, sValue);
+          m_aTarget.attrs ().putIn (sAreaValue, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
             m_aTarget.setHeader (sAreaValue, sValue);
@@ -110,13 +110,13 @@ public class MessageMDNParameters extends AbstractParameterParser
     final String sAreaValue = aKeyParts.nextToken ();
 
     if (sArea.equals (KEY_SENDER))
-      return m_aTarget.getPartnership ().getSenderID (sAreaValue);
+      return m_aTarget.partnership ().getSenderID (sAreaValue);
     if (sArea.equals (KEY_RECEIVER))
-      return m_aTarget.getPartnership ().getReceiverID (sAreaValue);
+      return m_aTarget.partnership ().getReceiverID (sAreaValue);
     if (sArea.equals (KEY_TEXT))
       return m_aTarget.getText ();
     if (sArea.equals (KEY_ATTRIBUTES))
-      return m_aTarget.getAttribute (sAreaValue);
+      return m_aTarget.attrs ().getAsString (sAreaValue);
     if (sArea.equals (KEY_HEADERS))
       return m_aTarget.getHeader (sAreaValue);
 

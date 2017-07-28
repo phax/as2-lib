@@ -196,9 +196,9 @@ public class AS2Client
     aMsg.setPartnership (aPartnership);
     aMsg.setMessageID (aMsg.generateMessageID ());
 
-    aMsg.setAttribute (CPartnershipIDs.PA_AS2_URL, aPartnership.getAS2URL ());
-    aMsg.setAttribute (CPartnershipIDs.PID_AS2, aPartnership.getReceiverAS2ID ());
-    aMsg.setAttribute (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderEmail ());
+    aMsg.attrs ().putIn (CPartnershipIDs.PA_AS2_URL, aPartnership.getAS2URL ());
+    aMsg.attrs ().putIn (CPartnershipIDs.PID_AS2, aPartnership.getReceiverAS2ID ());
+    aMsg.attrs ().putIn (CPartnershipIDs.PID_EMAIL, aPartnership.getSenderEmail ());
 
     // Build message content
     final MimeBodyPart aPart = new MimeBodyPart ();

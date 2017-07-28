@@ -67,13 +67,13 @@ public class MessageParameters extends AbstractParameterParser
     final String sAreaID = aKeyParts[1];
 
     if (sArea.equals (KEY_SENDER))
-      m_aTarget.getPartnership ().setSenderID (sAreaID, sValue);
+      m_aTarget.partnership ().setSenderID (sAreaID, sValue);
     else
       if (sArea.equals (KEY_RECEIVER))
-        m_aTarget.getPartnership ().setReceiverID (sAreaID, sValue);
+        m_aTarget.partnership ().setReceiverID (sAreaID, sValue);
       else
         if (sArea.equals (KEY_ATTRIBUTES))
-          m_aTarget.setAttribute (sAreaID, sValue);
+          m_aTarget.attrs ().putIn (sAreaID, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
             m_aTarget.setHeader (sAreaID, sValue);
@@ -114,13 +114,13 @@ public class MessageParameters extends AbstractParameterParser
     final String sAreaValue = aKeyParts[1];
 
     if (sArea.equals (KEY_SENDER))
-      return m_aTarget.getPartnership ().getSenderID (sAreaValue);
+      return m_aTarget.partnership ().getSenderID (sAreaValue);
 
     if (sArea.equals (KEY_RECEIVER))
-      return m_aTarget.getPartnership ().getReceiverID (sAreaValue);
+      return m_aTarget.partnership ().getReceiverID (sAreaValue);
 
     if (sArea.equals (KEY_ATTRIBUTES))
-      return m_aTarget.getAttribute (sAreaValue);
+      return m_aTarget.attrs ().getAsString (sAreaValue);
 
     if (sArea.equals (KEY_HEADERS))
       return m_aTarget.getHeader (sAreaValue);

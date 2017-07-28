@@ -47,11 +47,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.IStringMap;
 import com.helger.as2lib.util.StringMap;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -109,36 +107,9 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     aOOS.writeObject (m_aPartnership);
   }
 
-  public final boolean containsAttribute (@Nullable final String sKey)
+  public final StringMap attrs ()
   {
-    return m_aAttributes.containsKey (sKey);
-  }
-
-  @Nullable
-  public final String getAttribute (@Nullable final String sKey)
-  {
-    return m_aAttributes.getAsString (sKey);
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public final StringMap getAllAttributes ()
-  {
-    return m_aAttributes.getClone ();
-  }
-
-  public final void setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Setting message attribute: '" + sKey + "' = '" + sValue + "'");
-    m_aAttributes.putIn (sKey, sValue);
-  }
-
-  public final void setAttributes (@Nullable final IStringMap aAttributes)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Setting message attributes: " + aAttributes);
-    m_aAttributes.putAllIn (aAttributes);
+    return m_aAttributes;
   }
 
   public final void setHeader (@Nonnull final String sKey, @Nullable final String sValue)
@@ -172,8 +143,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nonnull
-  @ReturnsMutableObject ("design")
-  public final InternetHeaders getHeaders ()
+  @ReturnsMutableObject
+  public final InternetHeaders headers ()
   {
     return m_aHeaders;
   }
@@ -185,8 +156,8 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   }
 
   @Nonnull
-  @ReturnsMutableObject ("design")
-  public final Partnership getPartnership ()
+  @ReturnsMutableObject
+  public final Partnership partnership ()
   {
     return m_aPartnership;
   }

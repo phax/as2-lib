@@ -32,9 +32,40 @@
  */
 package com.helger.as2lib.util;
 
-import com.helger.commons.collection.attr.IAttributeContainer;
+import javax.annotation.Nonnull;
 
-public interface IStringMap extends IAttributeContainer <String, String>
+import com.helger.commons.collection.attr.IMutableAttributeContainer;
+import com.helger.commons.state.EChange;
+
+public interface IStringMap extends IMutableAttributeContainer <String, String>
 {
-  /* empty */
+  @Nonnull
+  default EChange putIn (@Nonnull final String sName, final boolean bValue)
+  {
+    return putIn (sName, Boolean.toString (bValue));
+  }
+
+  @Nonnull
+  default EChange putIn (@Nonnull final String sName, final int nValue)
+  {
+    return putIn (sName, Integer.toString (nValue));
+  }
+
+  @Nonnull
+  default EChange putIn (@Nonnull final String sName, final long nValue)
+  {
+    return putIn (sName, Long.toString (nValue));
+  }
+
+  @Nonnull
+  default EChange putIn (@Nonnull final String sName, final double dValue)
+  {
+    return putIn (sName, Double.toString (dValue));
+  }
+
+  @Nonnull
+  default EChange putIn (@Nonnull final String sName, final float fValue)
+  {
+    return putIn (sName, Float.toString (fValue));
+  }
 }

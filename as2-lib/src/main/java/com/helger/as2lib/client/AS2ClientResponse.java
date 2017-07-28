@@ -184,7 +184,7 @@ public class AS2ClientResponse implements Serializable
   @Nullable
   public String getMDNDisposition ()
   {
-    return m_aMDN == null ? null : m_aMDN.getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+    return m_aMDN == null ? null : m_aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
   }
 
   /**

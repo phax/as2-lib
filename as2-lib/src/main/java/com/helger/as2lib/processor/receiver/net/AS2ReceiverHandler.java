@@ -112,11 +112,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   protected AS2Message createMessage (@Nonnull final Socket aSocket)
   {
     final AS2Message aMsg = new AS2Message ();
-    aMsg.setAttribute (CNetAttribute.MA_SOURCE_IP, aSocket.getInetAddress ().toString ());
-    aMsg.setAttribute (CNetAttribute.MA_SOURCE_PORT, Integer.toString (aSocket.getPort ()));
-    aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aSocket.getLocalAddress ().toString ());
-    aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aSocket.getLocalPort ()));
-    aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED, Boolean.TRUE.toString ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_IP, aSocket.getInetAddress ().toString ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_PORT, aSocket.getPort ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aSocket.getLocalAddress ().toString ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aSocket.getLocalPort ());
+    aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED, true);
     return aMsg;
   }
 
@@ -127,9 +127,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
-      final boolean bDisableDecrypt = aMsg.getPartnership ().isDisableDecrypt ();
+      final boolean bDisableDecrypt = aMsg.partnership ().isDisableDecrypt ();
       final boolean bMsgIsEncrypted = aCryptoHelper.isEncrypted (aMsg.getData ());
-      final boolean bForceDecrypt = aMsg.getPartnership ().isForceDecrypt ();
+      final boolean bForceDecrypt = aMsg.partnership ().isForceDecrypt ();
       if (bMsgIsEncrypted && bDisableDecrypt)
       {
         s_aLogger.info ("Message claims to be encrypted but decryption is disabled" + aMsg.getLoggingText ());
@@ -153,7 +153,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                      bForceDecrypt);
           aMsg.setData (aDecryptedData);
           // Remember that message was encrypted
-          aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, Boolean.TRUE.toString ());
+          aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, true);
           s_aLogger.info ("Successfully decrypted incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
@@ -173,9 +173,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     try
     {
-      final boolean bDisableVerify = aMsg.getPartnership ().isDisableVerify ();
+      final boolean bDisableVerify = aMsg.partnership ().isDisableVerify ();
       final boolean bMsgIsSigned = aCryptoHelper.isSigned (aMsg.getData ());
-      final boolean bForceVerify = aMsg.getPartnership ().isForceVerify ();
+      final boolean bForceVerify = aMsg.partnership ().isForceVerify ();
       if (bMsgIsSigned && bDisableVerify)
       {
         s_aLogger.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
@@ -192,7 +192,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
                                                                                  ECertificatePartnershipType.SENDER);
           boolean bUseCertificateInBodyPart;
-          final ETriState eUseCertificateInBodyPart = aMsg.getPartnership ().getVerifyUseCertificateInBodyPart ();
+          final ETriState eUseCertificateInBodyPart = aMsg.partnership ().getVerifyUseCertificateInBodyPart ();
           if (eUseCertificateInBodyPart.isDefined ())
           {
             // Use per partnership
@@ -210,7 +210,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                    bForceVerify);
           aMsg.setData (aVerifiedData);
           // Remember that message was signed and verified
-          aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, Boolean.TRUE.toString ());
+          aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
           s_aLogger.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
@@ -227,7 +227,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   {
     try
     {
-      if (aMsg.getPartnership ().isDisableDecompress ())
+      if (aMsg.partnership ().isDisableDecompress ())
       {
         s_aLogger.info ("Message claims to be compressed but decompression is disabled" + aMsg.getLoggingText ());
       }
@@ -242,7 +242,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Update the message object
         aMsg.setData (aDecompressedPart);
         // Remember that message was decompressed
-        aMsg.setAttribute (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, Boolean.TRUE.toString ());
+        aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, true);
         s_aLogger.info ("Successfully decompressed incoming AS2 message" + aMsg.getLoggingText ());
       }
     }
@@ -261,7 +261,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                               @Nonnull final DispositionType aDisposition,
                               @Nonnull final String sText)
   {
-    final boolean bMDNBlocked = aMsg.getPartnership ().isBlockErrorMDN ();
+    final boolean bMDNBlocked = aMsg.partnership ().isBlockErrorMDN ();
     if (!bMDNBlocked)
     {
       try
@@ -304,7 +304,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.getSize ()));
 
           // start HTTP response
-          aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.getHeaders (), aData);
+          aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.headers (), aData);
 
           // Save sent MDN for later examination
           try
@@ -383,10 +383,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       try
       {
         final String sAS2From = aMsg.getAS2From ();
-        aMsg.getPartnership ().setSenderAS2ID (sAS2From);
+        aMsg.partnership ().setSenderAS2ID (sAS2From);
 
         final String sAS2To = aMsg.getAS2To ();
-        aMsg.getPartnership ().setReceiverAS2ID (sAS2To);
+        aMsg.partnership ().setReceiverAS2ID (sAS2To);
 
         // Fill all partnership attributes etc.
         aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
@@ -429,7 +429,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         }
 
         if (s_aLogger.isTraceEnabled ())
-          if (aMsg.containsAttribute (AS2Message.ATTRIBUTE_RECEIVED_SIGNED))
+          if (aMsg.attrs ().containsKey (AS2Message.ATTRIBUTE_RECEIVED_SIGNED))
             s_aLogger.trace ("Decompressing received message after verifying signature...");
           else
             s_aLogger.trace ("Decompressing received message after decryption...");

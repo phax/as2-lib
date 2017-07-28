@@ -64,7 +64,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public String generateMessageID ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    final String sDateFormat = getPartnership ().getDateFormat (DEFAULT_DATE_FORMAT);
+    final String sDateFormat = partnership ().getDateFormat (DEFAULT_DATE_FORMAT);
     aSB.append ('<').append (CAS2Info.NAME).append ('-').append (DateHelper.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
@@ -72,7 +72,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
     aSB.append ('-').append (aRandomFormatter.format (nRandom));
 
     // Message details
-    final Partnership aPartnership = getMessage ().getPartnership ();
+    final Partnership aPartnership = getMessage ().partnership ();
     final String sReceiverID = aPartnership.getReceiverAS2ID ();
     final String sSenderID = aPartnership.getSenderAS2ID ();
     aSB.append ('@').append (sReceiverID).append ('_').append (sSenderID);

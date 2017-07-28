@@ -89,7 +89,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     // the partnership for a default one. If none is in the partnership used the
     // default one
     final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
-                                                            aMsg.getPartnership ()
+                                                            aMsg.partnership ()
                                                                 .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ()));
     if (StringHelper.hasText (sContentTransferEncoding))
     {
@@ -111,8 +111,8 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
           aPayload = aDecoder.getDecoded (aPayload);
 
           // Remember that we potentially did something
-          aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
-          aMsg.setAttribute (MA_HTTP_ORIGINAL_CONTENT_LENGTH, Integer.toString (nOriginalContentLength));
+          aMsg.attrs ().putIn (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+          aMsg.attrs ().putIn (MA_HTTP_ORIGINAL_CONTENT_LENGTH, nOriginalContentLength);
         }
       }
     }

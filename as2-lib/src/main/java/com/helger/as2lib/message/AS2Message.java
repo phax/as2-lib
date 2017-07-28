@@ -76,7 +76,7 @@ public class AS2Message extends AbstractMessage
                                                                        .add ("msg", new MessageParameters (this))
                                                                        .add ("rand", new RandomParameters ());
 
-    final String sIDFormat = getPartnership ().getMessageIDFormat (DEFAULT_ID_FORMAT);
+    final String sIDFormat = partnership ().getMessageIDFormat (DEFAULT_ID_FORMAT);
 
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ('<');
@@ -96,7 +96,7 @@ public class AS2Message extends AbstractMessage
   public boolean isRequestingMDN ()
   {
     // Requesting by partnership?
-    final Partnership aPartnership = getPartnership ();
+    final Partnership aPartnership = partnership ();
     final boolean bRequesting = aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null;
     if (bRequesting)
       return true;
@@ -110,7 +110,7 @@ public class AS2Message extends AbstractMessage
   public boolean isRequestingAsynchMDN ()
   {
     // Requesting by partnership?
-    final Partnership aPartnership = getPartnership ();
+    final Partnership aPartnership = partnership ();
     // Same as regular MDN + PA_AS2_RECEIPT_OPTION
     final boolean bRequesting = (aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null) &&
                                 aPartnership.getAS2ReceiptDeliveryOption () != null;

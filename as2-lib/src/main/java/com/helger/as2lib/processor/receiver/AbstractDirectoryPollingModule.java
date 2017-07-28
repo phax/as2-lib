@@ -212,14 +212,14 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     s_aLogger.info ("processing " + aFile.getAbsolutePath ());
 
     final IMessage aMsg = createMessage ();
-    aMsg.setAttribute (CFileAttribute.MA_FILEPATH, aFile.getAbsolutePath ());
-    aMsg.setAttribute (CFileAttribute.MA_FILENAME, aFile.getName ());
+    aMsg.attrs ().putIn (CFileAttribute.MA_FILEPATH, aFile.getAbsolutePath ());
+    aMsg.attrs ().putIn (CFileAttribute.MA_FILENAME, aFile.getName ());
 
     /*
      * asynch mdn logic 2007-03-12 save the file name into message object, it
      * will be stored into pending information file
      */
-    aMsg.setAttribute (CFileAttribute.MA_PENDING_FILENAME, aFile.getName ());
+    aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, aFile.getName ());
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("AS2Message was created");
@@ -243,10 +243,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
        * attribute "status" then copy the transmitted file to pending folder and
        * wait for the receiver to make another HTTP call to post AsyncMDN
        */
-      if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.getAttribute (CFileAttribute.MA_STATUS)))
+      if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.attrs ().getAsString (CFileAttribute.MA_STATUS)))
       {
-        final File aPendingFile = new File (aMsg.getPartnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
-                                            aMsg.getAttribute (CFileAttribute.MA_PENDING_FILENAME));
+        final File aPendingFile = new File (aMsg.partnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
+                                            aMsg.attrs ().getAsString (CFileAttribute.MA_PENDING_FILENAME));
         final FileIOError aIOErr = IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
@@ -356,7 +356,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (aByteSource.getAsDataHandler ());
 
       // Headers must be set AFTER the DataHandler
-      final String sEncodeType = aMsg.getPartnership ()
+      final String sEncodeType = aMsg.partnership ()
                                      .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
       aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
 
@@ -370,7 +370,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       final String sSendFilename = getAsString (ATTR_SENDFILENAME);
       if ("true".equals (sSendFilename))
       {
-        final String sMAFilename = aMsg.getAttribute (CFileAttribute.MA_FILENAME);
+        final String sMAFilename = aMsg.attrs ().getAsString (CFileAttribute.MA_FILENAME);
         final String sContentDisposition = "Attachment; filename=\"" + sMAFilename + "\"";
         aBody.setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisposition);
         aMsg.setContentDisposition (sContentDisposition);

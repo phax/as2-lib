@@ -110,7 +110,7 @@ public class MDNFileModule extends AbstractStorageModule
     // write headers to the string buffer
     aSB.append ("Headers:" + HTTPHelper.EOL);
 
-    final Enumeration <?> aHeaderLines = aMdn.getHeaders ().getAllHeaderLines ();
+    final Enumeration <?> aHeaderLines = aMdn.headers ().getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
       final String sHeaderLine = (String) aHeaderLines.nextElement ();
@@ -121,7 +121,7 @@ public class MDNFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aSB.append ("Attributes:" + HTTPHelper.EOL);
-    for (final Map.Entry <String, String> aEntry : aMdn.getAllAttributes ().entrySet ())
+    for (final Map.Entry <String, String> aEntry : aMdn.attrs ().entrySet ())
     {
       aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (HTTPHelper.EOL);
     }

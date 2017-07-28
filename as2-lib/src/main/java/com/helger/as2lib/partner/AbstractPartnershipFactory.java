@@ -163,13 +163,13 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     ValueEnforcer.notNull (aMsg, "Message");
 
     // Fill in any available partnership information
-    final Partnership aPartnership = getPartnership (aMsg.getPartnership ());
+    final Partnership aPartnership = getPartnership (aMsg.partnership ());
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Updating partnership " + aPartnership);
 
     // Update partnership data of message with the stored ones
-    aMsg.getPartnership ().copyFrom (aPartnership);
+    aMsg.partnership ().copyFrom (aPartnership);
 
     // Set attributes
     if (bOverwrite)
@@ -188,8 +188,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     ValueEnforcer.notNull (aMdn, "MessageMDN");
 
     // Fill in any available partnership information
-    final Partnership aPartnership = getPartnership (aMdn.getPartnership ());
-    aMdn.getPartnership ().copyFrom (aPartnership);
+    final Partnership aPartnership = getPartnership (aMdn.partnership ());
+    aMdn.partnership ().copyFrom (aPartnership);
   }
 
   @Override

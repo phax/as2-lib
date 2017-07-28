@@ -470,11 +470,11 @@ public final class HTTPHelper
     // Read the HTTP meta data
     final String [] aRequest = _readRequestInfo (aIS);
     // Request method (e.g. "POST")
-    aMsg.setAttribute (MA_HTTP_REQ_TYPE, aRequest[0]);
+    aMsg.attrs ().putIn (MA_HTTP_REQ_TYPE, aRequest[0]);
     // Request URL (e.g. "/as2")
-    aMsg.setAttribute (MA_HTTP_REQ_URL, aRequest[1]);
+    aMsg.attrs ().putIn (MA_HTTP_REQ_URL, aRequest[1]);
     // HTTP version (e.g. "HTTP/1.1")
-    aMsg.setAttribute (MA_HTTP_REQ_VERSION, aRequest[2]);
+    aMsg.attrs ().putIn (MA_HTTP_REQ_VERSION, aRequest[2]);
 
     // Parse all HTTP headers from stream
     final InternetHeaders aHeaders = new InternetHeaders (aIS);

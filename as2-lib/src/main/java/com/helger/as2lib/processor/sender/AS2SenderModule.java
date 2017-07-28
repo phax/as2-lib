@@ -120,7 +120,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   protected void checkRequired (@Nonnull final AS2Message aMsg) throws InvalidParameterException
   {
-    final Partnership aPartnership = aMsg.getPartnership ();
+    final Partnership aPartnership = aMsg.partnership ();
 
     try
     {
@@ -184,8 +184,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aWriter.write (sMIC + "\n" + sPendingFilename);
       }
       // remember
-      aMsg.setAttribute (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
-      aMsg.setAttribute (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
+      aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
+      aMsg.attrs ().putIn (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
     }
     catch (final Exception ex)
     {
@@ -239,7 +239,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   @Nonempty
   protected String calculateAndStoreMIC (@Nonnull final AS2Message aMsg) throws Exception
   {
-    final Partnership aPartnership = aMsg.getPartnership ();
+    final Partnership aPartnership = aMsg.partnership ();
     final String sDispositionOptions = aPartnership.getAS2MDNOptions ();
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
@@ -276,7 +276,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
-    final String sTransferEncoding = aMsg.getPartnership ()
+    final String sTransferEncoding = aMsg.partnership ()
                                          .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
     aCompressedGenerator.setContentTransferEncoding (sTransferEncoding);
 
@@ -301,7 +301,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // Set up encrypt/sign variables
     MimeBodyPart aDataBP = aMsg.getData ();
 
-    final Partnership aPartnership = aMsg.getPartnership ();
+    final Partnership aPartnership = aMsg.partnership ();
     final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
 
     // Check compression parameters
@@ -341,8 +341,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Include certificate in signed content?
       boolean bIncludeCertificateInSignedContent;
-      final ETriState eIncludeCertificateInSignedContent = aMsg.getPartnership ()
-                                                               .getIncludeCertificateInSignedContent ();
+      final ETriState eIncludeCertificateInSignedContent = aMsg.partnership ().getIncludeCertificateInSignedContent ();
       if (eIncludeCertificateInSignedContent.isDefined ())
       {
         // Use per partnership
@@ -416,7 +415,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    */
   protected void updateHttpHeaders (@Nonnull final IAS2HttpHeaderWrapper aConn, @Nonnull final IMessage aMsg)
   {
-    final Partnership aPartnership = aMsg.getPartnership ();
+    final Partnership aPartnership = aMsg.partnership ();
 
     // Set all custom headers first (so that they are overridden with the
     // mandatory ones in here)
@@ -484,7 +483,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-      HTTPHelper.copyHttpHeaders (aConn, aMDN.getHeaders ());
+      HTTPHelper.copyHttpHeaders (aConn, aMDN.headers ());
 
       // Receive the MDN data
       final InputStream aConnIS = aConn.getInputStream ();
@@ -505,7 +504,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
       if (aIncomingDumper != null)
-        aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.getHeaders ()),
+        aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.headers ()),
                                              aMDNStream.toByteArray (),
                                              aMDN);
 
@@ -515,15 +514,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         s_aLogger.trace ("Retrieved MDN stream data:\n" + aMDNStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
-      final MimeBodyPart aPart = new MimeBodyPart (aMDN.getHeaders (), aMDNStream.toByteArray ());
+      final MimeBodyPart aPart = new MimeBodyPart (aMDN.headers (), aMDNStream.toByteArray ());
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMDN.getPartnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-      aMDN.getPartnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
       // Set the appropriate keystore aliases
-      aMDN.getPartnership ().setSenderX509Alias (aMsg.getPartnership ().getReceiverX509Alias ());
-      aMDN.getPartnership ().setReceiverX509Alias (aMsg.getPartnership ().getSenderX509Alias ());
+      aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
+      aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
       // Update the partnership
       getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
@@ -531,7 +530,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
       boolean bUseCertificateInBodyPart;
-      final ETriState eUseCertificateInBodyPart = aMsg.getPartnership ().getVerifyUseCertificateInBodyPart ();
+      final ETriState eUseCertificateInBodyPart = aMsg.partnership ().getVerifyUseCertificateInBodyPart ();
       if (eUseCertificateInBodyPart.isDefined ())
       {
         // Use per partnership
@@ -558,13 +557,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // No module found in message processor
       }
 
-      final String sDisposition = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_DISPOSITION);
+      final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
       s_aLogger.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN
-      final String sReturnMIC = aMsg.getMDN ().getAttribute (AS2MessageMDN.MDNA_MIC);
+      final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
 
       // Catch ReturnMIC == null in case the attribute is simply missing
       if (sReturnMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
@@ -628,7 +627,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                              @Nonnull final MimeBodyPart aSecuredMimePart,
                              @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
   {
-    final Partnership aPartnership = aMsg.getPartnership ();
+    final Partnership aPartnership = aMsg.partnership ();
 
     // Create the HTTP connection
     final String sUrl = aPartnership.getAS2URL ();
@@ -651,8 +650,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();
 
-      aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
-      aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aConn.getURL ().getPort ()));
+      aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
+      aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aConn.getURL ().getPort ());
 
       // Note: closing this stream causes connection abort errors on some AS2
       // servers
@@ -745,7 +744,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // verify all required information is present for sending
     checkRequired (aMsg);
 
-    final int nRetries = getRetryCount (aMsg.getPartnership (), aOptions);
+    final int nRetries = getRetryCount (aMsg.partnership (), aOptions);
 
     try
     {

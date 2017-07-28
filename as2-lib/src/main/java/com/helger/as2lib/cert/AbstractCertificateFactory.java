@@ -62,7 +62,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   public X509Certificate getCertificate (@Nonnull final IMessage aMsg,
                                          @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
-    final String sAlias = getAlias (aMsg.getPartnership (), ePartnershipType);
+    final String sAlias = getAlias (aMsg.partnership (), ePartnershipType);
     return internalGetCertificate (sAlias, ePartnershipType);
   }
 
@@ -85,7 +85,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   public X509Certificate getCertificate (@Nonnull final IMessageMDN aMDN,
                                          @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
-    final String sAlias = getAlias (aMDN.getPartnership (), ePartnershipType);
+    final String sAlias = getAlias (aMDN.partnership (), ePartnershipType);
     return internalGetCertificate (sAlias, ePartnershipType);
   }
 

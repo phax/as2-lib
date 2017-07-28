@@ -130,7 +130,7 @@ public class MessageFileModule extends AbstractStorageModule
     // write headers to the string buffer
     aSB.append ("Headers:" + HTTPHelper.EOL);
 
-    final Enumeration <?> aHeaderLines = aMsg.getHeaders ().getAllHeaderLines ();
+    final Enumeration <?> aHeaderLines = aMsg.headers ().getAllHeaderLines ();
     while (aHeaderLines.hasMoreElements ())
     {
       final String sHeaderLine = (String) aHeaderLines.nextElement ();
@@ -141,7 +141,7 @@ public class MessageFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aSB.append ("Attributes:" + HTTPHelper.EOL);
-    for (final Map.Entry <String, String> attrEntry : aMsg.getAllAttributes ().entrySet ())
+    for (final Map.Entry <String, String> attrEntry : aMsg.attrs ().entrySet ())
     {
       aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (HTTPHelper.EOL);
     }

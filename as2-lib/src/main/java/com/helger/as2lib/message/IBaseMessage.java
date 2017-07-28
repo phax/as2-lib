@@ -43,7 +43,6 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
@@ -57,18 +56,9 @@ import com.helger.commons.collection.impl.ICommonsOrderedMap;
  */
 public interface IBaseMessage extends Serializable
 {
-  boolean containsAttribute (@Nullable String sKey);
-
-  @Nullable
-  String getAttribute (@Nullable String sKey);
-
   @Nonnull
-  @ReturnsMutableCopy
-  StringMap getAllAttributes ();
-
-  void setAttribute (@Nonnull String sKey, @Nullable String sValue);
-
-  void setAttributes (@Nullable IStringMap aAttributes);
+  @ReturnsMutableObject
+  IStringMap attrs ();
 
   @Nullable
   default String getHeader (@Nonnull final String sKey)
@@ -81,7 +71,7 @@ public interface IBaseMessage extends Serializable
 
   @Nonnull
   @ReturnsMutableObject ("design")
-  InternetHeaders getHeaders ();
+  InternetHeaders headers ();
 
   /**
    * Iterate each header.
@@ -92,7 +82,7 @@ public interface IBaseMessage extends Serializable
    */
   default void forEachHeader (@Nonnull final BiConsumer <String, String> aConsumer)
   {
-    IOHelper.forEachHeader (getHeaders (), aConsumer);
+    IOHelper.forEachHeader (headers (), aConsumer);
   }
 
   /**
@@ -180,7 +170,7 @@ public interface IBaseMessage extends Serializable
 
   @Nonnull
   @ReturnsMutableObject ("Design")
-  Partnership getPartnership ();
+  Partnership partnership ();
 
   void setPartnership (@Nonnull Partnership aPartnership);
 
