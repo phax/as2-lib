@@ -210,15 +210,15 @@ public class AS2ReceiveServlet extends HttpServlet
   {
     // Create empty message
     final AS2Message aMsg = new AS2Message ();
-    aMsg.setAttribute (CNetAttribute.MA_SOURCE_IP, aHttpRequest.getRemoteAddr ());
-    aMsg.setAttribute (CNetAttribute.MA_SOURCE_PORT, Integer.toString (aHttpRequest.getRemotePort ()));
-    aMsg.setAttribute (CNetAttribute.MA_DESTINATION_IP, aHttpRequest.getLocalAddr ());
-    aMsg.setAttribute (CNetAttribute.MA_DESTINATION_PORT, Integer.toString (aHttpRequest.getLocalPort ()));
+    aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_IP, aHttpRequest.getRemoteAddr ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_PORT, aHttpRequest.getRemotePort ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aHttpRequest.getLocalAddr ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aHttpRequest.getLocalPort ());
 
     // Request type (e.g. "POST")
-    aMsg.setAttribute (HTTPHelper.MA_HTTP_REQ_TYPE, aHttpRequest.getMethod ());
+    aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_TYPE, aHttpRequest.getMethod ());
     // Request URL (e.g. "/as2")
-    aMsg.setAttribute (HTTPHelper.MA_HTTP_REQ_URL, aHttpRequest.getRequestURI ());
+    aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_URL, aHttpRequest.getRequestURI ());
 
     // Add all request headers to the AS2 message
     for (final Map.Entry <String, ICommonsList <String>> aEntry : RequestHelper.getRequestHeaderMap (aHttpRequest))
@@ -237,7 +237,7 @@ public class AS2ReceiveServlet extends HttpServlet
     // Dump on demand
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.getHeaders ()), aMsgData, aMsg);
+      aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.headers ()), aMsgData, aMsg);
 
     // Call main handling method
     handeIncomingMessage (aHttpRequest, aHttpResponse, aMsgData, aMsg, aResponseHandler);
