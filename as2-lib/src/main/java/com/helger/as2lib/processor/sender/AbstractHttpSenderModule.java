@@ -53,7 +53,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.ws.HostnameVerifierVerifyAll;
 import com.helger.commons.ws.TrustManagerTrustAll;
-import com.helger.http.EHTTPMethod;
+import com.helger.http.EHttpMethod;
 
 /**
  * Abstract HTTP based sender module
@@ -113,7 +113,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
                                           final boolean bOutput,
                                           final boolean bInput,
                                           final boolean bUseCaches,
-                                          @Nonnull final EHTTPMethod eRequestMethod,
+                                          @Nonnull final EHttpMethod eRequestMethod,
                                           @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
     try

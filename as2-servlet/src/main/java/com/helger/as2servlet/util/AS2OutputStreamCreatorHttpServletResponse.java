@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.http.HTTPStringHelper;
 
 /**
  * An implementation of {@link IAS2HttpResponseHandler} that works upon a
@@ -56,7 +56,7 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
 
     // Add headers
     IOHelper.forEachHeader (aHeaders,
-                            (k, v) -> m_aHttpResponse.addHeader (k, HTTPStringHelper.getUnifiedHTTPHeaderValue (v)));
+                            (k, v) -> m_aHttpResponse.addHeader (k, HttpHeaderMap.getUnifiedHTTPHeaderValue (v)));
 
     // Write response body
     final OutputStream aOS = StreamHelper.getBuffered (m_aHttpResponse.getOutputStream ());

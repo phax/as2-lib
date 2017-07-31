@@ -61,7 +61,7 @@ import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.timing.StopWatch;
-import com.helger.http.EHTTPMethod;
+import com.helger.http.EHttpMethod;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
@@ -90,7 +90,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     final boolean bOutput = true;
     final boolean bInput = true;
     final boolean bUseCaches = false;
-    final EHTTPMethod eRequestMethod = EHTTPMethod.POST;
+    final EHttpMethod eRequestMethod = EHttpMethod.POST;
     final HttpURLConnection aConn = getConnection (sUrl,
                                                    bOutput,
                                                    bInput,

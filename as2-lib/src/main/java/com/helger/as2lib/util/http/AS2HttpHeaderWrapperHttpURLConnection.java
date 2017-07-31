@@ -40,7 +40,7 @@ import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
-import com.helger.http.HTTPStringHelper;
+import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Implementation of {@link IAS2HttpHeaderWrapper} for {@link HttpURLConnection}
@@ -77,7 +77,7 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
 
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    final String sUnifiedValue = HTTPStringHelper.getUnifiedHTTPHeaderValue (sValue);
+    final String sUnifiedValue = HttpHeaderMap.getUnifiedHTTPHeaderValue (sValue);
     m_aConn.setRequestProperty (sName, sUnifiedValue);
 
     if (m_aOutgoingDumper != null)

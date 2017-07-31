@@ -49,7 +49,7 @@ import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.http.HTTPHeaderMap;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.StringHelper;
 
 /**
@@ -111,7 +111,7 @@ public class AS2ClientSettings implements Serializable
   private int m_nConnectTimeoutMS = DEFAULT_CONNECT_TIMEOUT_MS;
   private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
 
-  private final HTTPHeaderMap m_aCustomHeaders = new HTTPHeaderMap ();
+  private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
 
   public AS2ClientSettings ()
   {}
@@ -663,7 +663,7 @@ public class AS2ClientSettings implements Serializable
    */
   @Nonnull
   @ReturnsMutableObject ("Design")
-  public HTTPHeaderMap customHeaders ()
+  public HttpHeaderMap customHeaders ()
   {
     return m_aCustomHeaders;
   }

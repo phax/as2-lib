@@ -47,7 +47,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.http.EHTTPVersion;
+import com.helger.http.EHttpVersion;
 
 /**
  * An implementation of {@link IAS2HttpResponseHandler} that writes an HTTP 1.1
@@ -69,9 +69,9 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
    */
   @Nonnull
   @OverrideOnDemand
-  public EHTTPVersion getHTTPVersion ()
+  public EHttpVersion getHTTPVersion ()
   {
-    return EHTTPVersion.HTTP_11;
+    return EHttpVersion.HTTP_11;
   }
 
   @Nonnull

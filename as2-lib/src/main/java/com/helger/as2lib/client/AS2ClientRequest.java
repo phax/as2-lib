@@ -45,7 +45,7 @@ import javax.mail.internet.MimeBodyPart;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.http.CHTTPHeader;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
@@ -298,7 +298,7 @@ public class AS2ClientRequest
 
         // Set forced content-type
         if (m_sContentType != null)
-          aPart.setHeader (CHTTPHeader.CONTENT_TYPE, m_sContentType);
+          aPart.setHeader (CHttpHeader.CONTENT_TYPE, m_sContentType);
       }
       else
         if (m_aDataHandler != null)
@@ -314,7 +314,7 @@ public class AS2ClientRequest
 
     // Set Content-Transfer-Encoding
     if (m_eCTE != null)
-      aPart.setHeader (CHTTPHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
+      aPart.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
 
     if (StringHelper.hasText (m_sContentDescription))
       aPart.setHeader ("Content-Description", m_sContentDescription);

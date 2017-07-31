@@ -94,7 +94,7 @@ import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
-import com.helger.http.EHTTPMethod;
+import com.helger.http.EHttpMethod;
 import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
@@ -634,7 +634,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final boolean bOutput = true;
     final boolean bInput = true;
     final boolean bUseCaches = false;
-    final EHTTPMethod eRequestMethod = EHTTPMethod.POST;
+    final EHttpMethod eRequestMethod = EHttpMethod.POST;
     final HttpURLConnection aConn = getConnection (sUrl,
                                                    bOutput,
                                                    bInput,
