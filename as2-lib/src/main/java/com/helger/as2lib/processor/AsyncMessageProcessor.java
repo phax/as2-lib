@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
+import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.callback.CallbackList;
 import com.helger.commons.callback.exception.IExceptionCallback;
 
 /**
@@ -78,13 +80,9 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
   private static final Logger s_aLogger = LoggerFactory.getLogger (AsyncMessageProcessor.class);
 
   private final BlockingQueue <HandleObject> m_aQueue = new LinkedBlockingQueue <> ();
+  private final CallbackList <IExceptionCallback <Throwable>> m_aExceptionCallbacks = new CallbackList <> ();
 
   public AsyncMessageProcessor ()
-  {
-    this (null);
-  }
-
-  public AsyncMessageProcessor (@Nullable final IExceptionCallback <Throwable> aExceptionCB)
   {
     final Runnable aRunnable = () -> {
       // The temporary list that contains all objects to be delivered
@@ -106,14 +104,13 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
         }
         catch (final NoModuleException ex)
         {
-          if (aExceptionCB != null)
-            aExceptionCB.onException (ex);
+          m_aExceptionCallbacks.forEach (x -> x.onException (ex));
           // No need to log
         }
         catch (final Throwable t)
         {
-          if (aExceptionCB != null)
-            aExceptionCB.onException (t);
+          if (m_aExceptionCallbacks.isNotEmpty ())
+            m_aExceptionCallbacks.forEach (x -> x.onException (t));
           else
             s_aLogger.error ("Error executing action", t);
         }
@@ -122,6 +119,13 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
     final Thread aProcessorThread = new Thread (aRunnable, "AS2-AsyncMessageProcessor");
     aProcessorThread.setDaemon (true);
     aProcessorThread.start ();
+  }
+
+  @Nonnull
+  @ReturnsMutableObject
+  public final CallbackList <IExceptionCallback <Throwable>> exceptionCallbacks ()
+  {
+    return m_aExceptionCallbacks;
   }
 
   public void handle (@Nonnull final String sAction,
