@@ -22,10 +22,8 @@ import java.io.OutputStream;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
-import javax.mail.internet.InternetHeaders;
 import javax.servlet.http.HttpServletResponse;
 
-import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.HttpHeaderMap;
@@ -48,15 +46,15 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
   }
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
-                                @Nonnull final InternetHeaders aHeaders,
+                                @Nonnull final HttpHeaderMap aHeaders,
                                 @Nonnull @WillNotClose final IWriteToStream aData) throws IOException
   {
     // Set status code
     m_aHttpResponse.setStatus (nHttpResponseCode);
 
     // Add headers
-    IOHelper.forEachHeader (aHeaders,
-                            (k, v) -> m_aHttpResponse.addHeader (k, HttpHeaderMap.getUnifiedHTTPHeaderValue (v)));
+    aHeaders.forEachSingleHeader ( (k, v) -> m_aHttpResponse.addHeader (k,
+                                                                        HttpHeaderMap.getUnifiedHTTPHeaderValue (v)));
 
     // Write response body
     final OutputStream aOS = StreamHelper.getBuffered (m_aHttpResponse.getOutputStream ());

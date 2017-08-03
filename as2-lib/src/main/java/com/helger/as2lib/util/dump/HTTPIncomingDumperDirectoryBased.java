@@ -45,8 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -99,10 +99,10 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       for (final String sHeaderLine : aHeaderLines)
-        aOS.write ((sHeaderLine + HTTPHelper.EOL).getBytes (StandardCharsets.ISO_8859_1));
+        aOS.write ((sHeaderLine + CHttp.EOL).getBytes (StandardCharsets.ISO_8859_1));
 
       // empty line
-      aOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
+      aOS.write (CHttp.EOL.getBytes (StandardCharsets.ISO_8859_1));
 
       // Add payload
       aOS.write (aPayload);

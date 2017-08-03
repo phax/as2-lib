@@ -84,7 +84,7 @@ public class MessageMDNParameters extends AbstractParameterParser
           m_aTarget.attrs ().putIn (sAreaValue, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
-            m_aTarget.setHeader (sAreaValue, sValue);
+            m_aTarget.headers ().setHeader (sAreaValue, sValue);
           else
             throw new InvalidParameterException ("Invalid area in key", this, "key", sKey);
     }

@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +61,9 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.functional.IFunction;
 import com.helger.commons.functional.ISupplier;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -80,9 +81,6 @@ public final class HTTPHelper
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
   /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
-
-  /* End of line MUST be \r and \n */
-  public static final String EOL = "\r\n";
 
   private static ISupplier <? extends IHTTPIncomingDumper> s_aHTTPIncomingDumperFactory = () -> null;
   private static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> s_aHTTPOutgoingDumperFactory = x -> null;
@@ -110,140 +108,6 @@ public final class HTTPHelper
     while (aEnum.hasMoreElements ())
       ret.add ((String) aEnum.nextElement ());
     return ret;
-  }
-
-  @Nonnull
-  @Nonempty
-  public static String getHTTPResponseMessage (final int nResponseCode)
-  {
-    String sMsg;
-    switch (nResponseCode)
-    {
-      case 100:
-        sMsg = "Continue";
-        break;
-      case 101:
-        sMsg = "Switching Protocols";
-        break;
-      case 200:
-        sMsg = "OK";
-        break;
-      case 201:
-        sMsg = "Created";
-        break;
-      case 202:
-        sMsg = "Accepted";
-        break;
-      case 203:
-        sMsg = "Non-Authoritative Information";
-        break;
-      case 204:
-        sMsg = "No Content";
-        break;
-      case 205:
-        sMsg = "Reset Content";
-        break;
-      case 206:
-        sMsg = "Partial Content";
-        break;
-      case 300:
-        sMsg = "Multiple Choices";
-        break;
-      case 301:
-        sMsg = "Moved Permanently";
-        break;
-      case 302:
-        sMsg = "Found";
-        break;
-      case 303:
-        sMsg = "See Other";
-        break;
-      case 304:
-        sMsg = "Not Modified";
-        break;
-      case 305:
-        sMsg = "Use Proxy";
-        break;
-      case 307:
-        sMsg = "Temporary Redirect";
-        break;
-      case 400:
-        sMsg = "Bad Request";
-        break;
-      case 401:
-        sMsg = "Unauthorized";
-        break;
-      case 402:
-        sMsg = "Payment Required";
-        break;
-      case 403:
-        sMsg = "Forbidden";
-        break;
-      case 404:
-        sMsg = "Not Found";
-        break;
-      case 405:
-        sMsg = "Method Not Allowed";
-        break;
-      case 406:
-        sMsg = "Not Acceptable";
-        break;
-      case 407:
-        sMsg = "Proxy Authentication Required";
-        break;
-      case 408:
-        sMsg = "Request Time-out";
-        break;
-      case 409:
-        sMsg = "Conflict";
-        break;
-      case 410:
-        sMsg = "Gone";
-        break;
-      case 411:
-        sMsg = "Length Required";
-        break;
-      case 412:
-        sMsg = "Precondition Failed";
-        break;
-      case 413:
-        sMsg = "Request Entity Too Large";
-        break;
-      case 414:
-        sMsg = "Request-URI Too Large";
-        break;
-      case 415:
-        sMsg = "Unsupported Media Type";
-        break;
-      case 416:
-        sMsg = "Requested range not satisfiable";
-        break;
-      case 417:
-        sMsg = "Expectation Failed";
-        break;
-      case 500:
-        sMsg = "Internal Server Error";
-        break;
-      case 501:
-        sMsg = "Not Implemented";
-        break;
-      case 502:
-        sMsg = "Bad Gateway";
-        break;
-      case 503:
-        sMsg = "Service Unavailable";
-        break;
-      case 504:
-        sMsg = "Gateway Time-out";
-        break;
-      case 505:
-        sMsg = "HTTP Version not supported";
-        break;
-      default:
-        sMsg = "Unknown (" + nResponseCode + ")";
-        break;
-    }
-    return sMsg;
   }
 
   @Nonnull
@@ -311,7 +175,7 @@ public final class HTTPHelper
                 break;
             }
           }
-          aMsg.setHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (nLength));
+          aMsg.headers ().setContentLength (nLength);
         }
         else
         {
@@ -509,35 +373,32 @@ public final class HTTPHelper
   {
     try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
     {
-      final String sHTTPLine = Integer.toString (nResponseCode) + " " + getHTTPResponseMessage (nResponseCode) + EOL;
-      aData.write (sHTTPLine.getBytes (StandardCharsets.ISO_8859_1));
+      final String sHTTPLine = Integer.toString (nResponseCode) +
+                               " " +
+                               CHttp.getHttpResponseMessage (nResponseCode) +
+                               CHttp.EOL;
+      aData.write (sHTTPLine.getBytes (CHttp.HTTP_CHARSET));
 
-      final InternetHeaders aHeaders = new InternetHeaders ();
-      aResponseHandler.sendHttpResponse (nResponseCode, aHeaders, aData);
+      aResponseHandler.sendHttpResponse (nResponseCode, new HttpHeaderMap (), aData);
     }
   }
 
   /**
    * Copy headers from an HTTP connection to an InternetHeaders object
    *
-   * @param aConn
+   * @param aFromConn
    *        Connection - source. May not be <code>null</code>.
    * @param aHeaders
    *        Headers - destination. May not be <code>null</code>.
    */
-  public static void copyHttpHeaders (@Nonnull final HttpURLConnection aConn, @Nonnull final InternetHeaders aHeaders)
+  public static void copyHttpHeaders (@Nonnull final HttpURLConnection aFromConn, @Nonnull final HttpHeaderMap aHeaders)
   {
-    for (final Map.Entry <String, List <String>> aConnHeader : aConn.getHeaderFields ().entrySet ())
+    for (final Map.Entry <String, List <String>> aConnHeader : aFromConn.getHeaderFields ().entrySet ())
     {
       final String sHeaderName = aConnHeader.getKey ();
       if (sHeaderName != null)
         for (final String sHeaderValue : aConnHeader.getValue ())
-        {
-          if (aHeaders.getHeader (sHeaderName) == null)
-            aHeaders.setHeader (sHeaderName, sHeaderValue);
-          else
-            aHeaders.addHeader (sHeaderName, sHeaderValue);
-        }
+          aHeaders.addHeader (sHeaderName, sHeaderValue);
     }
   }
 }

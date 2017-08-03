@@ -35,22 +35,14 @@ package com.helger.as2lib.message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.StringMap;
-import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -61,10 +53,8 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public abstract class AbstractBaseMessage implements IBaseMessage
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractBaseMessage.class);
-
   private StringMap m_aAttributes = new StringMap ();
-  private InternetHeaders m_aHeaders = new InternetHeaders ();
+  private HttpHeaderMap m_aHeaders = new HttpHeaderMap ();
   private Partnership m_aPartnership = Partnership.createPlaceholderPartnership ();
 
   public AbstractBaseMessage ()
@@ -74,16 +64,7 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   {
     // read in attributes
     m_aAttributes = (StringMap) aOIS.readObject ();
-
-    try
-    {
-      // read in message headers
-      m_aHeaders = new InternetHeaders (aOIS);
-    }
-    catch (final MessagingException ex)
-    {
-      throw new IOException ("Messaging exception", ex);
-    }
+    m_aHeaders = (HttpHeaderMap) aOIS.readObject ();
 
     // read in partnership
     m_aPartnership = (Partnership) aOIS.readObject ();
@@ -94,57 +75,23 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     // write attributes
     aOOS.writeObject (m_aAttributes);
 
-    // write message headers
-    final Enumeration <String> en = m_aHeaders.getAllHeaderLines ();
-    while (en.hasMoreElements ())
-    {
-      aOOS.write ((en.nextElement () + HTTPHelper.EOL).getBytes (StandardCharsets.ISO_8859_1));
-    }
-
-    aOOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
+    // write headers
+    aOOS.writeObject (m_aHeaders);
 
     // write partnership info
     aOOS.writeObject (m_aPartnership);
   }
 
+  @Nonnull
+  @ReturnsMutableObject
   public final StringMap attrs ()
   {
     return m_aAttributes;
   }
 
-  public final void setHeader (@Nonnull final String sKey, @Nullable final String sValue)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Setting message header: '" + sKey + "' = '" + sValue + "'");
-    m_aHeaders.setHeader (sKey, sValue);
-  }
-
-  public final void addHeader (@Nonnull final String sKey, @Nullable final String sValue)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Adding message header: '" + sKey + "' = '" + sValue + "'");
-    m_aHeaders.addHeader (sKey, sValue);
-  }
-
-  @Nullable
-  public final String getHeader (@Nonnull final String sKey, @Nullable final String sDelimiter)
-  {
-    return m_aHeaders.getHeader (sKey, sDelimiter);
-  }
-
-  public final void setHeaders (@Nullable final InternetHeaders aHeaders)
-  {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Setting all message headers " + aHeaders);
-    if (aHeaders == null)
-      m_aHeaders = new InternetHeaders ();
-    else
-      m_aHeaders = aHeaders;
-  }
-
   @Nonnull
   @ReturnsMutableObject
-  public final InternetHeaders headers ()
+  public final HttpHeaderMap headers ()
   {
     return m_aHeaders;
   }

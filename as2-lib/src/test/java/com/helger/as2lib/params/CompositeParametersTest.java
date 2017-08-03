@@ -53,7 +53,7 @@ public final class CompositeParametersTest
   public void testBasic () throws InvalidParameterException
   {
     final AS2Message aMsg = new AS2Message ();
-    aMsg.addHeader ("message-id", "12345");
+    aMsg.headers ().addHeader ("message-id", "12345");
     aMsg.partnership ().setSenderAS2ID ("s1");
     aMsg.partnership ().setReceiverAS2ID ("r1");
     final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
@@ -103,7 +103,7 @@ public final class CompositeParametersTest
   public void testIgnore () throws InvalidParameterException
   {
     final AS2Message aMsg = new AS2Message ();
-    aMsg.addHeader ("message-id", "12345");
+    aMsg.headers ().addHeader ("message-id", "12345");
     aMsg.partnership ().setSenderAS2ID ("s1");
     aMsg.partnership ().setReceiverAS2ID ("r1");
     final CompositeParameters aParams = new CompositeParameters (true).add ("msg", new MessageParameters (aMsg));

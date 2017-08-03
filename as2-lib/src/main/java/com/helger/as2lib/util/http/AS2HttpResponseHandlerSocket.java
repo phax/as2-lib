@@ -35,16 +35,15 @@ package com.helger.as2lib.util.http;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
-import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.http.CHttp;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.http.EHttpVersion;
@@ -82,7 +81,7 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
   }
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
-                                @Nonnull final InternetHeaders aHeaders,
+                                @Nonnull final HttpHeaderMap aHeaders,
                                 @Nonnull @WillNotClose final IWriteToStream aData) throws IOException
   {
     ValueEnforcer.isGT0 (nHttpResponseCode, "HttpResponseCode");
@@ -96,20 +95,16 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
                                      " " +
                                      Integer.toString (nHttpResponseCode) +
                                      " " +
-                                     HTTPHelper.getHTTPResponseMessage (nHttpResponseCode) +
-                                     HTTPHelper.EOL;
-      aOS.write (sHttpStatusLine.getBytes (StandardCharsets.ISO_8859_1));
+                                     CHttp.getHttpResponseMessage (nHttpResponseCode) +
+                                     CHttp.EOL;
+      aOS.write (sHttpStatusLine.getBytes (CHttp.HTTP_CHARSET));
 
       // Add response headers
-      final Enumeration <?> aHeaderLines = aHeaders.getAllHeaderLines ();
-      while (aHeaderLines.hasMoreElements ())
-      {
-        final String sHeader = (String) aHeaderLines.nextElement () + HTTPHelper.EOL;
-        aOS.write (sHeader.getBytes (StandardCharsets.ISO_8859_1));
-      }
+      for (final String sHeaderLine : aHeaders.getAllHeaderLines ())
+        aOS.write ((sHeaderLine + CHttp.EOL).getBytes (CHttp.HTTP_CHARSET));
 
       // Empty line as separator
-      aOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
+      aOS.write (CHttp.EOL.getBytes (CHttp.HTTP_CHARSET));
 
       // Write body
       aData.writeTo (aOS);

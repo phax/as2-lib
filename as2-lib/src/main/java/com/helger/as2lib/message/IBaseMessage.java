@@ -33,21 +33,16 @@
 package com.helger.as2lib.message;
 
 import java.io.Serializable;
-import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -61,81 +56,20 @@ public interface IBaseMessage extends Serializable
   IStringMap attrs ();
 
   @Nullable
-  default String getHeader (@Nonnull final String sKey)
+  default String getHeader (@Nonnull final String sName)
   {
-    return getHeader (sKey, ", ");
+    return getHeader (sName, ", ");
   }
 
   @Nullable
-  String getHeader (@Nonnull String sKey, @Nullable String sDelimiter);
-
-  @Nonnull
-  @ReturnsMutableObject ("design")
-  InternetHeaders headers ();
-
-  /**
-   * Iterate each header.
-   *
-   * @param aConsumer
-   *        Consumer to be invoked. May not be <code>null</code>.
-   * @since 3.0.4
-   */
-  default void forEachHeader (@Nonnull final BiConsumer <String, String> aConsumer)
+  default String getHeader (@Nonnull final String sName, @Nullable final String sDelimiter)
   {
-    IOHelper.forEachHeader (headers (), aConsumer);
-  }
-
-  /**
-   * @return A map of all headers. Never <code>null</code>.
-   * @since 3.0.4
-   */
-  @Nonnull
-  @ReturnsMutableCopy
-  default ICommonsOrderedMap <String, String> getAllHeaders ()
-  {
-    final ICommonsOrderedMap <String, String> aMap = new CommonsLinkedHashMap <> ();
-    forEachHeader ( (k, v) -> aMap.put (k, v));
-    return aMap;
+    return headers ().getHeaderCombined (sName, sDelimiter);
   }
 
   @Nonnull
-  @Nonempty
-  default String getHeadersDebugFormatted ()
-  {
-    return getAllHeaders ().toString ();
-  }
-
-  /**
-   * Set a generic header. If it already exist it will be overwritten.
-   *
-   * @param sKey
-   *        Header name
-   * @param sValue
-   *        Header value
-   * @see #addHeader(String, String)
-   */
-  void setHeader (@Nonnull String sKey, @Nullable String sValue);
-
-  /**
-   * Add a generic header
-   *
-   * @param sKey
-   *        Header name
-   * @param sValue
-   *        Header value
-   * @see #setHeader(String, String)
-   */
-  void addHeader (@Nonnull String sKey, @Nullable String sValue);
-
-  /**
-   * Set all headers from the providers headers object. All existing headers are
-   * discarded.
-   *
-   * @param aHeaders
-   *        The headers object to be used. May be <code>null</code> in which
-   *        case all existing headers are removed.
-   */
-  void setHeaders (@Nullable InternetHeaders aHeaders);
+  @ReturnsMutableObject
+  HttpHeaderMap headers ();
 
   /**
    * @return Special message ID header
@@ -154,7 +88,7 @@ public interface IBaseMessage extends Serializable
    */
   default void setMessageID (@Nullable final String sMessageID)
   {
-    setHeader (CHttpHeader.MESSAGE_ID, sMessageID);
+    headers ().setHeader (CHttpHeader.MESSAGE_ID, sMessageID);
   }
 
   @Nonnull

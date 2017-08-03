@@ -18,7 +18,6 @@ package com.helger.as2servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -40,7 +39,6 @@ import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.as2servlet.util.AS2ServletSession;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.StringHelper;
 import com.helger.servlet.request.RequestHelper;
 
@@ -221,12 +219,7 @@ public class AS2ReceiveServlet extends HttpServlet
     aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_URL, aHttpRequest.getRequestURI ());
 
     // Add all request headers to the AS2 message
-    for (final Map.Entry <String, ICommonsList <String>> aEntry : RequestHelper.getRequestHeaderMap (aHttpRequest))
-    {
-      final String sName = aEntry.getKey ();
-      for (final String sValue : aEntry.getValue ())
-        aMsg.addHeader (sName, sValue);
-    }
+    aMsg.headers ().setAllHeaders (RequestHelper.getRequestHeaderMap (aHttpRequest));
 
     // Build the handler that performs the response handling
     final AS2OutputStreamCreatorHttpServletResponse aResponseHandler = new AS2OutputStreamCreatorHttpServletResponse (aHttpResponse);
@@ -237,7 +230,7 @@ public class AS2ReceiveServlet extends HttpServlet
     // Dump on demand
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMsg.headers ()), aMsgData, aMsg);
+      aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (), aMsgData, aMsg);
 
     // Call main handling method
     handeIncomingMessage (aHttpRequest, aHttpResponse, aMsgData, aMsg, aResponseHandler);

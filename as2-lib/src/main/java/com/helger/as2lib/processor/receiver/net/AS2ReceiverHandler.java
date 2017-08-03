@@ -41,7 +41,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
-import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
@@ -77,6 +76,7 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
@@ -273,8 +273,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         {
           // if asyncMDN requested, close connection and initiate separate MDN
           // send
-          final InternetHeaders aHeaders = new InternetHeaders ();
-          aHeaders.setHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (0));
+          final HttpHeaderMap aHeaders = new HttpHeaderMap ();
+          aHeaders.setContentLength (0);
           // Empty data
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
@@ -301,7 +301,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           final MimeBodyPart aPart = aMdn.getData ();
           StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-          aMdn.setHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (aData.getSize ()));
+          aMdn.headers ().setContentLength (aData.getSize ());
 
           // start HTTP response
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.headers (), aData);

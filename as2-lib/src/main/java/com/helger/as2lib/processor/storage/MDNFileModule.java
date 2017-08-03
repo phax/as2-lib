@@ -35,7 +35,6 @@ package com.helger.as2lib.processor.storage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -52,7 +51,7 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageMDNParameters;
-import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
@@ -108,25 +107,20 @@ public class MDNFileModule extends AbstractStorageModule
     final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aSB.append ("Headers:" + HTTPHelper.EOL);
+    aSB.append ("Headers:" + CHttp.EOL);
 
-    final Enumeration <?> aHeaderLines = aMdn.headers ().getAllHeaderLines ();
-    while (aHeaderLines.hasMoreElements ())
-    {
-      final String sHeaderLine = (String) aHeaderLines.nextElement ();
-      aSB.append (sHeaderLine).append (HTTPHelper.EOL);
-    }
+    aMdn.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL));
 
-    aSB.append (HTTPHelper.EOL);
+    aSB.append (CHttp.EOL);
 
     // write attributes to the string buffer
-    aSB.append ("Attributes:" + HTTPHelper.EOL);
+    aSB.append ("Attributes:" + CHttp.EOL);
     for (final Map.Entry <String, String> aEntry : aMdn.attrs ().entrySet ())
     {
-      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (HTTPHelper.EOL);
+      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (CHttp.EOL);
     }
     // finally, write the MDN text
-    aSB.append ("Text:").append (HTTPHelper.EOL).append (aMdn.getText ());
+    aSB.append ("Text:").append (CHttp.EOL).append (aMdn.getText ());
 
     // TODO which charset?
     return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes ());

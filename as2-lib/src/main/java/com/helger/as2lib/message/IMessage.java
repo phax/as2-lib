@@ -76,7 +76,7 @@ public interface IMessage extends IBaseMessage
 
   default void setContentType (@Nullable final String sContentType)
   {
-    setHeader (CHttpHeader.CONTENT_TYPE, sContentType);
+    headers ().setHeader (CHttpHeader.CONTENT_TYPE, sContentType);
   }
 
   @Nullable
@@ -87,7 +87,7 @@ public interface IMessage extends IBaseMessage
 
   default void setContentDisposition (@Nullable final String sContentDisposition)
   {
-    setHeader (CHttpHeader.CONTENT_DISPOSITION, sContentDisposition);
+    headers ().setHeader (CHttpHeader.CONTENT_DISPOSITION, sContentDisposition);
   }
 
   @Nullable
@@ -98,7 +98,7 @@ public interface IMessage extends IBaseMessage
 
   default void setSubject (@Nullable final String sSubject)
   {
-    setHeader (CHttpHeader.SUBJECT, sSubject);
+    headers ().setHeader (CHttpHeader.SUBJECT, sSubject);
   }
 
   @Nullable

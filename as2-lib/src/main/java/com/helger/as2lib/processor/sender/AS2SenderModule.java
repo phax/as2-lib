@@ -283,7 +283,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
-    aMsg.addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sTransferEncoding);
+    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sTransferEncoding);
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Compressed data with " +
@@ -420,7 +420,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Set all custom headers first (so that they are overridden with the
     // mandatory ones in here)
-    aMsg.forEachHeader ( (k, v) -> aConn.setHttpHeader (k, v));
+    aMsg.headers ().forEachSingleHeader ( (k, v) -> aConn.setHttpHeader (k, v));
 
     aConn.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aConn.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
@@ -437,8 +437,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setHttpHeader (CHttpHeader.SUBJECT, aMsg.getSubject ());
     aConn.setHttpHeader (CHttpHeader.FROM, aPartnership.getSenderEmail ());
     // Set when compression is enabled
-    aConn.setHttpHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING,
-                         aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING));
+    aConn.setHttpHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING));
 
     // Determine where to send the MDN to (legacy field)
     final String sDispTo = aPartnership.getAS2MDNTo ();
@@ -505,9 +504,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
       if (aIncomingDumper != null)
-        aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.headers ()),
-                                             aMDNStream.toByteArray (),
-                                             aMDN);
+        aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (), aMDNStream.toByteArray (), aMDN);
 
       if (s_aLogger.isTraceEnabled ())
       {

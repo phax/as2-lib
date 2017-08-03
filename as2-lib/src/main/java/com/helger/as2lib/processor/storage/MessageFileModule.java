@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -56,7 +55,7 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
-import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 /**
@@ -128,22 +127,17 @@ public class MessageFileModule extends AbstractStorageModule
     final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aSB.append ("Headers:" + HTTPHelper.EOL);
+    aSB.append ("Headers:" + CHttp.EOL);
 
-    final Enumeration <?> aHeaderLines = aMsg.headers ().getAllHeaderLines ();
-    while (aHeaderLines.hasMoreElements ())
-    {
-      final String sHeaderLine = (String) aHeaderLines.nextElement ();
-      aSB.append (sHeaderLine).append (HTTPHelper.EOL);
-    }
+    aMsg.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL));
 
-    aSB.append (HTTPHelper.EOL);
+    aSB.append (CHttp.EOL);
 
     // write attributes to the string buffer
-    aSB.append ("Attributes:" + HTTPHelper.EOL);
+    aSB.append ("Attributes:" + CHttp.EOL);
     for (final Map.Entry <String, String> attrEntry : aMsg.attrs ().entrySet ())
     {
-      aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (HTTPHelper.EOL);
+      aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (CHttp.EOL);
     }
 
     return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes (aCharset));

@@ -76,7 +76,7 @@ public class MessageParameters extends AbstractParameterParser
           m_aTarget.attrs ().putIn (sAreaID, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
-            m_aTarget.setHeader (sAreaID, sValue);
+            m_aTarget.headers ().setHeader (sAreaID, sValue);
           else
             throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
   }

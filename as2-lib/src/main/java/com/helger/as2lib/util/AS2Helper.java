@@ -65,8 +65,8 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
@@ -136,7 +136,7 @@ public final class AS2Helper
 
     // Create the text part
     final MimeBodyPart aTextPart = new MimeBodyPart ();
-    final String sText = aMdn.getText () + HTTPHelper.EOL;
+    final String sText = aMdn.getText () + CHttp.EOL;
     aTextPart.setContent (sText, CMimeType.TEXT_PLAIN.getAsString ());
     aTextPart.setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.TEXT_PLAIN.getAsString ());
     aReportParts.addBodyPart (aTextPart);
@@ -157,8 +157,8 @@ public final class AS2Helper
       final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
       final StringBuilder aReportData = new StringBuilder ();
       while (aReportEn.hasMoreElements ())
-        aReportData.append ((String) aReportEn.nextElement ()).append (HTTPHelper.EOL);
-      aReportData.append (HTTPHelper.EOL);
+        aReportData.append ((String) aReportEn.nextElement ()).append (CHttp.EOL);
+      aReportData.append (CHttp.EOL);
       aReportPart.setContent (aReportData.toString (), "message/disposition-notification");
     }
 
@@ -206,7 +206,7 @@ public final class AS2Helper
 
     // Update the MDN headers with content information
     final MimeBodyPart aData = aMdn.getData ();
-    aMdn.setHeader (CHttpHeader.CONTENT_TYPE, aData.getContentType ());
+    aMdn.headers ().setContentType (aData.getContentType ());
 
     // final int size = getSize (aData);
     // aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString
@@ -243,12 +243,12 @@ public final class AS2Helper
     ValueEnforcer.notNull (sText, "Text");
 
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
-    aMDN.setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aMDN.setHeader (CHttpHeader.DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aMDN.setHeader (CHttpHeader.SERVER, CAS2Info.NAME_VERSION);
-    aMDN.setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aMDN.setHeader (CHttpHeader.AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());
-    aMDN.setHeader (CHttpHeader.AS2_TO, aMsg.partnership ().getSenderAS2ID ());
+    aMDN.headers ().setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aMDN.headers ().setHeader (CHttpHeader.DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aMDN.headers ().setHeader (CHttpHeader.SERVER, CAS2Info.NAME_VERSION);
+    aMDN.headers ().setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aMDN.headers ().setHeader (CHttpHeader.AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());
+    aMDN.headers ().setHeader (CHttpHeader.AS2_TO, aMsg.partnership ().getSenderAS2ID ());
 
     // get the MDN partnership info
     aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
@@ -267,15 +267,15 @@ public final class AS2Helper
       // was the reason for sending the MDN :)
     }
 
-    aMDN.setHeader (CHttpHeader.FROM, aMsg.partnership ().getReceiverEmail ());
+    aMDN.headers ().setHeader (CHttpHeader.FROM, aMsg.partnership ().getReceiverEmail ());
     final String sSubject = aMDN.partnership ().getMDNSubject ();
     if (sSubject != null)
     {
-      aMDN.setHeader (CHttpHeader.SUBJECT, new MessageParameters (aMsg).format (sSubject));
+      aMDN.headers ().setHeader (CHttpHeader.SUBJECT, new MessageParameters (aMsg).format (sSubject));
     }
     else
     {
-      aMDN.setHeader (CHttpHeader.SUBJECT, "Your Requested MDN Response");
+      aMDN.headers ().setHeader (CHttpHeader.SUBJECT, "Your Requested MDN Response");
     }
     aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.attrs ()

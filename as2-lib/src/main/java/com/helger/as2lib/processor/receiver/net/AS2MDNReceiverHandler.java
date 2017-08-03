@@ -166,7 +166,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
       // copy headers from msg to MDN from msg
-      aMDN.setHeaders (aMsg.headers ());
+      aMDN.headers ().setAllHeaders (aMsg.headers ());
 
       final MimeBodyPart aPart = new MimeBodyPart (aMDN.headers (), aData);
       aMsg.getMDN ().setData (aPart);
@@ -378,9 +378,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (HTTPHelper.getAllHTTPHeaderLines (aMDN.headers ()),
-                                           aMDNStream.toByteArray (),
-                                           aMDN);
+      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (), aMDNStream.toByteArray (), aMDN);
 
     MimeBodyPart aPart = null;
     if (aMDNStream != null)

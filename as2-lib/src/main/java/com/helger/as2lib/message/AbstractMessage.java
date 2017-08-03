@@ -128,7 +128,8 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
     aSB.append ("Message From:").append (partnership ().getAllSenderIDs ());
     aSB.append ("\nTo:").append (partnership ().getAllReceiverIDs ());
 
-    aSB.append ("\nHeaders:").append (getHeadersDebugFormatted ()).append ("\nAttributes:").append (attrs ());
+    aSB.append ("\nHeaders:").append (headers ().toString ());
+    aSB.append ("\nAttributes:").append (attrs ().toString ());
 
     final IMessageMDN aMDN = getMDN ();
     if (aMDN != null)

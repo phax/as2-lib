@@ -37,8 +37,8 @@ import java.io.IOException;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
-import javax.mail.internet.InternetHeaders;
 
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.IWriteToStream;
 
 /**
@@ -65,6 +65,6 @@ public interface IAS2HttpResponseHandler
    *         In case of error
    */
   void sendHttpResponse (@Nonnegative int nHttpResponseCode,
-                         @Nonnull InternetHeaders aHeaders,
+                         @Nonnull HttpHeaderMap aHeaders,
                          @Nonnull @WillNotClose IWriteToStream aData) throws IOException;
 }
