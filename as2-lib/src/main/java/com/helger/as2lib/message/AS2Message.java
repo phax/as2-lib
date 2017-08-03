@@ -42,8 +42,8 @@ import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.http.CHttpHeader;
 
 public class AS2Message extends AbstractMessage
 {
@@ -102,8 +102,8 @@ public class AS2Message extends AbstractMessage
       return true;
 
     // Requesting by request?
-    final boolean bRequested = getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO) != null ||
-                               getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null;
+    final boolean bRequested = getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) != null ||
+                               getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS) != null;
     return bRequested;
   }
 
@@ -119,9 +119,9 @@ public class AS2Message extends AbstractMessage
 
     // Requesting by request?
     // Same as regular MDN + HEADER_RECEIPT_DELIVERY_OPTION
-    final boolean bRequested = (getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO) != null ||
-                                getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
-                               getHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION) != null;
+    final boolean bRequested = (getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) != null ||
+                                getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
+                               getHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION) != null;
     return bRequested;
   }
 
@@ -129,6 +129,6 @@ public class AS2Message extends AbstractMessage
   public String getAsyncMDNurl ()
   {
     // Only this field determines where to send the async MDN to
-    return getHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION);
+    return getHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION);
   }
 }

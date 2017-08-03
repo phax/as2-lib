@@ -51,7 +51,6 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
@@ -63,6 +62,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.functional.IFunction;
 import com.helger.commons.functional.ISupplier;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -259,11 +259,11 @@ public final class HTTPHelper
 
     // Retrieve the message content
     byte [] aData = null;
-    final String sContentLength = aMsg.getHeader (CAS2Header.HEADER_CONTENT_LENGTH);
+    final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
     if (sContentLength == null)
     {
       // No "Content-Length" header present
-      final String sTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_TRANSFER_ENCODING);
+      final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
       if (sTransferEncoding != null)
       {
         // Remove all whitespaces in the value
@@ -311,7 +311,7 @@ public final class HTTPHelper
                 break;
             }
           }
-          aMsg.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (nLength));
+          aMsg.setHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (nLength));
         }
         else
         {

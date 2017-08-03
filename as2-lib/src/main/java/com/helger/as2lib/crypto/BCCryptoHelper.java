@@ -98,7 +98,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -106,6 +105,7 @@ import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NullOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -461,7 +461,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final MimeBodyPart aTmpBody = new MimeBodyPart ();
     aTmpBody.setContent (aSignedData);
-    aTmpBody.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aSignedData.getContentType ());
+    aTmpBody.setHeader (CHttpHeader.CONTENT_TYPE, aSignedData.getContentType ());
     return aTmpBody;
   }
 

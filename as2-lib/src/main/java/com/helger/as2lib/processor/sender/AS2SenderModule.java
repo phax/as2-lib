@@ -86,6 +86,7 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -282,7 +283,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
-    aMsg.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sTransferEncoding);
+    aMsg.addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sTransferEncoding);
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Compressed data with " +
@@ -421,43 +422,43 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // mandatory ones in here)
     aMsg.forEachHeader ( (k, v) -> aConn.setHttpHeader (k, v));
 
-    aConn.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-    aConn.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+    aConn.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+    aConn.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setHttpHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aConn.setHttpHeader (CAS2Header.HEADER_MESSAGE_ID, aMsg.getMessageID ());
+    aConn.setHttpHeader (CHttpHeader.DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aConn.setHttpHeader (CHttpHeader.MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    aConn.setHttpHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TYPE, aMsg.getContentType ());
-    aConn.setHttpHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aConn.setHttpHeader (CAS2Header.HEADER_RECIPIENT_ADDRESS, aPartnership.getAS2URL ());
-    aConn.setHttpHeader (CAS2Header.HEADER_AS2_FROM, aPartnership.getSenderAS2ID ());
-    aConn.setHttpHeader (CAS2Header.HEADER_AS2_TO, aPartnership.getReceiverAS2ID ());
-    aConn.setHttpHeader (CAS2Header.HEADER_SUBJECT, aMsg.getSubject ());
-    aConn.setHttpHeader (CAS2Header.HEADER_FROM, aPartnership.getSenderEmail ());
+    aConn.setHttpHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aConn.setHttpHeader (CHttpHeader.CONTENT_TYPE, aMsg.getContentType ());
+    aConn.setHttpHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aConn.setHttpHeader (CHttpHeader.RECIPIENT_ADDRESS, aPartnership.getAS2URL ());
+    aConn.setHttpHeader (CHttpHeader.AS2_FROM, aPartnership.getSenderAS2ID ());
+    aConn.setHttpHeader (CHttpHeader.AS2_TO, aPartnership.getReceiverAS2ID ());
+    aConn.setHttpHeader (CHttpHeader.SUBJECT, aMsg.getSubject ());
+    aConn.setHttpHeader (CHttpHeader.FROM, aPartnership.getSenderEmail ());
     // Set when compression is enabled
-    aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
-                         aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING));
+    aConn.setHttpHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING,
+                         aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING));
 
     // Determine where to send the MDN to (legacy field)
     final String sDispTo = aPartnership.getAS2MDNTo ();
     if (sDispTo != null)
-      aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_TO, sDispTo);
+      aConn.setHttpHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, sDispTo);
 
     // MDN requirements
     final String sDispositionNotificationOptions = aPartnership.getAS2MDNOptions ();
     if (sDispositionNotificationOptions != null)
-      aConn.setHttpHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS, sDispositionNotificationOptions);
+      aConn.setHttpHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS, sDispositionNotificationOptions);
 
     // Async MDN 2007-03-12
     final String sReceiptDeliveryOption = aPartnership.getAS2ReceiptDeliveryOption ();
     if (sReceiptDeliveryOption != null)
-      aConn.setHttpHeader (CAS2Header.HEADER_RECEIPT_DELIVERY_OPTION, sReceiptDeliveryOption);
+      aConn.setHttpHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION, sReceiptDeliveryOption);
 
     // As of 2007-06-01
     final String sContententDisposition = aMsg.getContentDisposition ();
     if (sContententDisposition != null)
-      aConn.setHttpHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContententDisposition);
+      aConn.setHttpHeader (CHttpHeader.CONTENT_DISPOSITION, sContententDisposition);
   }
 
   /**
@@ -491,7 +492,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       try
       {
         // Retrieve the whole MDN content
-        final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
+        final long nContentLength = StringParser.parseLong (aMDN.getHeader (CHttpHeader.CONTENT_LENGTH), -1);
         if (nContentLength >= 0)
           StreamHelper.copyInputStreamToOutputStreamWithLimit (aConnIS, aMDNStream, nContentLength);
         else
@@ -518,8 +519,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-      aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
+      aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
       // Set the appropriate keystore aliases
       aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
       aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());

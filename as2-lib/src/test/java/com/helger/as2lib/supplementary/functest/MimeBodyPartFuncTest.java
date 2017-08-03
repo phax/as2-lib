@@ -48,9 +48,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.base64.Base64;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StringInputStream;
@@ -76,9 +76,9 @@ public final class MimeBodyPartFuncTest
     final MimeBodyPart aPart = new MimeBodyPart ();
     aPart.setText (sTestMsg, StandardCharsets.ISO_8859_1.name ());
     aPart.addHeader ("x-custom", "junit");
-    aPart.addHeader (CAS2Header.HEADER_CONTENT_TYPE, "text/plain");
-    aPart.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, EContentTransferEncoding._8BIT.getID ());
-    aPart.addHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (sTestMsg.length ()));
+    aPart.addHeader (CHttpHeader.CONTENT_TYPE, "text/plain");
+    aPart.addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, EContentTransferEncoding._8BIT.getID ());
+    aPart.addHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (sTestMsg.length ()));
 
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     aPart.writeTo (aBAOS);
@@ -104,9 +104,9 @@ public final class MimeBodyPartFuncTest
     final MimeBodyPart aPart = new MimeBodyPart ();
     aPart.setText (sTestMsg, StandardCharsets.ISO_8859_1.name ());
     aPart.addHeader ("x-custom", "junit");
-    aPart.addHeader (CAS2Header.HEADER_CONTENT_TYPE, "text/plain");
-    aPart.addHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, EContentTransferEncoding.BASE64.getID ());
-    aPart.addHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (sEncodedMsg.length ()));
+    aPart.addHeader (CHttpHeader.CONTENT_TYPE, "text/plain");
+    aPart.addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, EContentTransferEncoding.BASE64.getID ());
+    aPart.addHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (sEncodedMsg.length ()));
 
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     aPart.writeTo (aBAOS);
@@ -140,7 +140,7 @@ public final class MimeBodyPartFuncTest
 
     // Parse all HTTP headers from stream
     final InternetHeaders aHeaders = new InternetHeaders (aIS);
-    final String sCTE = aHeaders.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING)[0];
+    final String sCTE = aHeaders.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING)[0];
 
     if (StringHelper.hasText (sCTE))
       aIS = MimeUtility.decode (aIS, sCTE);
@@ -149,7 +149,7 @@ public final class MimeBodyPartFuncTest
     final byte [] aData = StreamHelper.getAllBytes (aIS);
 
     // Extract content type
-    final ContentType aReceivedContentType = new ContentType (aHeaders.getHeader (CAS2Header.HEADER_CONTENT_TYPE)[0]);
+    final ContentType aReceivedContentType = new ContentType (aHeaders.getHeader (CHttpHeader.CONTENT_TYPE)[0]);
     final String sReceivedContentType = aReceivedContentType.toString ();
 
     final MimeBodyPart aReceivedPart = new MimeBodyPart ();

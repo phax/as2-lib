@@ -59,6 +59,7 @@ import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.timing.StopWatch;
 import com.helger.http.EHttpMethod;
@@ -104,8 +105,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn,
                                                                                                               aOutgoingDumper);
-      aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-      aHeaderWrapper.setHttpHeader (CAS2Header.HEADER_USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+      aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+      aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
       aMdn.forEachHeader ( (k, v) -> aHeaderWrapper.setHttpHeader (k, v));
 

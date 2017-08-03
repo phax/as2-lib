@@ -63,7 +63,6 @@ import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
@@ -71,6 +70,7 @@ import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -119,7 +119,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // in one of partnerships, if yes, then process incoming AsyncMDN
       s_aLogger.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
 
-      final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
+      final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
       final String sReceivedContentType = aReceivedContentType.toString ();
 
       final MimeBodyPart aReceivedPart = new MimeBodyPart (aMsg.headers (), aData);
@@ -128,7 +128,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // MimeBodyPart receivedPart = new MimeBodyPart();
       aReceivedPart.setDataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null).getAsDataHandler ());
       // Must be set AFTER the DataHandler!
-      aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
+      aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
 
       aMsg.setData (aReceivedPart);
 
@@ -172,8 +172,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
-      aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-      aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+      aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
+      aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
       // Set the appropriate keystore aliases
       aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
       aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
@@ -201,8 +201,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
       // the 3 msg attributes have to be reset before calling MDNFileModule
-      aMsg.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
-      aMsg.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
+      aMsg.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
+      aMsg.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
       aMsg.setMessageID (aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
       try
@@ -361,7 +361,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMDNStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content
-      final long nContentLength = StringParser.parseLong (aMDN.getHeader (CAS2Header.HEADER_CONTENT_LENGTH), -1);
+      final long nContentLength = StringParser.parseLong (aMDN.getHeader (CHttpHeader.CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
         StreamHelper.copyInputStreamToOutputStreamWithLimit (aIS, aMDNStream, nContentLength);
       else
@@ -395,7 +395,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     aMsg.getMDN ().setData (aPart);
 
     // get the MDN partnership info
-    aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-    aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
+    aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
   }
 }

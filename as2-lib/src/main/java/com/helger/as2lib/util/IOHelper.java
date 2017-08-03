@@ -248,10 +248,10 @@ public final class IOHelper
   public static void forEachHeader (@Nonnull final InternetHeaders aHeaders,
                                     @Nonnull final BiConsumer <String, String> aConsumer)
   {
-    final Enumeration <?> aEnum = aHeaders.getAllHeaders ();
+    final Enumeration <Header> aEnum = aHeaders.getAllHeaders ();
     while (aEnum.hasMoreElements ())
     {
-      final Header aHeader = (Header) aEnum.nextElement ();
+      final Header aHeader = aEnum.nextElement ();
       aConsumer.accept (aHeader.getName (), aHeader.getValue ());
     }
   }

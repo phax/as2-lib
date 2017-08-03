@@ -317,6 +317,6 @@ public class AS2ClientRequest
       aPart.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
 
     if (StringHelper.hasText (m_sContentDescription))
-      aPart.setHeader ("Content-Description", m_sContentDescription);
+      aPart.setHeader (CHttpHeader.CONTENT_DESCRIPTION, m_sContentDescription);
   }
 }

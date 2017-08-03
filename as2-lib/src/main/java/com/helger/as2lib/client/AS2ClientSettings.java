@@ -662,7 +662,7 @@ public class AS2ClientSettings implements Serializable
    * @since 3.0.5
    */
   @Nonnull
-  @ReturnsMutableObject ("Design")
+  @ReturnsMutableObject
   public HttpHeaderMap customHeaders ()
   {
     return m_aCustomHeaders;

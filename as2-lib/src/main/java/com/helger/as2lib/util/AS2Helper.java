@@ -67,6 +67,7 @@ import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
 
@@ -137,7 +138,7 @@ public final class AS2Helper
     final MimeBodyPart aTextPart = new MimeBodyPart ();
     final String sText = aMdn.getText () + HTTPHelper.EOL;
     aTextPart.setContent (sText, CMimeType.TEXT_PLAIN.getAsString ());
-    aTextPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, CMimeType.TEXT_PLAIN.getAsString ());
+    aTextPart.setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.TEXT_PLAIN.getAsString ());
     aReportParts.addBodyPart (aTextPart);
 
     // Create the report part
@@ -161,14 +162,14 @@ public final class AS2Helper
       aReportPart.setContent (aReportData.toString (), "message/disposition-notification");
     }
 
-    aReportPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, "message/disposition-notification");
+    aReportPart.setHeader (CHttpHeader.CONTENT_TYPE, "message/disposition-notification");
     aReportParts.addBodyPart (aReportPart);
 
     // Convert report parts to MimeBodyPart
     final MimeBodyPart aReport = new MimeBodyPart ();
     aReportParts.setSubType ("report; report-type=disposition-notification");
     aReport.setContent (aReportParts);
-    aReport.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aReportParts.getContentType ());
+    aReport.setHeader (CHttpHeader.CONTENT_TYPE, aReportParts.getContentType ());
 
     // Sign the MDN data if needed
     if (bSignMDN)
@@ -205,7 +206,7 @@ public final class AS2Helper
 
     // Update the MDN headers with content information
     final MimeBodyPart aData = aMdn.getData ();
-    aMdn.setHeader (CAS2Header.HEADER_CONTENT_TYPE, aData.getContentType ());
+    aMdn.setHeader (CHttpHeader.CONTENT_TYPE, aData.getContentType ());
 
     // final int size = getSize (aData);
     // aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString
@@ -242,16 +243,16 @@ public final class AS2Helper
     ValueEnforcer.notNull (sText, "Text");
 
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
-    aMDN.setHeader (CAS2Header.HEADER_AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aMDN.setHeader (CAS2Header.HEADER_DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aMDN.setHeader (CAS2Header.HEADER_SERVER, CAS2Info.NAME_VERSION);
-    aMDN.setHeader (CAS2Header.HEADER_MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aMDN.setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());
-    aMDN.setHeader (CAS2Header.HEADER_AS2_TO, aMsg.partnership ().getSenderAS2ID ());
+    aMDN.setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aMDN.setHeader (CHttpHeader.DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aMDN.setHeader (CHttpHeader.SERVER, CAS2Info.NAME_VERSION);
+    aMDN.setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aMDN.setHeader (CHttpHeader.AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());
+    aMDN.setHeader (CHttpHeader.AS2_TO, aMsg.partnership ().getSenderAS2ID ());
 
     // get the MDN partnership info
-    aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_FROM));
-    aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
+    aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
     // Set the appropriate keystore aliases
     aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
     aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
@@ -266,15 +267,15 @@ public final class AS2Helper
       // was the reason for sending the MDN :)
     }
 
-    aMDN.setHeader (CAS2Header.HEADER_FROM, aMsg.partnership ().getReceiverEmail ());
+    aMDN.setHeader (CHttpHeader.FROM, aMsg.partnership ().getReceiverEmail ());
     final String sSubject = aMDN.partnership ().getMDNSubject ();
     if (sSubject != null)
     {
-      aMDN.setHeader (CAS2Header.HEADER_SUBJECT, new MessageParameters (aMsg).format (sSubject));
+      aMDN.setHeader (CHttpHeader.SUBJECT, new MessageParameters (aMsg).format (sSubject));
     }
     else
     {
-      aMDN.setHeader (CAS2Header.HEADER_SUBJECT, "Your Requested MDN Response");
+      aMDN.setHeader (CHttpHeader.SUBJECT, "Your Requested MDN Response");
     }
     aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.attrs ()
@@ -284,12 +285,12 @@ public final class AS2Helper
                                                  aMsg.attrs ().getAsString (CNetAttribute.MA_DESTINATION_IP) +
                                                  ":" +
                                                  aMsg.attrs ().getAsString (CNetAttribute.MA_DESTINATION_PORT));
-    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CAS2Header.HEADER_AS2_TO));
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CHttpHeader.AS2_TO));
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, "rfc822; " + aMsg.partnership ().getReceiverAS2ID ());
-    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CAS2Header.HEADER_MESSAGE_ID));
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CHttpHeader.MESSAGE_ID));
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
-    final String sDispositionOptions = aMsg.getHeader (CAS2Header.HEADER_DISPOSITION_NOTIFICATION_OPTIONS);
+    final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
     String sMIC = null;
     if (aDispositionOptions.getMICAlgCount () > 0)

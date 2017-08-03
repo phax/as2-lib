@@ -35,36 +35,10 @@ package com.helger.as2lib.util;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.commons.http.CHttpHeader;
 
 @Immutable
 public final class CAS2Header
 {
-  public static final String HEADER_AS2_FROM = CHttpHeader.AS2_FROM;
-  public static final String HEADER_AS2_TO = CHttpHeader.AS2_TO;
-  public static final String HEADER_AS2_VERSION = CHttpHeader.AS2_VERSION;
-  public static final String HEADER_CONNECTION = CHttpHeader.CONNECTION;
-  public static final String HEADER_CONTENT_DISPOSITION = CHttpHeader.CONTENT_DISPOSITION;
-  public static final String HEADER_CONTENT_LENGTH = CHttpHeader.CONTENT_LENGTH;
-  public static final String HEADER_CONTENT_TRANSFER_ENCODING = CHttpHeader.CONTENT_TRANSFER_ENCODING;
-  public static final String HEADER_CONTENT_TYPE = CHttpHeader.CONTENT_TYPE;
-  public static final String HEADER_DATE = CHttpHeader.DATE;
-  public static final String HEADER_DISPOSITION_NOTIFICATION_OPTIONS = CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS;
-  /** The URL where the async MDN should be send to - limited to RFC 2822 */
-  public static final String HEADER_DISPOSITION_NOTIFICATION_TO = CHttpHeader.DISPOSITION_NOTIFICATION_TO;
-  public static final String HEADER_FROM = CHttpHeader.FROM;
-  public static final String HEADER_MESSAGE_ID = CHttpHeader.MESSAGE_ID;
-  public static final String HEADER_MIME_VERSION = CHttpHeader.MIME_VERSION;
-  /** The URL where the async MDN should be send to */
-  public static final String HEADER_RECEIPT_DELIVERY_OPTION = CHttpHeader.RECEIPT_DELIVERY_OPTION;
-  public static final String HEADER_RECIPIENT_ADDRESS = CHttpHeader.RECIPIENT_ADDRESS;
-  public static final String HEADER_SERVER = CHttpHeader.SERVER;
-  public static final String HEADER_SUBJECT = CHttpHeader.SUBJECT;
-  public static final String HEADER_TRANSFER_ENCODING = CHttpHeader.TRANSFER_ENCODING;
-  public static final String HEADER_USER_AGENT = CHttpHeader.USER_AGENT;
-  /** Defined by RFC 6017 */
-  public static final String HEADER_EDIINT_FEATURES = CHttpHeader.EDIINT_FEATURES;
-
   public static final String DEFAULT_CONNECTION = "close, TE";
   public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender";
   public static final String DEFAULT_MIME_VERSION = "1.0";

@@ -39,8 +39,8 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
+import com.helger.commons.http.CHttpHeader;
 
 public class AS2MessageMDN extends AbstractMessageMDN
 {
@@ -56,8 +56,8 @@ public class AS2MessageMDN extends AbstractMessageMDN
   {
     super (aMsg);
     // Swap from and to
-    setHeader (CAS2Header.HEADER_AS2_TO, aMsg.getAS2From ());
-    setHeader (CAS2Header.HEADER_AS2_FROM, aMsg.getAS2To ());
+    setHeader (CHttpHeader.AS2_TO, aMsg.getAS2From ());
+    setHeader (CHttpHeader.AS2_FROM, aMsg.getAS2To ());
   }
 
   @Override

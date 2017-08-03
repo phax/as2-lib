@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.Nonempty;
@@ -48,6 +47,7 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.commons.http.CHttpHeader;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}.
@@ -143,7 +143,7 @@ public interface IBaseMessage extends Serializable
   @Nullable
   default String getMessageID ()
   {
-    return getHeader (CAS2Header.HEADER_MESSAGE_ID);
+    return getHeader (CHttpHeader.MESSAGE_ID);
   }
 
   /**
@@ -154,7 +154,7 @@ public interface IBaseMessage extends Serializable
    */
   default void setMessageID (@Nullable final String sMessageID)
   {
-    setHeader (CAS2Header.HEADER_MESSAGE_ID, sMessageID);
+    setHeader (CHttpHeader.MESSAGE_ID, sMessageID);
   }
 
   @Nonnull

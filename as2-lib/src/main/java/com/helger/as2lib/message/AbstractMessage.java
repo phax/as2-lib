@@ -44,8 +44,8 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -85,7 +85,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       // Set content disposition from data
       try
       {
-        setContentDisposition (aData.getHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, null));
+        setContentDisposition (aData.getHeader (CHttpHeader.CONTENT_DISPOSITION, null));
       }
       catch (final MessagingException ex)
       {

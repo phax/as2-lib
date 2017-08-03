@@ -70,13 +70,13 @@ import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
@@ -274,7 +274,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           // if asyncMDN requested, close connection and initiate separate MDN
           // send
           final InternetHeaders aHeaders = new InternetHeaders ();
-          aHeaders.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (0));
+          aHeaders.setHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (0));
           // Empty data
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
@@ -301,7 +301,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           final MimeBodyPart aPart = aMdn.getData ();
           StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-          aMdn.setHeader (CAS2Header.HEADER_CONTENT_LENGTH, Integer.toString (aData.getSize ()));
+          aMdn.setHeader (CHttpHeader.CONTENT_LENGTH, Integer.toString (aData.getSize ()));
 
           // start HTTP response
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.headers (), aData);
@@ -359,7 +359,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       try
       {
         // Put received data in a MIME body part
-        final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CAS2Header.HEADER_CONTENT_TYPE));
+        final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
         final String sReceivedContentType = aReceivedContentType.toString ();
 
         final MimeBodyPart aReceivedPart = new MimeBodyPart ();
@@ -368,7 +368,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                null).getAsDataHandler ());
 
         // Header must be set AFTER the DataHandler!
-        aReceivedPart.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sReceivedContentType);
+        aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
         aMsg.setData (aReceivedPart);
       }
       catch (final Exception ex)

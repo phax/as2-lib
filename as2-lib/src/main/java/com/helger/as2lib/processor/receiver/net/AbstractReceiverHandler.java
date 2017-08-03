@@ -42,13 +42,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2InputStreamProvider;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.codec.IDecoder;
 import com.helger.commons.codec.IdentityCodec;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.string.StringHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.cte.IContentTransferEncoding;
@@ -88,7 +88,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     // Check the transfer encoding of the request. If none is provided, check
     // the partnership for a default one. If none is in the partnership used the
     // default one
-    final String sContentTransferEncoding = aMsg.getHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING,
+    final String sContentTransferEncoding = aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING,
                                                             aMsg.partnership ()
                                                                 .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ()));
     if (StringHelper.hasText (sContentTransferEncoding))

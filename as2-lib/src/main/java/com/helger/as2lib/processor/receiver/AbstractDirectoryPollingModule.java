@@ -53,12 +53,12 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
@@ -358,12 +358,12 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       // Headers must be set AFTER the DataHandler
       final String sEncodeType = aMsg.partnership ()
                                      .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
-      aBody.setHeader (CAS2Header.HEADER_CONTENT_TRANSFER_ENCODING, sEncodeType);
+      aBody.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sEncodeType);
 
       // below statement is not filename related, just want to make it
       // consist with the parameter "mimetype="application/EDI-X12""
       // defined in config.xml 2007-06-01
-      aBody.setHeader (CAS2Header.HEADER_CONTENT_TYPE, sContentType);
+      aBody.setHeader (CHttpHeader.CONTENT_TYPE, sContentType);
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
@@ -372,7 +372,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       {
         final String sMAFilename = aMsg.attrs ().getAsString (CFileAttribute.MA_FILENAME);
         final String sContentDisposition = "Attachment; filename=\"" + sMAFilename + "\"";
-        aBody.setHeader (CAS2Header.HEADER_CONTENT_DISPOSITION, sContentDisposition);
+        aBody.setHeader (CHttpHeader.CONTENT_DISPOSITION, sContentDisposition);
         aMsg.setContentDisposition (sContentDisposition);
       }
 

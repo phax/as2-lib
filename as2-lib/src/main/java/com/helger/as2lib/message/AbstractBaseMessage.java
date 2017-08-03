@@ -95,10 +95,10 @@ public abstract class AbstractBaseMessage implements IBaseMessage
     aOOS.writeObject (m_aAttributes);
 
     // write message headers
-    final Enumeration <?> en = m_aHeaders.getAllHeaderLines ();
+    final Enumeration <String> en = m_aHeaders.getAllHeaderLines ();
     while (en.hasMoreElements ())
     {
-      aOOS.write (((String) en.nextElement () + HTTPHelper.EOL).getBytes (StandardCharsets.ISO_8859_1));
+      aOOS.write ((en.nextElement () + HTTPHelper.EOL).getBytes (StandardCharsets.ISO_8859_1));
     }
 
     aOOS.write (HTTPHelper.EOL.getBytes (StandardCharsets.ISO_8859_1));
