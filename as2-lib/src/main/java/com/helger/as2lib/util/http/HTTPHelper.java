@@ -45,6 +45,7 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
@@ -342,7 +343,13 @@ public final class HTTPHelper
 
     // Parse all HTTP headers from stream
     final InternetHeaders aHeaders = new InternetHeaders (aIS);
-    aMsg.setHeaders (aHeaders);
+    // Convert to header map
+    final Enumeration <Header> aEnum = aHeaders.getAllHeaders ();
+    while (aEnum.hasMoreElements ())
+    {
+      final Header aHeader = aEnum.nextElement ();
+      aMsg.headers ().addHeader (aHeader.getName (), aHeader.getValue ());
+    }
 
     // Read the message body - no Content-Transfer-Encoding handling
     final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);

@@ -63,6 +63,7 @@ import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
@@ -122,7 +123,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
       final String sReceivedContentType = aReceivedContentType.toString ();
 
-      final MimeBodyPart aReceivedPart = new MimeBodyPart (aMsg.headers (), aData);
+      final MimeBodyPart aReceivedPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMsg.headers ()), aData);
       aMsg.setData (aReceivedPart);
 
       // MimeBodyPart receivedPart = new MimeBodyPart();
@@ -168,7 +169,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // copy headers from msg to MDN from msg
       aMDN.headers ().setAllHeaders (aMsg.headers ());
 
-      final MimeBodyPart aPart = new MimeBodyPart (aMDN.headers (), aData);
+      final MimeBodyPart aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()), aData);
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
@@ -384,7 +385,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     if (aMDNStream != null)
       try
       {
-        aPart = new MimeBodyPart (aMDN.headers (), aMDNStream.toByteArray ());
+        aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()), aMDNStream.toByteArray ());
       }
       catch (final MessagingException ex)
       {

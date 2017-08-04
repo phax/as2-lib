@@ -44,8 +44,8 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.CGlobal;
+import com.helger.commons.collection.attr.IStringMap;
 
 /**
  * Base class for an active resender module.

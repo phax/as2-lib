@@ -39,9 +39,9 @@ import java.io.ObjectOutputStream;
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.ToStringGenerator;
 

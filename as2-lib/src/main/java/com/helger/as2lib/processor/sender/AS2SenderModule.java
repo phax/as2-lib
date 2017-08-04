@@ -76,6 +76,7 @@ import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.DateHelper;
 import com.helger.as2lib.util.IOHelper;
@@ -512,7 +513,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         s_aLogger.trace ("Retrieved MDN stream data:\n" + aMDNStream.getAsString (StandardCharsets.ISO_8859_1));
       }
 
-      final MimeBodyPart aPart = new MimeBodyPart (aMDN.headers (), aMDNStream.toByteArray ());
+      final MimeBodyPart aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()),
+                                                   aMDNStream.toByteArray ());
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info

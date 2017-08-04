@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IStringMap;
+import com.helger.commons.collection.attr.IStringMap;
 
 public abstract class AbstractActivePollingModule extends AbstractActiveReceiverModule
 {

@@ -37,9 +37,9 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.util.IStringMap;
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.attr.IStringMap;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;

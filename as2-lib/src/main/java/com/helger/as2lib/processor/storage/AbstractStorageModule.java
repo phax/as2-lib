@@ -48,9 +48,9 @@ import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.IOHelper;
-import com.helger.as2lib.util.IStringMap;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 

@@ -35,8 +35,8 @@ package com.helger.as2lib.partner.xml;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.util.StringMap;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsOrderedSet;
 
