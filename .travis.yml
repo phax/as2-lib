@@ -1,10 +1,3 @@
-# Workaround as per https://github.com/travis-ci/travis-ci/issues/3259
-sudo: false
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-      
 language: java
 
 env:
@@ -22,7 +15,7 @@ jdk:
   - oraclejdk8
   
 install:
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
   
 cache:
   directories:
