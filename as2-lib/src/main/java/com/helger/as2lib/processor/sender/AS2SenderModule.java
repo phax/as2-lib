@@ -88,6 +88,7 @@ import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -96,7 +97,6 @@ import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
-import com.helger.http.EHttpMethod;
 import com.helger.mail.cte.EContentTransferEncoding;
 
 /**

@@ -60,9 +60,9 @@ import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.timing.StopWatch;
-import com.helger.http.EHttpMethod;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {

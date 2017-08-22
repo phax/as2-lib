@@ -77,7 +77,7 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
 
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    final String sUnifiedValue = HttpHeaderMap.getUnifiedHTTPHeaderValue (sValue);
+    final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue);
     m_aConn.setRequestProperty (sName, sUnifiedValue);
 
     if (m_aOutgoingDumper != null)
