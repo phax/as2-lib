@@ -26,7 +26,7 @@ import com.helger.xservlet.AbstractXServlet;
  *
  * @author Philip Helger
  */
-public class AS2ReceiveServlet extends AbstractXServlet
+public final class AS2ReceiveServlet extends AbstractXServlet
 {
   public AS2ReceiveServlet ()
   {
