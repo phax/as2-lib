@@ -53,7 +53,7 @@ public final class ThirdPartyModuleProvider_as2_lib implements IThirdPartyModule
   public static final IThirdPartyModule BOUNCY_CASTLE = new ThirdPartyModule ("Bouncy Castle",
                                                                               "Legion of the Bouncy Castle",
                                                                               ELicense.MIT,
-                                                                              new Version (1, 56),
+                                                                              new Version (1, 58),
                                                                               "https://www.bouncycastle.org/");
 
   @Nullable
