@@ -30,6 +30,6 @@ public final class AS2ReceiveServlet extends AbstractXServlet
 {
   public AS2ReceiveServlet ()
   {
-    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandler ());
+    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandler (), false);
   }
 }
