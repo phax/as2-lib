@@ -30,6 +30,8 @@ public final class AS2ReceiveServlet extends AbstractXServlet
 {
   public AS2ReceiveServlet ()
   {
+    // Multipart is handled specifically inside
+    settings ().setMultipartEnabled (false);
     handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandler (), false);
   }
 }

@@ -186,6 +186,8 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
    *        HTTP request
    * @param aHttpResponse
    *        HTTP response
+   * @param aRequestScope
+   *        Current request scope
    * @param aMsgData
    *        Message content
    * @param aMsg
@@ -199,6 +201,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
   @OverridingMethodsMustInvokeSuper
   protected void handeIncomingMessage (@Nonnull final HttpServletRequest aHttpRequest,
                                        @Nonnull final HttpServletResponse aHttpResponse,
+                                       @Nonnull final IRequestWebScope aRequestScope,
                                        @Nonnull final byte [] aMsgData,
                                        @Nonnull final AS2Message aMsg,
                                        @Nonnull final AS2OutputStreamCreatorHttpServletResponse aResponseHandler) throws ServletException
@@ -243,6 +246,6 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
       aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (), aMsgData, aMsg);
 
     // Call main handling method
-    handeIncomingMessage (aHttpRequest, aHttpResponse, aMsgData, aMsg, aResponseHandler);
+    handeIncomingMessage (aHttpRequest, aHttpResponse, aRequestScope, aMsgData, aMsg, aResponseHandler);
   }
 }
