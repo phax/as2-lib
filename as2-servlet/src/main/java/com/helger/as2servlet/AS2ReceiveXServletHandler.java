@@ -43,7 +43,6 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.string.StringHelper;
 import com.helger.http.EHttpVersion;
-import com.helger.servlet.request.RequestHelper;
 import com.helger.web.scope.IRequestWebScope;
 import com.helger.xservlet.handler.IXServletHandler;
 
@@ -232,7 +231,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
     aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_URL, aHttpRequest.getRequestURI ());
 
     // Add all request headers to the AS2 message
-    aMsg.headers ().setAllHeaders (RequestHelper.getRequestHeaderMap (aHttpRequest));
+    aMsg.headers ().setAllHeaders (aRequestScope.headers ());
 
     // Build the handler that performs the response handling
     final AS2OutputStreamCreatorHttpServletResponse aResponseHandler = new AS2OutputStreamCreatorHttpServletResponse (aHttpResponse);
