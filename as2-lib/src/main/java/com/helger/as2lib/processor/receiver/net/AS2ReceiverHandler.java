@@ -301,7 +301,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           final MimeBodyPart aPart = aMdn.getData ();
           StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-          aMdn.headers ().setContentLength (aData.getSize ());
+          aMdn.headers ().setContentLength (aData.size ());
 
           // start HTTP response
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.headers (), aData);
