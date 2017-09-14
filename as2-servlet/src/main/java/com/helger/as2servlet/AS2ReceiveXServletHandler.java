@@ -37,7 +37,6 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.as2servlet.util.AS2ServletSession;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.EHttpMethod;
@@ -122,8 +121,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
   }
 
   @Override
-  public void onServletInit (@Nonnull @Nonempty final String sApplicationID,
-                             @Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException
+  public void onServletInit (@Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException
   {
     // Get configuration file
     final File aConfigurationFile = getConfigurationFile (aInitParams);
