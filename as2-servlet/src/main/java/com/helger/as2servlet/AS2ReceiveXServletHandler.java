@@ -151,7 +151,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
   }
 
   /**
-   * @return The AS2 session that was created in {@link #init()}. Never
+   * @return The AS2 session that was created in initialization. Never
    *         <code>null</code>.
    * @throws IllegalStateException
    *         In case initialization failed
@@ -165,7 +165,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
   }
 
   /**
-   * @return The AS2 receiver module that was created in {@link #init()}. Never
+   * @return The AS2 receiver module that was created in initialization. Never
    *         <code>null</code>.
    * @throws IllegalStateException
    *         In case initialization failed
