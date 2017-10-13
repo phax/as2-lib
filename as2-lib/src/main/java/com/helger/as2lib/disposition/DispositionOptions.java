@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.disposition;
 
-import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -210,7 +209,7 @@ public class DispositionOptions
       for (final String sMICAlg : aMICAlgs)
       {
         // trim and lowercase
-        final String sRealMICAlg = sMICAlg.trim ().toLowerCase (Locale.US);
+        final String sRealMICAlg = sMICAlg.trim ();
 
         final ECryptoAlgorithmSign eMICAlg = ECryptoAlgorithmSign.getFromIDOrNull (sRealMICAlg);
         if (eMICAlg == null)

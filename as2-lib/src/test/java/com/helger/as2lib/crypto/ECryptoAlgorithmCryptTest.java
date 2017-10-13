@@ -58,5 +58,7 @@ public final class ECryptoAlgorithmCryptTest
       assertSame (e, ECryptoAlgorithmCrypt.getFromIDOrDefault (e.getID (), ECryptoAlgorithmCrypt.CRYPT_3DES));
       assertSame (e, ECryptoAlgorithmCrypt.getFromIDOrThrow (e.getID ()));
     }
+    assertSame (ECryptoAlgorithmCrypt.CRYPT_3DES, ECryptoAlgorithmCrypt.getFromIDOrNull ("3des"));
+    assertSame (ECryptoAlgorithmCrypt.CRYPT_3DES, ECryptoAlgorithmCrypt.getFromIDOrNull ("3DES"));
   }
 }

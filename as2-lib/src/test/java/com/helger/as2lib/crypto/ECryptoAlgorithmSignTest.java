@@ -59,5 +59,8 @@ public final class ECryptoAlgorithmSignTest
       assertSame (e, ECryptoAlgorithmSign.getFromIDOrDefault (e.getID (), ECryptoAlgorithmSign.DIGEST_MD5));
       assertSame (e, ECryptoAlgorithmSign.getFromIDOrThrow (e.getID ()));
     }
+    assertSame (ECryptoAlgorithmSign.DIGEST_MD5, ECryptoAlgorithmSign.getFromIDOrNull ("md5"));
+    assertSame (ECryptoAlgorithmSign.DIGEST_MD5, ECryptoAlgorithmSign.getFromIDOrNull ("Md5"));
+    assertSame (ECryptoAlgorithmSign.DIGEST_MD5, ECryptoAlgorithmSign.getFromIDOrNull ("MD5"));
   }
 }

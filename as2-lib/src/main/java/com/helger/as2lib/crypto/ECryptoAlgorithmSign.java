@@ -137,19 +137,22 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   @Nullable
   public static ECryptoAlgorithmSign getFromIDOrNull (@Nullable final String sID)
   {
-    return EnumHelper.getFromIDOrNull (ECryptoAlgorithmSign.class, sID);
+    // Case insensitive for #32
+    return EnumHelper.getFromIDCaseInsensitiveOrNull (ECryptoAlgorithmSign.class, sID);
   }
 
   @Nonnull
   public static ECryptoAlgorithmSign getFromIDOrThrow (@Nullable final String sID)
   {
-    return EnumHelper.getFromIDOrThrow (ECryptoAlgorithmSign.class, sID);
+    // Case insensitive for #32
+    return EnumHelper.getFromIDCaseInsensitiveOrThrow (ECryptoAlgorithmSign.class, sID);
   }
 
   @Nullable
   public static ECryptoAlgorithmSign getFromIDOrDefault (@Nullable final String sID,
                                                          @Nullable final ECryptoAlgorithmSign eDefault)
   {
-    return EnumHelper.getFromIDOrDefault (ECryptoAlgorithmSign.class, sID, eDefault);
+    // Case insensitive for #32
+    return EnumHelper.getFromIDCaseInsensitiveOrDefault (ECryptoAlgorithmSign.class, sID, eDefault);
   }
 }

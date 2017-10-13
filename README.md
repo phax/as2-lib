@@ -26,6 +26,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
   * v4.0.0 - work in progress
     * Updated to ph-commons 9.0.0
     * Updated to BouncyCastle 1.58
+    * Fixed crypto algorithm case sensitivity issue on sending (issue #32) 
   * v3.1.0 - 2017-07-27
     * AS2 client can now handle custom HTTP headers
     * Reworked dumping API to create new dumpers per request
