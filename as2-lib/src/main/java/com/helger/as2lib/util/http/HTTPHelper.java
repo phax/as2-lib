@@ -51,7 +51,7 @@ import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
@@ -92,7 +92,7 @@ public final class HTTPHelper
     if (StringHelper.hasText (sHttpDumpDirectory))
     {
       final File aDumpDirectory = new File (sHttpDumpDirectory);
-      IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
+      AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
       setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
     }
   }

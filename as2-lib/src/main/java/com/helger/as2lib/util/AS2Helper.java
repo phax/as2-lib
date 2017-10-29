@@ -244,7 +244,7 @@ public final class AS2Helper
 
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
     aMDN.headers ().setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aMDN.headers ().setHeader (CHttpHeader.DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aMDN.headers ().setHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMDN.headers ().setHeader (CHttpHeader.SERVER, CAS2Info.NAME_VERSION);
     aMDN.headers ().setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aMDN.headers ().setHeader (CHttpHeader.AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());

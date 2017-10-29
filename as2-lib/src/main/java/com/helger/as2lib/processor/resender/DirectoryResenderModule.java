@@ -54,8 +54,8 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.DateHelper;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2DateHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsArrayList;
@@ -77,7 +77,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   public static final String ATTR_RESEND_DIRECTORY = "resenddir";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
 
-  private static final String FILENAME_DATE_FORMAT = "MM-dd-yy-HH-mm-ss";
+  private static final String FILENAME_DATE_FORMAT = "MM-dd-uu-HH-mm-ss";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
@@ -105,8 +105,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   {
     try
     {
-      final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
-      final File aResendFile = IOHelper.getUniqueFile (aResendDir, getFilename ());
+      final File aResendDir = AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
+      final File aResendFile = AS2IOHelper.getUniqueFile (aResendDir, getFilename ());
       try (final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile)))
       {
         String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
@@ -151,7 +151,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   {
     final long nResendDelayMS = getResendDelayMS ();
     final long nResendTime = new Date ().getTime () + nResendDelayMS;
-    return DateHelper.formatDate (FILENAME_DATE_FORMAT, new Date (nResendTime));
+    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT, new Date (nResendTime));
   }
 
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
@@ -159,7 +159,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     try
     {
       final StringTokenizer aFileTokens = new StringTokenizer (aCurrentFile.getName (), ".", false);
-      final Date aTimestamp = DateHelper.parseDate (FILENAME_DATE_FORMAT, aFileTokens.nextToken ());
+      final Date aTimestamp = AS2DateHelper.parseDate (FILENAME_DATE_FORMAT, aFileTokens.nextToken ());
       return aTimestamp.before (new Date ());
     }
     catch (final Exception ex)
@@ -193,11 +193,11 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         // Transmit the message
         s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
 
-        final ICommonsMap <String, Object> aOptions = new CommonsHashMap<> ();
+        final ICommonsMap <String, Object> aOptions = new CommonsHashMap <> ();
         aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
         getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
-        if (IOHelper.getFileOperationManager ().deleteFile (aFile).isFailure ())
+        if (AS2IOHelper.getFileOperationManager ().deleteFile (aFile).isFailure ())
         {
           // Delete the file, sender will re-queue if the transmission fails
           // again
@@ -220,7 +220,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }
 
@@ -233,7 +233,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   @ReturnsMutableCopy
   protected ICommonsList <File> scanDirectory () throws InvalidParameterException
   {
-    final File aResendDir = IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
+    final File aResendDir = AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
 
     final File [] aFiles = aResendDir.listFiles ();
     if (aFiles == null)
@@ -244,7 +244,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
                                            aResendDir.getAbsolutePath ());
     }
 
-    final ICommonsList <File> ret = new CommonsArrayList<> ();
+    final ICommonsList <File> ret = new CommonsArrayList <> ();
     if (aFiles.length > 0)
       for (final File aCurrentFile : aFiles)
         if (aCurrentFile.exists () && aCurrentFile.isFile () && aCurrentFile.canWrite () && isTimeToSend (aCurrentFile))

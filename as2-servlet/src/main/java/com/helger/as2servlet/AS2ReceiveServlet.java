@@ -22,7 +22,7 @@ import com.helger.xservlet.AbstractXServlet;
 /**
  * This is the main servlet that takes AS2 messages and processes them. This
  * servlet is configured to accept only POST requests. The logic for receiving
- * is contained in {@link AS2ReceiveXServletHandler}.
+ * is contained in {@link AbstractAS2ReceiveXServletHandler}.
  *
  * @author Philip Helger
  */
@@ -32,6 +32,6 @@ public final class AS2ReceiveServlet extends AbstractXServlet
   {
     // Multipart is handled specifically inside
     settings ().setMultipartEnabled (false);
-    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandler (), false);
+    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandlerFileBasedConfig (), false);
   }
 }

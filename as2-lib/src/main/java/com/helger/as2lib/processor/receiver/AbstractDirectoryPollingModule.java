@@ -53,7 +53,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsHashMap;
@@ -110,7 +110,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
   protected void scanDirectory (final String sDirectory) throws InvalidParameterException
   {
-    final File aDir = IOHelper.getDirectoryFile (sDirectory);
+    final File aDir = AS2IOHelper.getDirectoryFile (sDirectory);
 
     // get a list of entries in the directory
     final File [] aFiles = aDir.listFiles ();
@@ -247,7 +247,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       {
         final File aPendingFile = new File (aMsg.partnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
                                             aMsg.attrs ().getAsString (CFileAttribute.MA_PENDING_FILENAME));
-        final FileIOError aIOErr = IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
+        final FileIOError aIOErr = AS2IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
                                       aPendingFile +
@@ -268,9 +268,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         File aSentFile = null;
         try
         {
-          aSentFile = new File (IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
+          aSentFile = new File (AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
                                 aFile.getName ());
-          aSentFile = IOHelper.moveFile (aFile, aSentFile, false, true);
+          aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
           s_aLogger.info ("moved " +
                           aFile.getAbsolutePath () +
@@ -305,7 +305,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
-      IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }
 

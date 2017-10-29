@@ -55,7 +55,7 @@ import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -134,13 +134,13 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       // Transfer the data
       final InputStream aMessageIS = aMdn.getData ().getInputStream ();
       final StopWatch aSW = StopWatch.createdStarted ();
-      final long nBytes = IOHelper.copy (aMessageIS, aMsgOS);
+      final long nBytes = AS2IOHelper.copy (aMessageIS, aMsgOS);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
       aSW.stop ();
-      s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      s_aLogger.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();

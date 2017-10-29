@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.util.DateHelper;
+import com.helger.as2lib.util.AS2DateHelper;
 import com.helger.commons.http.CHttpHeader;
 
 public class AS2MessageMDN extends AbstractMessageMDN
@@ -50,7 +50,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   public static final String MDNA_ORIG_MESSAGEID = "ORIGINAL_MESSAGE_ID";
   public static final String MDNA_DISPOSITION = "DISPOSITION";
   public static final String MDNA_MIC = "MIC";
-  public static final String DEFAULT_DATE_FORMAT = "ddMMyyyyHHmmssZ";
+  public static final String DEFAULT_DATE_FORMAT = "ddMMuuuuHHmmssZ";
 
   public AS2MessageMDN (@Nonnull final AS2Message aMsg)
   {
@@ -65,7 +65,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   {
     final StringBuilder aSB = new StringBuilder ();
     final String sDateFormat = partnership ().getDateFormat (DEFAULT_DATE_FORMAT);
-    aSB.append ('<').append (CAS2Info.NAME).append ('-').append (DateHelper.getFormattedDateNow (sDateFormat));
+    aSB.append ('<').append (CAS2Info.NAME).append ('-').append (AS2DateHelper.getFormattedDateNow (sDateFormat));
 
     final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
     final int nRandom = AS2GlobalSettings.getRandom ().nextInt (10000);

@@ -64,7 +64,7 @@ import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
@@ -281,7 +281,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
                                                   .getMessageProcessor ()
                                                   .getAsString (ATTR_PENDINGMDNINFO) +
                                       "/" +
-                                      IOHelper.getFilenameFromMessageID (sOrigMessageID);
+                                      AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
       final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile));
 
       String sOriginalMIC;

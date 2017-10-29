@@ -78,8 +78,8 @@ import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.DateHelper;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2DateHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
@@ -167,7 +167,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
                                                                                                .getAsString (ATTR_PENDINGMDNINFO));
-      final String sMsgFilename = IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
+      final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
       final String sPendingFilename = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
                                                                                                  .getAsString (ATTR_PENDINGMDN)) +
                                       "/" +
@@ -426,7 +426,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     aConn.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aConn.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setHttpHeader (CHttpHeader.DATE, DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aConn.setHttpHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aConn.setHttpHeader (CHttpHeader.MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
     aConn.setHttpHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
@@ -678,13 +678,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final StopWatch aSW = StopWatch.createdStarted ();
       // Main transmission - closes InputStream
-      final long nBytes = IOHelper.copy (aMsgIS, aMsgOS);
+      final long nBytes = AS2IOHelper.copy (aMsgIS, aMsgOS);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
       aSW.stop ();
-      s_aLogger.info ("transferred " + IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      s_aLogger.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();

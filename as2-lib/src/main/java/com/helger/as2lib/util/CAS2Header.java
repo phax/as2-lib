@@ -53,7 +53,7 @@ public final class CAS2Header
   /**
    * RFC2822 format: Wed, 04 Mar 2009 10:59:17 +0100
    */
-  public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";
+  public static final String DEFAULT_DATE_FORMAT = "EEE, dd MMM uuuu HH:mm:ss Z";
 
   private CAS2Header ()
   {}

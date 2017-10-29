@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
- * Test class for class {@link IOHelper}.
+ * Test class for class {@link AS2IOHelper}.
  *
  * @author Philip Helger
  */
@@ -47,11 +47,11 @@ public final class IOHelperTest
   @Test
   public void testGetFilenameFromMessageID ()
   {
-    assertNull (IOHelper.getFilenameFromMessageID (""));
-    assertNull (IOHelper.getFilenameFromMessageID ("<<<<>>>>"));
-    assertEquals ("a", IOHelper.getFilenameFromMessageID ("a"));
-    assertEquals ("a", IOHelper.getFilenameFromMessageID ("<a>"));
-    assertEquals ("a", IOHelper.getFilenameFromMessageID ("<<<<<a>>>>>"));
-    assertEquals ("a@b.c", IOHelper.getFilenameFromMessageID ("<<<<<a@b.c>>>>>"));
+    assertNull (AS2IOHelper.getFilenameFromMessageID (""));
+    assertNull (AS2IOHelper.getFilenameFromMessageID ("<<<<>>>>"));
+    assertEquals ("a", AS2IOHelper.getFilenameFromMessageID ("a"));
+    assertEquals ("a", AS2IOHelper.getFilenameFromMessageID ("<a>"));
+    assertEquals ("a", AS2IOHelper.getFilenameFromMessageID ("<<<<<a>>>>>"));
+    assertEquals ("a@b.c", AS2IOHelper.getFilenameFromMessageID ("<<<<<a@b.c>>>>>"));
   }
 }

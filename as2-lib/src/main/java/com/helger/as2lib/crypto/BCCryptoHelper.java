@@ -99,7 +99,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.base64.Base64;
@@ -133,7 +133,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (StringHelper.hasText (sDumpDecryptedDirectory))
     {
       s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
-      IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
+      AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
       s_aLogger.info ("Using directory " +
                       s_aDumpDecryptedDirectory.getAbsolutePath () +
                       " to dump all decrypted body parts to.");

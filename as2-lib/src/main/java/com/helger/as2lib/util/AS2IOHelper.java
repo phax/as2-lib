@@ -58,7 +58,7 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
 
 @Immutable
-public final class IOHelper
+public final class AS2IOHelper
 {
   private static final FileOperationManager s_aFOM = new FileOperationManager ();
   static
@@ -66,7 +66,7 @@ public final class IOHelper
     s_aFOM.callbacks ().add (new LoggingFileOperationCallback ());
   }
 
-  private IOHelper ()
+  private AS2IOHelper ()
   {}
 
   @Nonnull

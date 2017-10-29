@@ -16,7 +16,6 @@
  */
 package com.helger.as2servlet;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
@@ -32,15 +31,14 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
+import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
-import com.helger.as2servlet.util.AS2ServletSession;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.EHttpMethod;
-import com.helger.commons.string.StringHelper;
 import com.helger.http.EHttpVersion;
 import com.helger.web.scope.IRequestWebScope;
 import com.helger.xservlet.handler.IXServletHandler;
@@ -53,7 +51,7 @@ import com.helger.xservlet.handler.IXServletHandler;
  *
  * @author Philip Helger
  */
-public class AS2ReceiveXServletHandler implements IXServletHandler
+public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHandler
 {
   /**
    * The name of the Servlet's init-parameter from which the absolute path to
@@ -61,51 +59,15 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
    */
   public static final String SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME = "as2-servlet-config-filename";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiveXServletHandler.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractAS2ReceiveXServletHandler.class);
 
-  private AS2ServletSession m_aSession;
+  private AS2Session m_aSession;
   private AS2ReceiverModule m_aReceiver;
 
   /**
-   * Get the AS2 configuration file to be used. By default this method reads it
-   * from the Servlet init-param called
-   * {@link #SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME}. You may override
-   * this method to use another way of retrieving the configuration file. <br>
-   * Note: it must be a {@link File} because the configuration file allows for
-   * "%home%" parameter substitution which uses the directory of the
-   * configuration file as the base directory.
-   *
-   * @param aInitParams
-   *        Servlet init parameters
-   * @return The configuration file to be used. MUST not be <code>null</code>.
-   * @throws ServletException
-   *         If no or an invalid configuration file was provided.
-   */
-  @OverrideOnDemand
-  @Nonnull
-  protected File getConfigurationFile (@Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException
-  {
-    final String sConfigurationFilename = aInitParams.get (SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME);
-    if (StringHelper.hasNoText (sConfigurationFilename))
-      throw new ServletException ("Servlet Init-Parameter '" +
-                                  SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME +
-                                  "' is missing or empty!");
-
-    try
-    {
-      return new File (sConfigurationFilename).getCanonicalFile ();
-    }
-    catch (final IOException ex)
-    {
-      throw new ServletException ("Failed to get the canonical file from '" + sConfigurationFilename + "'", ex);
-    }
-  }
-
-  /**
    * Create the AS2 session to be used based on the provided configuration file.
-   *
-   * @param aConfigurationFile
-   *        Configuration file to be used. Never <code>null</code>.
+   * 
+   * @param aInitParams
    * @return The created session. May not be <code>null</code>.
    * @throws OpenAS2Exception
    *         In case something goes wrong when initializing the session
@@ -114,24 +76,16 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
    */
   @Nonnull
   @OverrideOnDemand
-  protected AS2ServletSession createAS2ServletSession (@Nonnull final File aConfigurationFile) throws OpenAS2Exception,
-                                                                                               ServletException
-  {
-    return new AS2ServletSession (aConfigurationFile);
-  }
+  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws OpenAS2Exception,
+                                                                                                     ServletException;
 
   @Override
   public void onServletInit (@Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException
   {
-    // Get configuration file
-    final File aConfigurationFile = getConfigurationFile (aInitParams);
-    if (aConfigurationFile == null)
-      throw new ServletException ("No configuration file provided!");
-
     try
     {
-      // Read the configuration from a file
-      m_aSession = createAS2ServletSession (aConfigurationFile);
+      // E.g. read the configuration from a file
+      m_aSession = createAS2Session (aInitParams);
       // Don't start active modules to avoid connecting to a port!
 
       m_aReceiver = m_aSession.getMessageProcessor ().getModuleOfClass (AS2ServletReceiverModule.class);
@@ -143,9 +97,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
       throw new ServletException ("Failed to init AS2 configuration", ex);
     }
 
-    s_aLogger.info ("Successfully initialized AS2 configuration from file '" +
-                    aConfigurationFile.getAbsolutePath () +
-                    "'");
+    s_aLogger.info ("Successfully initialized AS2 configuration");
   }
 
   /**
@@ -155,7 +107,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
    *         In case initialization failed
    */
   @Nonnull
-  protected AS2ServletSession getSession ()
+  protected AS2Session getSession ()
   {
     if (m_aSession == null)
       throw new IllegalStateException ("This servlet was not initialized properly! No AS2 session is present.");
@@ -234,7 +186,7 @@ public class AS2ReceiveXServletHandler implements IXServletHandler
     // Build the handler that performs the response handling
     final AS2OutputStreamCreatorHttpServletResponse aResponseHandler = new AS2OutputStreamCreatorHttpServletResponse (aHttpResponse);
 
-    // Read the S/MIME content
+    // Read the S/MIME content in a byte array - memory!
     final byte [] aMsgData = HTTPHelper.readHttpPayload (aHttpRequest.getInputStream (), aResponseHandler, aMsg);
 
     // Dump on demand

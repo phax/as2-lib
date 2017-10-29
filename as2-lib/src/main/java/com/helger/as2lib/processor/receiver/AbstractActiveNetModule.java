@@ -57,7 +57,7 @@ import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.concurrent.BasicThreadFactory;
@@ -180,7 +180,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
       final String sErrorFilename = aParams.format (getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
-      final File aMsgErrorFile = IOHelper.getUniqueFile (IOHelper.getDirectoryFile (sErrorDirectory),
+      final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
                                                          FilenameHelper.getAsSecureValidFilename (sErrorFilename));
       // Default false for backwards compatibility reason
       final boolean bStoreBody = getAsBoolean (ATTR_ERROR_STORE_BODY, false);

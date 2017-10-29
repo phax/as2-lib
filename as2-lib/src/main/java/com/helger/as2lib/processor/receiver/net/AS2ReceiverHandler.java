@@ -69,7 +69,7 @@ import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
-import com.helger.as2lib.util.IOHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -570,7 +570,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     if (aMsgData != null)
     {
       s_aLogger.info ("received " +
-                      IOHelper.getTransferRate (aMsgData.length, aSW) +
+                      AS2IOHelper.getTransferRate (aMsgData.length, aSW) +
                       " from " +
                       sClientInfo +
                       aMsg.getLoggingText ());

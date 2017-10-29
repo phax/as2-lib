@@ -31,7 +31,7 @@ import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.as2lib.session.AS2Session;
-import com.helger.as2lib.util.XMLHelper;
+import com.helger.as2lib.util.AS2XMLHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.xml.microdom.IMicroDocument;
@@ -72,30 +72,30 @@ public class AS2ServletSession extends AS2Session
   private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
   {
     s_aLogger.info ("Loading certificates");
-    final ICertificateFactory aFactory = XMLHelper.createComponent (aElement,
-                                                                    ICertificateFactory.class,
-                                                                    this,
-                                                                    m_sBaseDirectory);
+    final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement,
+                                                                       ICertificateFactory.class,
+                                                                       this,
+                                                                       m_sBaseDirectory);
     setCertificateFactory (aFactory);
   }
 
   private void _loadPartnershipFactory (final IMicroElement eRootNode) throws OpenAS2Exception
   {
     s_aLogger.info ("Loading partnerships");
-    final IPartnershipFactory aFactory = XMLHelper.createComponent (eRootNode,
-                                                                    IPartnershipFactory.class,
-                                                                    this,
-                                                                    m_sBaseDirectory);
+    final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode,
+                                                                       IPartnershipFactory.class,
+                                                                       this,
+                                                                       m_sBaseDirectory);
     setPartnershipFactory (aFactory);
   }
 
   private void _loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
                                      @Nonnull final IMicroElement eModule) throws OpenAS2Exception
   {
-    final IProcessorModule aProcessorModule = XMLHelper.createComponent (eModule,
-                                                                         IProcessorModule.class,
-                                                                         this,
-                                                                         m_sBaseDirectory);
+    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule,
+                                                                            IProcessorModule.class,
+                                                                            this,
+                                                                            m_sBaseDirectory);
     aMsgProcessor.addModule (aProcessorModule);
     s_aLogger.info ("  Loaded processor module " + aProcessorModule.getName ());
   }
@@ -103,10 +103,10 @@ public class AS2ServletSession extends AS2Session
   private void _loadMessageProcessor (final IMicroElement eRootNode) throws OpenAS2Exception
   {
     s_aLogger.info ("Loading message processor");
-    final IMessageProcessor aMsgProcessor = XMLHelper.createComponent (eRootNode,
-                                                                       IMessageProcessor.class,
-                                                                       this,
-                                                                       m_sBaseDirectory);
+    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
+                                                                          IMessageProcessor.class,
+                                                                          this,
+                                                                          m_sBaseDirectory);
     setMessageProcessor (aMsgProcessor);
 
     for (final IMicroElement eModule : eRootNode.getAllChildElements ("module"))

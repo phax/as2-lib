@@ -55,12 +55,12 @@ import com.helger.commons.lang.GenericReflection;
 import com.helger.xml.microdom.IMicroElement;
 
 @Immutable
-public final class XMLHelper
+public final class AS2XMLHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (XMLHelper.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2XMLHelper.class);
   private static final String DOLLAR_HOME_DOLLAR = "%home%";
 
-  private XMLHelper ()
+  private AS2XMLHelper ()
   {}
 
   /**
@@ -187,7 +187,7 @@ public final class XMLHelper
         throw new OpenAS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
 
       // Read all parameters
-      final StringMap aParameters = XMLHelper.getAllAttrsWithLowercaseName (aElement);
+      final StringMap aParameters = AS2XMLHelper.getAllAttrsWithLowercaseName (aElement);
       if (sBaseDirectory != null)
       {
         // Replace %home% with session base directory
