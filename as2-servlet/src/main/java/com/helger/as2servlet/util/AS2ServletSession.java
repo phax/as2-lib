@@ -43,7 +43,7 @@ import com.helger.xml.microdom.serialize.MicroReader;
  *
  * @author Philip Helger
  */
-public final class AS2ServletSession extends AS2Session
+public class AS2ServletSession extends AS2Session
 {
   public static final String EL_CERTIFICATES = "certificates";
   public static final String EL_PROCESSOR = "processor";
@@ -72,20 +72,30 @@ public final class AS2ServletSession extends AS2Session
   private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
   {
     s_aLogger.info ("Loading certificates");
-    final ICertificateFactory aFactory = XMLHelper.createComponent (aElement, ICertificateFactory.class, this, m_sBaseDirectory);
+    final ICertificateFactory aFactory = XMLHelper.createComponent (aElement,
+                                                                    ICertificateFactory.class,
+                                                                    this,
+                                                                    m_sBaseDirectory);
     setCertificateFactory (aFactory);
   }
 
   private void _loadPartnershipFactory (final IMicroElement eRootNode) throws OpenAS2Exception
   {
     s_aLogger.info ("Loading partnerships");
-    final IPartnershipFactory aFactory = XMLHelper.createComponent (eRootNode, IPartnershipFactory.class, this, m_sBaseDirectory);
+    final IPartnershipFactory aFactory = XMLHelper.createComponent (eRootNode,
+                                                                    IPartnershipFactory.class,
+                                                                    this,
+                                                                    m_sBaseDirectory);
     setPartnershipFactory (aFactory);
   }
 
-  private void _loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor, @Nonnull final IMicroElement eModule) throws OpenAS2Exception
+  private void _loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
+                                     @Nonnull final IMicroElement eModule) throws OpenAS2Exception
   {
-    final IProcessorModule aProcessorModule = XMLHelper.createComponent (eModule, IProcessorModule.class, this, m_sBaseDirectory);
+    final IProcessorModule aProcessorModule = XMLHelper.createComponent (eModule,
+                                                                         IProcessorModule.class,
+                                                                         this,
+                                                                         m_sBaseDirectory);
     aMsgProcessor.addModule (aProcessorModule);
     s_aLogger.info ("  Loaded processor module " + aProcessorModule.getName ());
   }
@@ -93,7 +103,10 @@ public final class AS2ServletSession extends AS2Session
   private void _loadMessageProcessor (final IMicroElement eRootNode) throws OpenAS2Exception
   {
     s_aLogger.info ("Loading message processor");
-    final IMessageProcessor aMsgProcessor = XMLHelper.createComponent (eRootNode, IMessageProcessor.class, this, m_sBaseDirectory);
+    final IMessageProcessor aMsgProcessor = XMLHelper.createComponent (eRootNode,
+                                                                       IMessageProcessor.class,
+                                                                       this,
+                                                                       m_sBaseDirectory);
     setMessageProcessor (aMsgProcessor);
 
     for (final IMicroElement eModule : eRootNode.getAllChildElements ("module"))
