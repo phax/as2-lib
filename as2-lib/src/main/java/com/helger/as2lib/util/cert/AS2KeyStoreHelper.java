@@ -57,9 +57,9 @@ import com.helger.commons.io.stream.StreamHelper;
  *
  * @author Philip Helger
  */
-public final class KeyStoreHelper
+public final class AS2KeyStoreHelper
 {
-  private KeyStoreHelper ()
+  private AS2KeyStoreHelper ()
   {}
 
   @Nonnull

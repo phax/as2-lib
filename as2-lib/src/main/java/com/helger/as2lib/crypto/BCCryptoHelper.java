@@ -105,6 +105,7 @@ import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NullOutputStream;
@@ -113,6 +114,7 @@ import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.security.keystore.EKeyStoreType;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle.
@@ -163,7 +165,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public KeyStore createNewKeyStore () throws KeyStoreException, NoSuchProviderException
   {
-    return KeyStore.getInstance ("PKCS12", BouncyCastleProvider.PROVIDER_NAME);
+    return EKeyStoreType.PKCS12.getKeyStore (BouncyCastleProvider.PROVIDER_NAME);
   }
 
   @Nonnull
@@ -257,7 +259,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (bIncludeHeaders)
     {
       // Start hashing the header
-      final byte [] aCRLF = new byte [] { '\r', '\n' };
+      final byte [] aCRLF = _getAsciiBytes (CHttp.EOL);
       final Enumeration <?> aHeaderLines = aPart.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {

@@ -49,7 +49,7 @@ import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
-import com.helger.as2lib.util.cert.KeyStoreHelper;
+import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
 
@@ -89,7 +89,7 @@ public final class MainSendToMendelsonTest
     aSettings.setReceiverData ("mendelsontestAS2",
                                "mendelsontestAS2",
                                "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
-    final X509Certificate aReceiverCertificate = KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key2.cer");
+    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key2.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
     // AS2 stuff
