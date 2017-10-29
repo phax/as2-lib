@@ -57,6 +57,7 @@ import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillNotClose;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
@@ -169,7 +170,8 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public KeyStore loadKeyStore (@Nullable final InputStream aIS, @Nonnull final char [] aPassword) throws Exception
+  public KeyStore loadKeyStore (@Nullable @WillNotClose final InputStream aIS,
+                                @Nonnull final char [] aPassword) throws Exception
   {
     final KeyStore aKeyStore = createNewKeyStore ();
     if (aIS != null)

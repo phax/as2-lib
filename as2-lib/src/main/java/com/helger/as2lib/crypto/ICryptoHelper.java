@@ -39,6 +39,7 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillNotClose;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -72,7 +73,7 @@ public interface ICryptoHelper
    *         In case loading fails.
    */
   @Nonnull
-  KeyStore loadKeyStore (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws Exception;
+  KeyStore loadKeyStore (@Nonnull @WillNotClose InputStream aIS, @Nonnull char [] aPassword) throws Exception;
 
   /**
    * Check if the passed MIME body part is encrypted. The default implementation

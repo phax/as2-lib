@@ -362,11 +362,7 @@ public class PKCS12CertificateFactory extends AbstractCertificateFactory impleme
         aKeyStore.load (aIS, aPassword);
       }
     }
-    catch (final IOException ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
-    catch (final GeneralSecurityException ex)
+    catch (final IOException | GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
