@@ -43,7 +43,7 @@ public class DateParameters extends AbstractParameterParser
   @Deprecated
   public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
   {
-    throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
+    throw new InvalidParameterException ("setParameter is not supported", this, sKey, sValue);
   }
 
   @Override
