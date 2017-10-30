@@ -38,7 +38,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -62,6 +63,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.datetime.PDTFactory;
 
 /**
  * An asynchronous, persisting, file based, polling resender module. Upon
@@ -150,8 +152,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   protected String getFilename () throws InvalidParameterException
   {
     final long nResendDelayMS = getResendDelayMS ();
-    final long nResendTime = new Date ().getTime () + nResendDelayMS;
-    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT, new Date (nResendTime));
+    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT,
+                                     PDTFactory.getCurrentLocalDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
   }
 
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
@@ -159,8 +161,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     try
     {
       final StringTokenizer aFileTokens = new StringTokenizer (aCurrentFile.getName (), ".", false);
-      final Date aTimestamp = AS2DateHelper.parseDate (FILENAME_DATE_FORMAT, aFileTokens.nextToken ());
-      return aTimestamp.before (new Date ());
+      final LocalDateTime aTimestamp = AS2DateHelper.parseDate (FILENAME_DATE_FORMAT, aFileTokens.nextToken ());
+      return aTimestamp.isBefore (PDTFactory.getCurrentLocalDateTime ());
     }
     catch (final Exception ex)
     {

@@ -32,7 +32,8 @@
  */
 package com.helger.as2lib.processor.resender;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -41,6 +42,7 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.datetime.PDTFactory;
 
 /**
  * This class represents a single in-memory item to be resend.
@@ -54,7 +56,7 @@ public class ResendItem
   private final String m_sResendAction;
   private final int m_nRetries;
   private final IMessage m_aMsg;
-  private final long m_nEarliestResendDateMS;
+  private final LocalDateTime m_aEarliestResendDT;
 
   public ResendItem (@Nonnull @Nonempty final String sResendAction,
                      @Nonnegative final int nRetries,
@@ -65,7 +67,7 @@ public class ResendItem
     m_nRetries = ValueEnforcer.isGE0 (nRetries, "Retries");
     m_aMsg = ValueEnforcer.notNull (aMsg, "Message");
     ValueEnforcer.isGE0 (nResendDelayMS, "ResendDelayMS");
-    m_nEarliestResendDateMS = new Date ().getTime () + nResendDelayMS;
+    m_aEarliestResendDT = PDTFactory.getCurrentLocalDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS);
   }
 
   /**
@@ -101,9 +103,9 @@ public class ResendItem
    * @return The date the resend must not happen before
    */
   @Nonnull
-  public Date getEarliestResendDate ()
+  public LocalDateTime getEarliestResendDate ()
   {
-    return new Date (m_nEarliestResendDateMS);
+    return m_aEarliestResendDT;
   }
 
   /**
@@ -111,6 +113,6 @@ public class ResendItem
    */
   public boolean isTimeToSend ()
   {
-    return m_nEarliestResendDateMS <= new Date ().getTime ();
+    return m_aEarliestResendDT.compareTo (PDTFactory.getCurrentLocalDateTime ()) <= 0;
   }
 }

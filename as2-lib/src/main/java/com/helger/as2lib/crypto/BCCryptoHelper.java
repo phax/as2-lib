@@ -48,7 +48,6 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
@@ -106,6 +105,7 @@ import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
@@ -300,7 +300,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     do
     {
       aDestinationFile = new File (s_aDumpDecryptedDirectory,
-                                   "as2-decrypted-" + Long.toString (new Date ().getTime ()) + "-" + nIndex + ".part");
+                                   "as2-decrypted-" +
+                                                              Long.toString (PDTFactory.getCurrentMillis ()) +
+                                                              "-" +
+                                                              nIndex +
+                                                              ".part");
       nIndex++;
     } while (aDestinationFile.exists ());
 

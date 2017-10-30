@@ -32,12 +32,14 @@
  */
 package com.helger.as2lib.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+
+import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.datetime.PDTFormatter;
+import com.helger.commons.datetime.PDTFromString;
 
 @Immutable
 public final class AS2DateHelper
@@ -48,18 +50,21 @@ public final class AS2DateHelper
   @Nonnull
   public static String getFormattedDateNow (@Nonnull final String sFormat)
   {
-    return formatDate (sFormat, new Date ());
+    return formatDate (sFormat, PDTFactory.getCurrentLocalDateTime ());
   }
 
   @Nonnull
-  public static String formatDate (@Nonnull final String sFormat, @Nonnull final Date aValue)
+  public static String formatDate (@Nonnull final String sFormat, @Nonnull final LocalDateTime aValue)
   {
-    return new SimpleDateFormat (sFormat).format (aValue);
+    return PDTFormatter.getForPattern (sFormat).format (aValue);
   }
 
   @Nonnull
-  public static Date parseDate (@Nonnull final String sFormat, @Nonnull final String sValue) throws ParseException
+  public static LocalDateTime parseDate (@Nonnull final String sFormat, @Nonnull final String sValue)
   {
-    return new SimpleDateFormat (sFormat).parse (sValue);
+    final LocalDateTime ret = PDTFromString.getLocalDateTimeFromString (sValue, sFormat);
+    if (ret == null)
+      throw new IllegalArgumentException ("Failed to parse date '" + sValue + "' using format '" + sFormat + "'");
+    return ret;
   }
 }

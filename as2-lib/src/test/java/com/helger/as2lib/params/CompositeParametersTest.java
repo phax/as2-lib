@@ -35,12 +35,11 @@ package com.helger.as2lib.params;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.junit.Test;
 
 import com.helger.as2lib.message.AS2Message;
+import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.datetime.PDTFormatter;
 
 /**
  * Test class for class {@link CompositeParameters}.
@@ -59,17 +58,17 @@ public final class CompositeParametersTest
     final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                        .add ("msg", new MessageParameters (aMsg));
 
-    final String sNow = new SimpleDateFormat ("yyyyMMddhhmmss").format (new Date ());
+    final String sNow = PDTFormatter.getForPattern ("uuuuMMddhhmmss").format (PDTFactory.getCurrentLocalDateTime ());
 
     // Note: the date assertions may fail if they are executed exactly at the
     // edge of a second!
-    String sName = aParams.format ("$date.yyyyMMddhhmmss$");
+    String sName = aParams.format ("$date.uuuuMMddhhmmss$");
     assertEquals (sNow, sName);
 
-    sName = aParams.format ("any$date.yyyyMMddhhmmss$else");
+    sName = aParams.format ("any$date.uuuuMMddhhmmss$else");
     assertEquals ("any" + sNow + "else", sName);
 
-    sName = aParams.format ("$date.yyyyMMddhhmmss$$date.yyyyMMddhhmmss$");
+    sName = aParams.format ("$date.uuuuMMddhhmmss$$date.uuuuMMddhhmmss$");
     assertEquals (sNow + sNow, sName);
 
     // No placeholders
