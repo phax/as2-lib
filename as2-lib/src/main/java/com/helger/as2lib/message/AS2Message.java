@@ -55,7 +55,7 @@ public class AS2Message extends AbstractMessage
 
   public static final String PROTOCOL_AS2 = "as2";
   public static final String DEFAULT_ID_FORMAT = CAS2Info.NAME +
-                                                 "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+                                                 "-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
   public AS2Message ()
   {}

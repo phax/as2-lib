@@ -77,7 +77,7 @@ public class AS2ClientSettings implements Serializable
    * @see #setMessageIDFormat(String)
    */
   public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
-                                                         "-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
+                                                         "-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** By default no retry happens. */
   public static final int DEFAULT_RETRY_COUNT = IProcessorResenderModule.DEFAULT_RETRIES;
   /** Default connection timeout: 60 seconds */

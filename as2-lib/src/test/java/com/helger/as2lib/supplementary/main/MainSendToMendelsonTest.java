@@ -103,7 +103,7 @@ public final class MainSendToMendelsonTest
                                                       .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
     aSettings.setEncryptAndSign (ECryptoAlgorithmCrypt.CRYPT_3DES, eSignAlgo);
     aSettings.setCompress (ECompressionType.ZLIB, false);
-    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMyyyyHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
+    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
     aSettings.setReadTimeoutMS (10_000);

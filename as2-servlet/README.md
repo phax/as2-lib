@@ -81,13 +81,13 @@ Complete example configuration file:
              pendingMDNinfo="%home%/pendinginfoMDN">
     <!-- [optional] Store sent MDNs to a file -->
     <module classname="com.helger.as2lib.processor.storage.MDNFileModule"
-            filename="%home%/mdn/$date.yyyy$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
+            filename="%home%/mdn/$date.uuuu$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
             protocol="as2"
             tempdir="%home%/temp"/>
     <!-- [optional] Store received messages and headers to a file -->
     <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
             filename="%home%/inbox/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
-            header="%home%/inbox/msgheaders/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
+            header="%home%/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
             protocol="as2"
             tempdir="%home%/temp"/>
     <!-- [required] The main receiver module that performs the message parsing.

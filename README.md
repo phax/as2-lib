@@ -27,7 +27,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
     * Updated to ph-commons 9.0.0
     * Updated to BouncyCastle 1.58
     * Fixed crypto algorithm case sensitivity issue on sending (issue #32)
-    * Changed internally from `java.util.Date` to `java.time.LocalDateTime` - so all the Date parameters must be changed from `yyyyy` to `uuuu`!!! 
+    * Changed internally from `java.util.Date` to `java.time.LocalDateTime` - so all the Date parameters must be changed from `uuuuy` to `uuuu`!!! 
   * v3.1.0 - 2017-07-27
     * AS2 client can now handle custom HTTP headers
     * Reworked dumping API to create new dumpers per request
@@ -236,14 +236,14 @@ Complete example configuration file:
 
     <!-- [optional] Store sent MDNs to a file -->
     <module classname="com.helger.as2lib.processor.storage.MDNFileModule"
-            filename="%home%/mdn/$date.yyyy$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
+            filename="%home%/mdn/$date.uuuu$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
             protocol="as2"
             tempdir="%home%/temp"/>
 
     <!-- [optional] Store received messages and headers to a file -->
     <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
-            filename="%home%/inbox/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
-            header="%home%/inbox/msgheaders/$date.yyyy$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
+            filename="%home%/inbox/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
+            header="%home%/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
             protocol="as2"
             tempdir="%home%/temp"/>
 
@@ -255,7 +255,7 @@ Complete example configuration file:
     -->
     <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"      
             port="10080"
-            errordir="%home%/inbox/error/$date.yyyy$/$date.MM$"
+            errordir="%home%/inbox/error/$date.uuuu$/$date.MM$"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"
             errorstorebody="false"/>
 

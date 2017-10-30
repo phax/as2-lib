@@ -72,7 +72,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   public static final String ATTR_PORT = "port";
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   public static final String ATTR_ERROR_FORMAT = "errorformat";
-  public static final String DEFAULT_ERROR_FORMAT = "$date.yyyyMMddhhmmss$";
+  public static final String DEFAULT_ERROR_FORMAT = "$date.uuuuMMddhhmmss$";
   // Since 3.0.4
   public static final String ATTR_ERROR_STORE_BODY = "errorstorebody";
 
