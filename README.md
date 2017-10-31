@@ -220,10 +220,18 @@ Complete example configuration file:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <openas2>
-  <!-- [required] The keystore to be used -->
+  <!-- [required] The keystore to be used (since v4) -->
+  <certificates classname="com.helger.as2lib.cert.CertificateFactory"
+                type="pkcs12" 
+                filename="%home%/server-certs.p12"
+                password="mypassword" />
+
+  <!-- [required] The keystore to be used (prior to v4) -->
+  <!--
   <certificates classname="com.helger.as2lib.cert.PKCS12CertificateFactory" 
                 filename="%home%/server-certs.p12"
                 password="mypassword" />
+  -->                
                 
   <!-- [required] The pro-forma partnership factory -->                  
   <partnerships classname="com.helger.as2servlet.util.AS2ServletPartnershipFactory"
