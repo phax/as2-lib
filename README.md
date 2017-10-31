@@ -28,6 +28,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
     * Updated to BouncyCastle 1.58
     * Fixed crypto algorithm case sensitivity issue on sending (issue #32)
     * Changed internally from `java.util.Date` to `java.time.LocalDateTime` - so all the Date parameters must be changed from `yyyy` to `uuuu`!!! 
+    * The certificate factory `com.helger.as2lib.cert.PKCS12CertificateFactory` was deprecated in favor of the more generic `com.helger.as2lib.cert.CertificateFactory` that handles arbitrary keystore types (like JKS).
   * v3.1.0 - 2017-07-27
     * AS2 client can now handle custom HTTP headers
     * Reworked dumping API to create new dumpers per request

@@ -52,6 +52,7 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
+import com.helger.security.keystore.EKeyStoreType;
 
 /**
  * Test class to send an AS2 messages to the Mendelson test server.
@@ -76,11 +77,11 @@ public final class MainSendToMendelsonTest
 
     Proxy aHttpProxy = null;
     if (false)
-      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.12", 8080));
+      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.16", 8080));
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
-    aSettings.setKeyStore (new File ("src/test/resources/mendelson/key1.pfx"), "test");
+    aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/mendelson/key1.pfx"), "test");
 
     // Fixed sender
     aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key1");

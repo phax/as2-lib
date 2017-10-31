@@ -43,6 +43,7 @@ import javax.annotation.WillNotClose;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * Base interface for all crypto related methods in this project.
@@ -52,17 +53,20 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public interface ICryptoHelper
 {
   /**
-   * @return A new key store. The default implementation creates a PKCS12 key
-   *         store.
+   * @param aKeyStoreType
+   *        Key store type to use. May not be <code>null</code>.
+   * @return A new key store.
    * @throws Exception
    *         In case something goes wrong.
    */
   @Nonnull
-  KeyStore createNewKeyStore () throws Exception;
+  KeyStore createNewKeyStore (@Nonnull IKeyStoreType aKeyStoreType) throws Exception;
 
   /**
    * Load a key store from the specified input stream.
    *
+   * @param aKeyStoreType
+   *        Key store type to use. May not be <code>null</code>.
    * @param aIS
    *        The input stream to load the key store from. May not be
    *        <code>null</code>.
@@ -73,7 +77,9 @@ public interface ICryptoHelper
    *         In case loading fails.
    */
   @Nonnull
-  KeyStore loadKeyStore (@Nonnull @WillNotClose InputStream aIS, @Nonnull char [] aPassword) throws Exception;
+  KeyStore loadKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                         @Nonnull @WillNotClose InputStream aIS,
+                         @Nonnull char [] aPassword) throws Exception;
 
   /**
    * Check if the passed MIME body part is encrypted. The default implementation

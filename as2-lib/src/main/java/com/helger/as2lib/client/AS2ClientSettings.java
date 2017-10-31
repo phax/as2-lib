@@ -51,6 +51,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.StringHelper;
+import com.helger.security.keystore.EKeyStoreType;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * Settings object for a message delivery.
@@ -85,6 +87,7 @@ public class AS2ClientSettings implements Serializable
   /** Default read timeout: 60 seconds */
   public static final int DEFAULT_READ_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_READ_TIMEOUT_MS;
 
+  private IKeyStoreType m_aKeyStoreType = EKeyStoreType.PKCS12;
   private File m_aKeyStoreFile;
   private String m_sKeyStorePassword;
   private boolean m_bSaveKeyStoreChangesToFile = IStorableCertificateFactory.DEFAULT_SAVE_CHANGES_TO_FILE;
@@ -117,9 +120,10 @@ public class AS2ClientSettings implements Serializable
   {}
 
   /**
-   * Set the details of the certificate store of the client. The keystore must
-   * be in PKCS12 format.
+   * Set the details of the certificate store of the client.
    *
+   * @param aKeyStoreType
+   *        Key store type. May not be <code>null</code>.
    * @param aFile
    *        The keystore file. May not be <code>null</code>.
    * @param sPassword
@@ -128,16 +132,32 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setKeyStore (@Nonnull final File aFile, @Nonnull final String sPassword)
+  public AS2ClientSettings setKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                                        @Nonnull final File aFile,
+                                        @Nonnull final String sPassword)
   {
-    m_aKeyStoreFile = ValueEnforcer.notNull (aFile, "File");
-    m_sKeyStorePassword = ValueEnforcer.notNull (sPassword, "Password");
+    ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
+    ValueEnforcer.notNull (aFile, "File");
+    ValueEnforcer.notNull (sPassword, "Password");
+    m_aKeyStoreType = aKeyStoreType;
+    m_aKeyStoreFile = aFile;
+    m_sKeyStorePassword = sPassword;
     return this;
   }
 
   /**
+   * @return The key store type. May not be <code>null</code>.
+   * @see #setKeyStore(IKeyStoreType, File, String)
+   */
+  @Nonnull
+  public IKeyStoreType getKeyStoreType ()
+  {
+    return m_aKeyStoreType;
+  }
+
+  /**
    * @return The key store file. May be <code>null</code> if not yet set.
-   * @see #setKeyStore(File, String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
   public File getKeyStoreFile ()
@@ -147,7 +167,7 @@ public class AS2ClientSettings implements Serializable
 
   /**
    * @return The key store password. May be <code>null</code> if not yet set.
-   * @see #setKeyStore(File, String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
   public String getKeyStorePassword ()
@@ -227,7 +247,7 @@ public class AS2ClientSettings implements Serializable
    * @return The senders key alias in the keystore. May be <code>null</code> if
    *         not set.
    * @see #setSenderData(String, String, String)
-   * @see #setKeyStore(File, String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
   public String getSenderKeyAlias ()
@@ -273,7 +293,7 @@ public class AS2ClientSettings implements Serializable
    * @return The receivers key alias in the keystore. May be <code>null</code>
    *         if not set.
    * @see #setReceiverData(String, String, String)
-   * @see #setKeyStore(File, String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
   public String getReceiverKeyAlias ()

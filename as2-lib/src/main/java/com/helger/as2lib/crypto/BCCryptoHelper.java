@@ -115,7 +115,7 @@ import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
-import com.helger.security.keystore.EKeyStoreType;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle.
@@ -165,16 +165,27 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public KeyStore createNewKeyStore () throws KeyStoreException, NoSuchProviderException
+  public KeyStore createNewKeyStore (@Nonnull final IKeyStoreType aKeyStoreType) throws KeyStoreException,
+                                                                                 NoSuchProviderException
   {
-    return EKeyStoreType.PKCS12.getKeyStore (BouncyCastleProvider.PROVIDER_NAME);
+    try
+    {
+      // Try native
+      return aKeyStoreType.getKeyStore ();
+    }
+    catch (final GeneralSecurityException ex)
+    {
+      // Try with BouncyCastle
+      return aKeyStoreType.getKeyStore (BouncyCastleProvider.PROVIDER_NAME);
+    }
   }
 
   @Nonnull
-  public KeyStore loadKeyStore (@Nullable @WillNotClose final InputStream aIS,
+  public KeyStore loadKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                                @Nullable @WillNotClose final InputStream aIS,
                                 @Nonnull final char [] aPassword) throws Exception
   {
-    final KeyStore aKeyStore = createNewKeyStore ();
+    final KeyStore aKeyStore = createNewKeyStore (aKeyStoreType);
     if (aIS != null)
       aKeyStore.load (aIS, aPassword);
     return aKeyStore;

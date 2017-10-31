@@ -153,7 +153,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   {
     final long nResendDelayMS = getResendDelayMS ();
     return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT,
-                                     PDTFactory.getCurrentLocalDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
+                                     PDTFactory.getCurrentZonedDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
   }
 
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)

@@ -32,13 +32,15 @@
  */
 package com.helger.as2lib.util;
 
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.helger.commons.datetime.DateTimeFormatterCache;
 import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.datetime.PDTFormatter;
 import com.helger.commons.datetime.PDTFromString;
 
 @Immutable
@@ -50,21 +52,28 @@ public final class AS2DateHelper
   @Nonnull
   public static String getFormattedDateNow (@Nonnull final String sFormat)
   {
-    return formatDate (sFormat, PDTFactory.getCurrentLocalDateTime ());
+    return formatDate (sFormat, PDTFactory.getCurrentZonedDateTime ());
   }
 
   @Nonnull
-  public static String formatDate (@Nonnull final String sFormat, @Nonnull final LocalDateTime aValue)
+  public static String formatDate (@Nonnull final String sFormat, @Nonnull final ZonedDateTime aValue)
   {
-    return PDTFormatter.getForPattern (sFormat).format (aValue);
+    try
+    {
+      return DateTimeFormatterCache.getDateTimeFormatterSmart (sFormat).format (aValue);
+    }
+    catch (final DateTimeException ex)
+    {
+      throw new IllegalArgumentException ("Failed to format date '" + aValue + "' using format '" + sFormat + "'", ex);
+    }
   }
 
   @Nonnull
   public static LocalDateTime parseDate (@Nonnull final String sFormat, @Nonnull final String sValue)
   {
-    final LocalDateTime ret = PDTFromString.getLocalDateTimeFromString (sValue, sFormat);
+    final ZonedDateTime ret = PDTFromString.getZonedDateTimeFromString (sValue, sFormat);
     if (ret == null)
       throw new IllegalArgumentException ("Failed to parse date '" + sValue + "' using format '" + sFormat + "'");
-    return ret;
+    return ret.toLocalDateTime ();
   }
 }

@@ -51,6 +51,7 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * KeyStore reader and write class
@@ -63,7 +64,8 @@ public final class AS2KeyStoreHelper
   {}
 
   @Nonnull
-  public static OpenAS2KeyStore readKeyStore (@Nonnull final String sFilename,
+  public static OpenAS2KeyStore readKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                                              @Nonnull final String sFilename,
                                               @Nonnull final char [] aPassword,
                                               @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
   {
@@ -73,7 +75,7 @@ public final class AS2KeyStoreHelper
 
     try
     {
-      final KeyStore aKeyStore = aCryptoHelper.loadKeyStore (aIS, aPassword);
+      final KeyStore aKeyStore = aCryptoHelper.loadKeyStore (aKeyStoreType, aIS, aPassword);
       return new OpenAS2KeyStore (aKeyStore);
     }
     finally

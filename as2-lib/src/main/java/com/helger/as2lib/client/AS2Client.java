@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.CertificateExistsException;
-import com.helger.as2lib.cert.PKCS12CertificateFactory;
+import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
@@ -214,9 +214,9 @@ public class AS2Client
    */
   @Nonnull
   @OverrideOnDemand
-  protected PKCS12CertificateFactory createCertificateFactory ()
+  protected CertificateFactory createCertificateFactory ()
   {
-    return new PKCS12CertificateFactory ();
+    return new CertificateFactory ();
   }
 
   @OverrideOnDemand
@@ -225,11 +225,11 @@ public class AS2Client
   {
     // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
-    aParams.putIn (PKCS12CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
-    aParams.putIn (PKCS12CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
-    aParams.putIn (PKCS12CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
+    aParams.putIn (CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
+    aParams.putIn (CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
+    aParams.putIn (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
 
-    final PKCS12CertificateFactory aCertFactory = createCertificateFactory ();
+    final CertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
     if (aSettings.getReceiverCertificate () != null)
     {
