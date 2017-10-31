@@ -125,7 +125,7 @@ public class AS2ClientSettings implements Serializable
    * @param aKeyStoreType
    *        Key store type. May not be <code>null</code>.
    * @param aFile
-   *        The keystore file. May not be <code>null</code>.
+   *        The key store file. May not be <code>null</code>.
    * @param sPassword
    *        The password used to open the key store. May not be
    *        <code>null</code>.

@@ -253,7 +253,7 @@ public final class AS2Helper
     // get the MDN partnership info
     aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
     aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
-    // Set the appropriate keystore aliases
+    // Set the appropriate key store aliases
     aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
     aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
     // Update the partnership

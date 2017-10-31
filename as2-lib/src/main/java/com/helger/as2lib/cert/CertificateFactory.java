@@ -207,7 +207,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   public KeyStore getKeyStore ()
   {
     if (m_aKeyStore == null)
-      throw new IllegalStateException ("No keystore present");
+      throw new IllegalStateException ("No key store present");
     return m_aKeyStore;
   }
 
@@ -233,8 +233,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   }
 
   /**
-   * Custom callback method that is invoked if something changes in the
-   * keystore. By default the changes are written back to disk.
+   * Custom callback method that is invoked if something changes in the key
+   * store. By default the changes are written back to disk.
    *
    * @throws OpenAS2Exception
    *         In case saving fails.
@@ -256,7 +256,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
     try
     {
-      // This method heuristically scans the keystore and delivery the first
+      // This method heuristically scans the keys tore and delivery the first
       // result.
       sAlias = aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)

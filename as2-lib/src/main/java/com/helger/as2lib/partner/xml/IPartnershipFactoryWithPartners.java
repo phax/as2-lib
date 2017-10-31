@@ -45,8 +45,8 @@ import com.helger.commons.state.EChange;
 /**
  * This partnership factory extends {@link IPartnershipFactory} by adding
  * "partners". This can be used for providing certain fixed value on a
- * per-partner basis (e.g. email address or X509 certificate alias to the
- * keystore) without having redundancy data in all partnerships.
+ * per-partner basis (e.g. email address or X509 certificate alias to the key
+ * store) without having redundancy data in all partnerships.
  *
  * @author Philip Helger
  */

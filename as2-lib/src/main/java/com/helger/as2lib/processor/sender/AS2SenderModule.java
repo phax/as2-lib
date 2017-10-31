@@ -75,11 +75,11 @@ import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
+import com.helger.as2lib.util.AS2DateHelper;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
-import com.helger.as2lib.util.CAS2Header;
-import com.helger.as2lib.util.AS2DateHelper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
@@ -520,7 +520,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // get the MDN partnership info
       aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
       aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
-      // Set the appropriate keystore aliases
+      // Set the appropriate key store aliases
       aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
       aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
       // Update the partnership
