@@ -67,7 +67,8 @@ Complete example configuration file:
 <?xml version="1.0" encoding="utf-8"?>
 <openas2>
   <!-- [required] The keystore to be used -->
-  <certificates classname="com.helger.as2lib.cert.PKCS12CertificateFactory" 
+  <certificates classname="com.helger.as2lib.cert.CertificateFactory" 
+                type="pkcs12"
                 filename="%home%/server-certs.p12"
                 password="peppol" />
   <!-- [required] The pro-forma partnership factory -->                  

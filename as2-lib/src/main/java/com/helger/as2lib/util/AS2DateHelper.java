@@ -52,6 +52,7 @@ public final class AS2DateHelper
   @Nonnull
   public static String getFormattedDateNow (@Nonnull final String sFormat)
   {
+    // Must use "ZonedDateTime" because time zone is part of many formats
     return formatDate (sFormat, PDTFactory.getCurrentZonedDateTime ());
   }
 
