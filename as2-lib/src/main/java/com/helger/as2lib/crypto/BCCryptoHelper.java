@@ -144,7 +144,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   public BCCryptoHelper ()
   {
-    Security.addProvider (new BouncyCastleProvider ());
+    if (Security.getProvider (BouncyCastleProvider.PROVIDER_NAME) == null)
+      Security.addProvider (new BouncyCastleProvider ());
 
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
     aCommandMap.addMailcap ("application/pkcs7-signature;; x-java-content-handler=" +
