@@ -42,7 +42,7 @@ import org.junit.Test;
  *
  * @author Philip Helger
  */
-public final class IOHelperTest
+public final class AS2IOHelperTest
 {
   @Test
   public void testGetFilenameFromMessageID ()
