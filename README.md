@@ -23,73 +23,74 @@ The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license.
 The subproject `as2-servlet` is licensed under the Apache 2 license. 
 
 # News and noteworthy
-  * v4.0.0 - work in progress
-    * Updated to ph-commons 9.0.0
-    * Updated to BouncyCastle 1.58
-    * Fixed crypto algorithm case sensitivity issue on sending (issue #32)
-    * Changed internally from `java.util.Date` to `java.time.LocalDateTime` - so all the Date parameters must be changed from `yyyy` to `uuuu`!!! 
-    * The certificate factory `com.helger.as2lib.cert.PKCS12CertificateFactory` was deprecated in favor of the more generic `com.helger.as2lib.cert.CertificateFactory` that handles arbitrary keystore types (like JKS).
-  * v3.1.0 - 2017-07-27
-    * AS2 client can now handle custom HTTP headers
-    * Reworked dumping API to create new dumpers per request
-    * Dumping API was moved into a separate package.
-  * v3.0.4 - 2017-06-19
-    * AS2 client allows different content type even if text source is used
-    * AS2 client allows to specify Content-Transfer-Encoding
-    * Updated to BouncyCastle 1.57
-    * The receiving modules got a new attribute `errorstorebody` to indicate whether the body of a failed message should also be stored or not (default is `false`)
-    * The receiving modules `errordir` directory can now handle parameters (date and msg)
-    * AS2 client can now request and asynchronous MDN (issue #31)
-  * v3.0.3 - 2017-01-24
-    * Binds to ph-commons 8.6.x
-    * Binds to ph-web 8.7.0
-    * Updated to BouncyCastle 1.56
-  * v3.0.2 - 2016-11-28
-    * Improved signature validation certificate selection (#28) - thanks @rklyne
-    * Made connect and read timeout configurable in `AS2ClientSettings` (issue #23)
-  * v3.0.1 - 2016-09-27
-    * Made incoming HTTP request dumping customizable (issue #26)
-  * v3.0.0 - 2016-08-21
-    * JDK 8 is now required  
-    * Using ph-commons 8.4.x
-  * v2.2.8 - 2016-05-09
-    * Improved AS2 client https customization and API
-  * v2.2.7 - 2016-04-27 
-    * Added per partnership attribute `rfc3851_micalgs` to determine to use RFC 3851 MIC algorithm names instead of the default RFC 5751 MIC algorithm names (issue #18)
-    * Fixed problem with special character escaping in MDN context (issue #19)
-  * v2.2.6 - 2016-03-02
-    * Added support for dumping HTTP requests when using `as2-servlet` 
-  * v2.2.5 - 2015-12-01 
-    * Added a validity check so that expired certificates can no longer be used to sign, verify and encrypt messages. Decrypt is still possible.
-    * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings. (issue #17)
-    * Fixed potential endless loop when a retry count was specified at a partnership (issue #16) 
-  * v2.2.4 - 2015-11-11
-    * Fixed a minor issue where details of a ProcessingException were not passed into the MDN text
-  * v2.2.3 - 2015-10-22
-    * Improved API for handling MDN errors (as2-lib issue #11)  
-    * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
-    * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
-    * The new sub-project `as2-servlet` is now contained
-  * v2.2.2 - 2015-10-19
-    * Updated to Bouncy Castle 1.53 (as2-lib issue #10)
-  * v2.2.1 - 2015-10-08
-    * Extended API and some debug logging added
-  * v2.2.0 - 2015-09-27
-    * added system properties (see below) for configuration and debugging purposes
-    * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
-    * added the following new partnership attributes:
-      * `content_transfer_encoding_receive` [receiver side] to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
-      * `force_decrypt` [receiver side] to force decryption of incoming messages even if the `Content-Type` header claims the message is not encrypted (as a work-around for non spec-compliant senders)
-      * `disable_decrypt` [receiver side] to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
-      * `force_verify` [receiver side] to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
-      * `disable_verify` [receiver side] to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
-      * `verify_use_cert_in_body_part` [receiver side] to define whether a certificate passed in the signed MIME body part shall be used to verify the signature (when `true`) or whether to always use the certificate provided in the partnership (when `false`). If not set the value of the AS2 session is used.
-      * `disable_decompress` [receiver side] to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
-      * `sign_include_cert_in_body_part` [sender side] to determine whether the certificate used for signing should be included in the signed content part (when `true`) or not (when `false`). The default value is `true`.
-      * Added the sub-project `as2-partnership-mongodb` - thanks to @jochenberger for contributing it
-  * Version 2.1.0 - 2015-08-20
-    * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
-    * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
+
+* v4.0.0 - 2018-01-06
+  * Updated to ph-commons 9.0.0
+  * Updated to BouncyCastle 1.58
+  * Fixed crypto algorithm case sensitivity issue on sending (issue #32)
+  * Changed internally from `java.util.Date` to `java.time.LocalDateTime` - so all the Date parameters must be changed from `yyyy` to `uuuu`!!! 
+  * The certificate factory `com.helger.as2lib.cert.PKCS12CertificateFactory` was deprecated in favor of the more generic `com.helger.as2lib.cert.CertificateFactory` that handles arbitrary keystore types (like JKS).
+* v3.1.0 - 2017-07-27
+  * AS2 client can now handle custom HTTP headers
+  * Reworked dumping API to create new dumpers per request
+  * Dumping API was moved into a separate package.
+* v3.0.4 - 2017-06-19
+  * AS2 client allows different content type even if text source is used
+  * AS2 client allows to specify Content-Transfer-Encoding
+  * Updated to BouncyCastle 1.57
+  * The receiving modules got a new attribute `errorstorebody` to indicate whether the body of a failed message should also be stored or not (default is `false`)
+  * The receiving modules `errordir` directory can now handle parameters (date and msg)
+  * AS2 client can now request and asynchronous MDN (issue #31)
+* v3.0.3 - 2017-01-24
+  * Binds to ph-commons 8.6.x
+  * Binds to ph-web 8.7.0
+  * Updated to BouncyCastle 1.56
+* v3.0.2 - 2016-11-28
+  * Improved signature validation certificate selection (#28) - thanks @rklyne
+  * Made connect and read timeout configurable in `AS2ClientSettings` (issue #23)
+* v3.0.1 - 2016-09-27
+  * Made incoming HTTP request dumping customizable (issue #26)
+* v3.0.0 - 2016-08-21
+  * JDK 8 is now required  
+  * Using ph-commons 8.4.x
+* v2.2.8 - 2016-05-09
+  * Improved AS2 client https customization and API
+* v2.2.7 - 2016-04-27 
+  * Added per partnership attribute `rfc3851_micalgs` to determine to use RFC 3851 MIC algorithm names instead of the default RFC 5751 MIC algorithm names (issue #18)
+  * Fixed problem with special character escaping in MDN context (issue #19)
+* v2.2.6 - 2016-03-02
+  * Added support for dumping HTTP requests when using `as2-servlet` 
+* v2.2.5 - 2015-12-01 
+  * Added a validity check so that expired certificates can no longer be used to sign, verify and encrypt messages. Decrypt is still possible.
+  * Added the possibility to disable the autosave of the `PKCS12CertificateFactory` using the new boolean attribute `autosave`. This can now also easily be set in the client settings. (issue #17)
+  * Fixed potential endless loop when a retry count was specified at a partnership (issue #16) 
+* v2.2.4 - 2015-11-11
+  * Fixed a minor issue where details of a ProcessingException were not passed into the MDN text
+* v2.2.3 - 2015-10-22
+  * Improved API for handling MDN errors (as2-lib issue #11)  
+  * The signature verification of messages sent without `Content-Transfer-Encoding` was fixed (as2-lib issue #12)
+  * Receiving a message for an unknown partnership now results in a correct error MDN (as2-server issue #16)
+  * The new sub-project `as2-servlet` is now contained
+* v2.2.2 - 2015-10-19
+  * Updated to Bouncy Castle 1.53 (as2-lib issue #10)
+* v2.2.1 - 2015-10-08
+  * Extended API and some debug logging added
+* v2.2.0 - 2015-09-27
+  * added system properties (see below) for configuration and debugging purposes
+  * added new resender modules: `ImmediateResenderModule` and `InMemoryResenderModule`
+  * added the following new partnership attributes:
+    * `content_transfer_encoding_receive` [receiver side] to define a fixed `Content-Transfer-Encoding` for receiving, even if none is specified.
+    * `force_decrypt` [receiver side] to force decryption of incoming messages even if the `Content-Type` header claims the message is not encrypted (as a work-around for non spec-compliant senders)
+    * `disable_decrypt` [receiver side] to disable decryption of incoming messages even if the `Content-Type` header claims the message is encrypted (as a work-around for non spec-compliant senders)
+    * `force_verify` [receiver side] to force signature validation of incoming messages even if the `Content-Type` header claims the message is not signed (as a work-around for non spec-compliant senders)
+    * `disable_verify` [receiver side] to disable signature verification of incoming messages even if the `Content-Type` header claims the message is signed (as a work-around for non spec-compliant senders)
+    * `verify_use_cert_in_body_part` [receiver side] to define whether a certificate passed in the signed MIME body part shall be used to verify the signature (when `true`) or whether to always use the certificate provided in the partnership (when `false`). If not set the value of the AS2 session is used.
+    * `disable_decompress` [receiver side] to disable decompression of incoming messages even if the `Content-Type` header claims the message is compressed (as a work-around for non spec-compliant senders)
+    * `sign_include_cert_in_body_part` [sender side] to determine whether the certificate used for signing should be included in the signed content part (when `true`) or not (when `false`). The default value is `true`.
+    * Added the sub-project `as2-partnership-mongodb` - thanks to @jochenberger for contributing it
+* Version 2.1.0 - 2015-08-20
+  * fixes a problem that implicitly SHA-1 was always used for signing, no matter what you specify
+  * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
 
 # Maven usage
 Add the following to your `pom.xml` to use this artifact:
@@ -97,7 +98,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>3.1.0</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 
@@ -106,16 +107,16 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>3.1.0</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 
 For the receive servlet, add the following to your `pom.xml`:
-```xmö
+```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>3.1.0</version>
+  <version>4.0.0</version>
 </dependency>
 ```
 
