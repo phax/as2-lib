@@ -26,6 +26,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 * v4.0.1 - work in progress
   * Updated to BouncyCastle 1.59
+  * When using the non-servlet version, the values for the `source_ip` and `destination_ip` fields were fixed (see https://github.com/phax/as2-server/issues/20)
 * v4.0.0 - 2018-01-06
   * Updated to ph-commons 9.0.0
   * Updated to BouncyCastle 1.58
