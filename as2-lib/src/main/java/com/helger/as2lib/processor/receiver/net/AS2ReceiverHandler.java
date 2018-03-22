@@ -112,9 +112,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   protected AS2Message createMessage (@Nonnull final Socket aSocket)
   {
     final AS2Message aMsg = new AS2Message ();
-    aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_IP, aSocket.getInetAddress ().toString ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_IP, aSocket.getInetAddress ().getHostAddress ());
     aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_PORT, aSocket.getPort ());
-    aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aSocket.getLocalAddress ().toString ());
+    aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aSocket.getLocalAddress ().getHostAddress ());
     aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aSocket.getLocalPort ());
     aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED, true);
     return aMsg;
