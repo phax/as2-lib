@@ -444,11 +444,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
         aKeyStore.store (aOS, aPassword);
       }
     }
-    catch (final IOException ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
-    catch (final GeneralSecurityException ex)
+    catch (final IOException | GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
