@@ -614,8 +614,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
+  /**
+   * Handler for errors in MDN processing.
+   * 
+   * @param aMsg
+   *        The source message that was send
+   * @param ex
+   *        The exception that was caught
+   * @throws OpenAS2Exception
+   *         In case an overload wants to throw the exception
+   */
   @OverrideOnDemand
-  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg, @Nonnull final OpenAS2Exception ex)
+  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg,
+                                     @Nonnull final OpenAS2Exception ex) throws OpenAS2Exception
   {
     final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
                                                         ex);

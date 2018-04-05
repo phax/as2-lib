@@ -92,10 +92,13 @@ public class AS2Client
    *
    * @param aAS2SenderModuleFactory
    *        The factory to be used. May not be <code>null</code>.
+   * @return this for chaining
    */
-  public void setAS2SenderModuleFactory (@Nonnull final ISupplier <AS2SenderModule> aAS2SenderModuleFactory)
+  @Nonnull
+  public AS2Client setAS2SenderModuleFactory (@Nonnull final ISupplier <AS2SenderModule> aAS2SenderModuleFactory)
   {
     m_aAS2SenderModuleFactory = ValueEnforcer.notNull (aAS2SenderModuleFactory, "AS2SenderModuleFactory");
+    return this;
   }
 
   /**
@@ -112,7 +115,7 @@ public class AS2Client
    *
    * @param aHttpProxy
    *        The proxy to use. May be <code>null</code> to indicate no proxy.
-   * @return this
+   * @return this for chaining
    */
   @Nonnull
   public AS2Client setHttpProxy (@Nullable final Proxy aHttpProxy)
