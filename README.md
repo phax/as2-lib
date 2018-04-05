@@ -24,8 +24,9 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.0.2 - work in progress
-  * improved client configurability
+* v4.0.2 - 2018-04-05
+  * improved client configurability and customizability
+  * Switching back to preferring BC PKCS12 key store, because JDK PKCS 12 key store is partially case insensitive 
 * v4.0.1 - 2018-03-27
   * Updated to BouncyCastle 1.59
   * When using the non-servlet version, the values for the `source_ip` and `destination_ip` fields were fixed (see https://github.com/phax/as2-server/issues/20)
@@ -103,7 +104,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.0.1</version>
+  <version>4.0.2</version>
 </dependency>
 ```
 
@@ -112,7 +113,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.0.1</version>
+  <version>4.0.2</version>
 </dependency>
 ```
 
@@ -121,7 +122,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.0.1</version>
+  <version>4.0.2</version>
 </dependency>
 ```
 
