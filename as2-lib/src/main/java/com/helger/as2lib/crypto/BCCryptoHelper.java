@@ -170,12 +170,13 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     try
     {
-      // Try with BouncyCastle first
+      // Try with BouncyCastle first (e.g. PKCS12)
+      // Important, because JDK PKCS12 is partially case insensitive
       return aKeyStoreType.getKeyStore (BouncyCastleProvider.PROVIDER_NAME);
     }
     catch (final Exception ex)
     {
-      // Try native
+      // Try native (e.g. for JKS)
       return aKeyStoreType.getKeyStore ();
     }
   }
