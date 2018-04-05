@@ -170,13 +170,13 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     try
     {
+      // Try with BouncyCastle first
+      return aKeyStoreType.getKeyStore (BouncyCastleProvider.PROVIDER_NAME);
+    }
+    catch (final Exception ex)
+    {
       // Try native
       return aKeyStoreType.getKeyStore ();
-    }
-    catch (final GeneralSecurityException ex)
-    {
-      // Try with BouncyCastle
-      return aKeyStoreType.getKeyStore (BouncyCastleProvider.PROVIDER_NAME);
     }
   }
 
