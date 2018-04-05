@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.cert;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,8 +67,6 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.io.EAppend;
-import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.security.keystore.EKeyStoreType;
 
@@ -99,6 +96,13 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   public CertificateFactory ()
   {}
 
+  @Nonnull
+  @OverrideOnDemand
+  protected KeyStore createNewKeyStore (@Nonnull final EKeyStoreType eKeyStoreType) throws Exception
+  {
+    return AS2Helper.getCryptoHelper ().createNewKeyStore (eKeyStoreType);
+  }
+
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
                                     @Nullable final IStringMap aOptions) throws OpenAS2Exception
@@ -110,7 +114,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       final String sKeyStoreType = getAsString (ATTR_TYPE);
       final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType,
                                                                                            DEFAULT_KEY_STORE_TYPE);
-      m_aKeyStore = AS2Helper.getCryptoHelper ().createNewKeyStore (eKeyStoreType);
+      m_aKeyStore = createNewKeyStore (eKeyStoreType);
     }
     catch (final Exception ex)
     {
@@ -118,6 +122,22 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     }
 
     load (getFilename (), getPassword ());
+  }
+
+  /**
+   * Overridable method to perform unifications on aliases, e.g. for lower
+   * casing when using Oracle JDKs PKCS12 implementation.
+   *
+   * @param sAlias
+   *        Source alias. May be <code>null</code>.
+   * @return <code>null</code> if the source was <code>null</code>.
+   * @since 4.0.2
+   */
+  @Nullable
+  @OverrideOnDemand
+  protected String getUnifiedAlias (@Nullable final String sAlias)
+  {
+    return sAlias;
   }
 
   @Override
@@ -141,7 +161,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
     if (sAlias == null)
       throw new CertificateNotFoundException (ePartnershipType, aPartnership);
-    return sAlias;
+    return getUnifiedAlias (sAlias);
   }
 
   @Override
@@ -149,12 +169,13 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   protected X509Certificate internalGetCertificate (@Nullable final String sAlias,
                                                     @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
+    final String sRealAlias = getUnifiedAlias (sAlias);
     try
     {
       final KeyStore aKeyStore = getKeyStore ();
-      final X509Certificate aCert = (X509Certificate) aKeyStore.getCertificate (sAlias);
+      final X509Certificate aCert = (X509Certificate) aKeyStore.getCertificate (sRealAlias);
       if (aCert == null)
-        throw new CertificateNotFoundException (ePartnershipType, sAlias);
+        throw new CertificateNotFoundException (ePartnershipType, sRealAlias);
       return aCert;
     }
     catch (final KeyStoreException ex)
@@ -181,8 +202,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       final Enumeration <String> aAliases = aKeyStore.aliases ();
       while (aAliases.hasMoreElements ())
       {
-        final String sCertAlias = aAliases.nextElement ();
-        aCerts.put (sCertAlias, aKeyStore.getCertificate (sCertAlias));
+        final String sAlias = aAliases.nextElement ();
+        aCerts.put (sAlias, aKeyStore.getCertificate (sAlias));
       }
       return aCerts;
     }
@@ -252,25 +273,27 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   public PrivateKey getPrivateKey (@Nullable final X509Certificate aCert) throws OpenAS2Exception
   {
     final KeyStore aKeyStore = getKeyStore ();
-    String sAlias = null;
 
+    String sRealAlias = null;
     try
     {
       // This method heuristically scans the keys tore and delivery the first
       // result.
-      sAlias = aKeyStore.getCertificateAlias (aCert);
+      final String sAlias = aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
         throw new KeyNotFoundException (aCert);
 
-      final PrivateKey aKey = (PrivateKey) aKeyStore.getKey (sAlias, getPassword ());
+      sRealAlias = getUnifiedAlias (sAlias);
+
+      final PrivateKey aKey = (PrivateKey) aKeyStore.getKey (sRealAlias, getPassword ());
       if (aKey == null)
-        throw new KeyNotFoundException (aCert, sAlias);
+        throw new KeyNotFoundException (aCert, sRealAlias);
 
       return aKey;
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new KeyNotFoundException (aCert, sAlias, ex);
+      throw new KeyNotFoundException (aCert, sRealAlias, ex);
     }
   }
 
@@ -295,16 +318,17 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     ValueEnforcer.notEmpty (sAlias, "Alias");
     ValueEnforcer.notNull (aCert, "Cert");
 
+    final String sRealAlias = getUnifiedAlias (sAlias);
     final KeyStore aKeyStore = getKeyStore ();
 
     try
     {
-      if (aKeyStore.containsAlias (sAlias) && !bOverwrite)
-        throw new CertificateExistsException (sAlias);
+      if (aKeyStore.containsAlias (sRealAlias) && !bOverwrite)
+        throw new CertificateExistsException (sRealAlias);
 
-      aKeyStore.setCertificateEntry (sAlias, aCert);
+      aKeyStore.setCertificateEntry (sRealAlias, aCert);
       onChange ();
-      s_aLogger.info ("Added certificate alias '" + sAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
+      s_aLogger.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -320,16 +344,17 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     ValueEnforcer.notNull (aKey, "Key");
     ValueEnforcer.notNull (sPassword, "Password");
 
+    final String sRealAlias = getUnifiedAlias (sAlias);
     final KeyStore aKeyStore = getKeyStore ();
     try
     {
-      if (!aKeyStore.containsAlias (sAlias))
-        throw new CertificateNotFoundException (null, sAlias);
+      if (!aKeyStore.containsAlias (sRealAlias))
+        throw new CertificateNotFoundException (null, sRealAlias);
 
-      final Certificate [] aCertChain = aKeyStore.getCertificateChain (sAlias);
-      aKeyStore.setKeyEntry (sAlias, aKey, sPassword.toCharArray (), aCertChain);
+      final Certificate [] aCertChain = aKeyStore.getCertificateChain (sRealAlias);
+      aKeyStore.setKeyEntry (sRealAlias, aKey, sPassword.toCharArray (), aCertChain);
       onChange ();
-      s_aLogger.info ("Added key alias '" + sAlias + "'");
+      s_aLogger.info ("Added key alias '" + sRealAlias + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -343,21 +368,23 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     try
     {
       // Make a copy to be sure
+      int nDeleted = 0;
       for (final String sAlias : CollectionHelper.newList (aKeyStore.aliases ()))
+      {
         aKeyStore.deleteEntry (sAlias);
-      onChange ();
-      s_aLogger.info ("Remove all aliases in key store");
+        nDeleted++;
+      }
+      if (nDeleted > 0)
+      {
+        // Only if something changed
+        onChange ();
+        s_aLogger.info ("Remove all aliases in key store");
+      }
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
-  }
-
-  public void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
-  {
-    final InputStream aFIS = FileHelper.getInputStream (new File (sFilename));
-    load (aFIS, aPassword);
   }
 
   public void load (@Nonnull @WillClose final InputStream aIS, @Nonnull final char [] aPassword) throws OpenAS2Exception
@@ -380,14 +407,10 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     }
   }
 
-  public void load () throws OpenAS2Exception
-  {
-    load (getFilename (), getPassword ());
-  }
-
   public void removeCertificate (@Nonnull final X509Certificate aCert) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aCert, "Cert");
+
     final KeyStore aKeyStore = getKeyStore ();
 
     try
@@ -395,6 +418,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       final String sAlias = aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
         throw new CertificateNotFoundException (aCert);
+
       removeCertificate (sAlias);
     }
     catch (final GeneralSecurityException ex)
@@ -405,32 +429,29 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
   public void removeCertificate (@Nullable final String sAlias) throws OpenAS2Exception
   {
+    final String sRealAlias = getUnifiedAlias (sAlias);
     final KeyStore aKeyStore = getKeyStore ();
+
     try
     {
-      final Certificate aCert = aKeyStore.getCertificate (sAlias);
+      final Certificate aCert = aKeyStore.getCertificate (sRealAlias);
       if (aCert == null)
-        throw new CertificateNotFoundException (null, sAlias);
+        throw new CertificateNotFoundException (null, sRealAlias);
 
-      aKeyStore.deleteEntry (sAlias);
+      aKeyStore.deleteEntry (sRealAlias);
       onChange ();
-      s_aLogger.info ("Removed certificate alias '" + sAlias + "'");
+      s_aLogger.info ("Removed certificate alias '" +
+                      sRealAlias +
+                      "'" +
+                      (aCert instanceof X509Certificate ? " of certificate '" +
+                                                          ((X509Certificate) aCert).getSubjectDN () +
+                                                          "'"
+                                                        : ""));
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
-  }
-
-  public void save () throws OpenAS2Exception
-  {
-    save (getFilename (), getPassword ());
-  }
-
-  public void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
-  {
-    final OutputStream fOut = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
-    save (fOut, aPassword);
   }
 
   public void save (@Nonnull @WillClose final OutputStream aOS,

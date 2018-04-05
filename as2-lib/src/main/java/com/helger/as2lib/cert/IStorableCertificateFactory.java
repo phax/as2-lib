@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.cert;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -39,6 +40,8 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.commons.io.EAppend;
+import com.helger.commons.io.file.FileHelper;
 
 /**
  * Base interface for a certificate factory that can store to a file.
@@ -80,9 +83,16 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    * @throws OpenAS2Exception
    *         In case of an internal error
    */
-  void load () throws OpenAS2Exception;
+  default void load () throws OpenAS2Exception
+  {
+    load (getFilename (), getPassword ());
+  }
 
-  void load (@Nonnull String sFilename, @Nonnull char [] aPassword) throws OpenAS2Exception;
+  default void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
+  {
+    final InputStream aFIS = FileHelper.getInputStream (new File (sFilename));
+    load (aFIS, aPassword);
+  }
 
   void load (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws OpenAS2Exception;
 
@@ -92,9 +102,16 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    * @throws OpenAS2Exception
    *         In case of an internal error
    */
-  void save () throws OpenAS2Exception;
+  default void save () throws OpenAS2Exception
+  {
+    save (getFilename (), getPassword ());
+  }
 
-  void save (@Nonnull String sFilename, @Nonnull char [] aPassword) throws OpenAS2Exception;
+  default void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
+  {
+    final OutputStream fOut = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
+    save (fOut, aPassword);
+  }
 
   void save (@Nonnull OutputStream aOS, @Nonnull char [] aPassword) throws OpenAS2Exception;
 }
