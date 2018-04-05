@@ -43,7 +43,7 @@
     </developer>
   </developers>
   <properties>
-    <groovy.version>2.4.14</groovy.version>
+    <groovy.version>2.4.15</groovy.version>
   </properties>
   <dependencyManagement>
     <dependencies>
