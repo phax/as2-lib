@@ -573,9 +573,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (BouncyCastleProvider.PROVIDER_NAME)
                                                                                     .build (aRealX509Cert.getPublicKey ());
 
-    for (final Object aSigner : aSignedParser.getSignerInfos ().getSigners ())
+    for (final SignerInformation aSignerInfo : aSignedParser.getSignerInfos ().getSigners ())
     {
-      final SignerInformation aSignerInfo = (SignerInformation) aSigner;
       if (!aSignerInfo.verify (aSIV))
         throw new SignatureException ("Verification failed");
     }
