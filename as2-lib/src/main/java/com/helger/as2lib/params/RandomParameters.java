@@ -58,6 +58,12 @@ public class RandomParameters extends AbstractParameterParser
       throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
     final int nWantedChars = sKey.length ();
+    if (nWantedChars == 0)
+      throw new InvalidParameterException ("Empty key resulting in an empty random value is prohibited",
+                                           this,
+                                           sKey,
+                                           null);
+
     final StringBuilder ret = new StringBuilder (nWantedChars);
     for (int i = 0; i < nWantedChars; ++i)
     {
