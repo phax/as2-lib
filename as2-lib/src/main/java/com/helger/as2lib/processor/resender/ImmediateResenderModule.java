@@ -82,14 +82,14 @@ public class ImmediateResenderModule extends AbstractResenderModule
       nRetries = Integer.parseInt (sRetries);
     else
     {
-      s_aLogger.warn ("The resending retry count is missing - default to " +
-                      IProcessorResenderModule.DEFAULT_RETRIES +
-                      "!");
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
+      s_aLogger.warn ("The resending retry count is missing - default to " + nRetries + "!");
     }
 
-    // Update the retries
+    // Update the retries - decrement here
     aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nRetries - 1));
+
+    // Send again
     getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
   }
 }

@@ -88,7 +88,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
           nRetries = nRetriesOptions;
         else
         {
-          // Use the minimum
+          // Use the minimum of partnership and options
           nRetries = Math.min (nRetries, nRetriesOptions);
         }
     }
@@ -102,7 +102,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
           nRetries = nRetriesAttr;
         else
         {
-          // Use the minimum
+          // Use the minimum of attribute value, partnership and options
           nRetries = Math.min (nRetries, nRetriesAttr);
         }
     }

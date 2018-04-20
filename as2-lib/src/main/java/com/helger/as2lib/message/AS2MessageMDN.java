@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.message;
 
-import java.text.DecimalFormat;
-
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.AS2GlobalSettings;
@@ -41,6 +39,7 @@ import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.AS2DateHelper;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.string.StringHelper;
 
 public class AS2MessageMDN extends AbstractMessageMDN
 {
@@ -67,9 +66,8 @@ public class AS2MessageMDN extends AbstractMessageMDN
     final String sDateFormat = partnership ().getDateFormat (DEFAULT_DATE_FORMAT);
     aSB.append ('<').append (CAS2Info.NAME).append ('-').append (AS2DateHelper.getFormattedDateNow (sDateFormat));
 
-    final DecimalFormat aRandomFormatter = new DecimalFormat ("0000");
-    final int nRandom = AS2GlobalSettings.getRandom ().nextInt (10000);
-    aSB.append ('-').append (aRandomFormatter.format (nRandom));
+    final int nRandom = AS2GlobalSettings.getRandom ().nextInt (10_000);
+    aSB.append ('-').append (StringHelper.getLeadingZero (nRandom, 4));
 
     // Message details
     final Partnership aPartnership = getMessage ().partnership ();
