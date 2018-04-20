@@ -38,7 +38,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.AS2GlobalSettings;
-import com.helger.commons.string.StringHelper;
 
 public class RandomParameters extends AbstractParameterParser
 {
@@ -59,9 +58,12 @@ public class RandomParameters extends AbstractParameterParser
       throw new InvalidParameterException ("Invalid key", this, sKey, null);
 
     final int nWantedChars = sKey.length ();
-    final int nMax = (int) Math.pow (10, nWantedChars);
-    final int nRandom = s_aRandom.nextInt (nMax);
-
-    return StringHelper.getLeadingZero (nRandom, nWantedChars);
+    final StringBuilder ret = new StringBuilder (nWantedChars);
+    for (int i = 0; i < nWantedChars; ++i)
+    {
+      final char cRandom = (char) ('0' + s_aRandom.nextInt (10));
+      ret.append (cRandom);
+    }
+    return ret.toString ();
   }
 }

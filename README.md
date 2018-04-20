@@ -24,6 +24,8 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.0.3 - work in progress
+  * The random parameters class now supports creating random values that are longer than 10 characters
 * v4.0.2 - 2018-04-05
   * improved client configurability and customizability
   * Switching back to preferring BC PKCS12 key store, because JDK PKCS 12 key store is partially case insensitive 
