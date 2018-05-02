@@ -66,7 +66,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
 
   /**
    * Create the AS2 session to be used based on the provided configuration file.
-   * 
+   *
    * @param aInitParams
    * @return The created session. May not be <code>null</code>.
    * @throws OpenAS2Exception
@@ -90,7 +90,9 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
 
       m_aReceiver = m_aSession.getMessageProcessor ().getModuleOfClass (AS2ServletReceiverModule.class);
       if (m_aReceiver == null)
-        throw new ServletException ("Failed to retrieve AS2ReceiverModule which is a mandatory module!");
+        throw new ServletException ("Failed to retrieve AS2ReceiverModule which is a mandatory module! Please ensure your configuration file contains at least the module '" +
+                                    AS2ServletReceiverModule.class.getName () +
+                                    "'");
     }
     catch (final OpenAS2Exception ex)
     {
