@@ -392,6 +392,22 @@ public final class HTTPHelper
 
   /**
    * Copy headers from an HTTP connection to an InternetHeaders object
+   * Will switch according to type
+   *
+   * @param aFromConn
+   *        Connection - source. May not be <code>null</code>.
+   * @param aHeaders
+   *        Headers - destination. May not be <code>null</code>.
+   */
+  public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn, @Nonnull final HttpHeaderMap aHeaders)
+  {
+    if (aFromConn instanceof HttpURLConnection)
+      copyHttpHeaders(aFromConn, aHeaders);
+    else throw new IllegalArgumentException("class "+
+      aFromConn.getClass().getCanonicalName()+" not supported");
+  }
+  /**
+   * Copy headers from an HTTP connection to an InternetHeaders object
    *
    * @param aFromConn
    *        Connection - source. May not be <code>null</code>.

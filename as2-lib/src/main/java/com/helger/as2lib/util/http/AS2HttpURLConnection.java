@@ -32,56 +32,81 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.net.HttpURLConnection;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.HttpHeaderMap;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
- * Implementation of {@link IAS2HttpHeaderWrapper} for {@link HttpURLConnection}
- * of {@link sun.net.www.http.HttpClient}.
+ * Http connection, Implemented as HttpURLConnection.
  *
- * @author Philip Helger
+ * @author Ziv Harpaz
  */
-@Immutable
-public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHeaderWrapper
-{
-  private final IAS2HttpConnection m_aConn;
-  private final IHTTPOutgoingDumper m_aOutgoingDumper;
+public class AS2HttpURLConnection implements IAS2HttpConnection{
+	private HttpURLConnection httpURLConnection;
 
-  @SuppressWarnings("unused")
-  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn)
-  {
-    this (aConn, null);
-  }
+public AS2HttpURLConnection(HttpURLConnection connection){
+	httpURLConnection=connection;
+}
+	/**
+	 * Set an HTTP header
+	 *
+	 * @param sName
+	 *        Header name
+	 * @param sValue
+	 *        Header value
+	 */
+	public void setHttpHeader(@Nonnull String sName, @Nonnull String sValue){
+		httpURLConnection.setRequestProperty(sName, sValue);
+	}
 
-  /**
-   * Constructor with debug support
-   *
-   * @param aConn
-   *        The HTTP URL connection to use. May not be <code>null</code>.
-   * @param aOutgoingDumper
-   *        An optional outgoing dumper, that will also receive all the headers.
-   *        May be <code>null</code>.
-   */
-  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn,
-                                                @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
-  {
-    m_aConn = ValueEnforcer.notNull (aConn, "Connection");
-    m_aOutgoingDumper = aOutgoingDumper;
-  }
+	/**
+	 * Get URL
+	 *
+	 */
+	public URL getURL(){
+		return httpURLConnection.getURL();
+	}
 
-  public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
-  {
-    final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue);
-    m_aConn.setHttpHeader (sName, sUnifiedValue);
+	/**
+	 * Get OutputStream
+	 *
+	 */
+	public OutputStream getOutputStream() throws IOException {
+		return httpURLConnection.getOutputStream();
+	}
 
-    if (m_aOutgoingDumper != null)
-      m_aOutgoingDumper.dumpHeader (sName, sUnifiedValue);
-  }
+	/**
+	 * Get InputStream
+	 *
+	 */
+	public InputStream getInputStream() throws IOException{
+		return httpURLConnection.getInputStream();
+	}
+
+	/**
+	 * Get response HTTP Status as integer
+	 *
+	 */
+	public int getResponseCode() throws IOException {
+		return httpURLConnection.getResponseCode();
+	}
+
+	/**
+	 * Get the response message
+	 *
+	 */
+	public String getResponseMessage() throws IOException {
+		return httpURLConnection.getResponseMessage();
+	}
+
+	/**
+	 * Close the connection
+	 *
+	 */
+	public void disconnect(){
+		httpURLConnection.disconnect();
+	}
 }

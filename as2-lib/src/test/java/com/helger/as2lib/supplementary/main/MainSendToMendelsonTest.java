@@ -54,6 +54,9 @@ import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
 import com.helger.security.keystore.EKeyStoreType;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+
 /**
  * Test class to send an AS2 messages to the Mendelson test server.
  *
@@ -111,7 +114,8 @@ public final class MainSendToMendelsonTest
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
+    //aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
+    aRequest.setData (new DataHandler(new FileDataSource(new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message

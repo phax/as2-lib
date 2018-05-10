@@ -49,6 +49,7 @@ import javax.net.ssl.TrustManager;
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.util.http.AS2HttpURLConnection;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.EHttpMethod;
@@ -109,12 +110,12 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   @Nonnull
-  public HttpURLConnection getConnection (@Nonnull @Nonempty final String sUrl,
-                                          final boolean bOutput,
-                                          final boolean bInput,
-                                          final boolean bUseCaches,
-                                          @Nonnull final EHttpMethod eRequestMethod,
-                                          @Nullable final Proxy aProxy) throws OpenAS2Exception
+  public AS2HttpURLConnection getHttpURLConnection (@Nonnull @Nonempty final String sUrl,
+                                                    final boolean bOutput,
+                                                    final boolean bInput,
+                                                    final boolean bUseCaches,
+                                                    @Nonnull final EHttpMethod eRequestMethod,
+                                                    @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
     try
     {
@@ -143,7 +144,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
           aConns.setHostnameVerifier (aHV);
       }
 
-      return aConn;
+      return new AS2HttpURLConnection(aConn);
     }
     catch (final IOException ex)
     {

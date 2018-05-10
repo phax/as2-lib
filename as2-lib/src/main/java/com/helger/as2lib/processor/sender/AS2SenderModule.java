@@ -48,6 +48,7 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.util.http.IAS2HttpConnection;
 import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
 import org.slf4j.Logger;
@@ -474,7 +475,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *         in case of an IO error
    */
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
-                                 @Nonnull final HttpURLConnection aConn,
+                                 @Nonnull final IAS2HttpConnection aConn,
                                  @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
   {
     if (s_aLogger.isDebugEnabled ())
@@ -641,17 +642,32 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final Partnership aPartnership = aMsg.partnership ();
 
     // Create the HTTP connection
-    final String sUrl = aPartnership.getAS2URL ();
+    final String  sUrl = aPartnership.getAS2URL ();
     final boolean bOutput = true;
     final boolean bInput = true;
     final boolean bUseCaches = false;
     final EHttpMethod eRequestMethod = EHttpMethod.POST;
-    final HttpURLConnection aConn = getConnection (sUrl,
-                                                   bOutput,
-                                                   bInput,
-                                                   bUseCaches,
-                                                   eRequestMethod,
-                                                   getSession ().getHttpProxy ());
+    // decide on the connection type to use according to the MimeBodyPart:
+    // If it contains the data, (and no DataHandler), then use HttpUrlClient,
+    // otherwise, use HttpClient
+    final IAS2HttpConnection aConn;
+    if (aSecuredMimePart.getDataHandler() == null) {
+      aConn = getHttpURLConnection(
+        sUrl,
+        bOutput,
+        bInput,
+        bUseCaches,
+        eRequestMethod,
+        getSession().getHttpProxy());
+    } else {
+      aConn = getHttpURLConnection(
+        sUrl,
+        bOutput,
+        bInput,
+        bUseCaches,
+        eRequestMethod,
+        getSession().getHttpProxy());
+    }
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
       s_aLogger.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
