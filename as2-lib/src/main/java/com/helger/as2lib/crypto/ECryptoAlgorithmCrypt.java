@@ -52,7 +52,10 @@ public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
   CRYPT_3DES ("3des", PKCSObjectIdentifiers.des_EDE3_CBC),
   CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC),
   CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC),
-  CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC);
+  CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC),
+  CRYPT_AES128_CBC ("aes128-cbc", CMSAlgorithm.AES128_CBC),
+  CRYPT_AES192_CBC ("aes192-cbc", CMSAlgorithm.AES192_CBC),
+  CRYPT_AES256_CBC ("aes256-cbc", CMSAlgorithm.AES256_CBC);
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
