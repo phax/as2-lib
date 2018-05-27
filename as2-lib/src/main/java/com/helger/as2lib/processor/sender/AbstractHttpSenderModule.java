@@ -35,6 +35,7 @@ package com.helger.as2lib.processor.sender;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
+import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -49,12 +50,18 @@ import javax.net.ssl.TrustManager;
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpURLConnection;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.ws.HostnameVerifierVerifyAll;
 import com.helger.commons.ws.TrustManagerTrustAll;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  * Abstract HTTP based sender module
@@ -67,6 +74,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
   /** Attribute name for read timeout in milliseconds */
   public static final String ATTR_READ_TIMEOUT = "readtimeout";
+  /** Attribute name for large file support, i.e. avoid holding all file data in memory */
+  public static final String ATTR_LARGE_FILE_SUPPORT_ON = "largefileon";
   /** Default connection timeout: 60 seconds */
   public static final int DEFAULT_CONNECT_TIMEOUT_MS = 60_000;
   /** Default read timeout: 60 seconds */
@@ -154,5 +163,24 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+  }
+
+  /**
+   * Generate a HttpClient connection. It works with streams and avoids holding whole messge in memory. note that bOutput, bInput, and bUseCaches are not supported
+   * @param sUrl
+   * @param eRequestMethod
+   * @param aProxy
+   * @return a {@link AS2HttpClient} object to work with
+   * @throws OpenAS2Exception
+   */
+  @Nonnull
+  public AS2HttpClient getHttpClient(@Nonnull @Nonempty final String sUrl,
+                                     @Nonnull final EHttpMethod eRequestMethod,
+                                     @Nullable final Proxy aProxy) throws OpenAS2Exception {
+  return new AS2HttpClient(sUrl,
+    getAsInt(ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS),
+    getAsInt(ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS),
+    eRequestMethod,
+    aProxy);
   }
 }

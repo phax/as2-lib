@@ -49,6 +49,7 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 
+import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.AS2IOHelper;
@@ -392,29 +393,13 @@ public final class HTTPHelper
 
   /**
    * Copy headers from an HTTP connection to an InternetHeaders object
-   * Will switch according to type
    *
    * @param aFromConn
    *        Connection - source. May not be <code>null</code>.
    * @param aHeaders
    *        Headers - destination. May not be <code>null</code>.
    */
-  public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn, @Nonnull final HttpHeaderMap aHeaders)
-  {
-    if (aFromConn instanceof HttpURLConnection)
-      copyHttpHeaders(aFromConn, aHeaders);
-    else throw new IllegalArgumentException("class "+
-      aFromConn.getClass().getCanonicalName()+" not supported");
-  }
-  /**
-   * Copy headers from an HTTP connection to an InternetHeaders object
-   *
-   * @param aFromConn
-   *        Connection - source. May not be <code>null</code>.
-   * @param aHeaders
-   *        Headers - destination. May not be <code>null</code>.
-   */
-  public static void copyHttpHeaders (@Nonnull final HttpURLConnection aFromConn, @Nonnull final HttpHeaderMap aHeaders)
+  public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn, @Nonnull final HttpHeaderMap aHeaders) throws OpenAS2Exception
   {
     for (final Map.Entry <String, List <String>> aConnHeader : aFromConn.getHeaderFields ().entrySet ())
     {

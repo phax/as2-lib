@@ -32,11 +32,15 @@
  */
 package com.helger.as2lib.util.http;
 
+import com.helger.as2lib.exception.OpenAS2Exception;
+
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for Http connection, for set and get headers, content, etc.
@@ -59,7 +63,7 @@ public interface IAS2HttpConnection {
 	 * Get URL
 	 *
 	 */
-	URL getURL();
+	URL getURL() throws OpenAS2Exception;
 
 	/**
 	 * Get OutputStream
@@ -71,23 +75,33 @@ public interface IAS2HttpConnection {
 	 * Get InputStream
 	 *
 	 */
-	InputStream  getInputStream() throws IOException;
+	InputStream  getInputStream() throws OpenAS2Exception, IOException;
 
 	/**
 	 * Get response HTTP Status as integer
 	 *
 	 */
-	int getResponseCode() throws IOException;
+	int getResponseCode() throws OpenAS2Exception, IOException;
 
 	/**
 	 * Get the response message
 	 *
 	 */
-	String getResponseMessage() throws IOException;
+	String getResponseMessage() throws OpenAS2Exception, IOException;
 
 	/**
 	 * Close the connection
 	 *
 	 */
 	void disconnect();
+
+	/**
+	 * Get the headers of the request
+	 *
+	 */
+	Map<String,List<String>> getHeaderFields() throws OpenAS2Exception;
+
+	default public void send(InputStream toSend) throws OpenAS2Exception, IOException{
+		throw new OpenAS2Exception("Method not implemented in class "+ this.getClass().getName());
+	}
 }

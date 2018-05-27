@@ -1,4 +1,4 @@
-/**
+/*
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
  * Copyright (C) 2013-2018 Philip Helger philip[at]helger[dot]com
@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Http connection, Implemented as HttpURLConnection.
@@ -100,6 +102,14 @@ public AS2HttpURLConnection(HttpURLConnection connection){
 	 */
 	public String getResponseMessage() throws IOException {
 		return httpURLConnection.getResponseMessage();
+	}
+
+	/**
+	 * Get the headers of the request
+	 *
+	 */
+	public Map<String,List<String>> getHeaderFields(){
+		return httpURLConnection.getHeaderFields();
 	}
 
 	/**

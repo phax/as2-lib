@@ -651,7 +651,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // If it contains the data, (and no DataHandler), then use HttpUrlClient,
     // otherwise, use HttpClient
     final IAS2HttpConnection aConn;
-    if (aSecuredMimePart.getDataHandler() == null) {
+    if (!getAsBoolean(AbstractHttpSenderModule.ATTR_LARGE_FILE_SUPPORT_ON)) {
       aConn = getHttpURLConnection(
         sUrl,
         bOutput,
@@ -660,11 +660,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         eRequestMethod,
         getSession().getHttpProxy());
     } else {
-      aConn = getHttpURLConnection(
+      aConn = getHttpClient(
         sUrl,
-        bOutput,
-        bInput,
-        bUseCaches,
         eRequestMethod,
         getSession().getHttpProxy());
     }
@@ -680,38 +677,49 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aConn.getURL ().getPort ());
 
-      // Note: closing this stream causes connection abort errors on some AS2
-      // servers
-      OutputStream aMsgOS = aConn.getOutputStream ();
+      final InputStream aMsgIS = aSecuredMimePart.getInputStream();
 
-      // This stream dumps the HTTP
-      if (aOutgoingDumper != null)
-      {
-        // Overwrite the used OutputStream to additionally log to the debug
-        // OutputStream
-        aMsgOS = new WrappedOutputStream (aMsgOS)
+      if (!getAsBoolean(AbstractHttpSenderModule.ATTR_LARGE_FILE_SUPPORT_ON)) {
+        // Note: closing this stream causes connection abort errors on some AS2
+        // servers
+        OutputStream aMsgOS = aConn.getOutputStream ();
+
+        // This stream dumps the HTTP
+        if (aOutgoingDumper != null)
         {
-          @Override
-          public final void write (final int b) throws IOException
+          // Overwrite the used OutputStream to additionally log to the debug
+          // OutputStream
+          aMsgOS = new WrappedOutputStream (aMsgOS)
           {
-            super.write (b);
-            aOutgoingDumper.dumpPayload (b);
-          }
-        };
+            @Override
+            public final void write (final int b) throws IOException
+            {
+              super.write (b);
+              aOutgoingDumper.dumpPayload (b);
+            }
+          };
+        }
+
+        // Transfer the data
+        final StopWatch aSW = StopWatch.createdStarted();
+        // Main transmission - closes InputStream
+        final long nBytes = AS2IOHelper.copy(aMsgIS, aMsgOS);
+
+        aSW.stop ();
+        s_aLogger.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+
+      }else {//HttpClient option
+        // Transfer the data
+        final StopWatch aSW = StopWatch.createdStarted();
+        aConn.send(aMsgIS);
+        aSW.stop ();
+        //TODO: count sent bytes
+        //s_aLogger.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+
       }
-
-      // Transfer the data
-      final InputStream aMsgIS = aSecuredMimePart.getInputStream ();
-
-      final StopWatch aSW = StopWatch.createdStarted ();
-      // Main transmission - closes InputStream
-      final long nBytes = AS2IOHelper.copy (aMsgIS, aMsgOS);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
-
-      aSW.stop ();
-      s_aLogger.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
