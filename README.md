@@ -28,6 +28,8 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
   * The random parameters class now supports creating random values that are longer than 10 characters
   * Fixed OSGI ServiceProvider configuration
   * Added support for new encryption algorithms (see https://github.com/phax/as2-server/issues/38)
+  * Added new system property `AS2.httpDumpDirectoryOutgoing` to easily dump outgoing transmissions
+  * Renamed system property for dumping incoming HTTP transmissions from `AS2.httpDumpDirectory` to `AS2.httpDumpDirectoryIncoming` to avoid confusion. The old name can still be used but emits a warning.
 * v4.0.2 - 2018-04-05
   * improved client configurability and customizability
   * Switching back to preferring BC PKCS12 key store, because JDK PKCS 12 key store is partially case insensitive 
@@ -166,9 +168,10 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
 ### System Properties
 The following system properties are available for global customization
 
-  * boolean `AS2.useSecureRandom` - since 2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
-  * String `AS2.httpDumpDirectory` - since 2.2.0 - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectory=/var/dump/as2-http`). The filename starts with "as2-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
-  * String `AS2.dumpDecryptedDirectory` - since 2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
+  * boolean `AS2.useSecureRandom` - since v2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
+  * String `AS2.httpDumpDirectoryIncoming` - since v4.0.3 (old name `AS2.httpDumpDirectory` since v2.2.0) - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectoryIncoming=/var/dump/as2-http-incoming`). The filename starts with "as2-incoming-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
+  * String `AS2.dumpDecryptedDirectory` - since v2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
+  * String `AS2.httpDumpDirectoryOutgoing` - since v4.0.3 - if this system property is defined, all outgoing HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectoryOutgoing=/var/dump/as2-http-outgoing`). The filename starts with "as2-outgoing-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http".
   
 ### AS2 client
 `as2-lib` ships with a powerful client to send AS2 messages. It can easily be embedded in standalone Java applications and does not require any server part. All the necessary classes are in the package `com.helger.as2lib.client`.
