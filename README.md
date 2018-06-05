@@ -30,6 +30,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
   * Added support for new encryption algorithms (see https://github.com/phax/as2-server/issues/38)
   * Added new system property `AS2.httpDumpDirectoryOutgoing` to easily dump outgoing transmissions
   * Renamed system property for dumping incoming HTTP transmissions from `AS2.httpDumpDirectory` to `AS2.httpDumpDirectoryIncoming` to avoid confusion. The old name can still be used but emits a warning.
+  * Modules `MDNFileModule` and `MessageFileModule` now got a new attribute `charset` to define the charset to be used to dump the information.  
 * v4.0.2 - 2018-04-05
   * improved client configurability and customizability
   * Switching back to preferring BC PKCS12 key store, because JDK PKCS 12 key store is partially case insensitive 
