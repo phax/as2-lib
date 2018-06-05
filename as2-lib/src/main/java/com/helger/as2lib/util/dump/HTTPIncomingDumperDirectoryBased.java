@@ -35,7 +35,6 @@ package com.helger.as2lib.util.dump;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -99,10 +98,10 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       for (final String sHeaderLine : aHeaderLines)
-        aOS.write ((sHeaderLine + CHttp.EOL).getBytes (StandardCharsets.ISO_8859_1));
+        aOS.write ((sHeaderLine + CHttp.EOL).getBytes (CHttp.HTTP_CHARSET));
 
       // empty line
-      aOS.write (CHttp.EOL.getBytes (StandardCharsets.ISO_8859_1));
+      aOS.write (CHttp.EOL.getBytes (CHttp.HTTP_CHARSET));
 
       // Add payload
       aOS.write (aPayload);
