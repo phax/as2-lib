@@ -258,18 +258,24 @@ Complete example configuration file:
              pendingMDN="%home%/pendingMDN"
              pendingMDNinfo="%home%/pendinginfoMDN">
 
-    <!-- [optional] Store sent MDNs to a file -->
+    <!-- [optional] Store sent MDNs to a file
+      Note: "charset" attribute was added in v4.0.3 
+    -->
     <module classname="com.helger.as2lib.processor.storage.MDNFileModule"
             filename="%home%/mdn/$date.uuuu$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
             protocol="as2"
-            tempdir="%home%/temp"/>
+            tempdir="%home%/temp"
+            charset="utf-8" />
 
-    <!-- [optional] Store received messages and headers to a file -->
+    <!-- [optional] Store received messages and headers to a file 
+      Note: "charset" attribute was added in v4.0.3 
+    -->
     <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
             filename="%home%/inbox/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
             header="%home%/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
             protocol="as2"
-            tempdir="%home%/temp"/>
+            tempdir="%home%/temp"
+            charset="utf-8" />
 
     <!-- [required] The main receiver module that performs the message parsing.
          This module also sends synchronous MDNs back.
