@@ -228,12 +228,11 @@ public final class HTTPHelper
             aData = aNewData;
             nLength = nNewlen;
             // And now the CRLF after the chunk;
-            while (true)
+            int n;
+            do
             {
-              final int n = aDataIS.readByte ();
-              if (n == '\n')
-                break;
-            }
+              n = aDataIS.readByte ();
+            } while (n != '\n');
           }
           aMsg.headers ().setContentLength (nLength);
         }
