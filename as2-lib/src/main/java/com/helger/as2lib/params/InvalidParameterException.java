@@ -32,6 +32,8 @@
  */
 package com.helger.as2lib.params;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -40,11 +42,14 @@ import com.helger.commons.annotation.Nonempty;
 
 public class InvalidParameterException extends OpenAS2Exception
 {
-  private final Object m_aTarget;
+  private final Serializable m_aTarget;
   private final String m_sKey;
   private final String m_sValue;
 
-  public InvalidParameterException (final String sMsg, final Object aTarget, final String sKey, final String sValue)
+  public InvalidParameterException (final String sMsg,
+                                    final Serializable aTarget,
+                                    final String sKey,
+                                    final String sValue)
   {
     super (sMsg + " - " + getAsString (sKey, sValue));
     m_aTarget = aTarget;
@@ -65,7 +70,7 @@ public class InvalidParameterException extends OpenAS2Exception
     return m_sKey;
   }
 
-  public Object getTarget ()
+  public Serializable getTarget ()
   {
     return m_aTarget;
   }
@@ -75,7 +80,7 @@ public class InvalidParameterException extends OpenAS2Exception
     return m_sValue;
   }
 
-  public static void checkValue (@Nonnull final Object aTarget,
+  public static void checkValue (@Nonnull final Serializable aTarget,
                                  @Nonnull final String sValueName,
                                  @Nullable final Object aValue) throws InvalidParameterException
   {

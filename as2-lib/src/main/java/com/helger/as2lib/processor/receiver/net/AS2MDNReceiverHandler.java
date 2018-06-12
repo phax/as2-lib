@@ -71,6 +71,7 @@ import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -379,7 +380,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (), aMDNStream.toByteArray (), aMDN);
+      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (),
+                                           aMDNStream != null ? aMDNStream.toByteArray ()
+                                                              : ArrayHelper.EMPTY_BYTE_ARRAY,
+                                           aMDN);
 
     MimeBodyPart aPart = null;
     if (aMDNStream != null)

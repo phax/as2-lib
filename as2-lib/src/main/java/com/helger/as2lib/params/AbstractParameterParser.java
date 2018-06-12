@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.params;
 
+import java.io.Serializable;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
@@ -45,7 +46,7 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
-public abstract class AbstractParameterParser
+public abstract class AbstractParameterParser implements Serializable
 {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractParameterParser.class);
 
