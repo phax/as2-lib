@@ -177,7 +177,7 @@ The following system properties are available for global customization
 ### AS2 client
 `as2-lib` ships with a powerful client to send AS2 messages. It can easily be embedded in standalone Java applications and does not require any server part. All the necessary classes are in the package `com.helger.as2lib.client`.
 
-For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTest.java as a working example on how to send an arbitrary file to the Mendelson test server.
+For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTestServer.java as a working example on how to send an arbitrary file to the Mendelson test server.
 
 The client basically separates between per-partnership settings (class `AS2ClientSettings`) and the content to be transmitted (class `AS2ClientRequest`). The glue that holds all of this together is the class `AS2Client` that takes the settings and the request, adds the possibility to define an HTTP(S) proxy server, and does the synchronous sending. The settings and the main client are thought to be reusable, whereas the request data is to be changed for every request. 
 
