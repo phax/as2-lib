@@ -275,10 +275,10 @@ public final class BCCryptoHelper implements ICryptoHelper
     {
       // Start hashing the header
       final byte [] aCRLF = _getAsciiBytes (CHttp.EOL);
-      final Enumeration <?> aHeaderLines = aPart.getAllHeaderLines ();
+      final Enumeration <String> aHeaderLines = aPart.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {
-        aMessageDigest.update (_getAsciiBytes ((String) aHeaderLines.nextElement ()));
+        aMessageDigest.update (_getAsciiBytes (aHeaderLines.nextElement ()));
         aMessageDigest.update (aCRLF);
       }
 
