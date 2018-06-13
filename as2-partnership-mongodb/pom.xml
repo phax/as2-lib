@@ -43,6 +43,7 @@
     </developer>
   </developers>
   <properties>
+    <!-- 2.5.0 is a BOM -->
     <groovy.version>2.4.15</groovy.version>
   </properties>
   <dependencyManagement>
@@ -111,7 +112,7 @@
         visit https://github.com/groovy/GMavenPlus/wiki -->
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.6</version>
+        <version>1.6.1</version>
         <executions>
           <execution>
             <goals>
