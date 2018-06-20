@@ -99,6 +99,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
         }
         catch (final InterruptedException ex)
         {
+          Thread.currentThread ().interrupt ();
           s_aLogger.error ("Error taking elements from queue - queue has been interrupted!!!");
           break;
         }
@@ -141,6 +142,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
     }
     catch (final InterruptedException ex)
     {
+      Thread.currentThread ().interrupt ();
       throw new OpenAS2Exception ("Failed to queue action " + sAction, ex);
     }
   }

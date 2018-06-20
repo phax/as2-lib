@@ -109,7 +109,6 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NullOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -317,19 +316,15 @@ public final class BCCryptoHelper implements ICryptoHelper
     } while (aDestinationFile.exists ());
 
     s_aLogger.info ("Dumping decrypted MIME part to file " + aDestinationFile.getAbsolutePath ());
-    final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile);
-    try
+    try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       // Add payload
       aOS.write (aPayload);
     }
     catch (final IOException ex)
     {
-      s_aLogger.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
-    }
-    finally
-    {
-      StreamHelper.close (aOS);
+      if (s_aLogger.isErrorEnabled ())
+        s_aLogger.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
     }
   }
 
@@ -482,11 +477,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  private X509Certificate _verifyFindCertificate (@Nullable final X509Certificate aX509Cert,
-                                                  final boolean bUseCertificateInBodyPart,
-                                                  @Nonnull final SMIMESignedParser aSignedParser) throws CMSException,
-                                                                                                  CertificateException,
-                                                                                                  GeneralSecurityException
+  private static X509Certificate _verifyFindCertificate (@Nullable final X509Certificate aX509Cert,
+                                                         final boolean bUseCertificateInBodyPart,
+                                                         @Nonnull final SMIMESignedParser aSignedParser) throws CMSException,
+                                                                                                         CertificateException,
+                                                                                                         GeneralSecurityException
   {
     X509Certificate aRealX509Cert = aX509Cert;
     if (bUseCertificateInBodyPart)
@@ -505,16 +500,18 @@ public final class BCCryptoHelper implements ICryptoHelper
       {
         // For PEPPOL the certificate is passed in
         if (aContainedCerts.size () > 1)
-          s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
+          if (s_aLogger.isWarnEnabled ())
+            s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
         final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (PBCProvider.getProvider ())
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
-          s_aLogger.warn ("Certificate mismatch! Provided certificate\n" +
-                          aX509Cert +
-                          " differs from certficate contained in message\n" +
-                          aCert);
+          if (s_aLogger.isWarnEnabled ())
+            s_aLogger.warn ("Certificate mismatch! Provided certificate\n" +
+                            aX509Cert +
+                            " differs from certficate contained in message\n" +
+                            aCert);
 
         aRealX509Cert = aCert;
       }
