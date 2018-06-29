@@ -24,6 +24,8 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.1.1 - work in progress
+  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (#42)
 * v4.1.0 - 2018-06-20
   * The random parameters class now supports creating random values that are longer than 10 characters
   * Fixed OSGI ServiceProvider configuration
