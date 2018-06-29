@@ -25,11 +25,11 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 # News and noteworthy
 
 * v4.1.1 - work in progress
-  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (#42)
+  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-server/issues/42))
 * v4.1.0 - 2018-06-20
   * The random parameters class now supports creating random values that are longer than 10 characters
   * Fixed OSGI ServiceProvider configuration
-  * Added support for new encryption algorithms (see https://github.com/phax/as2-server/issues/38)
+  * Added support for new encryption algorithms (see [#38](https://github.com/phax/as2-server/issues/38))
   * Added new system property `AS2.httpDumpDirectoryOutgoing` to easily dump outgoing transmissions
   * Renamed system property for dumping incoming HTTP transmissions from `AS2.httpDumpDirectory` to `AS2.httpDumpDirectoryIncoming` to avoid confusion. The old name can still be used but emits a warning.
   * Modules `MDNFileModule` and `MessageFileModule` now got a new attribute `charset` to define the charset to be used to dump the information. 
