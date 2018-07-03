@@ -40,6 +40,7 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
 
+import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
@@ -75,6 +76,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.mail.datasource.ByteArrayDataSource;
+import sun.misc.IOUtils;
 
 public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 {
@@ -110,7 +112,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aData = org.apache.commons.io.IOUtils.toByteArray(aDataSourceBody.getInputStream());
 
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"

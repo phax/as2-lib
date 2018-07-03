@@ -37,21 +37,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.activation.DataSource;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.Header;
 import javax.mail.MessagingException;
+import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
@@ -69,6 +73,8 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
+import com.helger.mail.datasource.ByteArrayDataSource;
+import com.helger.mail.datasource.InputStreamDataSource;
 
 /**
  * HTTP utility methods.
@@ -308,7 +314,7 @@ public final class HTTPHelper
   }
 
   /**
-   * Read headers and payload from the passed input stream provider.
+   * Read headers and payload from the passed input stream provider. For large file support, return {@link DataSource}. If is on, data is not read.
    *
    * @param aISP
    *        The abstract input stream provider to use. May not be
@@ -317,16 +323,16 @@ public final class HTTPHelper
    *        The HTTP response handler to be used. May not be <code>null</code>.
    * @param aMsg
    *        The Message to be filled. May not be <code>null</code>.
-   * @return The payload of the HTTP request.
+   * @return A {@link DataSource} that holds/refers to the body.
    * @throws IOException
    *         In case of error reading from the InputStream
    * @throws MessagingException
    *         In case header line parsing fails
    */
   @Nonnull
-  public static byte [] readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
-                                         @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                         @Nonnull final IMessage aMsg) throws IOException, MessagingException
+  public static DataSource readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
+                                            @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                            @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
     // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
@@ -352,13 +358,35 @@ public final class HTTPHelper
       aMsg.headers ().addHeader (aHeader.getName (), aHeader.getValue ());
     }
 
-    // Read the message body - no Content-Transfer-Encoding handling
-    final byte [] aPayload = readHttpPayload (aIS, aResponseHandler, aMsg);
+    //Generate DataSource
+    // Put received data in a MIME body part
+    final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
+    final String sReceivedContentType = aReceivedContentType.toString ();
+    byte [] aBytePayLoad = null;
+    DataSource aPayload;
+    if (aMsg.attrs().getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
+      aPayload = new InputStreamDataSource(
+        aIS,
+        aMsg.getAS2From()==null ? "" : aMsg.getAS2From(),
+        sReceivedContentType,
+	      true);
+    } else {
+      // Read the message body - no Content-Transfer-Encoding handling
+      aBytePayLoad = readHttpPayload(aIS, aResponseHandler, aMsg);
+      aPayload = new ByteArrayDataSource(
+        aBytePayLoad,
+        sReceivedContentType,
+        null);
+    }
 
     // Dump on demand
     final IHTTPIncomingDumper aIncomingDumper = getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders), aPayload, aMsg);
+      aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
+        aBytePayLoad!=null
+          ?aBytePayLoad
+          :"Large File Support: body was not read yet".getBytes(),
+        aMsg);
 
     return aPayload;
 

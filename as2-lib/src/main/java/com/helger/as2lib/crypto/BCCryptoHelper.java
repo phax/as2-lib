@@ -63,6 +63,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -343,9 +344,23 @@ public final class BCCryptoHelper implements ICryptoHelper
                                @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final PrivateKey aPrivateKey,
                                final boolean bForceDecrypt) throws GeneralSecurityException,
+																													  MessagingException,
+																													  CMSException,
+																													  SMIMEException,
+																													  IOException{
+	  return decrypt(aPart, aX509Cert, aPrivateKey, bForceDecrypt, false);
+  }
+
+  @Nonnull
+  public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
+                               @Nonnull final X509Certificate aX509Cert,
+                               @Nonnull final PrivateKey aPrivateKey,
+                               final boolean bForceDecrypt,
+                               final boolean bLargeFileOn) throws GeneralSecurityException,
                                                             MessagingException,
                                                             CMSException,
-                                                            SMIMEException
+                                                            SMIMEException,
+	                                                          IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -362,7 +377,18 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
 
     // Parse the MIME body into an SMIME envelope object
-    final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
+    SMIMEEnveloped aEnvelope = null;
+    //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    try {
+      aEnvelope = new SMIMEEnveloped (aPart);
+    }catch(Exception e){
+      e.printStackTrace();
+      System.out.println("Exception in SMIMEEnveloped:"+e.getMessage()
+        +"\ncause:"+e.getCause());
+      } finally {
+      System.out.println("\nContinueing\n");
+    }
+    //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
     // Get the recipient object for decryption
     final RecipientId aRecipientID = new JceKeyTransRecipientId (aX509Cert);
@@ -372,12 +398,20 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (BouncyCastleProvider.PROVIDER_NAME));
+	  MimeBodyPart aDecryptedDataBodyPart=null;
+    if (bLargeFileOn){
+	    aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart(aRecipient.getContentStream(new JceKeyTransEnvelopedRecipient(aPrivateKey).setProvider(BouncyCastleProvider.PROVIDER_NAME)));
+    } else {
+      final byte[] aDecryptedData = aRecipient.getContent(new JceKeyTransEnvelopedRecipient(aPrivateKey).setProvider(BouncyCastleProvider.PROVIDER_NAME));
 
-    if (s_aDumpDecryptedDirectory != null)
-      _dumpDecrypted (aDecryptedData);
 
-    return SMIMEUtil.toMimeBodyPart (aDecryptedData);
+      if (s_aDumpDecryptedDirectory != null) {
+	      _dumpDecrypted(aDecryptedData);
+      }
+
+      aDecryptedDataBodyPart =  SMIMEUtil.toMimeBodyPart (aDecryptedData);
+    }
+	  return aDecryptedDataBodyPart;
   }
 
   @Nonnull

@@ -74,8 +74,6 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
   /** Attribute name for read timeout in milliseconds */
   public static final String ATTR_READ_TIMEOUT = "readtimeout";
-  /** Attribute name for large file support, i.e. avoid holding all file data in memory */
-  public static final String ATTR_LARGE_FILE_SUPPORT_ON = "largefileon";
   /** Default connection timeout: 60 seconds */
   public static final int DEFAULT_CONNECT_TIMEOUT_MS = 60_000;
   /** Default read timeout: 60 seconds */

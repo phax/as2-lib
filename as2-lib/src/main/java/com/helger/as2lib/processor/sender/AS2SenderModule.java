@@ -48,6 +48,7 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.http.IAS2HttpConnection;
 import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
@@ -286,6 +287,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
     aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sTransferEncoding);
+    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TYPE, "application/octet-stream");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Compressed data with " +
@@ -651,7 +653,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // If it contains the data, (and no DataHandler), then use HttpUrlClient,
     // otherwise, use HttpClient
     final IAS2HttpConnection aConn;
-    if (!getAsBoolean(AbstractHttpSenderModule.ATTR_LARGE_FILE_SUPPORT_ON)) {
+    if (!getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
       aConn = getHttpURLConnection(
         sUrl,
         bOutput,
@@ -679,7 +681,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final InputStream aMsgIS = aSecuredMimePart.getInputStream();
 
-      if (!getAsBoolean(AbstractHttpSenderModule.ATTR_LARGE_FILE_SUPPORT_ON)) {
+      if (!getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
         OutputStream aMsgOS = aConn.getOutputStream ();

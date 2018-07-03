@@ -40,6 +40,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.params.MessageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -374,7 +375,7 @@ public class AS2Client
         aSender.putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
         aSender.putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
         // Register large file support from caller
-        aSender.putIn(AbstractHttpSenderModule.ATTR_LARGE_FILE_SUPPORT_ON, aSettings.isLargeFileSupport());
+        aSender.putIn(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON, aSettings.isLargeFileSupport());
 
         // Add all custom headers
         aMsg.headers ().setAllHeaders (aSettings.customHeaders ());
