@@ -67,6 +67,11 @@ public interface IBaseMessage extends Serializable
     return headers ().getHeaderCombined (sName, sDelimiter);
   }
 
+  default boolean containsHeader (@Nullable final String sName)
+  {
+    return headers ().containsHeaders (sName);
+  }
+
   @Nonnull
   @ReturnsMutableObject
   HttpHeaderMap headers ();

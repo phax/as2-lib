@@ -76,7 +76,6 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.mail.datasource.ByteArrayDataSource;
-import sun.misc.IOUtils;
 
 public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 {

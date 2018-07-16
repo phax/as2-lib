@@ -32,13 +32,14 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

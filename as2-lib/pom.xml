@@ -38,7 +38,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>as2-lib-parent-pom</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.0.3-ziv-SNAPSHOT</version>
   </parent>
   <artifactId>as2-lib</artifactId>
   <packaging>bundle</packaging>
@@ -65,6 +65,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-mail</artifactId>
+      <version>9.0.2-ziv-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
@@ -78,6 +79,21 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
     </dependency>
   </dependencies>
   <build>

@@ -33,7 +33,6 @@
 package com.helger.as2lib.util.http;
 
 import org.apache.http.Header;
-import org.apache.http.HeaderElement;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -79,8 +78,6 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	private CloseableHttpClient   aCloseableHttpClient;
 	private CloseableHttpResponse aCloseableHttpResponse;
 	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2HttpClient.class);
-	private boolean               bSendComplete=false;
-	private Thread                aSenderThread=null;
 
 	public AS2HttpClient (@Nonnull @Nonempty final String sUrl,
 	                      final int iConnectTimeout,
@@ -128,8 +125,7 @@ public class AS2HttpClient implements IAS2HttpConnection{
 		URI uri = null;
 		try {
 			uri = aRequestBuilder.getUri();
-			URL url = uri.toURL();
-			return url;
+			return uri.toURL();
 		} catch (IllegalArgumentException|MalformedURLException e){
 			if (s_aLogger.isErrorEnabled ())
 				s_aLogger.error ("Failed to get URL from connection, URI: " +
@@ -157,12 +153,11 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 * send the request in background, allowing the forground to write to the OutputStream
 	 */
 	private void sendInBackground(){
-		aSenderThread = new Thread(() -> {
+		Thread aSenderThread = new Thread(() -> {
 			try {
 				HttpUriRequest aHttpUriRequest = aRequestBuilder.build();
 				System.out.println("Runnable: calling execute");
 				aCloseableHttpResponse = aCloseableHttpClient.execute(aHttpUriRequest);
-				bSendComplete = true;
 			}catch (Exception e){
 				e.printStackTrace();
 			}
@@ -177,13 +172,6 @@ public class AS2HttpClient implements IAS2HttpConnection{
 		aCloseableHttpResponse = aCloseableHttpClient.execute(aHttpUriRequest);
 
 	}
-
-	/**
-	 * isSendComplete
-	 *
-	 * @return true if sending has completed
-	 */
-	private boolean isbSendComplete(){ return bSendComplete;}
 
 	/**
 	 * Get InputStream
@@ -204,7 +192,6 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 */
 	public int getResponseCode() throws OpenAS2Exception {
 		try {
-			//aSenderThread.wait();
 			// message was not sent yet, not response
 			if (aCloseableHttpResponse == null) {
 				throw new OpenAS2Exception("No response as message was not yet sent");

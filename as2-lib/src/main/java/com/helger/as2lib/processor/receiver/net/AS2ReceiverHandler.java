@@ -32,10 +32,12 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -46,6 +48,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.commons.io.stream.LoggingInputStream;
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
 import org.bouncycastle.mail.smime.SMIMECompressed;
 import org.bouncycastle.mail.smime.SMIMECompressedParser;
@@ -252,6 +255,17 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
         if (aMsg.attrs().getAsBoolean(ATTR_LARGE_FILE_SUPPORT_ON)){
          // Compress using stream
+          if (s_aLogger.isDebugEnabled()) {
+            StringBuilder partInf = new StringBuilder();
+            MimeBodyPart part = aMsg.getData();
+            Enumeration<String> lines = part.getAllHeaderLines();
+            while (lines.hasMoreElements()) {
+              partInf.append(lines.nextElement()).append("\n");
+            }
+            partInf.append("Headers before uncompress\n");
+            s_aLogger.debug(partInf.toString());
+          }
+
           SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser(aMsg.getData(), 8*1024);// TODO: get buffer from configuration
           aDecompressedPart = SMIMEUtil.toMimeBodyPart(smimeCompressedParser.getContent(aExpander));
         } else {
@@ -372,10 +386,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   {
     // TODO store HTTP request, headers, and data to file in Received folder
     // -> use message-id for filename?
-    Socket socket=null;
-  if (aResponseHandler instanceof AS2HttpResponseHandlerSocket){
-    socket=((AS2HttpResponseHandlerSocket)aResponseHandler).getSocket();
-  }
     try
     {
       final IAS2Session aSession = m_aReceiverModule.getSession ();
@@ -400,7 +410,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                         ex);
       }
 
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
       // Extract AS2 ID's from header, find the message's partnership and
       // update the message
       try
@@ -411,7 +420,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         final String sAS2To = aMsg.getAS2To ();
         aMsg.partnership ().setReceiverAS2ID (sAS2To);
 
-        System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
         // Fill all partnership attributes etc.
         aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
       }
@@ -430,7 +438,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       // Decrypt and verify signature of the data, and attach data to the
       // message
       decrypt (aMsg);
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
 
       if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
       {
@@ -440,7 +447,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         bIsDecompressed = true;
       }
 
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
       verify (aMsg);
 
       if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
@@ -463,7 +469,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         bIsDecompressed = true;
       }
 
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
       if (s_aLogger.isTraceEnabled ())
         try
         {
@@ -481,7 +486,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           s_aLogger.error ("Failed to trace message: " + aMsg, ex);
         }
 
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
       // Validate the received message before storing
       try
       {
@@ -500,7 +504,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                         ex);
       }
 
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
       // Store the received message
       try
       {
@@ -519,7 +522,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                         ex);
       }
 
-      System.out.printf("\n---------============Socket status:%b\n", socket.isClosed());
       // Validate the received message after storing
       try
       {

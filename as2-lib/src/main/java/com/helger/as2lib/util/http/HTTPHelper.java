@@ -32,10 +32,7 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.util.Enumeration;
@@ -71,6 +68,7 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -146,24 +144,24 @@ public final class HTTPHelper
           for (;;)
           {
             // First get hex chunk length; followed by CRLF
-            int nBlocklen = 0;
-            for (;;)
-            {
-              int ch = aDataIS.readByte ();
-              if (ch == '\n')
-                break;
-              if (ch >= 'a' && ch <= 'f')
-                ch -= ('a' - 10);
-              else
-                if (ch >= 'A' && ch <= 'F')
-                  ch -= ('A' - 10);
-                else
-                  if (ch >= '0' && ch <= '9')
-                    ch -= '0';
-                  else
-                    continue;
-              nBlocklen = (nBlocklen * 16) + ch;
-            }
+            int nBlocklen = readChunkLen(aDataIS);
+//            for (;;)
+//            {
+//              int ch = aDataIS.readByte ();
+//              if (ch == '\n')
+//                break;
+//              if (ch >= 'a' && ch <= 'f')
+//                ch -= ('a' - 10);
+//              else
+//                if (ch >= 'A' && ch <= 'F')
+//                  ch -= ('A' - 10);
+//                else
+//                  if (ch >= '0' && ch <= '9')
+//                    ch -= '0';
+//                  else
+//                    continue;
+//              nBlocklen = (nBlocklen * 16) + ch;
+//            }
             // Zero length is end of chunks
             if (nBlocklen == 0)
               break;
@@ -176,12 +174,7 @@ public final class HTTPHelper
             aData = aNewData;
             nLength = nNewlen;
             // And now the CRLF after the chunk;
-            while (true)
-            {
-              final int n = aDataIS.readByte ();
-              if (n == '\n')
-                break;
-            }
+            readTillNexLine(aDataIS);
           }
           aMsg.headers ().setContentLength (nLength);
         }
@@ -365,12 +358,35 @@ public final class HTTPHelper
     byte [] aBytePayLoad = null;
     DataSource aPayload;
     if (aMsg.attrs().getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
-      aPayload = new InputStreamDataSource(
-        aIS,
+      InputStream is = aIS;
+      final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
+      if (sContentLength == null) {
+        // No "Content-Length" header present
+        final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
+        if (sTransferEncoding != null)
+        {
+          // Remove all whitespaces in the value
+          if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
+          {
+            // chunked encoding
+            is = new ChunkedInputStream(aIS);
+          } else {
+            // No "Content-Length" and unsupported "Transfer-Encoding"
+            sendSimpleHTTPResponse(aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
+            throw new IOException("Transfer-Encoding unimplemented: " + sTransferEncoding);
+          }
+        } else {
+          // No "Content-Length" and no "Transfer-Encoding"
+          sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
+          throw new IOException ("Content-Length missing");
+        }
+      }
+      //Content-length present, or chunked encoding
+      aPayload = new InputStreamDataSource(is,
         aMsg.getAS2From()==null ? "" : aMsg.getAS2From(),
         sReceivedContentType,
-	      true);
-    } else {
+        true);
+    } else { //Large message support off
       // Read the message body - no Content-Transfer-Encoding handling
       aBytePayLoad = readHttpPayload(aIS, aResponseHandler, aMsg);
       aPayload = new ByteArrayDataSource(
@@ -437,4 +453,68 @@ public final class HTTPHelper
           aHeaders.addHeader (sHeaderName, sHeaderValue);
     }
   }
+
+  /**
+   * Read chunk size (including the newline ending it). Discard any other data, e.g. headers that my be there.
+   *
+   * @param aIS - input stream to read from
+   * @return Chunk length
+   * @throws IOException
+   *         if stream ends during chunk length read
+   */
+  public static int readChunkLen(InputStream aIS) throws IOException{
+    int nRes=0;
+    boolean headersStarted=false;
+    for (;;)
+    {
+      int ch = aIS.read ();
+      if (ch < 0)
+        throw new EOFException();
+      if (ch == '\n')
+        break;
+      if (ch >= 'a' && ch <= 'f')
+        ch -= ('a' - 10);
+      else
+      if (ch >= 'A' && ch <= 'F')
+        ch -= ('A' - 10);
+      else
+      if (ch >= '0' && ch <= '9')
+        ch -= '0';
+      else
+        if (ch == ';')
+          headersStarted=true;
+      else
+        continue;
+      if (! headersStarted)
+        nRes = (nRes * 16) + ch;
+    }
+    return nRes;
+  }
+
+  /**
+   * Read up to (and including )CRLF.
+   *
+   * @param aIS - input stream to read from
+   * @throws IOException
+   *         if stream ends during chunk length read
+   */
+  public static void readTillNexLine(InputStream aIS) throws IOException {
+    while (true) {
+      final int n = aIS.read();
+      if (n == '\n')
+        break;
+    }
+  }
+
+//  public static boolean hasContentLength(@Nonnull IMessage aMsg){
+//    // No "Content-Length" header present
+//    final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
+//    if (sTransferEncoding != null) {
+//      // Remove all whitespaces in the value
+//      if (sTransferEncoding.replaceAll("\\s+", "").equalsIgnoreCase("chunked")) {
+//        return true;
+//      }
+//    }
+//    return false;
+//  }
 }
