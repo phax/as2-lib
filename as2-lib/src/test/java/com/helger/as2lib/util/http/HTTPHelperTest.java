@@ -57,12 +57,19 @@ public class HTTPHelperTest {
 		//non stream
 		AS2Message aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-		DataSource resRegular = HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		AS2InputStreamProviderSocket mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		DataSource resRegular = HTTPHelper.readHttpRequest(
+			mockStreamProvider, mockedResponseHandler, aMsg);
 		//stream
 		is = new ByteArrayInputStream(sRegularMessage.getBytes());
 		aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-		DataSource resStream = HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		DataSource resStream = HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 		assertTrue("Compare regular and stream read",
 			compareLineByLine(resRegular.getInputStream(), resStream.getInputStream()));
 	}
@@ -74,12 +81,18 @@ public class HTTPHelperTest {
 		//non stream
 		AS2Message aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-		DataSource resRegular = HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		AS2InputStreamProviderSocket mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		DataSource resRegular = HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 		//stream
 		is = new ByteArrayInputStream(sChunkedMessage.getBytes());
 		aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-		DataSource resStream = HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		DataSource resStream = HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 		assertTrue("Compare regular and stream read",
 			compareLineByLine(resRegular.getInputStream(), resStream.getInputStream()));
 	}
@@ -91,7 +104,10 @@ public class HTTPHelperTest {
 		//non stream
 		AS2Message aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-		HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		AS2InputStreamProviderSocket mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 	}
 
 	@Test(expected = IOException.class)
@@ -102,7 +118,10 @@ public class HTTPHelperTest {
 		is = new ByteArrayInputStream(sNoLengthMessage.getBytes());
 		AS2Message aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-		HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		AS2InputStreamProviderSocket mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 	}
 
 	@Test(expected = IOException.class)
@@ -112,7 +131,10 @@ public class HTTPHelperTest {
 		//stream
 		AS2Message aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-		HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		AS2InputStreamProviderSocket mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 	}
 
 	@Test(expected = IOException.class)
@@ -122,7 +144,10 @@ public class HTTPHelperTest {
 		//stream
 		AS2Message aMsg = new AS2Message();
 		aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-		HTTPHelper.readHttpRequest(is, mockedResponseHandler, aMsg);
+		AS2InputStreamProviderSocket mockStreamProvider = mock(AS2InputStreamProviderSocket.class);
+		when(mockStreamProvider.getInputStream()).thenReturn(is);
+		when(mockStreamProvider.getNonUpwardClosingInputStream()).thenReturn(is);
+		HTTPHelper.readHttpRequest(mockStreamProvider, mockedResponseHandler, aMsg);
 	}
 
 	private boolean compareLineByLine(InputStream is1, InputStream is2)throws IOException{
