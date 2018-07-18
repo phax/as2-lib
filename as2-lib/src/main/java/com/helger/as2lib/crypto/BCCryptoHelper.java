@@ -85,12 +85,7 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.mail.smime.SMIMEEnveloped;
-import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
-import org.bouncycastle.mail.smime.SMIMEException;
-import org.bouncycastle.mail.smime.SMIMESignedGenerator;
-import org.bouncycastle.mail.smime.SMIMESignedParser;
-import org.bouncycastle.mail.smime.SMIMEUtil;
+import org.bouncycastle.mail.smime.*;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
@@ -376,11 +371,21 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (!bForceDecrypt && !isEncrypted (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
 
+    // Get the recipient object for decryption
+    final RecipientId aRecipientID = new JceKeyTransRecipientId (aX509Cert);
+
     // Parse the MIME body into an SMIME envelope object
-    SMIMEEnveloped aEnvelope = null;
-    //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    RecipientInformation aRecipient = null;
     try {
-      aEnvelope = new SMIMEEnveloped (aPart);
+      if (bLargeFileOn){
+        SMIMEEnvelopedParser aEnvelope;
+        aEnvelope = new SMIMEEnvelopedParser(aPart);
+        aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
+      } else {
+        SMIMEEnveloped aEnvelope;
+        aEnvelope = new SMIMEEnveloped(aPart);
+        aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
+      }
     }catch(Exception e){
       e.printStackTrace();
       System.out.println("Exception in SMIMEEnveloped:"+e.getMessage()
@@ -388,17 +393,12 @@ public final class BCCryptoHelper implements ICryptoHelper
       } finally {
       System.out.println("\nContinueing\n");
     }
-    //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-    // Get the recipient object for decryption
-    final RecipientId aRecipientID = new JceKeyTransRecipientId (aX509Cert);
-
-    final RecipientInformation aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
     if (aRecipient == null)
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-	  MimeBodyPart aDecryptedDataBodyPart=null;
+	  MimeBodyPart aDecryptedDataBodyPart;
     if (bLargeFileOn){
 	    aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart(aRecipient.getContentStream(new JceKeyTransEnvelopedRecipient(aPrivateKey).setProvider(BouncyCastleProvider.PROVIDER_NAME)));
     } else {
