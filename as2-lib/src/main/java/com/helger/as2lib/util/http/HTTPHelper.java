@@ -48,6 +48,7 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
+import javax.mail.util.SharedFileInputStream;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
@@ -368,8 +369,11 @@ public final class HTTPHelper
           // Remove all whitespaces in the value
           if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
           {
-            // chunked encoding
-            is = new ChunkedInputStream(aIS);
+            // chunked encoding. Use also file backed stream as the message might be large
+            TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream(
+              new ChunkedInputStream(aIS), aMsg.getMessageID());
+            is = sis;
+            aMsg.setTempSharedFileInputStream(sis);
           } else {
             // No "Content-Length" and unsupported "Transfer-Encoding"
             sendSimpleHTTPResponse(aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);

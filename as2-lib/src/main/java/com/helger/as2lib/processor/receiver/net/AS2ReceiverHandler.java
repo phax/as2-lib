@@ -47,7 +47,9 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.util.SharedFileInputStream;
 
+import com.helger.as2lib.util.http.*;
 import com.helger.commons.io.stream.LoggingInputStream;
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
 import org.bouncycastle.mail.smime.SMIMECompressed;
@@ -77,10 +79,6 @@ import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
-import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
-import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
@@ -578,6 +576,17 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     catch (final OpenAS2Exception ex)
     {
       m_aReceiverModule.handleError (aMsg, ex);
+    }
+    finally {
+      //close the temporary shared stream if it exists
+      TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream();
+      if (null != sis){
+        try {
+          sis.closeAll();
+        } catch (IOException e){
+          s_aLogger.error("Exception while closing TempSharedFileInputStream",e);
+        }
+      }
     }
   }
 

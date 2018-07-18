@@ -65,7 +65,7 @@ public class ChunkedInputStream extends FilterInputStream {
 					afterFirstChunk = true;
 				}
 				nLeft = HTTPHelper.readChunkLen(aIS);
-				s_aLogger.debug("Read chunk size:{}", nLeft);
+				s_aLogger.trace("Read chunk size:{}", nLeft);
 				//check for end of data
 				if (nLeft <= 0) {
 					// No more chunks means EOF
