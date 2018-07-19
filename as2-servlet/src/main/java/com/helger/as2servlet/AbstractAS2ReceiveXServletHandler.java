@@ -40,6 +40,7 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.http.EHttpVersion;
+import com.helger.servlet.ServletHelper;
 import com.helger.web.scope.IRequestWebScope;
 import com.helger.xservlet.handler.IXServletHandler;
 
@@ -180,7 +181,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     // Request type (e.g. "POST")
     aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_TYPE, aHttpRequest.getMethod ());
     // Request URL (e.g. "/as2")
-    aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_URL, aHttpRequest.getRequestURI ());
+    aMsg.attrs ().putIn (HTTPHelper.MA_HTTP_REQ_URL, ServletHelper.getRequestRequestURI (aHttpRequest));
 
     // Add all request headers to the AS2 message
     aMsg.headers ().setAllHeaders (aRequestScope.headers ());

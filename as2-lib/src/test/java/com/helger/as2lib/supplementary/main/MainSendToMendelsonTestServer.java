@@ -59,7 +59,7 @@ import com.helger.security.keystore.EKeyStoreType;
  *
  * @author Philip Helger
  */
-public final class MainSendToMendelsonTest
+public final class MainSendToMendelsonTestServer
 {
   static
   {
@@ -67,7 +67,7 @@ public final class MainSendToMendelsonTest
       System.setProperty ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
   }
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainSendToMendelsonTest.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MainSendToMendelsonTestServer.class);
 
   public static void main (final String [] args) throws Exception
   {

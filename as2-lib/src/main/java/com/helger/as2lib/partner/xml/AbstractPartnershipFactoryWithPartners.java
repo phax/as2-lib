@@ -51,8 +51,8 @@ import com.helger.commons.state.EChange;
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPartnershipFactory
-                                                             implements IPartnershipFactoryWithPartners
+public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPartnershipFactory implements
+                                                             IPartnershipFactoryWithPartners
 {
   private final PartnerMap m_aPartners = new PartnerMap ();
 
@@ -93,14 +93,14 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
   @ReturnsMutableCopy
   public ICommonsSet <String> getAllPartnerNames ()
   {
-    return m_aRWLock.readLocked ( () -> m_aPartners.getAllPartnerNames ());
+    return m_aRWLock.readLocked (m_aPartners::getAllPartnerNames);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <Partner> getAllPartners ()
   {
-    return m_aRWLock.readLocked ( () -> m_aPartners.getAllPartners ());
+    return m_aRWLock.readLocked (m_aPartners::getAllPartners);
   }
 
   @Nonnull

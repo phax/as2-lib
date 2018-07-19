@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>as2-lib-parent-pom</artifactId>
-    <version>4.0.3-SNAPSHOT</version>
+    <version>4.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>as2-partnership-mongodb</artifactId>
   <packaging>bundle</packaging>
@@ -43,6 +43,7 @@
     </developer>
   </developers>
   <properties>
+    <!-- 2.5.0 is a BOM -->
     <groovy.version>2.4.15</groovy.version>
   </properties>
   <dependencyManagement>
@@ -64,7 +65,7 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver</artifactId>
-      <version>3.7.0</version>
+      <version>3.8.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -74,7 +75,7 @@
     <dependency>
       <groupId>de.flapdoodle.embed</groupId>
       <artifactId>de.flapdoodle.embed.mongo</artifactId>
-      <version>2.0.3</version>
+      <version>2.1.1</version>
       <scope>test</scope>
     </dependency>
     <!-- Mandatory dependencies for using Spock -->
@@ -111,7 +112,7 @@
         visit https://github.com/groovy/GMavenPlus/wiki -->
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.6</version>
+        <version>1.6.1</version>
         <executions>
           <execution>
             <goals>

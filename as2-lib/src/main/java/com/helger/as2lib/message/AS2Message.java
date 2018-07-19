@@ -97,13 +97,12 @@ public class AS2Message extends AbstractMessage
   {
     // Requesting by partnership?
     final Partnership aPartnership = partnership ();
-    final boolean bRequesting = aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null;
+    final boolean bRequesting = aPartnership.getAS2MDNTo () != null;
     if (bRequesting)
       return true;
 
     // Requesting by request?
-    final boolean bRequested = getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) != null ||
-                               getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS) != null;
+    final boolean bRequested = containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO);
     return bRequested;
   }
 
@@ -112,16 +111,15 @@ public class AS2Message extends AbstractMessage
     // Requesting by partnership?
     final Partnership aPartnership = partnership ();
     // Same as regular MDN + PA_AS2_RECEIPT_OPTION
-    final boolean bRequesting = (aPartnership.getAS2MDNTo () != null || aPartnership.getAS2MDNOptions () != null) &&
+    final boolean bRequesting = aPartnership.getAS2MDNTo () != null &&
                                 aPartnership.getAS2ReceiptDeliveryOption () != null;
     if (bRequesting)
       return true;
 
     // Requesting by request?
     // Same as regular MDN + HEADER_RECEIPT_DELIVERY_OPTION
-    final boolean bRequested = (getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) != null ||
-                                getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS) != null) &&
-                               getHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION) != null;
+    final boolean bRequested = containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) &&
+                               containsHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION);
     return bRequested;
   }
 

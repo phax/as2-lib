@@ -24,10 +24,16 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.0.3 - work in progress
+* v4.1.1 - work in progress
+  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-server/issues/42))
+* v4.1.0 - 2018-06-20
   * The random parameters class now supports creating random values that are longer than 10 characters
   * Fixed OSGI ServiceProvider configuration
-  * Added support for new encryption algorithms (see https://github.com/phax/as2-server/issues/38)
+  * Added support for new encryption algorithms (see [#38](https://github.com/phax/as2-server/issues/38))
+  * Added new system property `AS2.httpDumpDirectoryOutgoing` to easily dump outgoing transmissions
+  * Renamed system property for dumping incoming HTTP transmissions from `AS2.httpDumpDirectory` to `AS2.httpDumpDirectoryIncoming` to avoid confusion. The old name can still be used but emits a warning.
+  * Modules `MDNFileModule` and `MessageFileModule` now got a new attribute `charset` to define the charset to be used to dump the information. 
+  * Requires ph-commons 9.1.2 
 * v4.0.2 - 2018-04-05
   * improved client configurability and customizability
   * Switching back to preferring BC PKCS12 key store, because JDK PKCS 12 key store is partially case insensitive 
@@ -108,7 +114,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.0.2</version>
+  <version>4.1.0</version>
 </dependency>
 ```
 
@@ -117,7 +123,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.0.2</version>
+  <version>4.1.0</version>
 </dependency>
 ```
 
@@ -126,7 +132,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.0.2</version>
+  <version>4.1.0</version>
 </dependency>
 ```
 
@@ -166,14 +172,15 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
 ### System Properties
 The following system properties are available for global customization
 
-  * boolean `AS2.useSecureRandom` - since 2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
-  * String `AS2.httpDumpDirectory` - since 2.2.0 - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectory=/var/dump/as2-http`). The filename starts with "as2-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
-  * String `AS2.dumpDecryptedDirectory` - since 2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
+  * boolean `AS2.useSecureRandom` - since v2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
+  * String `AS2.httpDumpDirectoryIncoming` - since v4.1.0 (old name `AS2.httpDumpDirectory` since v2.2.0) - if this system property is defined, all incoming HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectoryIncoming=/var/dump/as2-http-incoming`). The filename starts with "as2-incoming-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http"
+  * String `AS2.dumpDecryptedDirectory` - since v2.2.0 - if this system property is defined, all incoming decrypted MIME parts are dumped "as is" into the specified directory (e.g. `-DAS2.dumpDecryptedDirectory=/var/dump/as2-decrypted`). The filename starts with "as2-decrypted-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".part"
+  * String `AS2.httpDumpDirectoryOutgoing` - since v4.1.0 - if this system property is defined, all outgoing HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectoryOutgoing=/var/dump/as2-http-outgoing`). The filename starts with "as2-outgoing-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http".
   
 ### AS2 client
 `as2-lib` ships with a powerful client to send AS2 messages. It can easily be embedded in standalone Java applications and does not require any server part. All the necessary classes are in the package `com.helger.as2lib.client`.
 
-For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTest.java as a working example on how to send an arbitrary file to the Mendelson test server.
+For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTestServer.java as a working example on how to send an arbitrary file to the Mendelson test server.
 
 The client basically separates between per-partnership settings (class `AS2ClientSettings`) and the content to be transmitted (class `AS2ClientRequest`). The glue that holds all of this together is the class `AS2Client` that takes the settings and the request, adds the possibility to define an HTTP(S) proxy server, and does the synchronous sending. The settings and the main client are thought to be reusable, whereas the request data is to be changed for every request. 
 
@@ -254,18 +261,24 @@ Complete example configuration file:
              pendingMDN="%home%/pendingMDN"
              pendingMDNinfo="%home%/pendinginfoMDN">
 
-    <!-- [optional] Store sent MDNs to a file -->
+    <!-- [optional] Store sent MDNs to a file
+      Note: "charset" attribute was added in v4.1.0 
+    -->
     <module classname="com.helger.as2lib.processor.storage.MDNFileModule"
             filename="%home%/mdn/$date.uuuu$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
             protocol="as2"
-            tempdir="%home%/temp"/>
+            tempdir="%home%/temp"
+            charset="utf-8" />
 
-    <!-- [optional] Store received messages and headers to a file -->
+    <!-- [optional] Store received messages and headers to a file 
+      Note: "charset" attribute was added in v4.1.0 
+    -->
     <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
             filename="%home%/inbox/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
             header="%home%/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
             protocol="as2"
-            tempdir="%home%/temp"/>
+            tempdir="%home%/temp"
+            charset="utf-8" />
 
     <!-- [required] The main receiver module that performs the message parsing.
          This module also sends synchronous MDNs back.

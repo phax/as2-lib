@@ -91,6 +91,18 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   }
 
   @Override
+  public boolean equals (@Nullable final Object o)
+  {
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return super.hashCode ();
+  }
+
+  @Override
   public String toString ()
   {
     // do not add "session" - this may lead to an endless loop

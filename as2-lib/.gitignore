@@ -7,3 +7,6 @@
 
 target
 /client-data/
+/.settings/ 
+/.project 
+/.classpath 

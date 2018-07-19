@@ -71,6 +71,7 @@ import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -282,11 +283,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
                                                   .getAsString (ATTR_PENDINGMDNINFO) +
                                       "/" +
                                       AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
-      final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile));
 
       String sOriginalMIC;
       File aPendingFile;
-      try
+      try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
       {
         // Get the original mic from the first line of pending information
         // file
@@ -296,14 +296,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         // information file
         aPendingFile = new File (aPendingInfoReader.readLine ());
       }
-      finally
-      {
-        StreamHelper.close (aPendingInfoReader);
-      }
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
-      s_aLogger.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+
       /*
        * original code just did string compare - returnmic.equals(originalmic).
        * Sadly this is not good enough as the mic fields are
@@ -314,31 +312,43 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
        */
       if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
       {
-        s_aLogger.info ("MIC IS NOT MATCHED, original mic: " +
-                        sOriginalMIC +
-                        " return mic: " +
-                        sReturnMIC +
-                        aMsg.getLoggingText ());
+        if (s_aLogger.isInfoEnabled ())
+          s_aLogger.info ("MIC IS NOT MATCHED, original mic: " +
+                          sOriginalMIC +
+                          " return mic: " +
+                          sReturnMIC +
+                          aMsg.getLoggingText ());
         return false;
       }
 
       // delete the pendinginfo & pending file if mic is matched
-      s_aLogger.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
 
       final File aPendingInfoFile = new File (sPendingInfoFile);
-      s_aLogger.info ("delete pendinginfo file : " +
-                      aPendingInfoFile.getName () +
-                      " from pending folder : " +
-                      getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
-                      aMsg.getLoggingText ());
-      aPendingInfoFile.delete ();
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("delete pendinginfo file : " +
+                        aPendingInfoFile.getName () +
+                        " from pending folder : " +
+                        getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
+                        aMsg.getLoggingText ());
+      if (!aPendingInfoFile.delete ())
+      {
+        if (s_aLogger.isErrorEnabled ())
+          s_aLogger.error ("Error delete pendinginfo file " + aPendingFile);
+      }
 
-      s_aLogger.info ("delete pending file : " +
-                      aPendingFile.getName () +
-                      " from pending folder : " +
-                      aPendingFile.getParent () +
-                      aMsg.getLoggingText ());
-      aPendingFile.delete ();
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("delete pending file : " +
+                        aPendingFile.getName () +
+                        " from pending folder : " +
+                        aPendingFile.getParent () +
+                        aMsg.getLoggingText ());
+      if (!aPendingFile.delete ())
+      {
+        if (s_aLogger.isErrorEnabled ())
+          s_aLogger.error ("Error delete pending file " + aPendingFile);
+      }
     }
     catch (final Exception ex)
     {
@@ -379,7 +389,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (), aMDNStream.toByteArray (), aMDN);
+      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (),
+                                           aMDNStream != null ? aMDNStream.toByteArray ()
+                                                              : ArrayHelper.EMPTY_BYTE_ARRAY,
+                                           aMDN);
 
     MimeBodyPart aPart = null;
     if (aMDNStream != null)

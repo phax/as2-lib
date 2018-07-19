@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -100,7 +99,7 @@ public class MessageFileModule extends AbstractStorageModule
       try
       {
         final File aHeaderFile = getFile (aMsg, sHeaderFilename, sAction);
-        final InputStream aIS = getHeaderStream (aMsg, StandardCharsets.ISO_8859_1);
+        final InputStream aIS = getHeaderStream (aMsg, getCharset ());
         store (aHeaderFile, aIS);
         s_aLogger.info ("stored headers to " + aHeaderFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
@@ -122,19 +121,19 @@ public class MessageFileModule extends AbstractStorageModule
   }
 
   @Nonnull
-  protected InputStream getHeaderStream (@Nonnull final IMessage aMsg, @Nonnull final Charset aCharset)
+  protected static InputStream getHeaderStream (@Nonnull final IMessage aMsg, @Nonnull final Charset aCharset)
   {
     final StringBuilder aSB = new StringBuilder ();
 
     // write headers to the string buffer
-    aSB.append ("Headers:" + CHttp.EOL);
+    aSB.append ("Message Headers:").append (CHttp.EOL);
 
     aMsg.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL));
 
     aSB.append (CHttp.EOL);
 
     // write attributes to the string buffer
-    aSB.append ("Attributes:" + CHttp.EOL);
+    aSB.append ("Attributes:").append (CHttp.EOL);
     for (final Map.Entry <String, String> attrEntry : aMsg.attrs ().entrySet ())
     {
       aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (CHttp.EOL);

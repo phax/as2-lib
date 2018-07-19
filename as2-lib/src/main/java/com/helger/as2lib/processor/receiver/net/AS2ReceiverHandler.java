@@ -298,13 +298,15 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                           aMsg.getLoggingText ());
 
           // Get data and therefore content length for sync MDN
-          final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
-          final MimeBodyPart aPart = aMdn.getData ();
-          StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
-          aMdn.headers ().setContentLength (aData.size ());
+          try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
+          {
+            final MimeBodyPart aPart = aMdn.getData ();
+            StreamHelper.copyInputStreamToOutputStream (aPart.getInputStream (), aData);
+            aMdn.headers ().setContentLength (aData.size ());
 
-          // start HTTP response
-          aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.headers (), aData);
+            // start HTTP response
+            aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aMdn.headers (), aData);
+          }
 
           // Save sent MDN for later examination
           try
