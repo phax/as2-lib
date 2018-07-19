@@ -56,7 +56,7 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public abstract class AbstractMessage extends AbstractBaseMessage implements IMessage
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractMessage.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractMessage.class);
 
   private MimeBodyPart m_aData;
   private IMessageMDN m_aMDN;
@@ -78,7 +78,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       }
       catch (final MessagingException ex)
       {
-        s_aLogger.warn ("Failed to set the Content-Type from the MimeBodyPart. Defaulting to null.");
+        LOGGER.warn ("Failed to set the Content-Type from the MimeBodyPart. Defaulting to null.");
         setContentType (null);
       }
 
@@ -89,7 +89,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
       }
       catch (final MessagingException ex)
       {
-        s_aLogger.warn ("Failed to set the Content-Disposition from the MimeBodyPart. Defaulting to null.");
+        LOGGER.warn ("Failed to set the Content-Disposition from the MimeBodyPart. Defaulting to null.");
         setContentDisposition (null);
       }
     }

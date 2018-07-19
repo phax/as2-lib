@@ -57,7 +57,7 @@ import com.helger.xml.microdom.IMicroElement;
 @Immutable
 public final class AS2XMLHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2XMLHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2XMLHelper.class);
   private static final String DOLLAR_HOME_DOLLAR = "%home%";
 
   private AS2XMLHelper ()
@@ -178,8 +178,8 @@ public final class AS2XMLHelper
 
     try
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Trying to instantiate '" + sClassName + "' as a " + aClass);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Trying to instantiate '" + sClassName + "' as a " + aClass);
 
       // Instantiate class
       final T aObj = GenericReflection.newInstance (sClassName, aClass);
@@ -197,8 +197,8 @@ public final class AS2XMLHelper
       // Init component
       aObj.initDynamicComponent (aSession, aParameters);
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Finished initializing " + aObj);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Finished initializing " + aObj);
 
       return aObj;
     }

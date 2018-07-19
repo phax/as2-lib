@@ -47,11 +47,11 @@ import com.helger.commons.annotation.DevelopersNote;
 @DevelopersNote ("Use CertificateFactory instead")
 public class PKCS12CertificateFactory extends CertificateFactory
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PKCS12CertificateFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PKCS12CertificateFactory.class);
 
   static
   {
-    s_aLogger.warn ("PKCS12CertificateFactory is deprecated. Please use the more generic CertificateFactory instead!");
+    LOGGER.warn ("PKCS12CertificateFactory is deprecated. Please use the more generic CertificateFactory instead!");
   }
 
   public PKCS12CertificateFactory ()

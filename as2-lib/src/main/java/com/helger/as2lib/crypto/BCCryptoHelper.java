@@ -122,7 +122,7 @@ import com.helger.security.keystore.IKeyStoreType;
  */
 public final class BCCryptoHelper implements ICryptoHelper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (BCCryptoHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File s_aDumpDecryptedDirectory;
 
   static
@@ -132,7 +132,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     {
       s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
-      s_aLogger.info ("Using directory " +
+      LOGGER.info ("Using directory " +
                       s_aDumpDecryptedDirectory.getAbsolutePath () +
                       " to dump all decrypted body parts to.");
     }
@@ -252,8 +252,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.calculateMIC (" +
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("BCCryptoHelper.calculateMIC (" +
                        eDigestAlgorithm +
                        " [" +
                        eDigestAlgorithm.getOID ().getId () +
@@ -293,8 +293,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     // Perform Base64 encoding and append algorithm ID
     final String ret = Base64.encodeBytes (aMIC) + ", " + eDigestAlgorithm.getID ();
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("  MIC = " + ret);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("  MIC = " + ret);
 
     return ret;
   }
@@ -315,7 +315,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       nIndex++;
     } while (aDestinationFile.exists ());
 
-    s_aLogger.info ("Dumping decrypted MIME part to file " + aDestinationFile.getAbsolutePath ());
+    LOGGER.info ("Dumping decrypted MIME part to file " + aDestinationFile.getAbsolutePath ());
     try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       // Add payload
@@ -323,8 +323,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
     catch (final IOException ex)
     {
-      if (s_aLogger.isErrorEnabled ())
-        s_aLogger.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
     }
   }
 
@@ -341,8 +341,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.decrypt; X509 subject=" +
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("BCCryptoHelper.decrypt; X509 subject=" +
                        aX509Cert.getSubjectX500Principal ().getName () +
                        "; forceDecrypt=" +
                        bForceDecrypt);
@@ -381,8 +381,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.encrypt; X509 subject=" +
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("BCCryptoHelper.encrypt; X509 subject=" +
                        aX509Cert.getSubjectX500Principal ().getName () +
                        "; algorithm=" +
                        eAlgorithm);
@@ -417,8 +417,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.sign; X509 subject=" +
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("BCCryptoHelper.sign; X509 subject=" +
                        aX509Cert.getSubjectX500Principal ().getName () +
                        "; algorithm=" +
                        eAlgorithm +
@@ -500,15 +500,15 @@ public final class BCCryptoHelper implements ICryptoHelper
       {
         // For PEPPOL the certificate is passed in
         if (aContainedCerts.size () > 1)
-          if (s_aLogger.isWarnEnabled ())
-            s_aLogger.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
+          if (LOGGER.isWarnEnabled ())
+            LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
         final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (PBCProvider.getProvider ())
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
-          if (s_aLogger.isWarnEnabled ())
-            s_aLogger.warn ("Certificate mismatch! Provided certificate\n" +
+          if (LOGGER.isWarnEnabled ())
+            LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
                             aX509Cert +
                             " differs from certficate contained in message\n" +
                             aCert);
@@ -533,8 +533,8 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                           CMSException,
                                                           OperatorCreationException
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("BCCryptoHelper.verify; X509 subject=" +
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("BCCryptoHelper.verify; X509 subject=" +
                        (aX509Cert == null ? "null" : aX509Cert.getSubjectX500Principal ().getName ()) +
                        "; useCertificateInBodyPart=" +
                        bUseCertificateInBodyPart +
@@ -554,8 +554,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug (aRealX509Cert == aX509Cert ? "Verifying signature using the provided certificate (partnership)"
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug (aRealX509Cert == aX509Cert ? "Verifying signature using the provided certificate (partnership)"
                                                   : "Verifying signature using the certificate contained in the MIME body part");
 
     // Check if the certificate is expired or active.

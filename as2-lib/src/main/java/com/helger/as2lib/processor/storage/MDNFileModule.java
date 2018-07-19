@@ -61,7 +61,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
  */
 public class MDNFileModule extends AbstractStorageModule
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MDNFileModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MDNFileModule.class);
 
   public MDNFileModule ()
   {
@@ -81,7 +81,7 @@ public class MDNFileModule extends AbstractStorageModule
       final File aMdnFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), "");
       final InputStream aIS = getMDNStream (aMsg.getMDN ());
       store (aMdnFile, aIS);
-      s_aLogger.info ("stored MDN to " + aMdnFile.getAbsolutePath ());
+      LOGGER.info ("stored MDN to " + aMdnFile.getAbsolutePath ());
     }
     catch (final IOException ex)
     {

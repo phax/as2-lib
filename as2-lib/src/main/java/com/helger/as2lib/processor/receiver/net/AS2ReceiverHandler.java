@@ -86,7 +86,7 @@ import com.helger.mail.datasource.ByteArrayDataSource;
 
 public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiverHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2ReceiverHandler.class);
 
   private final AS2ReceiverModule m_aReceiverModule;
 
@@ -132,17 +132,17 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       final boolean bForceDecrypt = aMsg.partnership ().isForceDecrypt ();
       if (bMsgIsEncrypted && bDisableDecrypt)
       {
-        s_aLogger.info ("Message claims to be encrypted but decryption is disabled" + aMsg.getLoggingText ());
+        LOGGER.info ("Message claims to be encrypted but decryption is disabled" + aMsg.getLoggingText ());
       }
       else
         if (bMsgIsEncrypted || bForceDecrypt)
         {
           // Decrypt
           if (bForceDecrypt && !bMsgIsEncrypted)
-            s_aLogger.info ("Forced decrypting" + aMsg.getLoggingText ());
+            LOGGER.info ("Forced decrypting" + aMsg.getLoggingText ());
           else
-            if (s_aLogger.isDebugEnabled ())
-              s_aLogger.debug ("Decrypting" + aMsg.getLoggingText ());
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("Decrypting" + aMsg.getLoggingText ());
 
           final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg,
                                                                              ECertificatePartnershipType.RECEIVER);
@@ -154,12 +154,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           aMsg.setData (aDecryptedData);
           // Remember that message was encrypted
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, true);
-          s_aLogger.info ("Successfully decrypted incoming AS2 message" + aMsg.getLoggingText ());
+          LOGGER.info ("Successfully decrypted incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
     catch (final Exception ex)
     {
-      s_aLogger.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
+      LOGGER.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (DispositionType.createError ("decryption-failed"),
                                       AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
                                       ex);
@@ -178,16 +178,16 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       final boolean bForceVerify = aMsg.partnership ().isForceVerify ();
       if (bMsgIsSigned && bDisableVerify)
       {
-        s_aLogger.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
+        LOGGER.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
       }
       else
         if (bMsgIsSigned || bForceVerify)
         {
           if (bForceVerify && !bMsgIsSigned)
-            s_aLogger.info ("Forced verify signature" + aMsg.getLoggingText ());
+            LOGGER.info ("Forced verify signature" + aMsg.getLoggingText ());
           else
-            if (s_aLogger.isDebugEnabled ())
-              s_aLogger.debug ("Verifying signature" + aMsg.getLoggingText ());
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("Verifying signature" + aMsg.getLoggingText ());
 
           final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
                                                                                  ECertificatePartnershipType.SENDER);
@@ -211,12 +211,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           aMsg.setData (aVerifiedData);
           // Remember that message was signed and verified
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
-          s_aLogger.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
+          LOGGER.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
     catch (final Exception ex)
     {
-      s_aLogger.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
+      LOGGER.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
       throw new DispositionException (DispositionType.createError ("integrity-check-failed"),
                                       AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED,
                                       ex);
@@ -229,12 +229,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     {
       if (aMsg.partnership ().isDisableDecompress ())
       {
-        s_aLogger.info ("Message claims to be compressed but decompression is disabled" + aMsg.getLoggingText ());
+        LOGGER.info ("Message claims to be compressed but decompression is disabled" + aMsg.getLoggingText ());
       }
       else
       {
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Decompressing a compressed AS2 message");
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Decompressing a compressed AS2 message");
 
         final SMIMECompressed aCompressed = new SMIMECompressed (aMsg.getData ());
         // decompression step MimeBodyPart
@@ -243,12 +243,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         aMsg.setData (aDecompressedPart);
         // Remember that message was decompressed
         aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_COMPRESSED, true);
-        s_aLogger.info ("Successfully decompressed incoming AS2 message" + aMsg.getLoggingText ());
+        LOGGER.info ("Successfully decompressed incoming AS2 message" + aMsg.getLoggingText ());
       }
     }
     catch (final Exception ex)
     {
-      s_aLogger.error ("Error decompressing received message", ex);
+      LOGGER.error ("Error decompressing received message", ex);
       throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                       AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
                                       ex);
@@ -279,7 +279,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ();
           aResponseHandler.sendHttpResponse (HttpURLConnection.HTTP_OK, aHeaders, aData);
 
-          s_aLogger.info ("Setup to send asynch MDN [" +
+          LOGGER.info ("Setup to send asynch MDN [" +
                           aDisposition.getAsString () +
                           "] " +
                           sClientInfo +
@@ -291,7 +291,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         else
         {
           // otherwise, send sync MDN back on same connection
-          s_aLogger.info ("Sending back sync MDN [" +
+          LOGGER.info ("Sending back sync MDN [" +
                           aDisposition.getAsString () +
                           "] " +
                           sClientInfo +
@@ -321,7 +321,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           {
             // No module found in message processor
           }
-          s_aLogger.info ("sent MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
+          LOGGER.info ("sent MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
         }
       }
       catch (final Exception ex)
@@ -411,8 +411,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
       if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
       {
-        if (s_aLogger.isTraceEnabled ())
-          s_aLogger.trace ("Decompressing received message before checking signature...");
+        if (LOGGER.isTraceEnabled ())
+          LOGGER.trace ("Decompressing received message before checking signature...");
         decompress (aMsg);
         bIsDecompressed = true;
       }
@@ -430,19 +430,19 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                           new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
         }
 
-        if (s_aLogger.isTraceEnabled ())
+        if (LOGGER.isTraceEnabled ())
           if (aMsg.attrs ().containsKey (AS2Message.ATTRIBUTE_RECEIVED_SIGNED))
-            s_aLogger.trace ("Decompressing received message after verifying signature...");
+            LOGGER.trace ("Decompressing received message after verifying signature...");
           else
-            s_aLogger.trace ("Decompressing received message after decryption...");
+            LOGGER.trace ("Decompressing received message after decryption...");
         decompress (aMsg);
         bIsDecompressed = true;
       }
 
-      if (s_aLogger.isTraceEnabled ())
+      if (LOGGER.isTraceEnabled ())
         try
         {
-          s_aLogger.trace ("SMIME Decrypted Content-Disposition: " +
+          LOGGER.trace ("SMIME Decrypted Content-Disposition: " +
                            aMsg.getContentDisposition () +
                            "\n      Content-Type received: " +
                            aMsg.getContentType () +
@@ -453,7 +453,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         }
         catch (final MessagingException ex)
         {
-          s_aLogger.error ("Failed to trace message: " + aMsg, ex);
+          LOGGER.error ("Failed to trace message: " + aMsg, ex);
         }
 
       // Validate the received message before storing
@@ -525,7 +525,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         {
           // Just send a HTTP OK
           HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
-          s_aLogger.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
+          LOGGER.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
         }
       }
       catch (final Exception ex)
@@ -547,7 +547,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nullable final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    s_aLogger.info ("Incoming connection " + sClientInfo);
+    LOGGER.info ("Incoming connection " + sClientInfo);
 
     final AS2Message aMsg = createMessage (aSocket);
 
@@ -571,7 +571,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
     if (aMsgData != null)
     {
-      s_aLogger.info ("received " +
+      LOGGER.info ("received " +
                       AS2IOHelper.getTransferRate (aMsgData.length, aSW) +
                       " from " +
                       sClientInfo +

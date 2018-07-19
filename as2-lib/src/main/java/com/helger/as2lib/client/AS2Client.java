@@ -76,7 +76,7 @@ import com.helger.commons.timing.StopWatch;
  */
 public class AS2Client
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Client.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2Client.class);
   private ISupplier <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
                                                                                              true);
   // proxy is not serializable
@@ -334,8 +334,8 @@ public class AS2Client
       aMsg = createMessage (aPartnership, aRequest);
       aResponse.setOriginalMessageID (aMsg.getMessageID ());
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("MessageID to send: " + aMsg.getMessageID ());
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("MessageID to send: " + aMsg.getMessageID ());
 
       final boolean bHasRetries = aSettings.getRetryCount () > 0;
 
@@ -388,7 +388,7 @@ public class AS2Client
     }
     catch (final Throwable t)
     {
-      s_aLogger.error ("Error sending AS2 message", t);
+      LOGGER.error ("Error sending AS2 message", t);
       aResponse.setException (t);
     }
     finally
@@ -400,8 +400,8 @@ public class AS2Client
       }
     }
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Response retrieved: " + aResponse.getAsString ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Response retrieved: " + aResponse.getAsString ());
 
     aResponse.setExecutionDuration (aSW.stopAndGetDuration ());
     return aResponse;

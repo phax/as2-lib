@@ -53,14 +53,14 @@ import com.helger.as2lib.message.IMessage;
 @NotThreadSafe
 public class DefaultMessageProcessor extends AbstractMessageProcessor
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DefaultMessageProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DefaultMessageProcessor.class);
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("DefaultMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("DefaultMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
 
     executeAction (sAction, aMsg, aOptions);
   }

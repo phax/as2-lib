@@ -44,7 +44,7 @@ import com.helger.commons.collection.CollectionHelper;
 
 public final class MainListCommandMap
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainListCommandMap.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainListCommandMap.class);
 
   public static void main (final String [] args)
   {
@@ -62,9 +62,9 @@ public final class MainListCommandMap
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
     for (final String sMimeType : CollectionHelper.getSorted (aCommandMap.getMimeTypes ()))
     {
-      s_aLogger.info (sMimeType);
+      LOGGER.info (sMimeType);
       for (final CommandInfo aCI : aCommandMap.getAllCommands (sMimeType))
-        s_aLogger.info ("  [" + aCI.getCommandName () + "] " + aCI.getCommandClass ());
+        LOGGER.info ("  [" + aCI.getCommandName () + "] " + aCI.getCommandClass ());
     }
   }
 }

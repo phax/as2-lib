@@ -64,7 +64,7 @@ import com.helger.commons.string.ToStringGenerator;
 @ThreadSafe
 public abstract class AbstractPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractPartnershipFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractPartnershipFactory.class);
 
   private final PartnershipMap m_aPartnerships = new PartnershipMap ();
 
@@ -165,8 +165,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMsg.partnership ());
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Updating partnership " + aPartnership);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Updating partnership " + aPartnership);
 
     // Update partnership data of message with the stored ones
     aMsg.partnership ().copyFrom (aPartnership);

@@ -60,7 +60,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
    */
   public static final String SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME = "as2-servlet-config-filename";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractAS2ReceiveXServletHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAS2ReceiveXServletHandler.class);
 
   private AS2Session m_aSession;
   private AS2ReceiverModule m_aReceiver;
@@ -100,7 +100,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
       throw new ServletException ("Failed to init AS2 configuration", ex);
     }
 
-    s_aLogger.info ("Successfully initialized AS2 configuration");
+    LOGGER.info ("Successfully initialized AS2 configuration");
   }
 
   /**

@@ -49,7 +49,7 @@ import com.helger.commons.collection.attr.IStringMap;
 public abstract class AbstractActivePollingModule extends AbstractActiveReceiverModule
 {
   public static final String ATTR_POLLING_INTERVAL = "interval";
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PollTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (PollTask.class);
 
   private Timer m_aTimer;
   private boolean m_bBusy;
@@ -105,7 +105,7 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
       }
       else
       {
-        s_aLogger.info ("Miss tick");
+        LOGGER.info ("Miss tick");
       }
     }
   }

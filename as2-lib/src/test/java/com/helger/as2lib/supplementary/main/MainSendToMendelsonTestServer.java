@@ -67,7 +67,7 @@ public final class MainSendToMendelsonTestServer
       System.setProperty ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
   }
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MainSendToMendelsonTestServer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServer.class);
 
   public static void main (final String [] args) throws Exception
   {
@@ -118,8 +118,8 @@ public final class MainSendToMendelsonTestServer
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings,
                                                                                                     aRequest);
     if (aResponse.hasException ())
-      s_aLogger.info (aResponse.getAsString ());
+      LOGGER.info (aResponse.getAsString ());
 
-    s_aLogger.info ("Done");
+    LOGGER.info ("Done");
   }
 }

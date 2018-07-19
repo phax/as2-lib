@@ -57,7 +57,7 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPIncomingDumperDirectoryBased.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (HTTPIncomingDumperDirectoryBased.class);
 
   private final File m_aDumpDirectory;
 
@@ -94,7 +94,7 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
                               @Nonnull final byte [] aPayload,
                               @Nullable final IBaseMessage aMsg)
   {
-    s_aLogger.info ("Dumping incoming HTTP request to file " + aDestinationFile.getAbsolutePath ());
+    LOGGER.info ("Dumping incoming HTTP request to file " + aDestinationFile.getAbsolutePath ());
     try (final OutputStream aOS = FileHelper.getOutputStream (aDestinationFile))
     {
       for (final String sHeaderLine : aHeaderLines)
@@ -108,7 +108,7 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     }
     catch (final IOException ex)
     {
-      s_aLogger.error ("Failed to dump HTTP request to file " +
+      LOGGER.error ("Failed to dump HTTP request to file " +
                        aDestinationFile.getAbsolutePath () +
                        " and message stub " +
                        aMsg,
