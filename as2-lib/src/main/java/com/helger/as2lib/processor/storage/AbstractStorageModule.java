@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -50,15 +51,18 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.charset.CharsetHelper;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.system.SystemHelper;
 
 public abstract class AbstractStorageModule extends AbstractProcessorModule implements IProcessorStorageModule
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_PROTOCOL = "protocol";
   public static final String ATTR_TEMPDIR = "tempdir";
+  public static final String ATTR_CHARSET = "charset";
 
   private final String m_sModuleAction;
 
@@ -89,6 +93,18 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   /**
+   * @return The charset configured via {@link #ATTR_CHARSET} parameter or the
+   *         system default. Never <code>null</code>.
+   */
+  @Nonnull
+  protected Charset getCharset ()
+  {
+    final String sCharsetName = getAsString (ATTR_CHARSET);
+    final Charset aCharset = CharsetHelper.getCharsetFromNameOrNull (sCharsetName);
+    return aCharset != null ? aCharset : SystemHelper.getSystemCharset ();
+  }
+
+  /**
    * @since 2007-06-01
    * @param aMsg
    *        The source message
@@ -111,12 +127,21 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     final File aFile = new File (sFilename);
     AS2IOHelper.getFileOperationManager ().createDirRecursiveIfNotExisting (aFile.getParentFile ());
     // don't overwrite existing files
-    return AS2IOHelper.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
+    return AS2IOHelper.getUniqueFile (aFile.getParentFile (),
+                                      FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
   protected abstract String getFilename (IMessage aMsg,
                                          String sFileParam,
                                          String sAction) throws InvalidParameterException;
+
+  private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS,
+                                          @Nonnull final File aDestination) throws IOException
+  {
+    final FileOutputStream aOS = new FileOutputStream (aDestination);
+    if (StreamHelper.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
+      throw new IOException ("Failed to write content to " + aDestination.getAbsolutePath ());
+  }
 
   protected void store (@Nonnull final File aMsgFile, @Nonnull @WillClose final InputStream aIS) throws IOException
   {
@@ -126,7 +151,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
       // write the data to a temporary directory first
       final File aTempDir = AS2IOHelper.getDirectoryFile (sTempDirname);
       final File aTempFile = AS2IOHelper.getUniqueFile (aTempDir, aMsgFile.getName ());
-      _writeStream (aIS, aTempFile);
+      _writeStreamToFile (aIS, aTempFile);
 
       // copy the temp file over to the destination
       if (AS2IOHelper.getFileOperationManager ().renameFile (aTempFile, aMsgFile).isFailure ())
@@ -139,15 +164,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     else
     {
       // Write directly to the destination file
-      _writeStream (aIS, aMsgFile);
+      _writeStreamToFile (aIS, aMsgFile);
     }
-  }
-
-  private void _writeStream (@Nonnull @WillClose final InputStream aIS,
-                             @Nonnull final File aDestination) throws IOException
-  {
-    final FileOutputStream aOS = new FileOutputStream (aDestination);
-    if (StreamHelper.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
-      throw new IOException ("Failed to write content to " + aDestination.getAbsolutePath ());
   }
 }

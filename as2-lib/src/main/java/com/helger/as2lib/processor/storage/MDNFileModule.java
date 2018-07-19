@@ -106,15 +106,17 @@ public class MDNFileModule extends AbstractStorageModule
   {
     final StringBuilder aSB = new StringBuilder ();
 
-    // write headers to the string buffer
-    aSB.append ("Headers:" + CHttp.EOL);
+    // write HTTP headers to the string buffer
+    aSB.append ("MDN Headers:").append (CHttp.EOL);
 
+    // Should use ISO-8859-1 charset for HTTP headers
     aMdn.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL));
 
+    // Empty line
     aSB.append (CHttp.EOL);
 
     // write attributes to the string buffer
-    aSB.append ("Attributes:" + CHttp.EOL);
+    aSB.append ("MDN Attributes:").append (CHttp.EOL);
     for (final Map.Entry <String, String> aEntry : aMdn.attrs ().entrySet ())
     {
       aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (CHttp.EOL);
@@ -122,7 +124,6 @@ public class MDNFileModule extends AbstractStorageModule
     // finally, write the MDN text
     aSB.append ("Text:").append (CHttp.EOL).append (aMdn.getText ());
 
-    // TODO which charset?
-    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes ());
+    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes (getCharset ()));
   }
 }

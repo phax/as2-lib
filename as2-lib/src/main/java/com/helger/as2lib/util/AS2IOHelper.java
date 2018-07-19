@@ -232,7 +232,7 @@ public final class AS2IOHelper
     return aRealDestFile;
   }
 
-  @Nonnull
+  @Nullable
   public static String getFilenameFromMessageID (@Nonnull final String sMessageID)
   {
     // Remove angle brackets manually

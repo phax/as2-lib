@@ -168,26 +168,28 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   private void writeObject (@Nonnull final ObjectOutputStream aOOS) throws IOException
   {
     // write the mime body
-    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-    try
+    // Write to BAOS first to avoid serializing an incomplete object
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
-      if (m_aData != null)
+      try
       {
-        aBAOS.write (1);
-        m_aData.writeTo (aBAOS);
+        if (m_aData != null)
+        {
+          aBAOS.write (1);
+          m_aData.writeTo (aBAOS);
+        }
+        else
+        {
+          aBAOS.write (0);
+        }
       }
-      else
+      catch (final MessagingException ex)
       {
-        aBAOS.write (0);
+        throw new IOException ("Messaging exception: " + ex.getMessage ());
       }
-    }
-    catch (final MessagingException ex)
-    {
-      throw new IOException ("Messaging exception: " + ex.getMessage ());
-    }
 
-    aOOS.write (aBAOS.toByteArray ());
-    aBAOS.close ();
+      aOOS.write (aBAOS.toByteArray ());
+    }
 
     // write the message's MDN
     aOOS.writeObject (m_aMDN);

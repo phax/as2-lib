@@ -13,5 +13,8 @@ hs_err_pid*
 /target/
 **/*.iml
 
-# IDE files #
-*.idea
+# IDE files
+.idea/
+/.settings/ 
+/.project 
+/.classpath 

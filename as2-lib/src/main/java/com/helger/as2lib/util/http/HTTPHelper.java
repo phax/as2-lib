@@ -39,16 +39,23 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.util.SharedFileInputStream;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
@@ -56,6 +63,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
+import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
@@ -63,6 +71,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.functional.IFunction;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttp;
@@ -80,6 +89,7 @@ import com.helger.mail.datasource.InputStreamDataSource;
  *
  * @author Philip Helger
  */
+@ThreadSafe
 public final class HTTPHelper
 {
   /** The request method used (POST or GET) */
@@ -89,17 +99,67 @@ public final class HTTPHelper
   /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
 
+  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
+
+  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
+  @GuardedBy ("s_aRWLock")
   private static ISupplier <? extends IHTTPIncomingDumper> s_aHTTPIncomingDumperFactory = () -> null;
+  @GuardedBy ("s_aRWLock")
   private static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> s_aHTTPOutgoingDumperFactory = x -> null;
+
+  private static final class OutgoingDumperFactory implements IFunction <IBaseMessage, IHTTPOutgoingDumper>
+  {
+    // Counter to ensure unique filenames
+    private final AtomicInteger m_aCounter = new AtomicInteger (0);
+    private final File m_aDumpDirectory;
+
+    public OutgoingDumperFactory (@Nonnull final File aDumpDirectory)
+    {
+      m_aDumpDirectory = aDumpDirectory;
+    }
+
+    @Nonnull
+    public IHTTPOutgoingDumper apply (@Nonnull final IBaseMessage aMsg)
+    {
+      return new HTTPOutgoingDumperFileBased (new File (m_aDumpDirectory,
+                                                        "as2-outgoing-" +
+                                                                          Long.toString (System.currentTimeMillis ()) +
+                                                                          "-" +
+                                                                          Integer.toString (m_aCounter.getAndIncrement ()) +
+                                                                          ".http"));
+    }
+  }
 
   static
   {
-    final String sHttpDumpDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
-    if (StringHelper.hasText (sHttpDumpDirectory))
+    // Set global incoming dump directory
     {
-      final File aDumpDirectory = new File (sHttpDumpDirectory);
-      AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
-      setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
+      // New property name since v4.0.3
+      String sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryIncoming");
+      if (StringHelper.hasNoText (sHttpDumpIncomingDirectory))
+      {
+        // Check old name
+        sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
+        if (StringHelper.hasText (sHttpDumpIncomingDirectory))
+          s_aLogger.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
+      }
+      if (StringHelper.hasText (sHttpDumpIncomingDirectory))
+      {
+        final File aDumpDirectory = new File (sHttpDumpIncomingDirectory);
+        AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
+        setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
+      }
+    }
+
+    // Set global outgoing dump directory (since v4.0.3)
+    {
+      final String sHttpDumpOutgoingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryOutgoing");
+      if (StringHelper.hasText (sHttpDumpOutgoingDirectory))
+      {
+        final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
+        AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
+        setHTTPOutgoingDumperFactory (new OutgoingDumperFactory (aDumpDirectory));
+      }
     }
   }
 
@@ -146,23 +206,6 @@ public final class HTTPHelper
           {
             // First get hex chunk length; followed by CRLF
             int nBlocklen = readChunkLen(aDataIS);
-//            for (;;)
-//            {
-//              int ch = aDataIS.readByte ();
-//              if (ch == '\n')
-//                break;
-//              if (ch >= 'a' && ch <= 'f')
-//                ch -= ('a' - 10);
-//              else
-//                if (ch >= 'A' && ch <= 'F')
-//                  ch -= ('A' - 10);
-//                else
-//                  if (ch >= '0' && ch <= '9')
-//                    ch -= '0';
-//                  else
-//                    continue;
-//              nBlocklen = (nBlocklen * 16) + ch;
-//            }
             // Zero length is end of chunks
             if (nBlocklen == 0)
               break;
@@ -265,7 +308,7 @@ public final class HTTPHelper
   @Nullable
   public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
-    return s_aHTTPIncomingDumperFactory.get ();
+    return s_aRWLock.readLocked ( () -> s_aHTTPIncomingDumperFactory.get ());
   }
 
   /**
@@ -278,7 +321,7 @@ public final class HTTPHelper
   public static void setHTTPIncomingDumperFactory (@Nonnull final ISupplier <? extends IHTTPIncomingDumper> aHttpDumperFactory)
   {
     ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
-    s_aHTTPIncomingDumperFactory = aHttpDumperFactory;
+    s_aRWLock.writeLocked ( () -> s_aHTTPIncomingDumperFactory = aHttpDumperFactory);
   }
 
   /**
@@ -291,7 +334,7 @@ public final class HTTPHelper
   @Nullable
   public static IHTTPOutgoingDumper getHTTPOutgoingDumper (@Nonnull final IBaseMessage aMsg)
   {
-    return s_aHTTPOutgoingDumperFactory.apply (aMsg);
+    return s_aRWLock.readLocked ( () -> s_aHTTPOutgoingDumperFactory.apply (aMsg));
   }
 
   /**
@@ -304,7 +347,7 @@ public final class HTTPHelper
   public static void setHTTPOutgoingDumperFactory (@Nullable final IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> aHttpDumperFactory)
   {
     ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
-    s_aHTTPOutgoingDumperFactory = aHttpDumperFactory;
+    s_aRWLock.writeLocked ( () -> s_aHTTPOutgoingDumperFactory = aHttpDumperFactory);
   }
 
   /**
@@ -509,16 +552,4 @@ public final class HTTPHelper
         break;
     }
   }
-
-//  public static boolean hasContentLength(@Nonnull IMessage aMsg){
-//    // No "Content-Length" header present
-//    final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
-//    if (sTransferEncoding != null) {
-//      // Remove all whitespaces in the value
-//      if (sTransferEncoding.replaceAll("\\s+", "").equalsIgnoreCase("chunked")) {
-//        return true;
-//      }
-//    }
-//    return false;
-//  }
 }

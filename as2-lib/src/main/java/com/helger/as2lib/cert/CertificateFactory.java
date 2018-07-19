@@ -328,7 +328,9 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
       aKeyStore.setCertificateEntry (sRealAlias, aCert);
       onChange ();
-      s_aLogger.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
+
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -354,7 +356,9 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       final Certificate [] aCertChain = aKeyStore.getCertificateChain (sRealAlias);
       aKeyStore.setKeyEntry (sRealAlias, aKey, sPassword.toCharArray (), aCertChain);
       onChange ();
-      s_aLogger.info ("Added key alias '" + sRealAlias + "'");
+
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("Added key alias '" + sRealAlias + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -378,7 +382,9 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       {
         // Only if something changed
         onChange ();
-        s_aLogger.info ("Remove all aliases in key store");
+
+        if (s_aLogger.isInfoEnabled ())
+          s_aLogger.info ("Remove all aliases in key store");
       }
     }
     catch (final GeneralSecurityException ex)
@@ -440,13 +446,15 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
       aKeyStore.deleteEntry (sRealAlias);
       onChange ();
-      s_aLogger.info ("Removed certificate alias '" +
-                      sRealAlias +
-                      "'" +
-                      (aCert instanceof X509Certificate ? " of certificate '" +
-                                                          ((X509Certificate) aCert).getSubjectDN () +
-                                                          "'"
-                                                        : ""));
+
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("Removed certificate alias '" +
+                        sRealAlias +
+                        "'" +
+                        (aCert instanceof X509Certificate ? " of certificate '" +
+                                                            ((X509Certificate) aCert).getSubjectDN () +
+                                                            "'"
+                                                          : ""));
     }
     catch (final GeneralSecurityException ex)
     {
@@ -473,5 +481,17 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     {
       StreamHelper.close (aOS);
     }
+  }
+
+  @Override
+  public boolean equals (@Nullable final Object o)
+  {
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    return super.hashCode ();
   }
 }

@@ -1,3 +1,5 @@
+dist: trusty
+sudo: required
 language: java
 
 env:
@@ -10,17 +12,31 @@ WFSl1SmvIOGcvK5QFLYqhcBAQR9RQXQczmzt8tEHOnVakCOs01OgtUjLxDmPzSSBPHtgylfml+ck+Qkq
 Rrga38f299N4O93tvWxKB+X7C54fMzcXCYbzg3Dwe5mkztqUVM8oilTLvwBfToCHHiwMhP+T1XyNpq7HO8L8etcSBLx0Qo+3RiPZ
 are/4JABwQEeLYKt5f0dw9Wf8OIBJMbY6VEC6ezOWCqOyqd/46XdJjwbMW0BTV1Ti0khrvOyfNWxJytFZl3PL2Hq7toxsyRfDbg1
 st0da29wkem8vFGdg2057ktVtNJ2TCIgw2s5kBIdxAxONduR4Fd1qyjHEZRVKlxYf/5VeFwn8h449gDxka6Q1ZNK1az0BA="
-    
+
+addons:
+  sonarcloud:
+    organization: "phax-github"
+    token:
+      secure: "Mh22x3iRUhoRW5Vg+IaJrx7xezW75eNUXEDfw9GfuEG4m0NG+N8Cco38q+mm4oOVYOaki0juEDIcxRyboCbM6FbG8RerYw/zsLnPupmMqCi1OgejzlDc2pjqshAcl26xY6VY5mdxz96l/YQisCDu8
+ZafS8Cu12765JzksJxwF/LNIK3aOE/QxvFJOMnQF8CXMaPa5KbnmjpolGmatFjwCsss+0KBhI6SLpqZhUZT4k9MtxW1JhIBNLK4CnHonOF9rxIg9+o0c5svKGikvCUkXhS091JriIkIOAR7FlaJ4OYPMTMkd9JzQ
+o81Aga9aASKU2zEq77pl1lr4RV6aHqLVBVM/zrlpIrwHj+bJBDeTIkZ1RBadhwpATrmm86iLfUFWKVE1uCWYsn0YMLI7tRxyrd189+l5UdCb5f1wrP7ZmK82g/pSIP6u7620vrnX8CYbeq5bHMGj00Xhx93bL8hJ
+Csp6cWSq7YCHomfEPfZDuL/5kdId/PQNenN49tX1lQ+kbf5MC/4+hDBQI/Pqf8gANwWOdHqQ9tYibxbxeDRyxuwdu+If7iuC4uoi70jzXiG/607iXw0FrRC4foh5Tz5zjeUPTYQc8JB1qJFWduT2lXdwnYL/tWxw
+k3n/auO5/uY/wmRrWwhSiFLmxjGQozkwXoVhdGGKb6zjYMzainBlF0="
+
 jdk:
   - oraclejdk8
   
 install:
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
-  
+
+script:
+  - mvn test -B -P coverage sonar:sonar
+
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
 
 after_success:
   - mvn deploy --settings travis-settings.xml -DskipTests=true -B -P travis-deploy
+  - bash <(curl -s https://codecov.io/bash)
   

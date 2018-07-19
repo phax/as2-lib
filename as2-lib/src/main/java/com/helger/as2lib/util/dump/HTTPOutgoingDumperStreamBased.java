@@ -34,7 +34,6 @@ package com.helger.as2lib.util.dump;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
@@ -43,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -100,7 +100,8 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 
   public void dumpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    _write ((sName + "=" + sValue + "\r\n").getBytes (StandardCharsets.ISO_8859_1));
+    final String sHeaderLine = sName + "=" + sValue + CHttp.EOL;
+    _write (sHeaderLine.getBytes (CHttp.HTTP_CHARSET));
     m_nHeaders++;
   }
 
@@ -108,8 +109,8 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   {
     if (m_nHeaders > 0)
     {
-      _write ('\r');
-      _write ('\n');
+      // empty line
+      _write (CHttp.EOL.getBytes (CHttp.HTTP_CHARSET));
     }
   }
 

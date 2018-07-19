@@ -65,11 +65,15 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-mail</artifactId>
-      <version>9.0.2-ziv-SNAPSHOT</version>
+      <version>9.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-http</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-bc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
