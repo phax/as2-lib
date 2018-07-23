@@ -1,0 +1,131 @@
+/**
+ * The FreeBSD Copyright
+ * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
+ * Copyright (C) 2013-2018 Philip Helger philip[at]helger[dot]com
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *    1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ *    2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation
+ * are those of the authors and should not be interpreted as representing
+ * official policies, either expressed or implied, of the FreeBSD Project.
+ */
+package com.helger.as2lib.util.http;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.mail.util.SharedFileInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+
+/**
+ * Stores the content of the input {@link InputStream} in a temporary
+ * file, and opens {@link SharedFileInputStream} on that file. When the stream is closed, the file will be deleted, and the input stream will be closed.
+ */
+@SuppressWarnings({"WeakerAccess", "JavaDoc", "SpellCheckingInspection"})
+public class TempSharedFileInputStream extends SharedFileInputStream {
+	private static final Logger s_aLogger = LoggerFactory.getLogger (TempSharedFileInputStream.class);
+	private File tempFile;
+	private InputStream srcIS;
+	int num=0;
+
+	private TempSharedFileInputStream(@Nonnull File file, @Nonnull InputStream is) throws IOException{
+		super(file);
+		srcIS = is;
+		tempFile = file;
+	}
+
+	/**
+	 * Stores the content of the input {@link InputStream} in a temporary
+	 * file (in the system temporary directory, and opens {@link SharedFileInputStream} on that file.
+	 * @param aIS    {@link InputStream} to read from
+	 * @param name  name to use in the temporary file to link it to the delivered message.
+	 *              May be null
+	 * @return    {@link TempSharedFileInputStream} on the created temporary file.
+	 * @throws IOException
+	 */
+	@SuppressWarnings({"unused", "JavaDoc"})
+	static TempSharedFileInputStream getTempSharedFileInputStream(@Nonnull InputStream aIS, String name) throws IOException {
+		File aDest = storeContentToTempFile(aIS, name);
+		return new TempSharedFileInputStream(aDest, aIS);
+	}
+
+	/**
+	 * Stores the content of the input {@link InputStream} in a temporary
+	 * file (in the system temporary directory.
+	 * @param aIS    {@link InputStream} to read from
+	 * @param name  name to use in the temporary file to link it to the delivered message.
+	 *              May be null
+	 * @return      The created {@link File}
+	 * @throws IOException
+	 */
+	@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection"})
+	protected static File storeContentToTempFile(@Nonnull InputStream aIS, String name) throws IOException{
+		// create temp file and write steam content to it
+		String suffix= null == name ? "tmp" : name;
+		File aDest = File.createTempFile("TempSharedFileInputStream", suffix);
+		final FileOutputStream aOS = new FileOutputStream (aDest);
+		long transferred = org.apache.commons.io.IOUtils.copyLarge(aIS, aOS);
+		s_aLogger.debug("%l bytes copied to %s", transferred, aDest.getAbsolutePath());
+		return aDest;
+	}
+
+	/**
+	 * close - Do nothing, to prevent early close, as the cryptographic processing stages closes their input stream
+	 */
+	@Override
+	public void close() throws  IOException {
+		s_aLogger.debug("close() called, doing nothing.");
+	}
+
+	/**
+	 * finalize - closes also the input stream, and deletes the backing file
+	 */
+	@Override
+	public void finalize() throws  IOException {
+		try {
+			super.finalize();
+			closeAll();
+		} catch (Throwable t) {
+			s_aLogger.error("Exception in finalize()", t);
+			throw new IOException(t.getClass().getName() + ":" + t.getMessage());
+		}
+	}
+
+	/**
+	 * closeAll - closes the input stream, and deletes the backing file
+	 */
+	public void closeAll() throws  IOException {
+			srcIS.close();
+			super.close();
+			if (tempFile.exists()) {
+				if (!tempFile.delete()) {
+					s_aLogger.error("Failed to delete file {}", tempFile.getAbsolutePath());
+				}
+			}
+	}
+}

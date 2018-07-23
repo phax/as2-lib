@@ -83,6 +83,7 @@ public class MessageFileModule extends AbstractStorageModule
       final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), sAction);
       final InputStream aIS = aMsg.getData ().getInputStream ();
       store (aMsgFile, aIS);
+      aMsg.attrs().put(MessageParameters.ATTR_STORED_FILE_NAME,aMsgFile.getAbsolutePath ());
       s_aLogger.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
     }
     catch (final Exception ex)

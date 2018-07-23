@@ -113,4 +113,6 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
       aOS.flush ();
     }
   }
+
+  public Socket getSocket(){return m_aSocket;}
 }

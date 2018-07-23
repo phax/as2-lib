@@ -35,6 +35,7 @@ package com.helger.as2lib.processor.sender;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
+import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
@@ -49,11 +50,18 @@ import javax.net.ssl.TrustManager;
 import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.util.http.AS2HttpClient;
+import com.helger.as2lib.util.http.AS2HttpURLConnection;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.ws.HostnameVerifierVerifyAll;
 import com.helger.commons.ws.TrustManagerTrustAll;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  * Abstract HTTP based sender module
@@ -109,12 +117,12 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   @Nonnull
-  public HttpURLConnection getConnection (@Nonnull @Nonempty final String sUrl,
-                                          final boolean bOutput,
-                                          final boolean bInput,
-                                          final boolean bUseCaches,
-                                          @Nonnull final EHttpMethod eRequestMethod,
-                                          @Nullable final Proxy aProxy) throws OpenAS2Exception
+  public AS2HttpURLConnection getHttpURLConnection (@Nonnull @Nonempty final String sUrl,
+                                                    final boolean bOutput,
+                                                    final boolean bInput,
+                                                    final boolean bUseCaches,
+                                                    @Nonnull final EHttpMethod eRequestMethod,
+                                                    @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
     try
     {
@@ -143,7 +151,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
           aConns.setHostnameVerifier (aHV);
       }
 
-      return aConn;
+      return new AS2HttpURLConnection(aConn);
     }
     catch (final IOException ex)
     {
@@ -153,5 +161,24 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+  }
+
+  /**
+   * Generate a HttpClient connection. It works with streams and avoids holding whole messge in memory. note that bOutput, bInput, and bUseCaches are not supported
+   * @param sUrl
+   * @param eRequestMethod
+   * @param aProxy
+   * @return a {@link AS2HttpClient} object to work with
+   * @throws OpenAS2Exception
+   */
+  @Nonnull
+  public AS2HttpClient getHttpClient(@Nonnull @Nonempty final String sUrl,
+                                     @Nonnull final EHttpMethod eRequestMethod,
+                                     @Nullable final Proxy aProxy) throws OpenAS2Exception {
+  return new AS2HttpClient(sUrl,
+    getAsInt(ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS),
+    getAsInt(ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS),
+    eRequestMethod,
+    aProxy);
   }
 }

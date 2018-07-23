@@ -44,17 +44,18 @@ import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Implementation of {@link IAS2HttpHeaderWrapper} for {@link HttpURLConnection}
- * .
+ * of {@link sun.net.www.http.HttpClient}.
  *
  * @author Philip Helger
  */
 @Immutable
 public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHeaderWrapper
 {
-  private final HttpURLConnection m_aConn;
+  private final IAS2HttpConnection m_aConn;
   private final IHTTPOutgoingDumper m_aOutgoingDumper;
 
-  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final HttpURLConnection aConn)
+  @SuppressWarnings("unused")
+  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn)
   {
     this (aConn, null);
   }
@@ -68,7 +69,7 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
    *        An optional outgoing dumper, that will also receive all the headers.
    *        May be <code>null</code>.
    */
-  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final HttpURLConnection aConn,
+  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn,
                                                 @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
   {
     m_aConn = ValueEnforcer.notNull (aConn, "Connection");
@@ -78,7 +79,7 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
     final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue);
-    m_aConn.setRequestProperty (sName, sUnifiedValue);
+    m_aConn.setHttpHeader (sName, sUnifiedValue);
 
     if (m_aOutgoingDumper != null)
       m_aOutgoingDumper.dumpHeader (sName, sUnifiedValue);
