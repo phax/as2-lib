@@ -18,12 +18,17 @@ package com.helger.as2servlet;
 
 import java.io.IOException;
 
+import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.ParseException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.helger.commons.http.CHttpHeader;
+import com.helger.mail.datasource.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,8 +166,22 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     // Handle the incoming message, and return the MDN if necessary
     final String sClientInfo = aHttpRequest.getRemoteAddr () + ":" + aHttpRequest.getRemotePort ();
 
+    //for large file support, handleIncomingMessage takes DataSource
+    DataSource aPayload;
+    try {
+      // Put received data in a MIME body part
+      final ContentType aReceivedContentType = new ContentType(aMsg.getHeader(CHttpHeader.CONTENT_TYPE));
+      final String sReceivedContentType = aReceivedContentType.toString();
+      aPayload = new ByteArrayDataSource(
+        aMsgData,
+        sReceivedContentType,
+        null);
+    } catch (ParseException e){
+      s_aLogger.error("Exception while building DataSource", e);
+      throw new ServletException(e.getMessage());
+    }
     // This call internally invokes the AS2ServletSBDModule
-    getReceiverModule ().createHandler ().handleIncomingMessage (sClientInfo, aMsgData, aMsg, aResponseHandler);
+    getReceiverModule ().createHandler ().handleIncomingMessage (sClientInfo, aPayload, aMsg, aResponseHandler);
   }
 
   public final void onRequest (@Nonnull final HttpServletRequest aHttpRequest,
