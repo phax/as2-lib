@@ -65,7 +65,6 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-mail</artifactId>
-      <version>9.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>

@@ -90,7 +90,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    */
   @Nonnull
   @OverrideOnDemand
-  protected SSLContext createSSLContext () throws GeneralSecurityException
+  public static SSLContext createSSLContext () throws GeneralSecurityException
   {
     // Trust all server certificates
     final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
@@ -111,7 +111,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    */
   @Nullable
   @OverrideOnDemand
-  protected HostnameVerifier createHostnameVerifier ()
+  public static HostnameVerifier createHostnameVerifier ()
   {
     return new HostnameVerifierVerifyAll ();
   }

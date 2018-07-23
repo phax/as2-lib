@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.util.http;
 
+import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,6 +41,7 @@ import org.apache.http.entity.InputStreamEntity;
 
 import java.io.*;
 import java.net.*;
+import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +49,8 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.annotation.Nonempty;
@@ -54,6 +58,7 @@ import com.helger.commons.http.EHttpMethod;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,19 +92,28 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	                      @Nullable final Proxy aProxy)
 		throws OpenAS2Exception {
 		try {
-			aCloseableHttpClient = HttpClients.createDefault();
 			// set configuration
 			RequestConfig conf = RequestConfig.custom()
 				.setConnectionRequestTimeout(iConnectTimeout)
 				.setConnectTimeout(iConnectTimeout)
 				.setSocketTimeout(iReadTimeout)
 				.build();
-			//TODO handle SSL
 			URI aUri = new URI(sUrl);
+			HttpClientBuilder aClientBuilder = HttpClientBuilder.create();
+			if (aUri.getScheme().toLowerCase().equals("https")){
+				// Create SSL context
+				final SSLContext aSSLCtx = AbstractHttpSenderModule.createSSLContext ();
+				// Get hostname verifier
+				final HostnameVerifier aHV = AbstractHttpSenderModule.createHostnameVerifier ();
+				aClientBuilder.setSSLContext(aSSLCtx)
+					.setSSLHostnameVerifier(aHV);
+			}
+			aCloseableHttpClient = aClientBuilder.build();
 			aRequestBuilder = RequestBuilder.create(eRequestMethod.getName())
 				.setUri(aUri)
 				.setConfig(conf);
-		}catch (java.net.URISyntaxException e) {
+		}catch (java.net.URISyntaxException|GeneralSecurityException e) {
+			s_aLogger.error("Exception in AS2HttpClient constructor: ", e.getMessage());
 			throw new OpenAS2Exception(e.getMessage());
 		}
 	}
