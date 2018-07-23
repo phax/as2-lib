@@ -66,7 +66,7 @@ public class MessageFileModule extends AbstractStorageModule
 {
   public static final String ATTR_HEADER = "header";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MessageFileModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MessageFileModule.class);
 
   public MessageFileModule ()
   {
@@ -84,7 +84,7 @@ public class MessageFileModule extends AbstractStorageModule
       final InputStream aIS = aMsg.getData ().getInputStream ();
       store (aMsgFile, aIS);
       aMsg.attrs().put(MessageParameters.ATTR_STORED_FILE_NAME,aMsgFile.getAbsolutePath ());
-      s_aLogger.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
+      LOGGER.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
     }
     catch (final Exception ex)
     {
@@ -102,7 +102,7 @@ public class MessageFileModule extends AbstractStorageModule
         final File aHeaderFile = getFile (aMsg, sHeaderFilename, sAction);
         final InputStream aIS = getHeaderStream (aMsg, getCharset ());
         store (aHeaderFile, aIS);
-        s_aLogger.info ("stored headers to " + aHeaderFile.getAbsolutePath () + aMsg.getLoggingText ());
+        LOGGER.info ("stored headers to " + aHeaderFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
       catch (final IOException ex)
       {

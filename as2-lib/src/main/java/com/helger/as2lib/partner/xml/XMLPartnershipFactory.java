@@ -75,7 +75,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
   private static final String PARTNER_NAME = Partner.PARTNER_NAME;
   private static final String PARTNERSHIP_NAME = Partner.PARTNER_NAME;
-  private static final Logger s_aLogger = LoggerFactory.getLogger (XMLPartnershipFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (XMLPartnershipFactory.class);
 
   public void setFilename (final String filename)
   {
@@ -138,7 +138,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
             aNewPartnerships.addPartnership (aNewPartnership);
           }
           else
-            s_aLogger.warn ("Invalid element '" + sNodeName + "' in XML partnership file");
+            LOGGER.warn ("Invalid element '" + sNodeName + "' in XML partnership file");
       }
     }
 
@@ -262,7 +262,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     {
       final File aBackupFile = _getUniqueBackupFile (sFilename);
 
-      s_aLogger.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
+      LOGGER.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
       final File aSourceFile = new File (sFilename);
       AS2IOHelper.getFileOperationManager ().renameFile (aSourceFile, aBackupFile);

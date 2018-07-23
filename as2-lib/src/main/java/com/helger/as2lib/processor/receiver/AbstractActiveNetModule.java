@@ -215,7 +215,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   protected static final class ConnectionThread extends Thread
   {
-    private static final Logger s_aLogger = LoggerFactory.getLogger (ConnectionThread.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger (ConnectionThread.class);
 
     private final AbstractActiveNetModule m_aOwner;
     private final Socket m_aSocket;
@@ -230,7 +230,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     @Override
     public void run ()
     {
-      s_aLogger.info ("AS2ConnectionThread: run");
+      LOGGER.info ("AS2ConnectionThread: run");
 
       m_aOwner.createHandler ().handle (m_aOwner, m_aSocket);
 
@@ -244,14 +244,14 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       }
       finally
       {
-        s_aLogger.info ("AS2ConnectionThread: done running");
+        LOGGER.info ("AS2ConnectionThread: done running");
       }
     }
   }
 
   protected static class MainThread extends Thread
   {
-    private static final Logger s_aLogger = LoggerFactory.getLogger (MainThread.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger (MainThread.class);
 
     private final AbstractActiveNetModule m_aOwner;
     private final ServerSocket m_aServerSocket;
@@ -267,7 +267,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)
                                                        : new InetSocketAddress (sAddress, nPort);
       m_aServerSocket.bind (aAddr);
-      s_aLogger.info ("Inited " + getName () + " at " + aAddr);
+      LOGGER.info ("Inited " + getName () + " at " + aAddr);
     }
 
     @OverrideOnDemand
@@ -281,7 +281,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     @Override
     public void run ()
     {
-      s_aLogger.info ("AS2MainThread: run");
+      LOGGER.info ("AS2MainThread: run");
       while (!m_bTerminated && !isInterrupted ())
       {
         try
@@ -296,7 +296,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
         }
       }
 
-      s_aLogger.info ("AS2MainThread: done running");
+      LOGGER.info ("AS2MainThread: done running");
     }
 
     public void terminate ()

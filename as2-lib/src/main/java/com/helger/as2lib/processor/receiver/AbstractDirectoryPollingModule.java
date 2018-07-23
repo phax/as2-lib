@@ -77,7 +77,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   public static final String ATTR_MIMETYPE = "mimetype";
   public static final String ATTR_SENDFILENAME = "sendfilename";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractDirectoryPollingModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractDirectoryPollingModule.class);
 
   private ICommonsMap <String, Long> m_aTrackedFiles;
 
@@ -209,7 +209,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
   protected void processFile (@Nonnull final File aFile) throws OpenAS2Exception
   {
-    s_aLogger.info ("processing " + aFile.getAbsolutePath ());
+    LOGGER.info ("processing " + aFile.getAbsolutePath ());
 
     final IMessage aMsg = createMessage ();
     aMsg.attrs ().putIn (CFileAttribute.MA_FILEPATH, aFile.getAbsolutePath ());
@@ -221,13 +221,13 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
      */
     aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, aFile.getName ());
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("AS2Message was created");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("AS2Message was created");
 
     try
     {
       updateMessage (aMsg, aFile);
-      s_aLogger.info ("file assigned to message " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
+      LOGGER.info ("file assigned to message " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
 
       if (aMsg.getData () == null)
         throw new InvalidMessageException ("No Data");
@@ -235,8 +235,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       // Transmit the message
       getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
 
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("AS2Message was successfully handled my the MessageProcessor");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("AS2Message was successfully handled my the MessageProcessor");
 
       /*
        * asynch mdn logic 2007-03-12 If the return status is pending in msg's
@@ -254,7 +254,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                                       " - " +
                                       aIOErr.toString ());
 
-        s_aLogger.info ("copied " +
+        LOGGER.info ("copied " +
                         aFile.getAbsolutePath () +
                         " to pending folder : " +
                         aPendingFile.getAbsolutePath () +
@@ -272,7 +272,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                                 aFile.getName ());
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
-          s_aLogger.info ("moved " +
+          LOGGER.info ("moved " +
                           aFile.getAbsolutePath () +
                           " to " +
                           aSentFile.getAbsolutePath () +
@@ -288,20 +288,20 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       }
       else
       {
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Trying to delete file " + aFile.getAbsolutePath ());
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Trying to delete file " + aFile.getAbsolutePath ());
 
         if (!aFile.delete ())
         {
           // Delete the file if a sent directory isn't set
           throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile);
         }
-        s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
+        LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
     }
     catch (final OpenAS2Exception ex)
     {
-      s_aLogger.info (ex.getLocalizedMessage () + aMsg.getLoggingText ());
+      LOGGER.info (ex.getLocalizedMessage () + aMsg.getLoggingText ());
       ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
       ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
       ex.terminate ();
@@ -345,7 +345,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         }
         catch (final InvalidParameterException ex)
         {
-          s_aLogger.error ("Bad content-type '" + sContentType + "'" + aMsg.getLoggingText ());
+          LOGGER.error ("Bad content-type '" + sContentType + "'" + aMsg.getLoggingText ());
           // Default to application/octet-stream
           sContentType = CMimeType.APPLICATION_OCTET_STREAM.getAsString ();
         }
@@ -383,19 +383,19 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       throw WrappedOpenAS2Exception.wrap (ex);
     }
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Updating partnership for AS2 message" + aMsg.getLoggingText ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Updating partnership for AS2 message" + aMsg.getLoggingText ());
 
     // update the message's partnership with any stored information
     getSession ().getPartnershipFactory ().updatePartnership (aMsg, true);
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Finished updating partnership for AS2 message");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Finished updating partnership for AS2 message");
 
     aMsg.updateMessageID ();
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Updated message ID to " + aMsg.getMessageID ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Updated message ID to " + aMsg.getMessageID ());
   }
 
   @Nonnull

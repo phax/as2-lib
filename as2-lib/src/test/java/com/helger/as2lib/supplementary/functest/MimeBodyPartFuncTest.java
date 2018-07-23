@@ -65,7 +65,7 @@ import com.helger.mail.datasource.ByteArrayDataSource;
  */
 public final class MimeBodyPartFuncTest
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (MimeBodyPartFuncTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MimeBodyPartFuncTest.class);
 
   @Test
   public void testWriteContentTransferEncoding8Bit () throws MessagingException, IOException
@@ -86,7 +86,7 @@ public final class MimeBodyPartFuncTest
 
     final String sMsgPart = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     if (false)
-      s_aLogger.info (sMsgPart);
+      LOGGER.info (sMsgPart);
 
     assertTrue (sMsgPart, sMsgPart.contains ("Content-Type: text/plain"));
     assertTrue (sMsgPart, sMsgPart.contains ("Content-Transfer-Encoding: 8bit"));
@@ -114,7 +114,7 @@ public final class MimeBodyPartFuncTest
 
     final String sMsgPart = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     if (false)
-      s_aLogger.info (sMsgPart);
+      LOGGER.info (sMsgPart);
 
     assertTrue (sMsgPart, sMsgPart.contains ("Content-Type: text/plain"));
     assertTrue (sMsgPart, sMsgPart.contains ("Content-Transfer-Encoding: base64"));
@@ -162,6 +162,6 @@ public final class MimeBodyPartFuncTest
 
     final String sMsgPart = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     if (true)
-      s_aLogger.info (sMsgPart);
+      LOGGER.info (sMsgPart);
   }
 }

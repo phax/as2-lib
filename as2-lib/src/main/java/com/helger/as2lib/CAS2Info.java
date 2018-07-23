@@ -57,7 +57,7 @@ public final class CAS2Info
   /** The version of this AS2 client. May not contain blanks. */
   public static final String VERSION;
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (CAS2Info.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (CAS2Info.class);
 
   static
   {
@@ -77,7 +77,7 @@ public final class CAS2Info
       // Project version stays "undefined"
     }
     if (sProjectVersion == null)
-      s_aLogger.warn ("Failed to load version number");
+      LOGGER.warn ("Failed to load version number");
     VERSION = sProjectVersion;
   }
 

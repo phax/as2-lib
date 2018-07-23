@@ -74,7 +74,7 @@ import com.helger.commons.state.ETriState;
 @Immutable
 public final class AS2Helper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2Helper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2Helper.class);
   private static final String HEADER_RECEIVED_CONTENT_MIC = "Received-Content-MIC";
   private static final String HEADER_DISPOSITION = "Disposition";
   private static final String HEADER_ORIGINAL_MESSAGE_ID = "Original-Message-ID";
@@ -354,7 +354,7 @@ public final class AS2Helper
                                @Nonnull final X509Certificate aReceiverCert,
                                final boolean bUseCertificateInBodyPart) throws Exception
   {
-    s_aLogger.info ("Start parsing MDN of" + aMsg.getLoggingText ());
+    LOGGER.info ("Start parsing MDN of" + aMsg.getLoggingText ());
 
     final IMessageMDN aMdn = aMsg.getMDN ();
     MimeBodyPart aMainPart = aMdn.getData ();
@@ -365,21 +365,21 @@ public final class AS2Helper
     final boolean bForceVerify = aMsg.partnership ().isForceVerify ();
     if (bMsgIsSigned && bDisableVerify)
     {
-      s_aLogger.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
+      LOGGER.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
     }
     else
       if (bMsgIsSigned || bForceVerify)
       {
         if (bForceVerify && !bMsgIsSigned)
-          s_aLogger.info ("Forced verify MDN signature" + aMsg.getLoggingText ());
+          LOGGER.info ("Forced verify MDN signature" + aMsg.getLoggingText ());
         else
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
 
         aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bUseCertificateInBodyPart, bForceVerify);
         // Remember that message was signed and verified
         aMdn.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
-        s_aLogger.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());
+        LOGGER.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
@@ -411,7 +411,7 @@ public final class AS2Helper
             aMdn.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }
           else
-            s_aLogger.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());
+            LOGGER.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());
       }
     }
   }

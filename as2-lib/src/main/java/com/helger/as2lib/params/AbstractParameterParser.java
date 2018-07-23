@@ -48,7 +48,7 @@ import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractParameterParser implements Serializable
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractParameterParser.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractParameterParser.class);
 
   public abstract void setParameter (@Nonnull String sKey, @Nonnull String sValue) throws InvalidParameterException;
 
@@ -120,8 +120,8 @@ public abstract class AbstractParameterParser implements Serializable
   @Nonnull
   public String format (@Nonnull final String sFormat) throws InvalidParameterException
   {
-    if (s_aLogger.isTraceEnabled ())
-      s_aLogger.trace ("Formatting '" + sFormat + "'");
+    if (LOGGER.isTraceEnabled ())
+      LOGGER.trace ("Formatting '" + sFormat + "'");
 
     final StringBuilder aSB = new StringBuilder ();
     for (int nNext = 0; nNext < sFormat.length (); ++nNext)
@@ -159,8 +159,8 @@ public abstract class AbstractParameterParser implements Serializable
       }
     }
 
-    if (s_aLogger.isTraceEnabled ())
-      s_aLogger.trace ("Formatted value is now '" + aSB.toString () + "'");
+    if (LOGGER.isTraceEnabled ())
+      LOGGER.trace ("Formatted value is now '" + aSB.toString () + "'");
 
     return aSB.toString ();
   }

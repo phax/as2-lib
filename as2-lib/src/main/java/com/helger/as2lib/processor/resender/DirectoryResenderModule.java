@@ -81,7 +81,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
   private static final String FILENAME_DATE_FORMAT = "MM-dd-uu-HH-mm-ss";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DirectoryResenderModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
@@ -114,14 +114,14 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
         if (sResendAction == null)
         {
-          s_aLogger.warn ("The resending method is missing - default to message sending!");
+          LOGGER.warn ("The resending method is missing - default to message sending!");
           sResendAction = IProcessorSenderModule.DO_SEND;
         }
 
         String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
         if (sRetries == null)
         {
-          s_aLogger.warn ("The resending retry count is missing - default to " +
+          LOGGER.warn ("The resending retry count is missing - default to " +
                           IProcessorResenderModule.DEFAULT_RETRIES +
                           "!");
           sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
@@ -132,7 +132,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         aOOS.writeObject (aMsg);
       }
 
-      s_aLogger.info ("Message put in resend queue" + aMsg.getLoggingText ());
+      LOGGER.info ("Message put in resend queue" + aMsg.getLoggingText ());
     }
     catch (final IOException ioe)
     {
@@ -172,8 +172,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
   protected void resendFile (@Nonnull final File aFile) throws OpenAS2Exception
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Processing " + aFile.getAbsolutePath ());
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Processing " + aFile.getAbsolutePath ());
 
     IMessage aMsg = null;
     try
@@ -193,7 +193,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         sRetries = Integer.toString (Integer.parseInt (sRetries) - 1);
 
         // Transmit the message
-        s_aLogger.info ("loaded message for resend." + aMsg.getLoggingText ());
+        LOGGER.info ("loaded message for resend." + aMsg.getLoggingText ());
 
         final ICommonsMap <String, Object> aOptions = new CommonsHashMap <> ();
         aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
@@ -206,7 +206,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
           throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile.getAbsolutePath ());
         }
 
-        s_aLogger.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
+        LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
       catch (final IOException ex)
       {
