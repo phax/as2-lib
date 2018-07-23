@@ -65,7 +65,6 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-mail</artifactId>
-      <version>9.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
@@ -88,11 +87,11 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <version>1.9.5</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
-      <version>4.5.2</version>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
