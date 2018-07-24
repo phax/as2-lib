@@ -89,7 +89,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   public static final String ATTR_PASSWORD = "password";
   public static final String ATTR_SAVE_CHANGES_TO_FILE = "autosave";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (CertificateFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (CertificateFactory.class);
 
   private KeyStore m_aKeyStore;
 
@@ -329,8 +329,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       aKeyStore.setCertificateEntry (sRealAlias, aCert);
       onChange ();
 
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -357,8 +357,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       aKeyStore.setKeyEntry (sRealAlias, aKey, sPassword.toCharArray (), aCertChain);
       onChange ();
 
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("Added key alias '" + sRealAlias + "'");
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Added key alias '" + sRealAlias + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -383,8 +383,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements
         // Only if something changed
         onChange ();
 
-        if (s_aLogger.isInfoEnabled ())
-          s_aLogger.info ("Remove all aliases in key store");
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Remove all aliases in key store");
       }
     }
     catch (final GeneralSecurityException ex)
@@ -447,8 +447,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       aKeyStore.deleteEntry (sRealAlias);
       onChange ();
 
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("Removed certificate alias '" +
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Removed certificate alias '" +
                         sRealAlias +
                         "'" +
                         (aCert instanceof X509Certificate ? " of certificate '" +

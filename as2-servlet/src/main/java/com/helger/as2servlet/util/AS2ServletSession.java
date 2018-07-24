@@ -49,7 +49,7 @@ public class AS2ServletSession extends AS2Session
   public static final String EL_PROCESSOR = "processor";
   public static final String EL_PARTNERSHIPS = "partnerships";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ServletSession.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2ServletSession.class);
 
   private final String m_sBaseDirectory;
 
@@ -59,7 +59,7 @@ public class AS2ServletSession extends AS2Session
     if (!aFile.exists ())
       throw new OpenAS2Exception ("AS2Session configuration file " + aFile.getAbsolutePath () + " does not exist!");
     m_sBaseDirectory = aFile.getParentFile ().getAbsolutePath ();
-    s_aLogger.info ("Loading AS2 configuration file '" + aFile.getAbsolutePath ());
+    LOGGER.info ("Loading AS2 configuration file '" + aFile.getAbsolutePath ());
     _load (FileHelper.getInputStream (aFile));
   }
 
@@ -71,7 +71,7 @@ public class AS2ServletSession extends AS2Session
 
   private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
   {
-    s_aLogger.info ("Loading certificates");
+    LOGGER.info ("Loading certificates");
     final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement,
                                                                        ICertificateFactory.class,
                                                                        this,
@@ -81,7 +81,7 @@ public class AS2ServletSession extends AS2Session
 
   private void _loadPartnershipFactory (final IMicroElement eRootNode) throws OpenAS2Exception
   {
-    s_aLogger.info ("Loading partnerships");
+    LOGGER.info ("Loading partnerships");
     final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode,
                                                                        IPartnershipFactory.class,
                                                                        this,
@@ -97,12 +97,12 @@ public class AS2ServletSession extends AS2Session
                                                                             this,
                                                                             m_sBaseDirectory);
     aMsgProcessor.addModule (aProcessorModule);
-    s_aLogger.info ("  Loaded processor module " + aProcessorModule.getName ());
+    LOGGER.info ("  Loaded processor module " + aProcessorModule.getName ());
   }
 
   private void _loadMessageProcessor (final IMicroElement eRootNode) throws OpenAS2Exception
   {
-    s_aLogger.info ("Loading message processor");
+    LOGGER.info ("Loading message processor");
     final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
                                                                           IMessageProcessor.class,
                                                                           this,

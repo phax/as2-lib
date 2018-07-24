@@ -52,7 +52,7 @@ import com.helger.as2lib.processor.sender.IProcessorSenderModule;
  */
 public class ImmediateResenderModule extends AbstractResenderModule
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (ImmediateResenderModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (ImmediateResenderModule.class);
 
   @Override
   public boolean canHandle (@Nonnull final String sAction,
@@ -67,12 +67,12 @@ public class ImmediateResenderModule extends AbstractResenderModule
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    s_aLogger.info ("Immediately resending message" + aMsg.getLoggingText ());
+    LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
 
     String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
-      s_aLogger.warn ("The resending action is missing - default to message sending!");
+      LOGGER.warn ("The resending action is missing - default to message sending!");
       sResendAction = IProcessorSenderModule.DO_SEND;
     }
 
@@ -83,7 +83,7 @@ public class ImmediateResenderModule extends AbstractResenderModule
     else
     {
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
-      s_aLogger.warn ("The resending retry count is missing - default to " + nRetries + "!");
+      LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
     }
 
     // Update the retries - decrement here

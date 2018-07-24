@@ -61,7 +61,7 @@ import com.helger.commons.state.EChange;
  */
 public abstract class AbstractMessageProcessor extends AbstractDynamicComponent implements IMessageProcessor
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractMessageProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractMessageProcessor.class);
 
   private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList<> ();
 
@@ -153,8 +153,8 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
       {
         try
         {
-          if (s_aLogger.isDebugEnabled ())
-            s_aLogger.debug ("  handling action '" + sAction + "' with module " + aModule);
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("  handling action '" + sAction + "' with module " + aModule);
 
           aModuleFound = aModule;
           aModule.handle (sAction, aMsg, aOptions);
@@ -169,12 +169,12 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
       throw new ProcessorException (this, aCauses);
     if (aModuleFound == null)
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("  no modules found for '" + sAction + "'; modules are: " + aAllModules);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("  no modules found for '" + sAction + "'; modules are: " + aAllModules);
       throw new NoModuleException (sAction, aMsg, aOptions);
     }
 
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("  action '" + sAction + "' was handled by module " + aModuleFound);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("  action '" + sAction + "' was handled by module " + aModuleFound);
   }
 }

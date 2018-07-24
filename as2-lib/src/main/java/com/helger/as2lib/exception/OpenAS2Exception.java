@@ -52,7 +52,7 @@ public class OpenAS2Exception extends Exception
 {
   public static final String SOURCE_MESSAGE = "message";
   public static final String SOURCE_FILE = "file";
-  private static final Logger s_aLogger = LoggerFactory.getLogger (OpenAS2Exception.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (OpenAS2Exception.class);
 
   private final ICommonsOrderedMap <String, Object> m_aSources = new CommonsLinkedHashMap<> ();
 
@@ -105,7 +105,7 @@ public class OpenAS2Exception extends Exception
    */
   protected void log (final boolean bTerminated)
   {
-    s_aLogger.info ("OpenAS2 " +
+    LOGGER.info ("OpenAS2 " +
                     ClassHelper.getClassLocalName (getClass ()) +
                     " " +
                     (bTerminated ? "terminated" : "caught") +

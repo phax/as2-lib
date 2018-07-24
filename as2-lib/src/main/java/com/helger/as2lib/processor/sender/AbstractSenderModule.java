@@ -52,7 +52,7 @@ import com.helger.commons.string.StringParser;
 
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSenderModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSenderModule.class);
 
   /**
    * How many times should this message be sent?
@@ -137,7 +137,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
   {
     if (nTriesLeft <= 0)
     {
-      s_aLogger.info ("Retry count exceeded - no more retries for" + aMsg.getLoggingText ());
+      LOGGER.info ("Retry count exceeded - no more retries for" + aMsg.getLoggingText ());
       return false;
     }
 
@@ -148,7 +148,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
     aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nTriesLeft));
     getSession ().getMessageProcessor ().handle (IProcessorResenderModule.DO_RESEND, aMsg, aOptions);
 
-    s_aLogger.info ("Scheduled message for resending" + aMsg.getLoggingText ());
+    LOGGER.info ("Scheduled message for resending" + aMsg.getLoggingText ());
     return true;
   }
 }

@@ -99,7 +99,7 @@ public final class HTTPHelper
   /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (HTTPHelper.class);
 
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
@@ -141,7 +141,7 @@ public final class HTTPHelper
         // Check old name
         sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
         if (StringHelper.hasText (sHttpDumpIncomingDirectory))
-          s_aLogger.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
+          LOGGER.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
       }
       if (StringHelper.hasText (sHttpDumpIncomingDirectory))
       {

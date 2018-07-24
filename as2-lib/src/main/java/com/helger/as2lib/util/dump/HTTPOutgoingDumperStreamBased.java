@@ -54,7 +54,7 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (HTTPOutgoingDumperStreamBased.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (HTTPOutgoingDumperStreamBased.class);
 
   private final OutputStream m_aOS;
   private int m_nHeaders = 0;
@@ -82,7 +82,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     }
     catch (final IOException ex)
     {
-      s_aLogger.error ("Error dumping byte", ex);
+      LOGGER.error ("Error dumping byte", ex);
     }
   }
 
@@ -94,7 +94,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     }
     catch (final IOException ex)
     {
-      s_aLogger.error ("Error dumping bytes", ex);
+      LOGGER.error ("Error dumping bytes", ex);
     }
   }
 

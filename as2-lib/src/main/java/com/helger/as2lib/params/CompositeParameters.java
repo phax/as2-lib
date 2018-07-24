@@ -48,7 +48,7 @@ import com.helger.commons.lang.ClassHelper;
 
 public class CompositeParameters extends AbstractParameterParser
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (CompositeParameters.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (CompositeParameters.class);
 
   private ICommonsMap <String, AbstractParameterParser> m_aParameterParsers;
   private boolean m_bIgnoreMissingParsers;
@@ -122,8 +122,8 @@ public class CompositeParameters extends AbstractParameterParser
       while (aKeyParts.hasMoreTokens ())
         aKeyBuf.append ('.').append (aKeyParts.nextToken ());
 
-      if (s_aLogger.isTraceEnabled ())
-        s_aLogger.trace ("Nested getParameter: " +
+      if (LOGGER.isTraceEnabled ())
+        LOGGER.trace ("Nested getParameter: " +
                          ClassHelper.getClassLocalName (aParser) +
                          " with '" +
                          aKeyBuf.toString () +

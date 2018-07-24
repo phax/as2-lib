@@ -71,7 +71,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
    */
   public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractReceiverHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractReceiverHandler.class);
 
   @Nonnull
   @Nonempty
@@ -99,7 +99,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     {
       final IContentTransferEncoding aCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
       if (aCTE == null)
-        s_aLogger.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
+        LOGGER.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
       else
       {
         // Decode data if necessary
@@ -111,7 +111,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
           // Remember original length before continuing
           final int nOriginalContentLength = actualBytes.length;
 
-          s_aLogger.info ("Incoming message uses Content-Transfer-Encoding '" +
+          LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
                           sContentTransferEncoding +
                           "' - decoding");
           actualBytes = aDecoder.getDecoded (actualBytes);

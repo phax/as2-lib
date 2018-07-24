@@ -67,7 +67,7 @@ import com.helger.commons.timing.StopWatch;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AsynchMDNSenderModule.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsynchMDNSenderModule.class);
 
   public AsynchMDNSenderModule ()
   {}
@@ -103,7 +103,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
-      s_aLogger.info ("connected to " + sUrl + aMsg.getLoggingText ());
+      LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
       final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn,
                                                                                                               aOutgoingDumper);
@@ -142,7 +142,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         aOutgoingDumper.finishedPayload ();
 
       aSW.stop ();
-      s_aLogger.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
@@ -152,11 +152,11 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
           nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
           nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
       {
-        s_aLogger.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
+        LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
         throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
-      s_aLogger.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
+      LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try
@@ -186,7 +186,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     {
       final AS2Message aMsg = (AS2Message) aBaseMsg;
 
-      s_aLogger.info ("Async MDN submitted" + aMsg.getLoggingText ());
+      LOGGER.info ("Async MDN submitted" + aMsg.getLoggingText ());
       final DispositionType aDisposition = DispositionType.createSuccess ();
 
       final int nRetries = getRetryCount (aMsg.partnership (), aOptions);
@@ -197,7 +197,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       }
       catch (final HttpResponseException ex)
       {
-        s_aLogger.error ("Http Response Error " + ex.getMessage ());
+        LOGGER.error ("Http Response Error " + ex.getMessage ());
 
         // Resend if the HTTP Response has an error code
         ex.terminate ();
@@ -223,8 +223,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     }
     finally
     {
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Async MDN message sent");
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Async MDN message sent");
     }
   }
 }

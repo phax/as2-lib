@@ -32,100 +32,128 @@
  */
 package com.helger.as2lib.util.http;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.annotation.Nonnull;
 import javax.mail.util.SharedFileInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.helger.commons.io.file.FilenameHelper;
 
 /**
- * Stores the content of the input {@link InputStream} in a temporary
- * file, and opens {@link SharedFileInputStream} on that file. When the stream is closed, the file will be deleted, and the input stream will be closed.
+ * Stores the content of the input {@link InputStream} in a temporary file, and
+ * opens {@link SharedFileInputStream} on that file. When the stream is closed,
+ * the file will be deleted, and the input stream will be closed.
  */
-@SuppressWarnings({"WeakerAccess", "JavaDoc", "SpellCheckingInspection"})
-public class TempSharedFileInputStream extends SharedFileInputStream {
-	private static final Logger s_aLogger = LoggerFactory.getLogger (TempSharedFileInputStream.class);
-	private File tempFile;
-	private InputStream srcIS;
-	int num=0;
+@SuppressWarnings ({ "WeakerAccess", "JavaDoc", "SpellCheckingInspection" })
+public class TempSharedFileInputStream extends SharedFileInputStream
+{
+  private static final Logger s_aLogger = LoggerFactory.getLogger (TempSharedFileInputStream.class);
+  private final File tempFile;
+  private final InputStream srcIS;
+  int num = 0;
 
-	private TempSharedFileInputStream(@Nonnull File file, @Nonnull InputStream is) throws IOException{
-		super(file);
-		srcIS = is;
-		tempFile = file;
-	}
+  private TempSharedFileInputStream (@Nonnull final File file, @Nonnull final InputStream is) throws IOException
+  {
+    super (file);
+    srcIS = is;
+    tempFile = file;
+  }
 
-	/**
-	 * Stores the content of the input {@link InputStream} in a temporary
-	 * file (in the system temporary directory, and opens {@link SharedFileInputStream} on that file.
-	 * @param aIS    {@link InputStream} to read from
-	 * @param name  name to use in the temporary file to link it to the delivered message.
-	 *              May be null
-	 * @return    {@link TempSharedFileInputStream} on the created temporary file.
-	 * @throws IOException
-	 */
-	@SuppressWarnings({"unused", "JavaDoc"})
-	static TempSharedFileInputStream getTempSharedFileInputStream(@Nonnull InputStream aIS, String name) throws IOException {
-		File aDest = storeContentToTempFile(aIS, name);
-		return new TempSharedFileInputStream(aDest, aIS);
-	}
+  /**
+   * Stores the content of the input {@link InputStream} in a temporary file (in
+   * the system temporary directory, and opens {@link SharedFileInputStream} on
+   * that file.
+   *
+   * @param aIS
+   *        {@link InputStream} to read from
+   * @param name
+   *        name to use in the temporary file to link it to the delivered
+   *        message. May be null
+   * @return {@link TempSharedFileInputStream} on the created temporary file.
+   * @throws IOException
+   */
+  @SuppressWarnings ({ "unused", "JavaDoc" })
+  static TempSharedFileInputStream getTempSharedFileInputStream (@Nonnull final InputStream aIS,
+                                                                 final String name) throws IOException
+  {
+    final File aDest = storeContentToTempFile (aIS, name);
+    return new TempSharedFileInputStream (aDest, aIS);
+  }
 
-	/**
-	 * Stores the content of the input {@link InputStream} in a temporary
-	 * file (in the system temporary directory.
-	 * @param aIS    {@link InputStream} to read from
-	 * @param name  name to use in the temporary file to link it to the delivered message.
-	 *              May be null
-	 * @return      The created {@link File}
-	 * @throws IOException
-	 */
-	@SuppressWarnings({"WeakerAccess", "SpellCheckingInspection"})
-	protected static File storeContentToTempFile(@Nonnull InputStream aIS, String name) throws IOException{
-		// create temp file and write steam content to it
-		String suffix= null == name ? "tmp" : name;
-		File aDest = File.createTempFile("TempSharedFileInputStream", suffix);
-		final FileOutputStream aOS = new FileOutputStream (aDest);
-		long transferred = org.apache.commons.io.IOUtils.copyLarge(aIS, aOS);
-		s_aLogger.debug("%l bytes copied to %s", transferred, aDest.getAbsolutePath());
-		return aDest;
-	}
+  /**
+   * Stores the content of the input {@link InputStream} in a temporary file (in
+   * the system temporary directory.
+   *
+   * @param aIS
+   *        {@link InputStream} to read from
+   * @param name
+   *        name to use in the temporary file to link it to the delivered
+   *        message. May be null
+   * @return The created {@link File}
+   * @throws IOException
+   */
+  @SuppressWarnings ({ "WeakerAccess", "SpellCheckingInspection" })
+  protected static File storeContentToTempFile (@Nonnull final InputStream aIS, final String name) throws IOException
+  {
+    // create temp file and write steam content to it
+    // name may contain ":" on Windows and that would fail the tests!
+    final String suffix = null == name ? "tmp" : FilenameHelper.getAsSecureValidASCIIFilename (name);
+    final File aDest = File.createTempFile ("TempSharedFileInputStream", suffix);
+    try (final FileOutputStream aOS = new FileOutputStream (aDest))
+    {
+      final long transferred = org.apache.commons.io.IOUtils.copyLarge (aIS, aOS);
+      s_aLogger.debug ("%l bytes copied to %s", transferred, aDest.getAbsolutePath ());
+      return aDest;
+    }
+  }
 
-	/**
-	 * close - Do nothing, to prevent early close, as the cryptographic processing stages closes their input stream
-	 */
-	@Override
-	public void close() throws  IOException {
-		s_aLogger.debug("close() called, doing nothing.");
-	}
+  /**
+   * close - Do nothing, to prevent early close, as the cryptographic processing
+   * stages closes their input stream
+   */
+  @Override
+  public void close () throws IOException
+  {
+    s_aLogger.debug ("close() called, doing nothing.");
+  }
 
-	/**
-	 * finalize - closes also the input stream, and deletes the backing file
-	 */
-	@Override
-	public void finalize() throws  IOException {
-		try {
-			super.finalize();
-			closeAll();
-		} catch (Throwable t) {
-			s_aLogger.error("Exception in finalize()", t);
-			throw new IOException(t.getClass().getName() + ":" + t.getMessage());
-		}
-	}
+  /**
+   * finalize - closes also the input stream, and deletes the backing file
+   */
+  @Override
+  public void finalize () throws IOException
+  {
+    try
+    {
+      super.finalize ();
+      closeAll ();
+    }
+    catch (final Throwable t)
+    {
+      s_aLogger.error ("Exception in finalize()", t);
+      throw new IOException (t.getClass ().getName () + ":" + t.getMessage ());
+    }
+  }
 
-	/**
-	 * closeAll - closes the input stream, and deletes the backing file
-	 */
-	public void closeAll() throws  IOException {
-			srcIS.close();
-			super.close();
-			if (tempFile.exists()) {
-				if (!tempFile.delete()) {
-					s_aLogger.error("Failed to delete file {}", tempFile.getAbsolutePath());
-				}
-			}
-	}
+  /**
+   * closeAll - closes the input stream, and deletes the backing file
+   */
+  public void closeAll () throws IOException
+  {
+    srcIS.close ();
+    super.close ();
+    if (tempFile.exists ())
+    {
+      if (!tempFile.delete ())
+      {
+        s_aLogger.error ("Failed to delete file {}", tempFile.getAbsolutePath ());
+      }
+    }
+  }
 }

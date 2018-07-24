@@ -83,7 +83,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
   private static final String ATTR_PENDINGMDN = "pendingmdn";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2MDNReceiverHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2MDNReceiverHandler.class);
 
   private final AS2MDNReceiverModule m_aModule;
 
@@ -101,7 +101,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    s_aLogger.info ("incoming connection [" + sClientInfo + "]");
+    LOGGER.info ("incoming connection [" + sClientInfo + "]");
 
     final AS2Message aMsg = new AS2Message ();
 
@@ -118,7 +118,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
-      s_aLogger.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
+      LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
 
       final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
       final String sReceivedContentType = aReceivedContentType.toString ();
@@ -298,8 +298,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       /*
        * original code just did string compare - returnmic.equals(originalmic).
@@ -311,8 +311,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
        */
       if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
       {
-        if (s_aLogger.isInfoEnabled ())
-          s_aLogger.info ("MIC IS NOT MATCHED, original mic: " +
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("MIC IS NOT MATCHED, original mic: " +
                           sOriginalMIC +
                           " return mic: " +
                           sReturnMIC +
@@ -321,37 +321,37 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       }
 
       // delete the pendinginfo & pending file if mic is matched
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
 
       final File aPendingInfoFile = new File (sPendingInfoFile);
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("delete pendinginfo file : " +
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("delete pendinginfo file : " +
                         aPendingInfoFile.getName () +
                         " from pending folder : " +
                         getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
                         aMsg.getLoggingText ());
       if (!aPendingInfoFile.delete ())
       {
-        if (s_aLogger.isErrorEnabled ())
-          s_aLogger.error ("Error delete pendinginfo file " + aPendingFile);
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Error delete pendinginfo file " + aPendingFile);
       }
 
-      if (s_aLogger.isInfoEnabled ())
-        s_aLogger.info ("delete pending file : " +
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("delete pending file : " +
                         aPendingFile.getName () +
                         " from pending folder : " +
                         aPendingFile.getParent () +
                         aMsg.getLoggingText ());
       if (!aPendingFile.delete ())
       {
-        if (s_aLogger.isErrorEnabled ())
-          s_aLogger.error ("Error delete pending file " + aPendingFile);
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Error delete pending file " + aPendingFile);
       }
     }
     catch (final Exception ex)
     {
-      s_aLogger.error ("Error checking async MDN", ex);
+      LOGGER.error ("Error checking async MDN", ex);
       return false;
     }
     return true;
@@ -379,7 +379,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     }
     catch (final IOException ex)
     {
-      s_aLogger.error ("Error reparsing", ex);
+      LOGGER.error ("Error reparsing", ex);
     }
     finally
     {
@@ -401,7 +401,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       }
       catch (final MessagingException ex)
       {
-        s_aLogger.error ("Error creating MimeBodyPart", ex);
+        LOGGER.error ("Error creating MimeBodyPart", ex);
       }
     aMsg.getMDN ().setData (aPart);
 

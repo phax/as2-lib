@@ -71,7 +71,7 @@ public class DispositionOptions
   /** Default protocol value */
   public static final String PROTOCOL_PKCS7_SIGNATURE = "pkcs7-signature";
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (DispositionOptions.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (DispositionOptions.class);
 
   private String m_sProtocolImportance;
   private String m_sProtocol;
@@ -91,7 +91,7 @@ public class DispositionOptions
   private static void _checkImportance (@Nullable final String sImportance)
   {
     if (sImportance != null && !sImportance.equals (IMPORTANCE_REQUIRED) && !sImportance.equals (IMPORTANCE_OPTIONAL))
-      s_aLogger.warn ("Non-standard importance value '" + sImportance + "' used!");
+      LOGGER.warn ("Non-standard importance value '" + sImportance + "' used!");
   }
 
   /**
@@ -215,7 +215,7 @@ public class DispositionOptions
         if (eMICAlg == null)
         {
           // Ignore all unsupported MIC algorithms and continue
-          s_aLogger.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
+          LOGGER.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
         }
         else
         {
@@ -395,21 +395,21 @@ public class DispositionOptions
                   ret.setMICAlg (aValues[1].trim ());
                 }
                 else
-                  s_aLogger.warn ("Unsupported disposition attribute '" +
+                  LOGGER.warn ("Unsupported disposition attribute '" +
                                   sAttribute +
                                   "' with value '" +
                                   aParts[1].trim () +
                                   "' found!");
             }
             else
-              s_aLogger.warn ("Failed to split disposition options parameter '" +
+              LOGGER.warn ("Failed to split disposition options parameter '" +
                               sParameter +
                               "' value '" +
                               aParts[1].trim () +
                               "' into importance and values");
           }
           else
-            s_aLogger.warn ("Failed to split disposition options parameter '" +
+            LOGGER.warn ("Failed to split disposition options parameter '" +
                             sParameter +
                             "' into attribute and values");
         }

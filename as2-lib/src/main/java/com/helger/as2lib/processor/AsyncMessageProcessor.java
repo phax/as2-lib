@@ -77,7 +77,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
     }
   }
 
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AsyncMessageProcessor.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AsyncMessageProcessor.class);
 
   private final BlockingQueue <HandleObject> m_aQueue = new LinkedBlockingQueue <> ();
   private final CallbackList <IExceptionCallback <Throwable>> m_aExceptionCallbacks = new CallbackList <> ();
@@ -100,7 +100,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
         catch (final InterruptedException ex)
         {
           Thread.currentThread ().interrupt ();
-          s_aLogger.error ("Error taking elements from queue - queue has been interrupted!!!");
+          LOGGER.error ("Error taking elements from queue - queue has been interrupted!!!");
           break;
         }
         catch (final NoModuleException ex)
@@ -113,7 +113,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
           if (m_aExceptionCallbacks.isNotEmpty ())
             m_aExceptionCallbacks.forEach (x -> x.onException (t));
           else
-            s_aLogger.error ("Error executing action", t);
+            LOGGER.error ("Error executing action", t);
         }
       }
     };
@@ -133,8 +133,8 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("AsyncMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("AsyncMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
 
     try
     {
