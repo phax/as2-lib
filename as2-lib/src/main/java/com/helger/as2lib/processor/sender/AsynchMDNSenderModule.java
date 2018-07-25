@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 
+import com.helger.as2lib.util.http.IAS2HttpConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     final boolean bInput = true;
     final boolean bUseCaches = false;
     final EHttpMethod eRequestMethod = EHttpMethod.POST;
-    final HttpURLConnection aConn = getConnection (sUrl,
+    // MDN is a small message. We will always use HttpURLConnection
+    final IAS2HttpConnection aConn = getHttpURLConnection (sUrl,
                                                    bOutput,
                                                    bInput,
                                                    bUseCaches,

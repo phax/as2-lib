@@ -40,11 +40,13 @@ import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
 
+import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.util.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,10 +68,6 @@ import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
-import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
-import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
-import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttpHeader;
@@ -116,7 +114,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
-      aData = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      aData = org.apache.commons.io.IOUtils.toByteArray(aDataSourceBody.getInputStream());
 
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
@@ -360,7 +359,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     return true;
   }
 
-  public void reparse (@Nonnull final AS2Message aMsg, final HttpURLConnection aConn)
+  public void reparse (@Nonnull final AS2Message aMsg, final IAS2HttpConnection aConn) throws OpenAS2Exception
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);

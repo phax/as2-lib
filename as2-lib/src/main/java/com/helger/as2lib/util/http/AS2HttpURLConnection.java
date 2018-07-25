@@ -1,4 +1,4 @@
-/**
+/*
  * The FreeBSD Copyright
  * Copyright 1994-2008 The FreeBSD Project. All rights reserved.
  * Copyright (C) 2013-2018 Philip Helger philip[at]helger[dot]com
@@ -32,35 +32,91 @@
  */
 package com.helger.as2lib.util.http;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
-
-import javax.annotation.Nonnull;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Provider interface to retrieve an AS2 {@link InputStream}.
- * 
- * @author Philip Helger
+ * Http connection, Implemented as HttpURLConnection.
+ *
+ * @author Ziv Harpaz
  */
-public interface IAS2InputStreamProvider
-{
-  /**
-   * @return Never <code>null</code>
-   * @throws IOException
-   *         In case of error
-   */
-  @Nonnull
-  InputStream getInputStream () throws IOException;
+public class AS2HttpURLConnection implements IAS2HttpConnection{
+	private HttpURLConnection httpURLConnection;
 
-  /**
-   * Returns an {@link InputStream}, that when closed, will not close in source stream. This
-   * is useful when working with {@link java.net.SocketInputStream}, as close() on a socket
-   * stream closes the {@link Socket}
-   * @return Never <code>null</code>
-   * @throws IOException
-   *         In case of error
-   */
-  @Nonnull
-  InputStream getNonUpwardClosingInputStream () throws IOException;
+public AS2HttpURLConnection(HttpURLConnection connection){
+	httpURLConnection=connection;
+}
+	/**
+	 * Set an HTTP header
+	 *
+	 * @param sName
+	 *        Header name
+	 * @param sValue
+	 *        Header value
+	 */
+	public void setHttpHeader(@Nonnull String sName, @Nonnull String sValue){
+		httpURLConnection.setRequestProperty(sName, sValue);
+	}
+
+	/**
+	 * Get URL
+	 *
+	 */
+	public URL getURL(){
+		return httpURLConnection.getURL();
+	}
+
+	/**
+	 * Get OutputStream
+	 *
+	 */
+	public OutputStream getOutputStream() throws IOException {
+		return httpURLConnection.getOutputStream();
+	}
+
+	/**
+	 * Get InputStream
+	 *
+	 */
+	public InputStream getInputStream() throws IOException{
+		return httpURLConnection.getInputStream();
+	}
+
+	/**
+	 * Get response HTTP Status as integer
+	 *
+	 */
+	public int getResponseCode() throws IOException {
+		return httpURLConnection.getResponseCode();
+	}
+
+	/**
+	 * Get the response message
+	 *
+	 */
+	public String getResponseMessage() throws IOException {
+		return httpURLConnection.getResponseMessage();
+	}
+
+	/**
+	 * Get the headers of the request
+	 *
+	 */
+	public Map<String,List<String>> getHeaderFields(){
+		return httpURLConnection.getHeaderFields();
+	}
+
+	/**
+	 * Close the connection
+	 *
+	 */
+	public void disconnect(){
+		httpURLConnection.disconnect();
+	}
 }
