@@ -34,6 +34,7 @@ package com.helger.as2lib.util.http;
 
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -59,7 +60,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,28 +76,29 @@ import org.slf4j.LoggerFactory;
  * @author Ziv Harpaz
  */
 public class AS2HttpClient implements IAS2HttpConnection{
-	private RequestBuilder        aRequestBuilder;
-	private PipedInputStream      aPipedInputStream;
-	private PipedOutputStream     aPipedOutputStream;
+	private RequestBuilder        m_aRequestBuilder;
+	private PipedInputStream      m_aPipedInputStream;
+	private PipedOutputStream     m_aPipedOutputStream;
 	@SuppressWarnings("CanBeFinal")
-	private CloseableHttpClient   aCloseableHttpClient;
-	private CloseableHttpResponse aCloseableHttpResponse;
+	private CloseableHttpClient   m_aCloseableHttpClient;
+	private CloseableHttpResponse m_aCloseableHttpResponse;
 	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2HttpClient.class);
 
 	public AS2HttpClient (@Nonnull @Nonempty final String sUrl,
 	                      final int iConnectTimeout,
 	                      final int iReadTimeout,
 	                      @Nonnull final EHttpMethod eRequestMethod,
-	                      //TODO handle proxy
 	                      @Nullable final Proxy aProxy)
 		throws OpenAS2Exception {
 		try {
 			// set configuration
-			RequestConfig conf = RequestConfig.custom()
-				.setConnectionRequestTimeout(iConnectTimeout)
-				.setConnectTimeout(iConnectTimeout)
-				.setSocketTimeout(iReadTimeout)
-				.build();
+      RequestConfig.Builder aConfBuilder = RequestConfig.custom()
+        .setConnectionRequestTimeout(iConnectTimeout)
+        .setConnectTimeout(iConnectTimeout)
+        .setSocketTimeout(iReadTimeout);
+      //add proxy if exists
+      setProxyToRequestConfig(aConfBuilder, aProxy);
+			RequestConfig aConf = aConfBuilder.build();
 			URI aUri = new URI(sUrl);
 			HttpClientBuilder aClientBuilder = HttpClientBuilder.create();
 			if (aUri.getScheme().toLowerCase().equals("https")){
@@ -108,10 +109,10 @@ public class AS2HttpClient implements IAS2HttpConnection{
 				aClientBuilder.setSSLContext(aSSLCtx)
 					.setSSLHostnameVerifier(aHV);
 			}
-			aCloseableHttpClient = aClientBuilder.build();
-			aRequestBuilder = RequestBuilder.create(eRequestMethod.getName())
+			m_aCloseableHttpClient = aClientBuilder.build();
+			m_aRequestBuilder = RequestBuilder.create(eRequestMethod.getName())
 				.setUri(aUri)
-				.setConfig(conf);
+				.setConfig(aConf);
 		}catch (java.net.URISyntaxException|GeneralSecurityException e) {
 			s_aLogger.error("Exception in AS2HttpClient constructor: ", e.getMessage());
 			throw new OpenAS2Exception(e.getMessage());
@@ -127,7 +128,7 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 *        Header value
 	 */
 	public void setHttpHeader(@Nonnull String sName, @Nonnull String sValue){
-		aRequestBuilder.setHeader(sName, sValue);
+		m_aRequestBuilder.setHeader(sName, sValue);
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	{
 		URI uri = null;
 		try {
-			uri = aRequestBuilder.getUri();
+			uri = m_aRequestBuilder.getUri();
 			return uri.toURL();
 		} catch (IllegalArgumentException|MalformedURLException e){
 			if (s_aLogger.isErrorEnabled ())
@@ -154,13 +155,13 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 * @return OutputStream to write message body to
 	 */
 	public OutputStream getOutputStream() throws IOException {
-		if (aPipedOutputStream == null){
-			aPipedInputStream  = new PipedInputStream();
-			aPipedOutputStream = new PipedOutputStream(aPipedInputStream);
+		if (m_aPipedOutputStream == null){
+			m_aPipedInputStream = new PipedInputStream();
+			m_aPipedOutputStream = new PipedOutputStream(m_aPipedInputStream);
 		}
-		aRequestBuilder.setEntity(new InputStreamEntity(aPipedInputStream));
+		m_aRequestBuilder.setEntity(new InputStreamEntity(m_aPipedInputStream));
 		sendInBackground();
-		return aPipedOutputStream;
+		return m_aPipedOutputStream;
 	}
 
 	/**
@@ -169,9 +170,9 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	private void sendInBackground(){
 		Thread aSenderThread = new Thread(() -> {
 			try {
-				HttpUriRequest aHttpUriRequest = aRequestBuilder.build();
+				HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build();
 				System.out.println("Runnable: calling execute");
-				aCloseableHttpResponse = aCloseableHttpClient.execute(aHttpUriRequest);
+				m_aCloseableHttpResponse = m_aCloseableHttpClient.execute(aHttpUriRequest);
 			}catch (Exception e){
 				e.printStackTrace();
 			}
@@ -181,9 +182,9 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	}
 
 	public void send(InputStream toSend) throws IOException {
-		aRequestBuilder.setEntity(new InputStreamEntity(toSend));
-		HttpUriRequest aHttpUriRequest = aRequestBuilder.build();
-		aCloseableHttpResponse = aCloseableHttpClient.execute(aHttpUriRequest);
+		m_aRequestBuilder.setEntity(new InputStreamEntity(toSend));
+		HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build();
+		m_aCloseableHttpResponse = m_aCloseableHttpClient.execute(aHttpUriRequest);
 
 	}
 
@@ -194,10 +195,10 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 */
 	public InputStream getInputStream() throws OpenAS2Exception, IOException{
 		// message was not sent yet, not response
-		if (aCloseableHttpResponse == null) {
+		if (m_aCloseableHttpResponse == null) {
 			throw new OpenAS2Exception("No response as message was not yet sent");
 		}
-		return aCloseableHttpResponse.getEntity().getContent();
+		return m_aCloseableHttpResponse.getEntity().getContent();
 	}
 
 	/**
@@ -207,10 +208,10 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	public int getResponseCode() throws OpenAS2Exception {
 		try {
 			// message was not sent yet, not response
-			if (aCloseableHttpResponse == null) {
+			if (m_aCloseableHttpResponse == null) {
 				throw new OpenAS2Exception("No response as message was not yet sent");
 			}
-			StatusLine status = aCloseableHttpResponse.getStatusLine();
+			StatusLine status = m_aCloseableHttpResponse.getStatusLine();
 			return status.getStatusCode();
 		}catch (Exception e){
 			throw new OpenAS2Exception(e.getCause());
@@ -223,10 +224,10 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 */
 	public String getResponseMessage() throws OpenAS2Exception {
 		// message was not sent yet, not response
-		if (aCloseableHttpResponse == null) {
+		if (m_aCloseableHttpResponse == null) {
 			throw new OpenAS2Exception("No response as message was not yet sent");
 		}
-		StatusLine status = aCloseableHttpResponse.getStatusLine();
+		StatusLine status = m_aCloseableHttpResponse.getStatusLine();
 		return status.getReasonPhrase();
 	}
 
@@ -236,10 +237,10 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 */
 	public Map<String,List<String>> getHeaderFields()throws OpenAS2Exception{
 		// message was not sent yet, not response
-		if (aCloseableHttpResponse == null) {
+		if (m_aCloseableHttpResponse == null) {
 			throw new OpenAS2Exception("No response as message was not yet sent");
 		}
-		Header[] headers = aCloseableHttpResponse.getAllHeaders();
+		Header[] headers = m_aCloseableHttpResponse.getAllHeaders();
 		Map<String,List<String>> res = new HashMap<>();
 		for (Header h :headers){
 			List<String> values = new LinkedList<>();
@@ -255,11 +256,49 @@ public class AS2HttpClient implements IAS2HttpConnection{
 	 */
 	public void disconnect() {
 		try {
-			if (aCloseableHttpResponse != null) aCloseableHttpResponse.close();
-			if (aCloseableHttpClient   != null) aCloseableHttpClient.close();
+			if (m_aCloseableHttpResponse != null) m_aCloseableHttpResponse.close();
+			if (m_aCloseableHttpClient != null) m_aCloseableHttpClient.close();
 		} catch (Exception e){
 			if (s_aLogger.isErrorEnabled ())
 				s_aLogger.error ("Exception while closing HttpClient connection: " + this.toString());
 		}
 	}
+
+  /**
+   * Set {@link Proxy} into {@link RequestConfig.Builder}
+   *
+   * @param aConfBuilder
+   *        {@link RequestConfig.Builder} to set
+   * @param aProxy
+   *        My by null, in such case nothing is done.
+   *
+   */
+  private static void setProxyToRequestConfig(@Nonnull RequestConfig.Builder aConfBuilder, @Nullable Proxy aProxy)
+  {
+    try {
+      if (null != aProxy) {
+        SocketAddress aSocketAddress = aProxy.address();
+        if (null != aSocketAddress &&
+          aSocketAddress instanceof InetSocketAddress) {
+          InetSocketAddress aISocketAdress = (InetSocketAddress) aSocketAddress;
+          InetAddress aInetAddr = aISocketAdress.getAddress();
+          if (null != aInetAddr) {
+            HttpHost aHost = new HttpHost(aInetAddr);
+            aConfBuilder.setProxy(aHost);
+          } else {
+            s_aLogger.debug("No address in proxy:{}-{}",
+              aProxy.address(),
+              (null != aProxy.type()? aProxy.type().name():"null"));
+          }
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      String aMessage = String.format("Exception while setting proxy. Continue without proxy. aProxy:%s-%s",
+        aProxy.address(),
+        (null != aProxy.type()? aProxy.type().name():"null"));
+      s_aLogger.error(aMessage, e);
+    }
+  }
 }
