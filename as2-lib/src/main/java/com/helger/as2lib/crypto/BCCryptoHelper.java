@@ -381,8 +381,6 @@ public final class BCCryptoHelper implements ICryptoHelper
       e.printStackTrace();
       System.out.println("Exception in SMIMEEnveloped:"+e.getMessage()
         +"\ncause:"+e.getCause());
-      } finally {
-      System.out.println("\nContinueing\n");
     }
 
     if (aRecipient == null)
