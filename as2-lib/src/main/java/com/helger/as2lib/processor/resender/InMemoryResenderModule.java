@@ -65,7 +65,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (InMemoryResenderModule.class);
 
   @GuardedBy ("m_aRWLock")
-  private final ICommonsList <ResendItem> m_aItems = new CommonsArrayList<> ();
+  private final ICommonsList <ResendItem> m_aItems = new CommonsArrayList <> ();
 
   @Override
   public boolean canHandle (@Nonnull final String sAction,
@@ -95,9 +95,10 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       nRetries = Integer.parseInt (sRetries);
     else
     {
-      LOGGER.warn ("The resending retry count is missing - default to " +
-                      IProcessorResenderModule.DEFAULT_RETRIES +
-                      "!");
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.warn ("The resending retry count is missing - default to " +
+                     IProcessorResenderModule.DEFAULT_RETRIES +
+                     "!");
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
     }
 
@@ -121,9 +122,10 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       aMsg = aItem.getMessage ();
 
       // Transmit the message
-      LOGGER.info ("Loaded message for resend" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Loaded message for resend" + aMsg.getLoggingText ());
 
-      final ICommonsMap <String, Object> aOptions = new CommonsHashMap<> ();
+      final ICommonsMap <String, Object> aOptions = new CommonsHashMap <> ();
       aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRemainingRetries);
       getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
@@ -143,7 +145,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     try
     {
       // Determine all items to be re-send
-      final ICommonsList <ResendItem> aResendItems = new CommonsArrayList<> ();
+      final ICommonsList <ResendItem> aResendItems = new CommonsArrayList <> ();
       m_aRWLock.readLocked ( () -> m_aItems.findAll (ResendItem::isTimeToSend, aResendItems::add));
 
       // Resend all selected items
@@ -160,7 +162,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   @Nonnegative
   public int getResendItemCount ()
   {
-    return m_aRWLock.readLocked ( () -> m_aItems.size ());
+    return m_aRWLock.readLocked (m_aItems::size);
   }
 
   /**
@@ -172,7 +174,8 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     if (nItems > 0)
     {
       m_aRWLock.writeLocked ( () -> m_aItems.clear ());
-      LOGGER.info ("Removed " + nItems + " items from InMemoryResenderModule");
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Removed " + nItems + " items from InMemoryResenderModule");
     }
   }
 
@@ -180,7 +183,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   @ReturnsMutableCopy
   public ICommonsList <ResendItem> getAllResendItems ()
   {
-    return m_aRWLock.readLocked ( () -> m_aItems.getClone ());
+    return m_aRWLock.readLocked (m_aItems::getClone);
   }
 
   @Override
@@ -188,9 +191,12 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   {
     final int nRemainingItems = getResendItemCount ();
     if (nRemainingItems > 0)
-      LOGGER.error ("InMemoryResenderModule is stopped but " +
-                       nRemainingItems +
-                       " items are still contained. They are discarded and will be lost!");
+    {
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("InMemoryResenderModule is stopped but " +
+                      nRemainingItems +
+                      " items are still contained. They are discarded and will be lost!");
+    }
 
     super.doStop ();
   }

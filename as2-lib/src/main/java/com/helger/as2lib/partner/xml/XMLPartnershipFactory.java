@@ -138,7 +138,10 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
             aNewPartnerships.addPartnership (aNewPartnership);
           }
           else
-            LOGGER.warn ("Invalid element '" + sNodeName + "' in XML partnership file");
+          {
+            if (LOGGER.isWarnEnabled ())
+              LOGGER.warn ("Invalid element '" + sNodeName + "' in XML partnership file");
+          }
       }
     }
 
@@ -153,9 +156,9 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final String sNodeKeyName = "name";
     final String sNodeValueName = "value";
     final ICommonsOrderedMap <String, String> aAttributes = AS2XMLHelper.mapAttributeNodes (aNode,
-                                                                                         sNodeName,
-                                                                                         sNodeKeyName,
-                                                                                         sNodeValueName);
+                                                                                            sNodeName,
+                                                                                            sNodeKeyName,
+                                                                                            sNodeValueName);
     aPartnership.addAllAttributes (aAttributes);
   }
 
@@ -221,7 +224,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     // Name attribute is required
     final IStringMap aPartnershipAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
-                                                                                             PARTNERSHIP_NAME);
+                                                                                                PARTNERSHIP_NAME);
 
     final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAsString (PARTNERSHIP_NAME));
 
@@ -262,7 +265,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     {
       final File aBackupFile = _getUniqueBackupFile (sFilename);
 
-      LOGGER.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
       final File aSourceFile = new File (sFilename);
       AS2IOHelper.getFileOperationManager ().renameFile (aSourceFile, aBackupFile);

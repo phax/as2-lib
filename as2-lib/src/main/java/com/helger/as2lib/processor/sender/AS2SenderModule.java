@@ -173,10 +173,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                       "/" +
                                       sMsgFilename;
 
-      LOGGER.info ("Save Original MIC & message id information into folder '" +
-                   sPendingFolder +
-                   "'" +
-                   aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Save Original MIC & message id information into folder '" +
+                     sPendingFolder +
+                     "'" +
+                     aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
@@ -556,7 +557,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
-      LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN
@@ -567,18 +569,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         // file was sent completely but the returned mic was not matched,
         // don't know it needs or needs not to be resent ? it's depended on
-        // what!
-        // anyway, just log the warning message here.
-        LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
-                     sOriginalMIC +
-                     "' return mic: '" +
-                     sReturnMIC +
-                     "'" +
-                     aMsg.getLoggingText ());
+        // what! anyway, just log the warning message here.
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
+                       sOriginalMIC +
+                       "' return mic: '" +
+                       sReturnMIC +
+                       "'" +
+                       aMsg.getLoggingText ());
       }
       else
       {
-        LOGGER.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("MIC is matched, MIC: " + sReturnMIC + aMsg.getLoggingText ());
       }
 
       try
@@ -653,7 +656,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                    getSession ().getHttpProxy ());
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
-      LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
       updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn, aOutgoingDumper), aMsg);
 
@@ -694,7 +698,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aOutgoingDumper.finishedPayload ();
 
       aSW.stop ();
-      LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
@@ -705,7 +710,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           nResponseCode != HttpURLConnection.HTTP_NO_CONTENT &&
           nResponseCode != HttpURLConnection.HTTP_PARTIAL)
       {
-        LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
         throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
@@ -721,7 +727,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           {
             // go ahead to receive sync MDN
             receiveSyncMDN (aMsg, aConn, sMIC);
-            LOGGER.info ("message sent" + aMsg.getLoggingText ());
+
+            if (LOGGER.isInfoEnabled ())
+              LOGGER.info ("message sent" + aMsg.getLoggingText ());
           }
         }
       }
@@ -749,7 +757,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final AS2Message aMsg = (AS2Message) aBaseMsg;
-    LOGGER.info ("Submitting message" + aMsg.getLoggingText ());
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Submitting message" + aMsg.getLoggingText ());
 
     // verify all required information is present for sending
     checkRequired (aMsg);
@@ -773,7 +783,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final HttpResponseException ex)
     {
-      LOGGER.error ("Http Response Error " + ex.getMessage ());
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Http Response Error " + ex.getMessage ());
       ex.terminate ();
 
       if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, ex, nRetries))

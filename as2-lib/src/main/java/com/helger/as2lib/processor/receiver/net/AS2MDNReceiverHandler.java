@@ -103,7 +103,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    LOGGER.info ("incoming connection [" + sClientInfo + "]");
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("incoming connection [" + sClientInfo + "]");
 
     final AS2Message aMsg = new AS2Message ();
 
@@ -119,7 +121,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
-      LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
 
       final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
       final String sReceivedContentType = aReceivedContentType.toString ();
