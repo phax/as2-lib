@@ -95,11 +95,9 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       nRetries = Integer.parseInt (sRetries);
     else
     {
-      if (LOGGER.isWarnEnabled ())
-        LOGGER.warn ("The resending retry count is missing - default to " +
-                     IProcessorResenderModule.DEFAULT_RETRIES +
-                     "!");
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
     }
 
     // Build the item and add it to the vector

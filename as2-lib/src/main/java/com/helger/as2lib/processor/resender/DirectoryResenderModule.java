@@ -121,9 +121,10 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
         if (sRetries == null)
         {
-          LOGGER.warn ("The resending retry count is missing - default to " +
-                       IProcessorResenderModule.DEFAULT_RETRIES +
-                       "!");
+          if (LOGGER.isWarnEnabled ())
+            LOGGER.warn ("The resending retry count is missing - default to " +
+                         IProcessorResenderModule.DEFAULT_RETRIES +
+                         "!");
           sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
         }
 
@@ -193,7 +194,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         sRetries = Integer.toString (Integer.parseInt (sRetries) - 1);
 
         // Transmit the message
-        LOGGER.info ("loaded message for resend." + aMsg.getLoggingText ());
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("loaded message for resend." + aMsg.getLoggingText ());
 
         final ICommonsMap <String, Object> aOptions = new CommonsHashMap <> ();
         aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRetries);
@@ -206,7 +208,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
           throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile.getAbsolutePath ());
         }
 
-        LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
       catch (final IOException | ClassNotFoundException ex)
       {
