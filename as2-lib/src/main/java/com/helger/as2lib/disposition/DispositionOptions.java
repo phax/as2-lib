@@ -91,7 +91,8 @@ public class DispositionOptions
   private static void _checkImportance (@Nullable final String sImportance)
   {
     if (sImportance != null && !sImportance.equals (IMPORTANCE_REQUIRED) && !sImportance.equals (IMPORTANCE_OPTIONAL))
-      LOGGER.warn ("Non-standard importance value '" + sImportance + "' used!");
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.warn ("Non-standard importance value '" + sImportance + "' used!");
   }
 
   /**
@@ -215,7 +216,8 @@ public class DispositionOptions
         if (eMICAlg == null)
         {
           // Ignore all unsupported MIC algorithms and continue
-          LOGGER.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
+          if (LOGGER.isWarnEnabled ())
+            LOGGER.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
         }
         else
         {
@@ -395,23 +397,32 @@ public class DispositionOptions
                   ret.setMICAlg (aValues[1].trim ());
                 }
                 else
-                  LOGGER.warn ("Unsupported disposition attribute '" +
-                                  sAttribute +
-                                  "' with value '" +
-                                  aParts[1].trim () +
-                                  "' found!");
+                {
+                  if (LOGGER.isWarnEnabled ())
+                    LOGGER.warn ("Unsupported disposition attribute '" +
+                                 sAttribute +
+                                 "' with value '" +
+                                 aParts[1].trim () +
+                                 "' found!");
+                }
             }
             else
-              LOGGER.warn ("Failed to split disposition options parameter '" +
-                              sParameter +
-                              "' value '" +
-                              aParts[1].trim () +
-                              "' into importance and values");
+            {
+              if (LOGGER.isWarnEnabled ())
+                LOGGER.warn ("Failed to split disposition options parameter '" +
+                             sParameter +
+                             "' value '" +
+                             aParts[1].trim () +
+                             "' into importance and values");
+            }
           }
           else
-            LOGGER.warn ("Failed to split disposition options parameter '" +
-                            sParameter +
-                            "' into attribute and values");
+          {
+            if (LOGGER.isWarnEnabled ())
+              LOGGER.warn ("Failed to split disposition options parameter '" +
+                           sParameter +
+                           "' into attribute and values");
+          }
         }
       }
       catch (final NoSuchElementException ex)

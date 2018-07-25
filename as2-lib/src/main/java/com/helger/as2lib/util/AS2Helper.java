@@ -70,6 +70,7 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 @Immutable
 public final class AS2Helper
@@ -187,12 +188,7 @@ public final class AS2Helper
                                                                     bUseOldRFC3851MicAlgs);
         aMdn.setData (aSignedReport);
       }
-      catch (final CertificateNotFoundException ex)
-      {
-        ex.terminate ();
-        aMdn.setData (aReport);
-      }
-      catch (final KeyNotFoundException ex)
+      catch (final CertificateNotFoundException | KeyNotFoundException ex)
       {
         ex.terminate ();
         aMdn.setData (aReport);
@@ -277,6 +273,12 @@ public final class AS2Helper
     {
       aMDN.headers ().setHeader (CHttpHeader.SUBJECT, "Your Requested MDN Response");
     }
+
+    // Content-Transfer-Encoding for outgoing MDNs
+    final String sCTE = aMsg.partnership ()
+                            .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    aMDN.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
+
     aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.attrs ()
         .putIn (AS2MessageMDN.MDNA_REPORTING_UA,

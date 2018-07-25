@@ -54,7 +54,7 @@ public class OpenAS2Exception extends Exception
   public static final String SOURCE_FILE = "file";
   private static final Logger LOGGER = LoggerFactory.getLogger (OpenAS2Exception.class);
 
-  private final ICommonsOrderedMap <String, Object> m_aSources = new CommonsLinkedHashMap<> ();
+  private final ICommonsOrderedMap <String, Object> m_aSources = new CommonsLinkedHashMap <> ();
 
   public OpenAS2Exception ()
   {
@@ -105,13 +105,14 @@ public class OpenAS2Exception extends Exception
    */
   protected void log (final boolean bTerminated)
   {
-    LOGGER.info ("OpenAS2 " +
-                    ClassHelper.getClassLocalName (getClass ()) +
-                    " " +
-                    (bTerminated ? "terminated" : "caught") +
-                    ": " +
-                    getMessage () +
-                    (m_aSources.isEmpty () ? "" : "; sources: " + m_aSources),
-                    getCause ());
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("OpenAS2 " +
+                   ClassHelper.getClassLocalName (getClass ()) +
+                   " " +
+                   (bTerminated ? "terminated" : "caught") +
+                   ": " +
+                   getMessage () +
+                   (m_aSources.isEmpty () ? "" : "; sources: " + m_aSources),
+                   getCause ());
   }
 }

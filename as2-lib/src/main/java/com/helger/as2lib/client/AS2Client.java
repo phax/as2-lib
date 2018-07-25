@@ -167,7 +167,9 @@ public class AS2Client
     else
     {
       // We want an sync MDN
-      aPartnership.setAS2MDNTo (null);
+      // This field must be set
+      aPartnership.setAS2MDNTo (aSettings.getSenderAS2ID ());
+      // This field must be null - otherwise async MDN!
       aPartnership.setAS2ReceiptDeliveryOption (null);
     }
 
@@ -365,6 +367,10 @@ public class AS2Client
         final ICommonsMap <String, Object> aHandleOptions = new CommonsHashMap <> ();
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
+
+        // It's a partnership property
+        aPartnership.setContentTransferEncodingSend (aRequest.getContentTransferEncoding ());
+        aPartnership.setContentTransferEncodingReceive (aRequest.getContentTransferEncoding ());
 
         // And create a sender module that directly sends the message
         // The message processor registration is required for the resending

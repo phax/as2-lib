@@ -267,6 +267,16 @@ public class AS2ClientRequest
   }
 
   /**
+   * @return The Content-Transfer-Encoding provided. May be <code>null</code>.
+   * @since 4.1.1
+   */
+  @Nullable
+  public EContentTransferEncoding getContentTransferEncoding ()
+  {
+    return m_eCTE;
+  }
+
+  /**
    * Set the optional Content-Description header to be used. By default non is
    * present.
    *

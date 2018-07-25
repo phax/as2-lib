@@ -92,14 +92,17 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     // Check the transfer encoding of the request. If none is provided, check
     // the partnership for a default one. If none is in the partnership used the
     // default one
-    final String sContentTransferEncoding = aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING,
-                                                            aMsg.partnership ()
-                                                                .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ()));
+    final String sCTE = aMsg.partnership ()
+                            .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    final String sContentTransferEncoding = aMsg.getHeaderOrDefault (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
     if (StringHelper.hasText (sContentTransferEncoding))
     {
       final IContentTransferEncoding aCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
       if (aCTE == null)
-        LOGGER.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
+      {
+        if (LOGGER.isWarnEnabled ())
+          LOGGER.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
+      }
       else
       {
         // Decode data if necessary
@@ -111,6 +114,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
           // Remember original length before continuing
           final int nOriginalContentLength = actualBytes.length;
 
+          if (LOGGER.isInfoEnabled ())
           LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
                           sContentTransferEncoding +
                           "' - decoding");

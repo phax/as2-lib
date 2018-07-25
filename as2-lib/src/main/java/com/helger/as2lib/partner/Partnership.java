@@ -49,6 +49,7 @@ import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
  * This class represents a single partnership. It has a unique name, a set of
@@ -436,6 +437,8 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
   {
+    if (sValue == null)
+      return m_aAttributes.removeObject (sKey);
     return m_aAttributes.putIn (sKey, sValue);
   }
 
@@ -696,28 +699,115 @@ public class Partnership implements Serializable
     return setAttribute (CPartnershipIDs.PA_SUBJECT, sValue);
   }
 
+  /**
+   * Get the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sDefault
+   *        Default to be returned if none is present. May be <code>null</code>.
+   * @return The partnership Content-Transfer-Encoding or the provided default
+   *         value.
+   * @deprecated Use {@link #getContentTransferEncodingSend(String)} instead
+   */
+  @Deprecated
   @Nullable
   public String getContentTransferEncoding (@Nullable final String sDefault)
   {
-    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sDefault);
+    return getContentTransferEncodingSend (sDefault);
   }
 
+  /**
+   * Get the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sDefault
+   *        Default to be returned if none is present. May be <code>null</code>.
+   * @return The partnership Content-Transfer-Encoding or the provided default
+   *         value.
+   */
+  @Nullable
+  public String getContentTransferEncodingSend (@Nullable final String sDefault)
+  {
+    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_SEND, sDefault);
+  }
+
+  /**
+   * Set the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sValue
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   * @deprecated Use {@link #setContentTransferEncodingSend(String)} instead
+   */
+  @Deprecated
   @Nonnull
   public EChange setContentTransferEncoding (@Nullable final String sValue)
   {
-    return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sValue);
+    return setContentTransferEncodingSend (sValue);
   }
 
+  /**
+   * Set the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sValue
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
+  @Nonnull
+  public EChange setContentTransferEncodingSend (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_SEND, sValue);
+  }
+
+  /**
+   * Set the Content-Transfer-Encoding for sending messages.
+   *
+   * @param eCTE
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
+  @Nonnull
+  public EChange setContentTransferEncodingSend (@Nullable final EContentTransferEncoding eCTE)
+  {
+    return setContentTransferEncodingSend (eCTE != null ? eCTE.getID () : null);
+  }
+
+  /**
+   * Get the Content-Transfer-Encoding for receiving messages.
+   *
+   * @param sDefault
+   *        Default to be returned if none is present. May be <code>null</code>.
+   * @return The partnership Content-Transfer-Encoding or the provided default
+   *         value.
+   */
   @Nullable
   public String getContentTransferEncodingReceive (@Nullable final String sDefault)
   {
     return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE, sDefault);
   }
 
+  /**
+   * Set the Content-Transfer-Encoding for receiving messages.
+   *
+   * @param sValue
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
   @Nonnull
   public EChange setContentTransferEncodingReceive (@Nullable final String sValue)
   {
     return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE, sValue);
+  }
+
+  /**
+   * Set the Content-Transfer-Encoding for receiving messages.
+   *
+   * @param eCTE
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
+  @Nonnull
+  public EChange setContentTransferEncodingReceive (@Nullable final EContentTransferEncoding eCTE)
+  {
+    return setContentTransferEncodingReceive (eCTE != null ? eCTE.getID () : null);
   }
 
   @Nullable

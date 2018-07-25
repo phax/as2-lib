@@ -67,30 +67,6 @@ public final class AS2GlobalSettings
   private AS2GlobalSettings ()
   {}
 
-  /**
-   * Change the usage of SecureRandom if not necessary. On certain Linux
-   * derivates the usage of (Very)SecureRandom can take minutes to initialize,
-   * because the calls to /dev/urandom are blocking.
-   *
-   * @param bUseSecureRandom
-   *        <code>true</code> to enable it, <code>false</code> to disable it.
-   */
-  @Deprecated
-  public static void setUseSecureRandom (final boolean bUseSecureRandom)
-  {
-    RandomHelper.setUseSecureRandom (bUseSecureRandom);
-  }
-
-  /**
-   * @return <code>true</code> if SecureRandom is used where possible,
-   *         <code>false</code> to use Random or the like.
-   */
-  @Deprecated
-  public static boolean isUseSecureRandom ()
-  {
-    return RandomHelper.isUseSecureRandom ();
-  }
-
   @Nonnull
   public static Random getRandom ()
   {

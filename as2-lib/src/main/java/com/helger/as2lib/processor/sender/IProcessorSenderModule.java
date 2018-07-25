@@ -40,10 +40,4 @@ public interface IProcessorSenderModule extends IProcessorModule
   String DO_SEND = "send";
   /** Action name for sending an asynchronous MDN message */
   String DO_SEND_ASYNC_MDN = "sendmdn";
-  /**
-   * Action name for sending an asynchronous MDN message. Use DO_SEND_ASYNC_MDN
-   * instead.
-   */
-  @Deprecated
-  String DO_SENDMDN = DO_SEND_ASYNC_MDN;
 }

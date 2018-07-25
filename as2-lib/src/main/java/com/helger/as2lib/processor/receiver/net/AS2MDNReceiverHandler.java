@@ -101,7 +101,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    LOGGER.info ("incoming connection [" + sClientInfo + "]");
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("incoming connection [" + sClientInfo + "]");
 
     final AS2Message aMsg = new AS2Message ();
 
@@ -118,7 +120,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
       // in one of partnerships, if yes, then process incoming AsyncMDN
-      LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
 
       final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
       final String sReceivedContentType = aReceivedContentType.toString ();
@@ -210,13 +213,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException ex)
+      catch (final ComponentNotFoundException | NoModuleException ex)
       {
         // No message processor found
-      }
-      catch (final NoModuleException ex)
-      {
-        // No module found in message processor
+        // Or no module found in message processor
       }
 
       // check if the mic (message integrity check) is correct
@@ -235,11 +235,13 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         ex.setText (aMsg.getMDN ().getText ());
         if (ex.getDisposition ().isWarning ())
         {
+          // Warning
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
         }
         else
         {
+          // Error
           throw ex;
         }
       }
@@ -313,10 +315,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: " +
-                          sOriginalMIC +
-                          " return mic: " +
-                          sReturnMIC +
-                          aMsg.getLoggingText ());
+                       sOriginalMIC +
+                       " return mic: " +
+                       sReturnMIC +
+                       aMsg.getLoggingText ());
         return false;
       }
 
@@ -327,10 +329,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final File aPendingInfoFile = new File (sPendingInfoFile);
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("delete pendinginfo file : " +
-                        aPendingInfoFile.getName () +
-                        " from pending folder : " +
-                        getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
-                        aMsg.getLoggingText ());
+                     aPendingInfoFile.getName () +
+                     " from pending folder : " +
+                     getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
+                     aMsg.getLoggingText ());
       if (!aPendingInfoFile.delete ())
       {
         if (LOGGER.isErrorEnabled ())
@@ -339,10 +341,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("delete pending file : " +
-                        aPendingFile.getName () +
-                        " from pending folder : " +
-                        aPendingFile.getParent () +
-                        aMsg.getLoggingText ());
+                     aPendingFile.getName () +
+                     " from pending folder : " +
+                     aPendingFile.getParent () +
+                     aMsg.getLoggingText ());
       if (!aPendingFile.delete ())
       {
         if (LOGGER.isErrorEnabled ())

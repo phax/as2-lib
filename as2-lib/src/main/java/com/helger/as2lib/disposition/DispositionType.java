@@ -32,12 +32,14 @@
  */
 package com.helger.as2lib.disposition;
 
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
@@ -49,7 +51,8 @@ import com.helger.commons.string.ToStringGenerator;
  *
  * @author Philip Helger
  */
-public final class DispositionType
+@Immutable
+public class DispositionType implements Serializable
 {
   public static final String ACTION_AUTOMATIC_ACTION = "automatic-action";
   public static final String MDNACTION_MDN_SENT_AUTOMATICALLY = "MDN-sent-automatically";
@@ -69,38 +72,60 @@ public final class DispositionType
                           @Nullable final String sStatusModifier,
                           @Nullable final String sStatusDescription)
   {
-    m_sAction = ValueEnforcer.notNull (sAction, "Action");
-    m_sMDNAction = ValueEnforcer.notNull (sMDNAction, "MDNAction");
-    m_sStatus = ValueEnforcer.notNull (sStatus, "Status");
+    ValueEnforcer.notNull (sAction, "Action");
+    ValueEnforcer.notNull (sMDNAction, "MDNAction");
+    ValueEnforcer.notNull (sStatus, "Status");
+
+    m_sAction = sAction;
+    m_sMDNAction = sMDNAction;
+    m_sStatus = sStatus;
     m_sStatusModifier = sStatusModifier;
     m_sStatusDescription = sStatusDescription;
   }
 
+  @Nonnull
   public String getAction ()
   {
     return m_sAction;
   }
 
+  @Nonnull
   public String getMDNAction ()
   {
     return m_sMDNAction;
   }
 
+  @Nonnull
   public String getStatus ()
   {
     return m_sStatus;
   }
 
+  @Nullable
   public String getStatusDescription ()
   {
     return m_sStatusDescription;
   }
 
+  @Nullable
   public String getStatusModifier ()
   {
     return m_sStatusModifier;
   }
 
+  /**
+   * @return <code>true</code> if it is an error, <code>false</code> if not
+   *         (maybe success or warning).
+   */
+  public boolean isError ()
+  {
+    return EqualsHelper.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_ERROR);
+  }
+
+  /**
+   * @return <code>true</code> if it is a warning, <code>false</code> if not
+   *         (maybe success or error).
+   */
   public boolean isWarning ()
   {
     return EqualsHelper.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
@@ -108,8 +133,6 @@ public final class DispositionType
 
   public void validate () throws DispositionException
   {
-    if (m_sStatus == null)
-      throw new DispositionException (this, null);
     if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
       throw new DispositionException (this, null);
 
@@ -161,7 +184,7 @@ public final class DispositionType
       String sStatusDescription = null;
       if (aDispTokens.hasMoreTokens ())
       {
-        sStatusModifier = aDispTokens.nextToken ().toLowerCase (Locale.US);
+        sStatusModifier = aDispTokens.nextToken ().trim ().toLowerCase (Locale.US);
         if (aDispTokens.hasMoreTokens ())
           sStatusDescription = aDispTokens.nextToken ().trim ().toLowerCase (Locale.US);
       }
@@ -174,7 +197,7 @@ public final class DispositionType
   }
 
   /**
-   * @return A success dispostion without additional information. Never
+   * @return A success disposition without additional information. Never
    *         <code>null</code>.
    */
   @Nonnull

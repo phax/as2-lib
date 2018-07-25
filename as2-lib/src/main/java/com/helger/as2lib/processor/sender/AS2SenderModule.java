@@ -175,10 +175,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                       "/" +
                                       sMsgFilename;
 
-      LOGGER.info ("Save Original MIC & message id information into folder '" +
-                      sPendingFolder +
-                      "'" +
-                      aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Save Original MIC & message id information into folder '" +
+                     sPendingFolder +
+                     "'" +
+                     aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
@@ -280,22 +281,24 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
-    final String sTransferEncoding = aMsg.partnership ()
-                                         .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
-    aCompressedGenerator.setContentTransferEncoding (sTransferEncoding);
+    // Content-Transfer-Encoding to use
+    final String sCTE = aMsg.partnership ()
+                            .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    aCompressedGenerator.setContentTransferEncoding (sCTE);
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
-    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sTransferEncoding);
+    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
+    // TODO use constant
     aMsg.headers ().addHeader (CHttpHeader.CONTENT_TYPE, "application/octet-stream");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compressed data with " +
-                       eCompressionType +
-                       " to " +
-                       aCompressedBodyPart.getContentType () +
-                       ":" +
-                       aMsg.getLoggingText ());
+                    eCompressionType +
+                    " to " +
+                    aCompressedBodyPart.getContentType () +
+                    ":" +
+                    aMsg.getLoggingText ());
 
     return aCompressedBodyPart;
   }
@@ -371,11 +374,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signed data with " +
-                         eSignAlgorithm +
-                         " to " +
-                         aDataBP.getContentType () +
-                         ":" +
-                         aMsg.getLoggingText ());
+                      eSignAlgorithm +
+                      " to " +
+                      aDataBP.getContentType () +
+                      ":" +
+                      aMsg.getLoggingText ());
     }
 
     if (eCompressionType != null && !bCompressBeforeSign)
@@ -399,11 +402,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypted data with " +
-                         eCryptAlgorithm +
-                         " to " +
-                         aDataBP.getContentType () +
-                         ":" +
-                         aMsg.getLoggingText ());
+                      eCryptAlgorithm +
+                      " to " +
+                      aDataBP.getContentType () +
+                      ":" +
+                      aMsg.getLoggingText ());
     }
 
     return aDataBP;
@@ -424,7 +427,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Set all custom headers first (so that they are overridden with the
     // mandatory ones in here)
-    aMsg.headers ().forEachSingleHeader ( (k, v) -> aConn.setHttpHeader (k, v));
+    aMsg.headers ().forEachSingleHeader (aConn::setHttpHeader);
 
     aConn.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aConn.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
@@ -551,18 +554,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException ex)
+      catch (final ComponentNotFoundException | NoModuleException ex)
       {
         // No message processor found
-      }
-      catch (final NoModuleException ex)
-      {
-        // No module found in message processor
+        // Or no module found in message processor
       }
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
-      LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN
@@ -573,18 +574,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         // file was sent completely but the returned mic was not matched,
         // don't know it needs or needs not to be resent ? it's depended on
-        // what!
-        // anyway, just log the warning message here.
-        LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
-                        sOriginalMIC +
-                        "' return mic: '" +
-                        sReturnMIC +
-                        "'" +
-                        aMsg.getLoggingText ());
+        // what! anyway, just log the warning message here.
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
+                       sOriginalMIC +
+                       "' return mic: '" +
+                       sReturnMIC +
+                       "'" +
+                       aMsg.getLoggingText ());
       }
       else
       {
-        LOGGER.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("MIC is matched, MIC: " + sReturnMIC + aMsg.getLoggingText ());
       }
 
       try
@@ -596,11 +598,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         ex.setText (aMsg.getMDN ().getText ());
         if (ex.getDisposition ().isWarning ())
         {
+          // Warning
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
         }
         else
         {
+          // Error
           throw ex;
         }
       }
@@ -619,7 +623,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   /**
    * Handler for errors in MDN processing.
-   * 
+   *
    * @param aMsg
    *        The source message that was send
    * @param ex
@@ -669,7 +673,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
-      LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
       updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn, aOutgoingDumper), aMsg);
 
@@ -732,7 +737,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           nResponseCode != HttpURLConnection.HTTP_NO_CONTENT &&
           nResponseCode != HttpURLConnection.HTTP_PARTIAL)
       {
-        LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
         throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
@@ -748,7 +754,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           {
             // go ahead to receive sync MDN
             receiveSyncMDN (aMsg, aConn, sMIC);
-            LOGGER.info ("message sent" + aMsg.getLoggingText ());
+
+            if (LOGGER.isInfoEnabled ())
+              LOGGER.info ("message sent" + aMsg.getLoggingText ());
           }
         }
       }
@@ -776,7 +784,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final AS2Message aMsg = (AS2Message) aBaseMsg;
-    LOGGER.info ("Submitting message" + aMsg.getLoggingText ());
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Submitting message" + aMsg.getLoggingText ());
 
     // verify all required information is present for sending
     checkRequired (aMsg);
@@ -800,7 +810,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final HttpResponseException ex)
     {
-      LOGGER.error ("Http Response Error " + ex.getMessage ());
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Http Response Error " + ex.getMessage ());
       ex.terminate ();
 
       if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, ex, nRetries))

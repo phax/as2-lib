@@ -105,6 +105,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     m_nHeaders++;
   }
 
+  @Override
   public void finishedHeaders ()
   {
     if (m_nHeaders > 0)
@@ -119,11 +120,13 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     _write (nByte);
   }
 
+  @Override
   public void finishedPayload ()
   {
     StreamHelper.flush (m_aOS);
   }
 
+  @Override
   public void close ()
   {
     StreamHelper.close (m_aOS);

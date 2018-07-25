@@ -112,14 +112,14 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @ReturnsMutableCopy
   public ICommonsSet <String> getAllPartnershipNames ()
   {
-    return m_aRWLock.readLocked ( () -> m_aPartnerships.getAllPartnershipNames ());
+    return m_aRWLock.readLocked (m_aPartnerships::getAllPartnershipNames);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <Partnership> getAllPartnerships ()
   {
-    return m_aRWLock.readLocked ( () -> m_aPartnerships.getAllPartnerships ());
+    return m_aRWLock.readLocked (m_aPartnerships::getAllPartnerships);
   }
 
   @Nonnull

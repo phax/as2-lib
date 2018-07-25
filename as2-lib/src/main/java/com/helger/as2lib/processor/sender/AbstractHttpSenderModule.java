@@ -153,11 +153,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 
       return new AS2HttpURLConnection(aConn);
     }
-    catch (final IOException ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
-    catch (final GeneralSecurityException ex)
+    catch (final IOException | GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }

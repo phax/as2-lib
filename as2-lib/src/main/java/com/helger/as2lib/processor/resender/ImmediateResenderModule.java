@@ -67,7 +67,8 @@ public class ImmediateResenderModule extends AbstractResenderModule
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
 
     String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
@@ -83,7 +84,8 @@ public class ImmediateResenderModule extends AbstractResenderModule
     else
     {
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
-      LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
     }
 
     // Update the retries - decrement here

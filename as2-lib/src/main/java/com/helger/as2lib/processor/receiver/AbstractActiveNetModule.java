@@ -181,7 +181,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final String sErrorFilename = aParams.format (getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
       final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
-                                                         FilenameHelper.getAsSecureValidFilename (sErrorFilename));
+                                                            FilenameHelper.getAsSecureValidFilename (sErrorFilename));
       // Default false for backwards compatibility reason
       final boolean bStoreBody = getAsBoolean (ATTR_ERROR_STORE_BODY, false);
 
@@ -267,7 +267,9 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort)
                                                        : new InetSocketAddress (sAddress, nPort);
       m_aServerSocket.bind (aAddr);
-      LOGGER.info ("Inited " + getName () + " at " + aAddr);
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Inited " + getName () + " at " + aAddr);
     }
 
     @OverrideOnDemand

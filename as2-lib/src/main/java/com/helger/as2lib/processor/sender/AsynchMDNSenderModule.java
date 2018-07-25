@@ -55,8 +55,8 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -82,8 +82,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition) throws OpenAS2Exception,
                                                                           IOException,
-                                                                          MessagingException,
-                                                                          HttpResponseException
+                                                                          MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -103,14 +102,15 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
-      LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
       final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn,
                                                                                                               aOutgoingDumper);
       aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
-      aMdn.headers ().forEachSingleHeader ( (k, v) -> aHeaderWrapper.setHttpHeader (k, v));
+      aMdn.headers ().forEachSingleHeader (aHeaderWrapper::setHttpHeader);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();
@@ -142,7 +142,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
         aOutgoingDumper.finishedPayload ();
 
       aSW.stop ();
-      LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
@@ -152,24 +153,23 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
           nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
           nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
       {
-        LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
         throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
-      LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try
       {
         getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException ex)
+      catch (final ComponentNotFoundException | NoModuleException ex)
       {
         // No message processor found
-      }
-      catch (final NoModuleException ex)
-      {
-        // No module found in message processor
+        // Or no module found in message processor
       }
     }
     finally
@@ -186,7 +186,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     {
       final AS2Message aMsg = (AS2Message) aBaseMsg;
 
-      LOGGER.info ("Async MDN submitted" + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Async MDN submitted" + aMsg.getLoggingText ());
+
       final DispositionType aDisposition = DispositionType.createSuccess ();
 
       final int nRetries = getRetryCount (aMsg.partnership (), aOptions);
@@ -197,7 +199,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       }
       catch (final HttpResponseException ex)
       {
-        LOGGER.error ("Http Response Error " + ex.getMessage ());
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Http Response Error " + ex.getMessage ());
 
         // Resend if the HTTP Response has an error code
         ex.terminate ();

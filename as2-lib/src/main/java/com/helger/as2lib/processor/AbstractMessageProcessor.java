@@ -63,7 +63,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractMessageProcessor.class);
 
-  private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList<> ();
+  private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList <> ();
 
   public void addModule (@Nonnull final IProcessorModule aModule)
   {
@@ -96,7 +96,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
   public <T extends IProcessorModule> T getModuleOfClass (@Nonnull final Class <T> aClass)
   {
     ValueEnforcer.notNull (aClass, "Class");
-    return m_aModules.findFirstMapped (x -> aClass.isAssignableFrom (x.getClass ()), x -> aClass.cast (x));
+    return m_aModules.findFirstMapped (x -> aClass.isAssignableFrom (x.getClass ()), aClass::cast);
   }
 
   @Nonnull
@@ -144,7 +144,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
                                       @Nonnull final IMessage aMsg,
                                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
-    final ICommonsList <Throwable> aCauses = new CommonsArrayList<> ();
+    final ICommonsList <Throwable> aCauses = new CommonsArrayList <> ();
     IProcessorModule aModuleFound = null;
 
     final ICommonsList <IProcessorModule> aAllModules = getAllModules ();
