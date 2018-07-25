@@ -49,6 +49,7 @@ import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.state.EChange;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.ToStringGenerator;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
  * This class represents a single partnership. It has a unique name, a set of
@@ -757,6 +758,19 @@ public class Partnership implements Serializable
   }
 
   /**
+   * Set the Content-Transfer-Encoding for sending messages.
+   *
+   * @param eCTE
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
+  @Nonnull
+  public EChange setContentTransferEncodingSend (@Nullable final EContentTransferEncoding eCTE)
+  {
+    return setContentTransferEncodingSend (eCTE != null ? eCTE.getID () : null);
+  }
+
+  /**
    * Get the Content-Transfer-Encoding for receiving messages.
    *
    * @param sDefault
@@ -781,6 +795,19 @@ public class Partnership implements Serializable
   public EChange setContentTransferEncodingReceive (@Nullable final String sValue)
   {
     return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE, sValue);
+  }
+
+  /**
+   * Set the Content-Transfer-Encoding for receiving messages.
+   *
+   * @param eCTE
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
+  @Nonnull
+  public EChange setContentTransferEncodingReceive (@Nullable final EContentTransferEncoding eCTE)
+  {
+    return setContentTransferEncodingReceive (eCTE != null ? eCTE.getID () : null);
   }
 
   @Nullable

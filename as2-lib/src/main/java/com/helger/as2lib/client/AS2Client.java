@@ -367,6 +367,10 @@ public class AS2Client
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 
+        // It's a partnership property
+        aPartnership.setContentTransferEncodingSend (aRequest.getContentTransferEncoding ());
+        aPartnership.setContentTransferEncodingReceive (aRequest.getContentTransferEncoding ());
+
         // And create a sender module that directly sends the message
         // The message processor registration is required for the resending
         // feature
