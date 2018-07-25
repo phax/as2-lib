@@ -80,6 +80,7 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
+import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -276,14 +277,15 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  protected void sendSyncMDN (@Nonnull final String sClientInfo,
-                              @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                              @Nonnull final AS2Message aMsg,
-                              @Nonnull final DispositionType aDisposition,
-                              @Nonnull final String sText)
+  protected void sendMDN (@Nonnull final String sClientInfo,
+                          @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                          @Nonnull final AS2Message aMsg,
+                          @Nonnull final DispositionType aDisposition,
+                          @Nonnull final String sText,
+                          @Nonnull final ESuccess eSuccess)
   {
-    final boolean bMDNBlocked = aMsg.partnership ().isBlockErrorMDN ();
-    if (!bMDNBlocked)
+    final boolean bAllowErrorMDN = !aMsg.partnership ().isBlockErrorMDN ();
+    if (eSuccess.isSuccess () || bAllowErrorMDN)
     {
       try
       {
@@ -543,11 +545,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (aMsg.isRequestingMDN ())
         {
           // Transmit a success MDN if requested
-          sendSyncMDN (sClientInfo,
-                       aResponseHandler,
-                       aMsg,
-                       DispositionType.createSuccess (),
-                       AbstractActiveNetModule.DISP_SUCCESS);
+          sendMDN (sClientInfo,
+                   aResponseHandler,
+                   aMsg,
+                   DispositionType.createSuccess (),
+                   AbstractActiveNetModule.DISP_SUCCESS,
+                   ESuccess.SUCCESS);
         }
         else
         {
@@ -564,7 +567,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final DispositionException ex)
     {
-      sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText ());
+      sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
       m_aReceiverModule.handleError (aMsg, ex);
     }
     catch (final OpenAS2Exception ex)

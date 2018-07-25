@@ -593,11 +593,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         ex.setText (aMsg.getMDN ().getText ());
         if (ex.getDisposition ().isWarning ())
         {
+          // Warning
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
         }
         else
         {
+          // Error
           throw ex;
         }
       }

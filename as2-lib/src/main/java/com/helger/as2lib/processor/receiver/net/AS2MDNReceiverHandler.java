@@ -236,11 +236,13 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         ex.setText (aMsg.getMDN ().getText ());
         if (ex.getDisposition ().isWarning ())
         {
+          // Warning
           ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
           ex.terminate ();
         }
         else
         {
+          // Error
           throw ex;
         }
       }
@@ -314,10 +316,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: " +
-                          sOriginalMIC +
-                          " return mic: " +
-                          sReturnMIC +
-                          aMsg.getLoggingText ());
+                       sOriginalMIC +
+                       " return mic: " +
+                       sReturnMIC +
+                       aMsg.getLoggingText ());
         return false;
       }
 
@@ -328,10 +330,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final File aPendingInfoFile = new File (sPendingInfoFile);
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("delete pendinginfo file : " +
-                        aPendingInfoFile.getName () +
-                        " from pending folder : " +
-                        getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
-                        aMsg.getLoggingText ());
+                     aPendingInfoFile.getName () +
+                     " from pending folder : " +
+                     getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
+                     aMsg.getLoggingText ());
       if (!aPendingInfoFile.delete ())
       {
         if (LOGGER.isErrorEnabled ())
@@ -340,10 +342,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("delete pending file : " +
-                        aPendingFile.getName () +
-                        " from pending folder : " +
-                        aPendingFile.getParent () +
-                        aMsg.getLoggingText ());
+                     aPendingFile.getName () +
+                     " from pending folder : " +
+                     aPendingFile.getParent () +
+                     aMsg.getLoggingText ());
       if (!aPendingFile.delete ())
       {
         if (LOGGER.isErrorEnabled ())
