@@ -279,6 +279,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
+    // Content-Transfer-Encoding to use
     final String sCTE = aMsg.partnership ()
                             .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
     aCompressedGenerator.setContentTransferEncoding (sCTE);
