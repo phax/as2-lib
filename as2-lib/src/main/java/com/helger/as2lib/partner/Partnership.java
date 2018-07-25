@@ -436,6 +436,8 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
   {
+    if (sValue == null)
+      return m_aAttributes.removeObject (sKey);
     return m_aAttributes.putIn (sKey, sValue);
   }
 
