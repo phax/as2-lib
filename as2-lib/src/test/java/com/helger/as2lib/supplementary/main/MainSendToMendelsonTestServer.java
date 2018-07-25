@@ -77,7 +77,7 @@ public final class MainSendToMendelsonTestServer
 
     Proxy aHttpProxy = null;
     if (false)
-      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.16", 8080));
+      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.6", 8080));
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
