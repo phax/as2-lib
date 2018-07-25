@@ -41,10 +41,10 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -196,11 +196,13 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   }
 
   @Nullable
-  public TempSharedFileInputStream getTempSharedFileInputStream() {
+  public TempSharedFileInputStream getTempSharedFileInputStream ()
+  {
     return m_TempSharedFileInputStream;
   }
 
-  public void setTempSharedFileInputStream(@Nullable TempSharedFileInputStream m_TempSharedFileInputStream) {
-    this.m_TempSharedFileInputStream = m_TempSharedFileInputStream;
+  public void setTempSharedFileInputStream (@Nullable final TempSharedFileInputStream aTempSharedFileInputStream)
+  {
+    m_TempSharedFileInputStream = aTempSharedFileInputStream;
   }
 }

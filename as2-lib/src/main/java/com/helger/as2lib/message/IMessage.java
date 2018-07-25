@@ -123,7 +123,7 @@ public interface IMessage extends IBaseMessage
   boolean isRequestingAsynchMDN ();
 
   @Nullable
-  TempSharedFileInputStream getTempSharedFileInputStream();
+  TempSharedFileInputStream getTempSharedFileInputStream ();
 
-  void setTempSharedFileInputStream(@Nullable TempSharedFileInputStream m_TempSharedFileInputStream);
+  void setTempSharedFileInputStream (@Nullable TempSharedFileInputStream m_TempSharedFileInputStream);
 }

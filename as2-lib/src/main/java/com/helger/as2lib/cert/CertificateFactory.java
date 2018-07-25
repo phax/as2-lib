@@ -449,12 +449,12 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Removed certificate alias '" +
-                        sRealAlias +
-                        "'" +
-                        (aCert instanceof X509Certificate ? " of certificate '" +
-                                                            ((X509Certificate) aCert).getSubjectDN () +
-                                                            "'"
-                                                          : ""));
+                     sRealAlias +
+                     "'" +
+                     (aCert instanceof X509Certificate ? " of certificate '" +
+                                                         ((X509Certificate) aCert).getSubjectDN () +
+                                                         "'"
+                                                       : ""));
     }
     catch (final GeneralSecurityException ex)
     {

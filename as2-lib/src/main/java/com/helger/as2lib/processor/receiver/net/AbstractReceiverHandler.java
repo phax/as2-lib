@@ -32,15 +32,13 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.Socket;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
 
-import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.mail.datasource.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +53,7 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.string.StringHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.cte.IContentTransferEncoding;
+import com.helger.mail.datasource.ByteArrayDataSource;
 
 /**
  * Abstract base class for Message and MDN receive handlers.
@@ -83,8 +82,8 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   // Returns DataSource for large file support
   @Nonnull
   protected DataSource readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
-                                              @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                              @Nonnull final IMessage aMsg) throws IOException, MessagingException
+                                                 @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                                 @Nonnull final IMessage aMsg) throws IOException, MessagingException
   {
     // Main read
     DataSource aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg);
@@ -110,18 +109,16 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
         // TODO: Handle decoding when large file support is on
         if (!(aDecoder instanceof IdentityCodec <?>) && aPayload instanceof ByteArrayDataSource)
         {
-          byte [] actualBytes = ((ByteArrayDataSource) aPayload).directGetBytes();
+          byte [] actualBytes = ((ByteArrayDataSource) aPayload).directGetBytes ();
           // Remember original length before continuing
           final int nOriginalContentLength = actualBytes.length;
 
           if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
-                          sContentTransferEncoding +
-                          "' - decoding");
+            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
+                         sContentTransferEncoding +
+                         "' - decoding");
           actualBytes = aDecoder.getDecoded (actualBytes);
-          aPayload=new ByteArrayDataSource(actualBytes,
-            aPayload.getContentType(),
-            aPayload.getName());
+          aPayload = new ByteArrayDataSource (actualBytes, aPayload.getContentType (), aPayload.getName ());
 
           // Remember that we potentially did something
           aMsg.attrs ().putIn (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);

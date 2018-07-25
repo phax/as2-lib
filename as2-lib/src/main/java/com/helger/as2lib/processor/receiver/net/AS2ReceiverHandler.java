@@ -32,7 +32,10 @@
  */
 package com.helger.as2lib.processor.receiver.net;
 
-import java.io.*;
+import static com.helger.as2lib.params.MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON;
+import static com.helger.as2lib.params.MessageParameters.ATTR_STORED_FILE_NAME;
+
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.PrivateKey;
@@ -47,10 +50,7 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.util.SharedFileInputStream;
 
-import com.helger.as2lib.util.http.*;
-import com.helger.commons.io.stream.LoggingInputStream;
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
 import org.bouncycastle.mail.smime.SMIMECompressed;
 import org.bouncycastle.mail.smime.SMIMECompressedParser;
@@ -79,6 +79,11 @@ import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
+import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
+import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
+import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
@@ -89,9 +94,6 @@ import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.datasource.ByteArrayDataSource;
-
-import static com.helger.as2lib.params.MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON;
-import static com.helger.as2lib.params.MessageParameters.ATTR_STORED_FILE_NAME;
 
 public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
@@ -139,7 +141,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       final boolean bDisableDecrypt = aMsg.partnership ().isDisableDecrypt ();
       final boolean bMsgIsEncrypted = aCryptoHelper.isEncrypted (aMsg.getData ());
       final boolean bForceDecrypt = aMsg.partnership ().isForceDecrypt ();
-      final boolean bLargeFileSupportOn = aMsg.attrs().getAsBoolean(ATTR_LARGE_FILE_SUPPORT_ON);
+      final boolean bLargeFileSupportOn = aMsg.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON);
       if (LOGGER.isDebugEnabled () && bLargeFileSupportOn)
         LOGGER.debug ("Large file support on for " + aMsg.getLoggingText ());
       if (bMsgIsEncrypted && bDisableDecrypt)
@@ -167,7 +169,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                      aReceiverCert,
                                                                      aReceiverKey,
                                                                      bForceDecrypt,
-	                                                                   bLargeFileSupportOn);
+                                                                     bLargeFileSupportOn);
           aMsg.setData (aDecryptedData);
           // Remember that message was encrypted
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, true);
@@ -267,27 +269,36 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           LOGGER.debug ("Decompressing a compressed AS2 message");
 
         MimeBodyPart aDecompressedPart;
-        final ZlibExpanderProvider aExpander = new ZlibExpanderProvider();
+        final ZlibExpanderProvider aExpander = new ZlibExpanderProvider ();
 
-        if (aMsg.attrs().getAsBoolean(ATTR_LARGE_FILE_SUPPORT_ON)){
-         // Compress using stream
-          if (LOGGER.isDebugEnabled()) {
-            StringBuilder partInf = new StringBuilder();
-            MimeBodyPart part = aMsg.getData();
-            Enumeration<String> lines = part.getAllHeaderLines();
-            while (lines.hasMoreElements()) {
-              partInf.append(lines.nextElement()).append("\n");
+        if (aMsg.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON))
+        {
+          // Compress using stream
+          if (LOGGER.isDebugEnabled ())
+          {
+            StringBuilder partInf = new StringBuilder ();
+            MimeBodyPart part = aMsg.getData ();
+            Enumeration <String> lines = part.getAllHeaderLines ();
+            while (lines.hasMoreElements ())
+            {
+              partInf.append (lines.nextElement ()).append ("\n");
             }
-            partInf.append("Headers before uncompress\n");
-            LOGGER.debug(partInf.toString());
+            partInf.append ("Headers before uncompress\n");
+            LOGGER.debug (partInf.toString ());
           }
 
-          SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser(aMsg.getData(), 8*1024);// TODO: get buffer from configuration
-          aDecompressedPart = SMIMEUtil.toMimeBodyPart(smimeCompressedParser.getContent(aExpander));
-        } else {
-          final SMIMECompressed aCompressed = new SMIMECompressed(aMsg.getData());
+          SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser (aMsg.getData (), 8 * 1024);// TODO:
+                                                                                                              // get
+                                                                                                              // buffer
+                                                                                                              // from
+                                                                                                              // configuration
+          aDecompressedPart = SMIMEUtil.toMimeBodyPart (smimeCompressedParser.getContent (aExpander));
+        }
+        else
+        {
+          final SMIMECompressed aCompressed = new SMIMECompressed (aMsg.getData ());
           // decompression step MimeBodyPart
-          aDecompressedPart = SMIMEUtil.toMimeBodyPart(aCompressed.getContent(aExpander));
+          aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressed.getContent (aExpander));
         }
         // Update the message object
         aMsg.setData (aDecompressedPart);
@@ -423,7 +434,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         final String sReceivedContentType = aReceivedContentType.toString ();
 
         final MimeBodyPart aReceivedPart = new MimeBodyPart ();
-        aReceivedPart.setDataHandler (new DataHandler(aMsgData));
+        aReceivedPart.setDataHandler (new DataHandler (aMsgData));
 
         // Header must be set AFTER the DataHandler!
         aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
@@ -572,12 +583,15 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (aMsg.isRequestingMDN ())
         {
           // Transmit a success MDN if requested
-          if (aMsg.attrs().getAsBoolean(ATTR_LARGE_FILE_SUPPORT_ON)){
-            //if large file support is on, the message does not hold the actual data. in order to get the data for the MDN, a new message that will take the data from the file that was written should be used
-            String sStoredFileName = aMsg.attrs().getAsString(ATTR_STORED_FILE_NAME);
-            FileDataSource aFileDataSource = new FileDataSource(sStoredFileName);
-            DataHandler aDataFromFile = new DataHandler(aFileDataSource);
-            aMsg.getData().setDataHandler(aDataFromFile);
+          if (aMsg.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON))
+          {
+            // if large file support is on, the message does not hold the actual
+            // data. in order to get the data for the MDN, a new message that
+            // will take the data from the file that was written should be used
+            String sStoredFileName = aMsg.attrs ().getAsString (ATTR_STORED_FILE_NAME);
+            FileDataSource aFileDataSource = new FileDataSource (sStoredFileName);
+            DataHandler aDataFromFile = new DataHandler (aFileDataSource);
+            aMsg.getData ().setDataHandler (aDataFromFile);
           }
           sendMDN (sClientInfo,
                    aResponseHandler,
@@ -608,14 +622,19 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     {
       m_aReceiverModule.handleError (aMsg, ex);
     }
-    finally {
-      //close the temporary shared stream if it exists
-      TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream();
-      if (null != sis){
-        try {
-          sis.closeAll();
-        } catch (IOException e){
-          LOGGER.error("Exception while closing TempSharedFileInputStream",e);
+    finally
+    {
+      // close the temporary shared stream if it exists
+      TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
+      if (null != sis)
+      {
+        try
+        {
+          sis.closeAll ();
+        }
+        catch (IOException e)
+        {
+          LOGGER.error ("Exception while closing TempSharedFileInputStream", e);
         }
       }
     }
@@ -624,14 +643,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nullable final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    final boolean bLargeFileSupportOn = aOwner.getAsBoolean(ATTR_LARGE_FILE_SUPPORT_ON);
+    final boolean bLargeFileSupportOn = aOwner.getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON);
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("Incoming connection " + sClientInfo);
 
     final AS2Message aMsg = createMessage (aSocket);
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, bLargeFileSupportOn);
-    if (LOGGER.isDebugEnabled())
-      LOGGER.debug("Large file support on:"+aMsg.attrs().getAsBoolean(ATTR_LARGE_FILE_SUPPORT_ON));
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Large file support on:" + aMsg.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON));
 
     final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
 
@@ -641,9 +660,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     try
     {
       // Read in the message request, headers, and data
-      aMsgDataSource = readAndDecodeHttpRequest (
-        new AS2InputStreamProviderSocket (aSocket, bLargeFileSupportOn),
-        aResponseHandler, aMsg);
+      aMsgDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket, bLargeFileSupportOn),
+                                                 aResponseHandler,
+                                                 aMsg);
     }
     catch (final Exception ex)
     {
@@ -658,15 +677,16 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("received " +
-          AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes().length, aSW) +
-          " from " +
-          sClientInfo +
-          aMsg.getLoggingText ());
+                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length,
+                                                    aSW) +
+                       " from " +
+                       sClientInfo +
+                       aMsg.getLoggingText ());
 
-      } else {
-        LOGGER.info ("received message from " +
-          sClientInfo +
-          aMsg.getLoggingText ());
+      }
+      else
+      {
+        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText ());
 
       }
     handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);

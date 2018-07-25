@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Provider interface to retrieve an AS2 {@link InputStream}.
- * 
+ *
  * @author Philip Helger
  */
 public interface IAS2InputStreamProvider
@@ -54,9 +54,11 @@ public interface IAS2InputStreamProvider
   InputStream getInputStream () throws IOException;
 
   /**
-   * Returns an {@link InputStream}, that when closed, will not close in source stream. This
-   * is useful when working with {@link java.net.SocketInputStream}, as close() on a socket
-   * stream closes the {@link Socket}
+   * Returns an {@link InputStream}, that when closed, will not close in source
+   * stream. This is useful when working with
+   * {@link java.net.SocketInputStream}, as close() on a socket stream closes
+   * the {@link Socket}
+   *
    * @return Never <code>null</code>
    * @throws IOException
    *         In case of error

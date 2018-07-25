@@ -48,8 +48,6 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.util.http.IAS2HttpConnection;
 import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
 import org.slf4j.Logger;
@@ -70,6 +68,7 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.CFileAttribute;
@@ -86,6 +85,7 @@ import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -648,7 +648,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final Partnership aPartnership = aMsg.partnership ();
 
     // Create the HTTP connection
-    final String  sUrl = aPartnership.getAS2URL ();
+    final String sUrl = aPartnership.getAS2URL ();
     final boolean bOutput = true;
     final boolean bInput = true;
     final boolean bUseCaches = false;
@@ -657,19 +657,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // If it contains the data, (and no DataHandler), then use HttpUrlClient,
     // otherwise, use HttpClient
     final IAS2HttpConnection aConn;
-    if (!getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
-      aConn = getHttpURLConnection(
-        sUrl,
-        bOutput,
-        bInput,
-        bUseCaches,
-        eRequestMethod,
-        getSession().getHttpProxy());
-    } else {
-      aConn = getHttpClient(
-        sUrl,
-        eRequestMethod,
-        getSession ().getHttpProxy ());
+    if (!getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
+    {
+      aConn = getHttpURLConnection (sUrl, bOutput, bInput, bUseCaches, eRequestMethod, getSession ().getHttpProxy ());
+    }
+    else
+    {
+      aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
     }
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
@@ -684,9 +678,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aConn.getURL ().getPort ());
 
-      final InputStream aMsgIS = aSecuredMimePart.getInputStream();
+      final InputStream aMsgIS = aSecuredMimePart.getInputStream ();
 
-      if (!getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
+      if (!getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
+      {
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
         OutputStream aMsgOS = aConn.getOutputStream ();
@@ -708,20 +703,23 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         }
 
         // Transfer the data
-        final StopWatch aSW = StopWatch.createdStarted();
+        final StopWatch aSW = StopWatch.createdStarted ();
         // Main transmission - closes InputStream
-        final long nBytes = AS2IOHelper.copy(aMsgIS, aMsgOS);
+        final long nBytes = AS2IOHelper.copy (aMsgIS, aMsgOS);
 
         aSW.stop ();
         LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
-      }else {//HttpClient option
+      }
+      else
+      {// HttpClient option
         // Transfer the data
-        final StopWatch aSW = StopWatch.createdStarted();
-        aConn.send(aMsgIS);
+        final StopWatch aSW = StopWatch.createdStarted ();
+        aConn.send (aMsgIS);
         aSW.stop ();
-        //TODO: count sent bytes
-        //LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+        // TODO: count sent bytes
+        // LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes,
+        // aSW) + aMsg.getLoggingText ());
 
       }
 

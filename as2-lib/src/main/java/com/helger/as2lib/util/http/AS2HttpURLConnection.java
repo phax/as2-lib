@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.util.http;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,82 +40,88 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 /**
  * Http connection, Implemented as HttpURLConnection.
  *
  * @author Ziv Harpaz
  */
-public class AS2HttpURLConnection implements IAS2HttpConnection{
-	private HttpURLConnection httpURLConnection;
+public class AS2HttpURLConnection implements IAS2HttpConnection
+{
+  private HttpURLConnection httpURLConnection;
 
-public AS2HttpURLConnection(HttpURLConnection connection){
-	httpURLConnection=connection;
-}
-	/**
-	 * Set an HTTP header
-	 *
-	 * @param sName
-	 *        Header name
-	 * @param sValue
-	 *        Header value
-	 */
-	public void setHttpHeader(@Nonnull String sName, @Nonnull String sValue){
-		httpURLConnection.setRequestProperty(sName, sValue);
-	}
+  public AS2HttpURLConnection (HttpURLConnection connection)
+  {
+    httpURLConnection = connection;
+  }
 
-	/**
-	 * Get URL
-	 *
-	 */
-	public URL getURL(){
-		return httpURLConnection.getURL();
-	}
+  /**
+   * Set an HTTP header
+   *
+   * @param sName
+   *        Header name
+   * @param sValue
+   *        Header value
+   */
+  public void setHttpHeader (@Nonnull String sName, @Nonnull String sValue)
+  {
+    httpURLConnection.setRequestProperty (sName, sValue);
+  }
 
-	/**
-	 * Get OutputStream
-	 *
-	 */
-	public OutputStream getOutputStream() throws IOException {
-		return httpURLConnection.getOutputStream();
-	}
+  /**
+   * Get URL
+   */
+  public URL getURL ()
+  {
+    return httpURLConnection.getURL ();
+  }
 
-	/**
-	 * Get InputStream
-	 *
-	 */
-	public InputStream getInputStream() throws IOException{
-		return httpURLConnection.getInputStream();
-	}
+  /**
+   * Get OutputStream
+   */
+  public OutputStream getOutputStream () throws IOException
+  {
+    return httpURLConnection.getOutputStream ();
+  }
 
-	/**
-	 * Get response HTTP Status as integer
-	 *
-	 */
-	public int getResponseCode() throws IOException {
-		return httpURLConnection.getResponseCode();
-	}
+  /**
+   * Get InputStream
+   */
+  public InputStream getInputStream () throws IOException
+  {
+    return httpURLConnection.getInputStream ();
+  }
 
-	/**
-	 * Get the response message
-	 *
-	 */
-	public String getResponseMessage() throws IOException {
-		return httpURLConnection.getResponseMessage();
-	}
+  /**
+   * Get response HTTP Status as integer
+   */
+  public int getResponseCode () throws IOException
+  {
+    return httpURLConnection.getResponseCode ();
+  }
 
-	/**
-	 * Get the headers of the request
-	 *
-	 */
-	public Map<String,List<String>> getHeaderFields(){
-		return httpURLConnection.getHeaderFields();
-	}
+  /**
+   * Get the response message
+   */
+  public String getResponseMessage () throws IOException
+  {
+    return httpURLConnection.getResponseMessage ();
+  }
 
-	/**
-	 * Close the connection
-	 *
-	 */
-	public void disconnect(){
-		httpURLConnection.disconnect();
-	}
+  /**
+   * Get the headers of the request
+   */
+  public Map <String, List <String>> getHeaderFields ()
+  {
+    return httpURLConnection.getHeaderFields ();
+  }
+
+  /**
+   * Close the connection
+   */
+  public void disconnect ()
+  {
+    httpURLConnection.disconnect ();
+  }
 }

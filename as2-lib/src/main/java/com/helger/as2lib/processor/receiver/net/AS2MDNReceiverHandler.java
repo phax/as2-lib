@@ -46,7 +46,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.util.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +67,11 @@ import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
+import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
+import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
+import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2HttpConnection;
+import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttpHeader;
@@ -114,8 +118,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
-      DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
-      aData = org.apache.commons.io.IOUtils.toByteArray(aDataSourceBody.getInputStream());
+      DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
+                                                             aResponseHandler,
+                                                             aMsg);
+      aData = org.apache.commons.io.IOUtils.toByteArray (aDataSourceBody.getInputStream ());
 
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"

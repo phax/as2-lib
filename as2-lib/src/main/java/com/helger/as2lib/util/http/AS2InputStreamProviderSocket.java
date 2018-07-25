@@ -63,7 +63,7 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
    */
   public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket)
   {
-    this(aSocket, false);
+    this (aSocket, false);
   }
 
   /**
@@ -72,10 +72,10 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
    * @param aSocket
    *        Socket to read from. May not be <code>null</code>.
    * @param nonUpwardClosing
-   *        When true, closing the {@link InputStream} will not close the {@link Socket}
+   *        When true, closing the {@link InputStream} will not close the
+   *        {@link Socket}
    */
-  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket,
-                                       boolean nonUpwardClosing)
+  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket, final boolean nonUpwardClosing)
   {
     ValueEnforcer.notNull (aSocket, "Socket");
     m_aSocket = aSocket;
@@ -84,10 +84,11 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
 
   /**
    * According to instance initialization, will either return the regular
-   * {@link InputStream}, or a {@link NonClosingInputStream} that when closed, will not
-   * close in source stream. This is useful when working with
-   * {@link java.net.SocketInputStream}, as close() on a socket stream closes the
-   * {@link Socket}
+   * {@link InputStream}, or a {@link NonClosingInputStream} that when closed,
+   * will not close in source stream. This is useful when working with
+   * {@link java.net.SocketInputStream}, as close() on a socket stream closes
+   * the {@link Socket}
+   *
    * @return {@link InputStream}
    * @throws IOException
    */
@@ -95,21 +96,22 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
   public InputStream getInputStream () throws IOException
   {
     if (m_bNonUpwardClosing)
-      return StreamHelper.getBuffered (new NonClosingInputStream(m_aSocket.getInputStream ()));
-    else
-      return StreamHelper.getBuffered (m_aSocket.getInputStream ());
+      return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocket.getInputStream ()));
+    return StreamHelper.getBuffered (m_aSocket.getInputStream ());
   }
 
   /**
-   * Returns an {@link InputStream}, that when closed, will not close in source stream. This
-   * is useful when working with {@link java.net.SocketInputStream}, as close() on a socket
-   * stream closes the {@link Socket}
+   * Returns an {@link InputStream}, that when closed, will not close in source
+   * stream. This is useful when working with
+   * {@link java.net.SocketInputStream}, as close() on a socket stream closes
+   * the {@link Socket}
+   *
    * @return {@link InputStream}
    * @throws IOException
    */
   @Nonnull
   public InputStream getNonUpwardClosingInputStream () throws IOException
   {
-    return StreamHelper.getBuffered (new NonClosingInputStream(m_aSocket.getInputStream ()));
+    return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocket.getInputStream ()));
   }
 }

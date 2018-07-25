@@ -44,7 +44,7 @@ import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Implementation of {@link IAS2HttpHeaderWrapper} for {@link HttpURLConnection}
- * of {@link sun.net.www.http.HttpClient}.
+ * of {@link org.apache.http.client.HttpClient}.
  *
  * @author Philip Helger
  */
@@ -54,7 +54,6 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
   private final IAS2HttpConnection m_aConn;
   private final IHTTPOutgoingDumper m_aOutgoingDumper;
 
-  @SuppressWarnings("unused")
   public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn)
   {
     this (aConn, null);

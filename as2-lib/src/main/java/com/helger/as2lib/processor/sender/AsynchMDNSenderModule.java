@@ -42,7 +42,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 
-import com.helger.as2lib.util.http.IAS2HttpConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +59,7 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.io.stream.WrappedOutputStream;
@@ -94,11 +94,11 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     final EHttpMethod eRequestMethod = EHttpMethod.POST;
     // MDN is a small message. We will always use HttpURLConnection
     final IAS2HttpConnection aConn = getHttpURLConnection (sUrl,
-                                                   bOutput,
-                                                   bInput,
-                                                   bUseCaches,
-                                                   eRequestMethod,
-                                                   getSession ().getHttpProxy ());
+                                                           bOutput,
+                                                           bInput,
+                                                           bUseCaches,
+                                                           eRequestMethod,
+                                                           getSession ().getHttpProxy ());
 
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {

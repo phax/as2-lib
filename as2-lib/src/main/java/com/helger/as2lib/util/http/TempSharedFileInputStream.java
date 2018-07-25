@@ -50,13 +50,12 @@ import com.helger.commons.io.file.FilenameHelper;
  * opens {@link SharedFileInputStream} on that file. When the stream is closed,
  * the file will be deleted, and the input stream will be closed.
  */
-@SuppressWarnings ({ "WeakerAccess", "JavaDoc", "SpellCheckingInspection" })
 public class TempSharedFileInputStream extends SharedFileInputStream
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (TempSharedFileInputStream.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (TempSharedFileInputStream.class);
   private final File tempFile;
   private final InputStream srcIS;
-  int num = 0;
+  private final int num = 0;
 
   private TempSharedFileInputStream (@Nonnull final File file, @Nonnull final InputStream is) throws IOException
   {
@@ -78,7 +77,6 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    * @return {@link TempSharedFileInputStream} on the created temporary file.
    * @throws IOException
    */
-  @SuppressWarnings ({ "unused", "JavaDoc" })
   static TempSharedFileInputStream getTempSharedFileInputStream (@Nonnull final InputStream aIS,
                                                                  final String name) throws IOException
   {
@@ -98,7 +96,6 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    * @return The created {@link File}
    * @throws IOException
    */
-  @SuppressWarnings ({ "WeakerAccess", "SpellCheckingInspection" })
   protected static File storeContentToTempFile (@Nonnull final InputStream aIS, final String name) throws IOException
   {
     // create temp file and write steam content to it
@@ -108,7 +105,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
     try (final FileOutputStream aOS = new FileOutputStream (aDest))
     {
       final long transferred = org.apache.commons.io.IOUtils.copyLarge (aIS, aOS);
-      s_aLogger.debug ("%l bytes copied to %s", transferred, aDest.getAbsolutePath ());
+      LOGGER.debug ("%l bytes copied to %s", transferred, aDest.getAbsolutePath ());
       return aDest;
     }
   }
@@ -120,7 +117,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   @Override
   public void close () throws IOException
   {
-    s_aLogger.debug ("close() called, doing nothing.");
+    LOGGER.debug ("close() called, doing nothing.");
   }
 
   /**
@@ -136,7 +133,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
     }
     catch (final Throwable t)
     {
-      s_aLogger.error ("Exception in finalize()", t);
+      LOGGER.error ("Exception in finalize()", t);
       throw new IOException (t.getClass ().getName () + ":" + t.getMessage ());
     }
   }
@@ -152,7 +149,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
     {
       if (!tempFile.delete ())
       {
-        s_aLogger.error ("Failed to delete file {}", tempFile.getAbsolutePath ());
+        LOGGER.error ("Failed to delete file {}", tempFile.getAbsolutePath ());
       }
     }
   }

@@ -47,126 +47,118 @@ import static org.junit.Assert.*;
  *
  * @author Ziv Harpaz
  */
-public class ChunkedInputStreamTest {
-	@Before
-	public void setUp() throws Exception {
-	}
+public class ChunkedInputStreamTest
+{
+  @Before
+  public void setUp () throws Exception
+  {}
 
-	@After
-	public void tearDown() throws Exception {
-	}
+  @After
+  public void tearDown () throws Exception
+  {}
 
-	@Test(expected = EOFException.class)
-	public void readBufferFromEmpty() throws Exception {
-		InputStream empty = new ByteArrayInputStream("".getBytes());
-		byte[] buf = new byte[17];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read(buf, 0, buf.length);
-		fail("An EOFException should have been thrown");
-	}
+  @Test (expected = EOFException.class)
+  public void readBufferFromEmpty () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("".getBytes ());
+    byte [] buf = new byte [17];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read (buf, 0, buf.length);
+    fail ("An EOFException should have been thrown");
+  }
 
-	@Test
-	public void readPastEOS() throws Exception {
-		InputStream empty = new ByteArrayInputStream("3\n123\r\n0\r\n".getBytes());
-		byte[] buf = new byte[17];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read(buf, 0, buf.length);
-		assertEquals("read correct num of bytes", ret,3);
-		assertEquals("read the chunk",
-			new String(buf, 0, ret),
-			"123");
-		ret = cIS.read(buf, 0, buf.length);
-		assertEquals("read past EOS", ret,-1);
-	}
+  @Test
+  public void readPastEOS () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("3\n123\r\n0\r\n".getBytes ());
+    byte [] buf = new byte [17];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read (buf, 0, buf.length);
+    assertEquals ("read correct num of bytes", ret, 3);
+    assertEquals ("read the chunk", new String (buf, 0, ret), "123");
+    ret = cIS.read (buf, 0, buf.length);
+    assertEquals ("read past EOS", ret, -1);
+  }
 
-	@Test(expected = EOFException.class)
-	public void readByteFromEmpty() throws Exception {
-		InputStream empty = new ByteArrayInputStream("".getBytes());
-		byte[] buf = new byte[17];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read();
-		fail("An EOFException should have been thrown");
-	}
+  @Test (expected = EOFException.class)
+  public void readByteFromEmpty () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("".getBytes ());
+    byte [] buf = new byte [17];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read ();
+    fail ("An EOFException should have been thrown");
+  }
 
-	@Test
-	public void readOneChunkBuffer() throws Exception {
-		InputStream empty = new ByteArrayInputStream("3\n123".getBytes());
-		byte[] buf = new byte[3];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read(buf, 0, buf.length);
-		assertEquals("Read one chunk: 3 chars read",
-			3,ret);
-		assertEquals("Read one Chunk: corect data returned",new String(buf),"123");
-	}
+  @Test
+  public void readOneChunkBuffer () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("3\n123".getBytes ());
+    byte [] buf = new byte [3];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read (buf, 0, buf.length);
+    assertEquals ("Read one chunk: 3 chars read", 3, ret);
+    assertEquals ("Read one Chunk: corect data returned", new String (buf), "123");
+  }
 
-	@Test
-	public void readOneChunkBytes() throws Exception {
-		InputStream empty = new ByteArrayInputStream("3\n123".getBytes());
-		byte[] buf = new byte[3];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read();
-		assertEquals("Read first char",'1',ret);
-		ret = cIS.read();
-		assertEquals("Read second char",'2',ret);
-		ret = cIS.read();
-		assertEquals("Read third char",'3',ret);
-	}
-	@Test
-	public void read1() throws Exception {
-	}
+  @Test
+  public void readOneChunkBytes () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("3\n123".getBytes ());
+    byte [] buf = new byte [3];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read ();
+    assertEquals ("Read first char", '1', ret);
+    ret = cIS.read ();
+    assertEquals ("Read second char", '2', ret);
+    ret = cIS.read ();
+    assertEquals ("Read third char", '3', ret);
+  }
 
-	@Test
-	public void readTwoChunkBuffer() throws Exception {
-		InputStream empty = new ByteArrayInputStream("2\r\n12\r\n1\na\r\n0\r\n".getBytes());
-		byte[] buf = new byte[3];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read(buf, 0, buf.length);
-		assertEquals("Read two chunk: 3 chars read",
-			3,ret);
-		assertEquals("Read one Chunk: corect data returned",
-			"12a",
-			new String(buf));
-	}
+  @Test
+  public void read1 () throws Exception
+  {}
 
-	@Test
-	public void readTwoChunkBufferMultipleReads() throws Exception {
-		InputStream empty = new ByteArrayInputStream("2\r\n12\r\n1\na\r\n0\r\n".getBytes());
-		byte[] buf = new byte[3];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read(buf, 0, 1);
-		assertEquals("Read two chunk-1: 1 chars read",
-			1,ret);
-		assertEquals("Read one Chunk-1: correct data returned",
-			'1',
-			buf[0]);
-		ret = cIS.read(buf, 0, 1);
-		assertEquals("Read two chunk-1: 1 chars read",
-			1,ret);
-		assertEquals("Read one Chunk-1: correct data returned",
-			'2',
-			buf[0]);
-		ret = cIS.read(buf, 0, 1);
-		assertEquals("Read two chunk-1: 1 chars read",
-			1,ret);
-		assertEquals("Read one Chunk-1: correct data returned",
-			'a',
-			buf[0]);
-	}
+  @Test
+  public void readTwoChunkBuffer () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes ());
+    byte [] buf = new byte [3];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read (buf, 0, buf.length);
+    assertEquals ("Read two chunk: 3 chars read", 3, ret);
+    assertEquals ("Read one Chunk: corect data returned", "12a", new String (buf));
+  }
 
-	@Test
-	public void readTwoChunkByteMultipleReads() throws Exception {
-		InputStream empty = new ByteArrayInputStream("2\r\n12\r\n1\na\r\n0\r\n".getBytes());
-		byte[] buf = new byte[3];
-		ChunkedInputStream cIS = new ChunkedInputStream(empty);
-		int ret = cIS.read();
-		assertEquals("Read one Chunk-1: correct data returned",
-			'1', ret);
-		ret = cIS.read();
-		assertEquals("Read one Chunk-1: correct data returned",
-			'2', ret);
-		ret = cIS.read();
-		assertEquals("Read one Chunk-1: correct data returned",
-			'a', ret);
-	}
+  @Test
+  public void readTwoChunkBufferMultipleReads () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes ());
+    byte [] buf = new byte [3];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read (buf, 0, 1);
+    assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
+    assertEquals ("Read one Chunk-1: correct data returned", '1', buf[0]);
+    ret = cIS.read (buf, 0, 1);
+    assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
+    assertEquals ("Read one Chunk-1: correct data returned", '2', buf[0]);
+    ret = cIS.read (buf, 0, 1);
+    assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
+    assertEquals ("Read one Chunk-1: correct data returned", 'a', buf[0]);
+  }
+
+  @Test
+  public void readTwoChunkByteMultipleReads () throws Exception
+  {
+    InputStream empty = new ByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes ());
+    byte [] buf = new byte [3];
+    ChunkedInputStream cIS = new ChunkedInputStream (empty);
+    int ret = cIS.read ();
+    assertEquals ("Read one Chunk-1: correct data returned", '1', ret);
+    ret = cIS.read ();
+    assertEquals ("Read one Chunk-1: correct data returned", '2', ret);
+    ret = cIS.read ();
+    assertEquals ("Read one Chunk-1: correct data returned", 'a', ret);
+  }
 
 }

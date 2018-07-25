@@ -32,9 +32,12 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +54,6 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
-import javax.mail.util.SharedFileInputStream;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,6 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -205,7 +205,7 @@ public final class HTTPHelper
           for (;;)
           {
             // First get hex chunk length; followed by CRLF
-            int nBlocklen = readChunkLen(aDataIS);
+            int nBlocklen = readChunkLen (aDataIS);
             // Zero length is end of chunks
             if (nBlocklen == 0)
               break;
@@ -218,7 +218,7 @@ public final class HTTPHelper
             aData = aNewData;
             nLength = nNewlen;
             // And now the CRLF after the chunk;
-            readTillNexLine(aDataIS);
+            readTillNexLine (aDataIS);
           }
           aMsg.headers ().setContentLength (nLength);
         }
@@ -351,7 +351,8 @@ public final class HTTPHelper
   }
 
   /**
-   * Read headers and payload from the passed input stream provider. For large file support, return {@link DataSource}. If is on, data is not read.
+   * Read headers and payload from the passed input stream provider. For large
+   * file support, return {@link DataSource}. If is on, data is not read.
    *
    * @param aISP
    *        The abstract input stream provider to use. May not be
@@ -395,16 +396,18 @@ public final class HTTPHelper
       aMsg.headers ().addHeader (aHeader.getName (), aHeader.getValue ());
     }
 
-    //Generate DataSource
+    // Generate DataSource
     // Put received data in a MIME body part
     final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
     final String sReceivedContentType = aReceivedContentType.toString ();
     byte [] aBytePayLoad = null;
     DataSource aPayload;
-    if (aMsg.attrs().getAsBoolean(MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON)) {
+    if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
+    {
       InputStream is = aIS;
       final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
-      if (sContentLength == null) {
+      if (sContentLength == null)
+      {
         // No "Content-Length" header present
         final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
         if (sTransferEncoding != null)
@@ -412,44 +415,47 @@ public final class HTTPHelper
           // Remove all whitespaces in the value
           if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
           {
-            // chunked encoding. Use also file backed stream as the message might be large
-            TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream(
-              new ChunkedInputStream(aIS), aMsg.getMessageID());
+            // chunked encoding. Use also file backed stream as the message
+            // might be large
+            TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
+                                                                                                    aMsg.getMessageID ());
             is = sis;
-            aMsg.setTempSharedFileInputStream(sis);
-          } else {
-            // No "Content-Length" and unsupported "Transfer-Encoding"
-            sendSimpleHTTPResponse(aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
-            throw new IOException("Transfer-Encoding unimplemented: " + sTransferEncoding);
+            aMsg.setTempSharedFileInputStream (sis);
           }
-        } else {
+          else
+          {
+            // No "Content-Length" and unsupported "Transfer-Encoding"
+            sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
+            throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
+          }
+        }
+        else
+        {
           // No "Content-Length" and no "Transfer-Encoding"
           sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
           throw new IOException ("Content-Length missing");
         }
       }
-      //Content-length present, or chunked encoding
-      aPayload = new InputStreamDataSource(is,
-        aMsg.getAS2From()==null ? "" : aMsg.getAS2From(),
-        sReceivedContentType,
-        true);
-    } else { //Large message support off
+      // Content-length present, or chunked encoding
+      aPayload = new InputStreamDataSource (is,
+                                            aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
+                                            sReceivedContentType,
+                                            true);
+    }
+    else
+    { // Large message support off
       // Read the message body - no Content-Transfer-Encoding handling
-      aBytePayLoad = readHttpPayload(aIS, aResponseHandler, aMsg);
-      aPayload = new ByteArrayDataSource(
-        aBytePayLoad,
-        sReceivedContentType,
-        null);
+      aBytePayLoad = readHttpPayload (aIS, aResponseHandler, aMsg);
+      aPayload = new ByteArrayDataSource (aBytePayLoad, sReceivedContentType, null);
     }
 
     // Dump on demand
     final IHTTPIncomingDumper aIncomingDumper = getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
-        aBytePayLoad!=null
-          ?aBytePayLoad
-          :"Large File Support: body was not read yet".getBytes(),
-        aMsg);
+                                           aBytePayLoad != null ? aBytePayLoad
+                                                                : "Large File Support: body was not read yet".getBytes (),
+                                           aMsg);
 
     return aPayload;
 
@@ -490,7 +496,8 @@ public final class HTTPHelper
    * @param aHeaders
    *        Headers - destination. May not be <code>null</code>.
    */
-  public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn, @Nonnull final HttpHeaderMap aHeaders) throws OpenAS2Exception
+  public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn,
+                                      @Nonnull final HttpHeaderMap aHeaders) throws OpenAS2Exception
   {
     for (final Map.Entry <String, List <String>> aConnHeader : aFromConn.getHeaderFields ().entrySet ())
     {
@@ -502,37 +509,40 @@ public final class HTTPHelper
   }
 
   /**
-   * Read chunk size (including the newline ending it). Discard any other data, e.g. headers that my be there.
+   * Read chunk size (including the newline ending it). Discard any other data,
+   * e.g. headers that my be there.
    *
-   * @param aIS - input stream to read from
+   * @param aIS
+   *        - input stream to read from
    * @return Chunk length
    * @throws IOException
    *         if stream ends during chunk length read
    */
-  public static int readChunkLen(InputStream aIS) throws IOException{
-    int nRes=0;
-    boolean headersStarted=false;
+  public static int readChunkLen (InputStream aIS) throws IOException
+  {
+    int nRes = 0;
+    boolean headersStarted = false;
     for (;;)
     {
       int ch = aIS.read ();
       if (ch < 0)
-        throw new EOFException();
+        throw new EOFException ();
       if (ch == '\n')
         break;
       if (ch >= 'a' && ch <= 'f')
         ch -= ('a' - 10);
       else
-      if (ch >= 'A' && ch <= 'F')
-        ch -= ('A' - 10);
-      else
-      if (ch >= '0' && ch <= '9')
-        ch -= '0';
-      else
-        if (ch == ';')
-          headersStarted=true;
-      else
-        continue;
-      if (! headersStarted)
+        if (ch >= 'A' && ch <= 'F')
+          ch -= ('A' - 10);
+        else
+          if (ch >= '0' && ch <= '9')
+            ch -= '0';
+          else
+            if (ch == ';')
+              headersStarted = true;
+            else
+              continue;
+      if (!headersStarted)
         nRes = (nRes * 16) + ch;
     }
     return nRes;
@@ -541,13 +551,16 @@ public final class HTTPHelper
   /**
    * Read up to (and including )CRLF.
    *
-   * @param aIS - input stream to read from
+   * @param aIS
+   *        - input stream to read from
    * @throws IOException
    *         if stream ends during chunk length read
    */
-  public static void readTillNexLine(InputStream aIS) throws IOException {
-    while (true) {
-      final int n = aIS.read();
+  public static void readTillNexLine (InputStream aIS) throws IOException
+  {
+    while (true)
+    {
+      final int n = aIS.read ();
       if (n == '\n')
         break;
     }

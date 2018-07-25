@@ -114,8 +114,10 @@ public final class MainSendToMendelsonTestServer
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    //aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
-    aRequest.setData (new DataHandler(new FileDataSource(new File ("src/test/resources/mendelson/testcontent.attachment"))));
+    // aRequest.setData (new File
+    // ("src/test/resources/mendelson/testcontent.attachment"),
+    // StandardCharsets.ISO_8859_1);
+    aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message

@@ -114,5 +114,8 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
     }
   }
 
-  public Socket getSocket(){return m_aSocket;}
+  public Socket getSocket ()
+  {
+    return m_aSocket;
+  }
 }

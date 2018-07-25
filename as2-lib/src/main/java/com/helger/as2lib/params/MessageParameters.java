@@ -49,7 +49,10 @@ public class MessageParameters extends AbstractParameterParser
   public static final String KEY_HEADERS = "headers";
   public static final String KEY_CONTENT_DISPOSITION = "content-disposition";
 
-  /** Attributes for large file support, i.e. avoid holding all file data in memory */
+  /**
+   * Attributes for large file support, i.e. avoid holding all file data in
+   * memory
+   */
   public static final String ATTR_LARGE_FILE_SUPPORT_ON = "largefileon";
   public static final String ATTR_STORED_FILE_NAME = "storedfilename";
 
