@@ -95,8 +95,13 @@ public final class CPartnershipIDs
   public static final String PA_PROTOCOL = "protocol";
   /** Subject sent in messages */
   public static final String PA_SUBJECT = "subject";
-  /** optional content transfer encoding value for outgoing messages */
-  public static final String PA_CONTENT_TRANSFER_ENCODING = "content_transfer_encoding";
+  /**
+   * optional content transfer encoding value for outgoing messages. Legacy
+   * name.
+   */
+  public static final String PA_CONTENT_TRANSFER_ENCODING_SEND = "content_transfer_encoding";
+  @Deprecated
+  public static final String PA_CONTENT_TRANSFER_ENCODING = PA_CONTENT_TRANSFER_ENCODING_SEND;
   /**
    * optional content transfer encoding value for incoming messages if not
    * specified

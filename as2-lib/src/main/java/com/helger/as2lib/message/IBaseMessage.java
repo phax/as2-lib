@@ -51,30 +51,43 @@ import com.helger.commons.http.HttpHeaderMap;
  */
 public interface IBaseMessage extends Serializable
 {
+  /**
+   * @return Mutable custom attribute map. Never <code>null</code>.
+   */
   @Nonnull
   @ReturnsMutableObject
   IStringMap attrs ();
 
+  /**
+   * @return Mutable HTTP header map. Never <code>null</code>.
+   */
+  @Nonnull
+  @ReturnsMutableObject
+  HttpHeaderMap headers ();
+
   @Nullable
   default String getHeader (@Nonnull final String sName)
   {
-    return getHeader (sName, ", ");
+    return getHeaderCombined (sName, ", ");
   }
 
   @Nullable
-  default String getHeader (@Nonnull final String sName, @Nullable final String sDelimiter)
+  default String getHeaderCombined (@Nonnull final String sName, @Nullable final String sDelimiter)
   {
     return headers ().getHeaderCombined (sName, sDelimiter);
+  }
+
+  @Nullable
+  default String getHeaderOrDefault (@Nonnull final String sName, @Nullable final String sDefault)
+  {
+    final String ret = getHeader (sName);
+    return ret != null ? ret : sDefault;
   }
 
   default boolean containsHeader (@Nullable final String sName)
   {
     return headers ().containsHeaders (sName);
   }
-
-  @Nonnull
-  @ReturnsMutableObject
-  HttpHeaderMap headers ();
 
   /**
    * @return Special message ID header
@@ -108,7 +121,7 @@ public interface IBaseMessage extends Serializable
   }
 
   @Nonnull
-  @ReturnsMutableObject ("Design")
+  @ReturnsMutableObject
   Partnership partnership ();
 
   void setPartnership (@Nonnull Partnership aPartnership);

@@ -255,10 +255,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                                       aIOErr.toString ());
 
         LOGGER.info ("copied " +
-                        aFile.getAbsolutePath () +
-                        " to pending folder : " +
-                        aPendingFile.getAbsolutePath () +
-                        aMsg.getLoggingText ());
+                     aFile.getAbsolutePath () +
+                     " to pending folder : " +
+                     aPendingFile.getAbsolutePath () +
+                     aMsg.getLoggingText ());
       }
 
       // If the Sent Directory option is set, move the transmitted file to
@@ -273,10 +273,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
           LOGGER.info ("moved " +
-                          aFile.getAbsolutePath () +
-                          " to " +
-                          aSentFile.getAbsolutePath () +
-                          aMsg.getLoggingText ());
+                       aFile.getAbsolutePath () +
+                       " to " +
+                       aSentFile.getAbsolutePath () +
+                       aMsg.getLoggingText ());
 
         }
         catch (final IOException ex)
@@ -356,9 +356,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (aByteSource.getAsDataHandler ());
 
       // Headers must be set AFTER the DataHandler
-      final String sEncodeType = aMsg.partnership ()
-                                     .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
-      aBody.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sEncodeType);
+      final String sCTE = aMsg.partnership ()
+                              .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+      aBody.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
 
       // below statement is not filename related, just want to make it
       // consist with the parameter "mimetype="application/EDI-X12""

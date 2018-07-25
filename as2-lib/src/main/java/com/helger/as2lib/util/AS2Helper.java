@@ -277,6 +277,7 @@ public final class AS2Helper
     {
       aMDN.headers ().setHeader (CHttpHeader.SUBJECT, "Your Requested MDN Response");
     }
+
     aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.attrs ()
         .putIn (AS2MessageMDN.MDNA_REPORTING_UA,

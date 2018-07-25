@@ -696,24 +696,85 @@ public class Partnership implements Serializable
     return setAttribute (CPartnershipIDs.PA_SUBJECT, sValue);
   }
 
+  /**
+   * Get the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sDefault
+   *        Default to be returned if none is present. May be <code>null</code>.
+   * @return The partnership Content-Transfer-Encoding or the provided default
+   *         value.
+   * @deprecated Use {@link #getContentTransferEncodingSend(String)} instead
+   */
+  @Deprecated
   @Nullable
   public String getContentTransferEncoding (@Nullable final String sDefault)
   {
-    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sDefault);
+    return getContentTransferEncodingSend (sDefault);
   }
 
+  /**
+   * Get the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sDefault
+   *        Default to be returned if none is present. May be <code>null</code>.
+   * @return The partnership Content-Transfer-Encoding or the provided default
+   *         value.
+   */
+  @Nullable
+  public String getContentTransferEncodingSend (@Nullable final String sDefault)
+  {
+    return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_SEND, sDefault);
+  }
+
+  /**
+   * Set the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sValue
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   * @deprecated Use {@link #setContentTransferEncodingSend(String)} instead
+   */
+  @Deprecated
   @Nonnull
   public EChange setContentTransferEncoding (@Nullable final String sValue)
   {
-    return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING, sValue);
+    return setContentTransferEncodingSend (sValue);
   }
 
+  /**
+   * Set the Content-Transfer-Encoding for sending messages.
+   *
+   * @param sValue
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
+  @Nonnull
+  public EChange setContentTransferEncodingSend (@Nullable final String sValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_SEND, sValue);
+  }
+
+  /**
+   * Get the Content-Transfer-Encoding for receiving messages.
+   *
+   * @param sDefault
+   *        Default to be returned if none is present. May be <code>null</code>.
+   * @return The partnership Content-Transfer-Encoding or the provided default
+   *         value.
+   */
   @Nullable
   public String getContentTransferEncodingReceive (@Nullable final String sDefault)
   {
     return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_RECEIVE, sDefault);
   }
 
+  /**
+   * Set the Content-Transfer-Encoding for receiving messages.
+   *
+   * @param sValue
+   *        The value for this partnership. May be <code>null</code>.
+   * @return {@link EChange}
+   */
   @Nonnull
   public EChange setContentTransferEncodingReceive (@Nullable final String sValue)
   {

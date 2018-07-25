@@ -174,9 +174,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                       sMsgFilename;
 
       LOGGER.info ("Save Original MIC & message id information into folder '" +
-                      sPendingFolder +
-                      "'" +
-                      aMsg.getLoggingText ());
+                   sPendingFolder +
+                   "'" +
+                   aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
@@ -278,21 +278,21 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
-    final String sTransferEncoding = aMsg.partnership ()
-                                         .getContentTransferEncoding (EContentTransferEncoding.AS2_DEFAULT.getID ());
-    aCompressedGenerator.setContentTransferEncoding (sTransferEncoding);
+    final String sCTE = aMsg.partnership ()
+                            .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    aCompressedGenerator.setContentTransferEncoding (sCTE);
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
-    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sTransferEncoding);
+    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compressed data with " +
-                       eCompressionType +
-                       " to " +
-                       aCompressedBodyPart.getContentType () +
-                       ":" +
-                       aMsg.getLoggingText ());
+                    eCompressionType +
+                    " to " +
+                    aCompressedBodyPart.getContentType () +
+                    ":" +
+                    aMsg.getLoggingText ());
 
     return aCompressedBodyPart;
   }
@@ -368,11 +368,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signed data with " +
-                         eSignAlgorithm +
-                         " to " +
-                         aDataBP.getContentType () +
-                         ":" +
-                         aMsg.getLoggingText ());
+                      eSignAlgorithm +
+                      " to " +
+                      aDataBP.getContentType () +
+                      ":" +
+                      aMsg.getLoggingText ());
     }
 
     if (eCompressionType != null && !bCompressBeforeSign)
@@ -396,11 +396,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypted data with " +
-                         eCryptAlgorithm +
-                         " to " +
-                         aDataBP.getContentType () +
-                         ":" +
-                         aMsg.getLoggingText ());
+                      eCryptAlgorithm +
+                      " to " +
+                      aDataBP.getContentType () +
+                      ":" +
+                      aMsg.getLoggingText ());
     }
 
     return aDataBP;
@@ -573,11 +573,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // what!
         // anyway, just log the warning message here.
         LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
-                        sOriginalMIC +
-                        "' return mic: '" +
-                        sReturnMIC +
-                        "'" +
-                        aMsg.getLoggingText ());
+                     sOriginalMIC +
+                     "' return mic: '" +
+                     sReturnMIC +
+                     "'" +
+                     aMsg.getLoggingText ());
       }
       else
       {
@@ -616,7 +616,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   /**
    * Handler for errors in MDN processing.
-   * 
+   *
    * @param aMsg
    *        The source message that was send
    * @param ex
