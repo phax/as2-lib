@@ -108,12 +108,12 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
           m_aExceptionCallbacks.forEach (x -> x.onException (ex));
           // No need to log
         }
-        catch (final Throwable t)
+        catch (final Exception ex)
         {
           if (m_aExceptionCallbacks.isNotEmpty ())
-            m_aExceptionCallbacks.forEach (x -> x.onException (t));
+            m_aExceptionCallbacks.forEach (x -> x.onException (ex));
           else
-            LOGGER.error ("Error executing action", t);
+            LOGGER.error ("Error executing action", ex);
         }
       }
     };

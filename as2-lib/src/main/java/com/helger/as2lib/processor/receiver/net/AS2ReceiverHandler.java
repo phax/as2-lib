@@ -341,13 +341,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           {
             aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
           }
-          catch (final ComponentNotFoundException ex)
+          catch (final ComponentNotFoundException | NoModuleException ex)
           {
             // No message processor found
-          }
-          catch (final NoModuleException ex)
-          {
-            // No module found in message processor
+            // or No module found in message processor
           }
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("sent MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());

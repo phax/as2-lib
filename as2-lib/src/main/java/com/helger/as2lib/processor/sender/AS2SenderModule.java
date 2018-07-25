@@ -548,13 +548,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException ex)
+      catch (final ComponentNotFoundException | NoModuleException ex)
       {
         // No message processor found
-      }
-      catch (final NoModuleException ex)
-      {
-        // No module found in message processor
+        // Or no module found in message processor
       }
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);

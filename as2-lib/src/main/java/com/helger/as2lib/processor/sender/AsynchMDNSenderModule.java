@@ -54,8 +54,8 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
-import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -161,13 +161,10 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       {
         getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException ex)
+      catch (final ComponentNotFoundException | NoModuleException ex)
       {
         // No message processor found
-      }
-      catch (final NoModuleException ex)
-      {
-        // No module found in message processor
+        // Or no module found in message processor
       }
     }
     finally

@@ -211,13 +211,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException ex)
+      catch (final ComponentNotFoundException | NoModuleException ex)
       {
         // No message processor found
-      }
-      catch (final NoModuleException ex)
-      {
-        // No module found in message processor
+        // Or no module found in message processor
       }
 
       // check if the mic (message integrity check) is correct
