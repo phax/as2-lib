@@ -166,7 +166,9 @@ public class AS2Client
     else
     {
       // We want an sync MDN
-      aPartnership.setAS2MDNTo (null);
+      // This field must be set
+      aPartnership.setAS2MDNTo (aSettings.getSenderAS2ID ());
+      // This field must be null - otherwise async MDN!
       aPartnership.setAS2ReceiptDeliveryOption (null);
     }
 
