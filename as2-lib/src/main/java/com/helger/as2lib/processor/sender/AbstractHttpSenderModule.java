@@ -145,11 +145,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 
       return aConn;
     }
-    catch (final IOException ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
-    catch (final GeneralSecurityException ex)
+    catch (final IOException | GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }

@@ -122,8 +122,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         if (sRetries == null)
         {
           LOGGER.warn ("The resending retry count is missing - default to " +
-                          IProcessorResenderModule.DEFAULT_RETRIES +
-                          "!");
+                       IProcessorResenderModule.DEFAULT_RETRIES +
+                       "!");
           sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
         }
 
@@ -208,11 +208,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
         LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
-      catch (final IOException ex)
-      {
-        throw WrappedOpenAS2Exception.wrap (ex);
-      }
-      catch (final ClassNotFoundException ex)
+      catch (final IOException | ClassNotFoundException ex)
       {
         throw WrappedOpenAS2Exception.wrap (ex);
       }

@@ -48,7 +48,7 @@ public final class AS2HttpHelper
   public static InternetHeaders getAsInternetHeaders (@Nonnull final HttpHeaderMap aHeaders)
   {
     final InternetHeaders ret = new InternetHeaders ();
-    aHeaders.forEachSingleHeader ( (n, v) -> ret.addHeader (n, v));
+    aHeaders.forEachSingleHeader (ret::addHeader);
     return ret;
   }
 }

@@ -81,8 +81,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition) throws OpenAS2Exception,
                                                                           IOException,
-                                                                          MessagingException,
-                                                                          HttpResponseException
+                                                                          MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -109,7 +108,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
-      aMdn.headers ().forEachSingleHeader ( (k, v) -> aHeaderWrapper.setHttpHeader (k, v));
+      aMdn.headers ().forEachSingleHeader (aHeaderWrapper::setHttpHeader);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();

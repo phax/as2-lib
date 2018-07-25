@@ -41,7 +41,6 @@ import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.CHttpHeader;
 
@@ -96,33 +95,38 @@ public class AS2Message extends AbstractMessage
   public boolean isRequestingMDN ()
   {
     // Requesting by partnership?
-    final Partnership aPartnership = partnership ();
-    final boolean bRequesting = aPartnership.getAS2MDNTo () != null;
-    if (bRequesting)
+    if (partnership ().getAS2MDNTo () != null)
       return true;
 
     // Requesting by request?
-    final boolean bRequested = containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO);
-    return bRequested;
+    if (containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO))
+      return true;
+
+    // Default: no
+    return false;
   }
 
   public boolean isRequestingAsynchMDN ()
   {
     // Requesting by partnership?
-    final Partnership aPartnership = partnership ();
     // Same as regular MDN + PA_AS2_RECEIPT_OPTION
-    final boolean bRequesting = aPartnership.getAS2MDNTo () != null &&
-                                aPartnership.getAS2ReceiptDeliveryOption () != null;
-    if (bRequesting)
+    if (partnership ().getAS2MDNTo () != null && partnership ().getAS2ReceiptDeliveryOption () != null)
       return true;
 
     // Requesting by request?
     // Same as regular MDN + HEADER_RECEIPT_DELIVERY_OPTION
-    final boolean bRequested = containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) &&
-                               containsHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION);
-    return bRequested;
+    if (containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) &&
+        containsHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION))
+      return true;
+
+    // Default: no
+    return false;
   }
 
+  /**
+   * @return The URL where to send the async MDN to. May be <code>null</code> if
+   *         no MDN or a sync MDN is needed.
+   */
   @Nullable
   public String getAsyncMDNurl ()
   {

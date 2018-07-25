@@ -422,7 +422,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Set all custom headers first (so that they are overridden with the
     // mandatory ones in here)
-    aMsg.headers ().forEachSingleHeader ( (k, v) -> aConn.setHttpHeader (k, v));
+    aMsg.headers ().forEachSingleHeader (aConn::setHttpHeader);
 
     aConn.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aConn.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);

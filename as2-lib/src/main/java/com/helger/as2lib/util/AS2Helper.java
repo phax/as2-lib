@@ -187,12 +187,7 @@ public final class AS2Helper
                                                                     bUseOldRFC3851MicAlgs);
         aMdn.setData (aSignedReport);
       }
-      catch (final CertificateNotFoundException ex)
-      {
-        ex.terminate ();
-        aMdn.setData (aReport);
-      }
-      catch (final KeyNotFoundException ex)
+      catch (final CertificateNotFoundException | KeyNotFoundException ex)
       {
         ex.terminate ();
         aMdn.setData (aReport);

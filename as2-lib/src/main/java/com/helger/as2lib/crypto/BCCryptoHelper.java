@@ -44,7 +44,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -133,8 +132,8 @@ public final class BCCryptoHelper implements ICryptoHelper
       s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
       LOGGER.info ("Using directory " +
-                      s_aDumpDecryptedDirectory.getAbsolutePath () +
-                      " to dump all decrypted body parts to.");
+                   s_aDumpDecryptedDirectory.getAbsolutePath () +
+                   " to dump all decrypted body parts to.");
     }
     else
       s_aDumpDecryptedDirectory = null;
@@ -254,12 +253,12 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.calculateMIC (" +
-                       eDigestAlgorithm +
-                       " [" +
-                       eDigestAlgorithm.getOID ().getId () +
-                       "], " +
-                       bIncludeHeaders +
-                       ")");
+                    eDigestAlgorithm +
+                    " [" +
+                    eDigestAlgorithm.getOID ().getId () +
+                    "], " +
+                    bIncludeHeaders +
+                    ")");
 
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
@@ -343,9 +342,9 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.decrypt; X509 subject=" +
-                       aX509Cert.getSubjectX500Principal ().getName () +
-                       "; forceDecrypt=" +
-                       bForceDecrypt);
+                    aX509Cert.getSubjectX500Principal ().getName () +
+                    "; forceDecrypt=" +
+                    bForceDecrypt);
 
     // Make sure the data is encrypted
     if (!bForceDecrypt && !isEncrypted (aPart))
@@ -383,9 +382,9 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.encrypt; X509 subject=" +
-                       aX509Cert.getSubjectX500Principal ().getName () +
-                       "; algorithm=" +
-                       eAlgorithm);
+                    aX509Cert.getSubjectX500Principal ().getName () +
+                    "; algorithm=" +
+                    eAlgorithm);
 
     // Check if the certificate is expired or active.
     aX509Cert.checkValidity ();
@@ -419,11 +418,11 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.sign; X509 subject=" +
-                       aX509Cert.getSubjectX500Principal ().getName () +
-                       "; algorithm=" +
-                       eAlgorithm +
-                       "; includeCertificateInSignedContent=" +
-                       bIncludeCertificateInSignedContent);
+                    aX509Cert.getSubjectX500Principal ().getName () +
+                    "; algorithm=" +
+                    eAlgorithm +
+                    "; includeCertificateInSignedContent=" +
+                    bIncludeCertificateInSignedContent);
 
     // Check if the certificate is expired or active.
     aX509Cert.checkValidity ();
@@ -480,7 +479,6 @@ public final class BCCryptoHelper implements ICryptoHelper
   private static X509Certificate _verifyFindCertificate (@Nullable final X509Certificate aX509Cert,
                                                          final boolean bUseCertificateInBodyPart,
                                                          @Nonnull final SMIMESignedParser aSignedParser) throws CMSException,
-                                                                                                         CertificateException,
                                                                                                          GeneralSecurityException
   {
     X509Certificate aRealX509Cert = aX509Cert;
@@ -509,9 +507,9 @@ public final class BCCryptoHelper implements ICryptoHelper
         if (aX509Cert != null && !aX509Cert.equals (aCert))
           if (LOGGER.isWarnEnabled ())
             LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
-                            aX509Cert +
-                            " differs from certficate contained in message\n" +
-                            aCert);
+                         aX509Cert +
+                         " differs from certficate contained in message\n" +
+                         aCert);
 
         aRealX509Cert = aCert;
       }
@@ -535,11 +533,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.verify; X509 subject=" +
-                       (aX509Cert == null ? "null" : aX509Cert.getSubjectX500Principal ().getName ()) +
-                       "; useCertificateInBodyPart=" +
-                       bUseCertificateInBodyPart +
-                       "; forceVerify=" +
-                       bForceVerify);
+                    (aX509Cert == null ? "null" : aX509Cert.getSubjectX500Principal ().getName ()) +
+                    "; useCertificateInBodyPart=" +
+                    bUseCertificateInBodyPart +
+                    "; forceVerify=" +
+                    bForceVerify);
 
     // Make sure the data is signed
     if (!bForceVerify && !isSigned (aPart))
@@ -556,7 +554,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug (aRealX509Cert == aX509Cert ? "Verifying signature using the provided certificate (partnership)"
-                                                  : "Verifying signature using the certificate contained in the MIME body part");
+                                               : "Verifying signature using the certificate contained in the MIME body part");
 
     // Check if the certificate is expired or active.
     aRealX509Cert.checkValidity ();
