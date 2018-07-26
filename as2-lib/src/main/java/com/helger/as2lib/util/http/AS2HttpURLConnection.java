@@ -42,18 +42,20 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 
+import com.helger.commons.http.HttpHeaderMap;
+
 /**
- * Http connection, Implemented as HttpURLConnection.
+ * AS2 Http connection, Implemented as HttpURLConnection.
  *
  * @author Ziv Harpaz
  */
 public class AS2HttpURLConnection implements IAS2HttpConnection
 {
-  private HttpURLConnection httpURLConnection;
+  private final HttpURLConnection m_aHttpURLConnection;
 
-  public AS2HttpURLConnection (HttpURLConnection connection)
+  public AS2HttpURLConnection (@Nonnull final HttpURLConnection aConnection)
   {
-    httpURLConnection = connection;
+    m_aHttpURLConnection = aConnection;
   }
 
   /**
@@ -64,9 +66,9 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    * @param sValue
    *        Header value
    */
-  public void setHttpHeader (@Nonnull String sName, @Nonnull String sValue)
+  public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    httpURLConnection.setRequestProperty (sName, sValue);
+    m_aHttpURLConnection.setRequestProperty (sName, sValue);
   }
 
   /**
@@ -74,7 +76,7 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    */
   public URL getURL ()
   {
-    return httpURLConnection.getURL ();
+    return m_aHttpURLConnection.getURL ();
   }
 
   /**
@@ -82,7 +84,7 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    */
   public OutputStream getOutputStream () throws IOException
   {
-    return httpURLConnection.getOutputStream ();
+    return m_aHttpURLConnection.getOutputStream ();
   }
 
   /**
@@ -90,7 +92,7 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    */
   public InputStream getInputStream () throws IOException
   {
-    return httpURLConnection.getInputStream ();
+    return m_aHttpURLConnection.getInputStream ();
   }
 
   /**
@@ -98,7 +100,7 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    */
   public int getResponseCode () throws IOException
   {
-    return httpURLConnection.getResponseCode ();
+    return m_aHttpURLConnection.getResponseCode ();
   }
 
   /**
@@ -106,15 +108,23 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    */
   public String getResponseMessage () throws IOException
   {
-    return httpURLConnection.getResponseMessage ();
+    return m_aHttpURLConnection.getResponseMessage ();
   }
 
   /**
    * Get the headers of the request
    */
-  public Map <String, List <String>> getHeaderFields ()
+  @Nonnull
+  public HttpHeaderMap getHeaderFields ()
   {
-    return httpURLConnection.getHeaderFields ();
+    final HttpHeaderMap ret = new HttpHeaderMap ();
+    for (final Map.Entry <String, List <String>> aEntry : m_aHttpURLConnection.getHeaderFields ().entrySet ())
+    {
+      final String sName = aEntry.getKey ();
+      for (final String sValue : aEntry.getValue ())
+        ret.addHeader (sName, sValue);
+    }
+    return ret;
   }
 
   /**
@@ -122,6 +132,6 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
    */
   public void disconnect ()
   {
-    httpURLConnection.disconnect ();
+    m_aHttpURLConnection.disconnect ();
   }
 }

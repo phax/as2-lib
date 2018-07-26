@@ -30,7 +30,6 @@ public final class HTTPHelperTest
   private String m_sRegularMessage;
   private String m_sChunkedMessage;
   private String m_sRegularMessageBody;
-  private String m_sChunkedMessageBody;
   private String m_sNoLengthMessage;
   private String m_sBadTransferEncodingMessage;
 

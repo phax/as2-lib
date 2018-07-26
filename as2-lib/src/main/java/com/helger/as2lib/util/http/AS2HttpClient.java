@@ -39,16 +39,13 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -72,6 +69,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.EHttpMethod;
+import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Http connection, Implemented as HttpClient.
@@ -85,11 +83,11 @@ public class AS2HttpClient implements IAS2HttpConnection
   private PipedOutputStream m_aPipedOutputStream;
   private CloseableHttpClient m_aCloseableHttpClient;
   private CloseableHttpResponse m_aCloseableHttpResponse;
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AS2HttpClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpClient.class);
 
   public AS2HttpClient (@Nonnull @Nonempty final String sUrl,
-                        final int iConnectTimeout,
-                        final int iReadTimeout,
+                        final int nConnectTimeout,
+                        final int nReadTimeout,
                         @Nonnull final EHttpMethod eRequestMethod,
                         @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
@@ -97,15 +95,15 @@ public class AS2HttpClient implements IAS2HttpConnection
     {
       // set configuration
       final RequestConfig.Builder aConfBuilder = RequestConfig.custom ()
-                                                              .setConnectionRequestTimeout (iConnectTimeout)
-                                                              .setConnectTimeout (iConnectTimeout)
-                                                              .setSocketTimeout (iReadTimeout);
+                                                              .setConnectionRequestTimeout (nConnectTimeout)
+                                                              .setConnectTimeout (nConnectTimeout)
+                                                              .setSocketTimeout (nReadTimeout);
       // add proxy if exists
-      setProxyToRequestConfig (aConfBuilder, aProxy);
+      _setProxyToRequestConfig (aConfBuilder, aProxy);
       final RequestConfig aConf = aConfBuilder.build ();
       final URI aUri = new URI (sUrl);
       final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ();
-      if (aUri.getScheme ().toLowerCase ().equals ("https"))
+      if (aUri.getScheme ().toLowerCase (Locale.ROOT).equals ("https"))
       {
         // Create SSL context
         final SSLContext aSSLCtx = AbstractHttpSenderModule.createSSLContext ();
@@ -116,9 +114,9 @@ public class AS2HttpClient implements IAS2HttpConnection
       m_aCloseableHttpClient = aClientBuilder.build ();
       m_aRequestBuilder = RequestBuilder.create (eRequestMethod.getName ()).setUri (aUri).setConfig (aConf);
     }
-    catch (java.net.URISyntaxException | GeneralSecurityException e)
+    catch (final URISyntaxException | GeneralSecurityException e)
     {
-      s_aLogger.error ("Exception in AS2HttpClient constructor: ", e.getMessage ());
+      LOGGER.error ("Exception in AS2HttpClient constructor", e);
       throw new OpenAS2Exception (e.getMessage ());
     }
   }
@@ -147,10 +145,10 @@ public class AS2HttpClient implements IAS2HttpConnection
       uri = m_aRequestBuilder.getUri ();
       return uri.toURL ();
     }
-    catch (IllegalArgumentException | MalformedURLException e)
+    catch (final Exception e)
     {
-      if (s_aLogger.isErrorEnabled ())
-        s_aLogger.error ("Failed to get URL from connection, URI: " + (uri == null ? "null" : uri.toASCIIString ()));
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Failed to get URL from connection, URI: " + (uri == null ? "null" : uri.toASCIIString ()));
       throw new OpenAS2Exception (e.getCause ());
     }
   }
@@ -169,15 +167,15 @@ public class AS2HttpClient implements IAS2HttpConnection
       m_aPipedOutputStream = new PipedOutputStream (m_aPipedInputStream);
     }
     m_aRequestBuilder.setEntity (new InputStreamEntity (m_aPipedInputStream));
-    sendInBackground ();
+    _sendInBackground ();
     return m_aPipedOutputStream;
   }
 
   /**
-   * send the request in background, allowing the forground to write to the
+   * send the request in background, allowing the foreground to write to the
    * OutputStream
    */
-  private void sendInBackground ()
+  private void _sendInBackground ()
   {
     final Thread aSenderThread = new Thread ( () -> {
       try
@@ -256,7 +254,7 @@ public class AS2HttpClient implements IAS2HttpConnection
   /**
    * Get the headers of the request
    */
-  public Map <String, List <String>> getHeaderFields () throws OpenAS2Exception
+  public HttpHeaderMap getHeaderFields () throws OpenAS2Exception
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
@@ -264,13 +262,9 @@ public class AS2HttpClient implements IAS2HttpConnection
       throw new OpenAS2Exception ("No response as message was not yet sent");
     }
     final Header [] headers = m_aCloseableHttpResponse.getAllHeaders ();
-    final Map <String, List <String>> res = new HashMap <> ();
+    final HttpHeaderMap res = new HttpHeaderMap ();
     for (final Header h : headers)
-    {
-      final List <String> values = new LinkedList <> ();
-      values.add (h.getValue ());
-      res.put (h.getName (), values);
-    }
+      res.addHeader (h.getName (), h.getValue ());
     return res;
   }
 
@@ -288,8 +282,8 @@ public class AS2HttpClient implements IAS2HttpConnection
     }
     catch (final Exception e)
     {
-      if (s_aLogger.isErrorEnabled ())
-        s_aLogger.error ("Exception while closing HttpClient connection: " + this.toString ());
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Exception while closing HttpClient connection: " + this.toString ());
     }
   }
 
@@ -301,8 +295,8 @@ public class AS2HttpClient implements IAS2HttpConnection
    * @param aProxy
    *        My by null, in such case nothing is done.
    */
-  private static void setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
-                                               @Nullable final Proxy aProxy)
+  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
+                                                @Nullable final Proxy aProxy)
   {
     try
     {
@@ -320,19 +314,23 @@ public class AS2HttpClient implements IAS2HttpConnection
           }
           else
           {
-            s_aLogger.debug ("No address in proxy:{}-{}",
-                             aProxy.address (),
-                             (null != aProxy.type () ? aProxy.type ().name () : "null"));
+            if (LOGGER.isDebugEnabled ())
+              LOGGER.debug ("No address in proxy:" +
+                            aProxy.address () +
+                            "-" +
+                            (null != aProxy.type () ? aProxy.type ().name () : "null"));
           }
         }
       }
     }
     catch (final Exception e)
     {
-      final String aMessage = String.format ("Exception while setting proxy. Continue without proxy. aProxy:%s-%s",
-                                             aProxy.address (),
-                                             (null != aProxy.type () ? aProxy.type ().name () : "null"));
-      s_aLogger.error (aMessage, e);
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Exception while setting proxy. Continue without proxy. aProxy:" +
+                      aProxy.address () +
+                      "-" +
+                      (null != aProxy.type () ? aProxy.type ().name () : "null"),
+                      e);
     }
   }
 }

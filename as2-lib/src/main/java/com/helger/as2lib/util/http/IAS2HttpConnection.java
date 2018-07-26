@@ -36,12 +36,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Interface for Http connection, for set and get headers, content, etc.
@@ -61,39 +60,58 @@ public interface IAS2HttpConnection
   void setHttpHeader (@Nonnull String sName, @Nonnull String sValue);
 
   /**
-   * Get URL
+   * @return URL
+   * @throws OpenAS2Exception
+   *         in case of error
    */
   URL getURL () throws OpenAS2Exception;
 
   /**
-   * Get OutputStream
+   * @return OutputStream
+   * @throws IOException
+   *         in case of error
    */
   OutputStream getOutputStream () throws IOException;
 
   /**
-   * Get InputStream
+   * @return InputStream
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of error
    */
   InputStream getInputStream () throws OpenAS2Exception, IOException;
 
   /**
-   * Get response HTTP Status as integer
+   * @return response HTTP Status as integer
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of error
    */
   int getResponseCode () throws OpenAS2Exception, IOException;
 
   /**
-   * Get the response message
+   * @return the response message
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of error
    */
   String getResponseMessage () throws OpenAS2Exception, IOException;
+
+  /**
+   * @return the headers of the request
+   * @throws OpenAS2Exception
+   *         in case of error
+   */
+  @Nonnull
+  HttpHeaderMap getHeaderFields () throws OpenAS2Exception;
 
   /**
    * Close the connection
    */
   void disconnect ();
-
-  /**
-   * Get the headers of the request
-   */
-  Map <String, List <String>> getHeaderFields () throws OpenAS2Exception;
 
   default public void send (final InputStream toSend) throws OpenAS2Exception, IOException
   {

@@ -256,9 +256,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                          aPartnership.getEncryptAlgorithm () != null ||
                                          aPartnership.getCompressionType () != null;
 
-    final String sMIC = AS2Helper.getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                                                   aDispositionOptions.getFirstMICAlg (),
-                                                                   bIncludeHeadersInMIC);
+    final String sMIC = AS2Helper.getCryptoHelper ()
+                                 .calculateMIC (aMsg.getData (),
+                                                aDispositionOptions.getFirstMICAlg (),
+                                                bIncludeHeadersInMIC);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calculated MIC: '" + sMIC + "'");
 
@@ -365,12 +366,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
 
       // Main signing
-      aDataBP = AS2Helper.getCryptoHelper ().sign (aDataBP,
-                                                   aSenderCert,
-                                                   aSenderKey,
-                                                   eSignAlgorithm,
-                                                   bIncludeCertificateInSignedContent,
-                                                   bUseRFC3851MICAlg);
+      aDataBP = AS2Helper.getCryptoHelper ()
+                         .sign (aDataBP,
+                                aSenderCert,
+                                aSenderKey,
+                                eSignAlgorithm,
+                                bIncludeCertificateInSignedContent,
+                                bUseRFC3851MICAlg);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signed data with " +
@@ -490,7 +492,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-      HTTPHelper.copyHttpHeaders (aConn, aMDN.headers ());
+      aMDN.headers ().addAllHeaders (aConn.getHeaderFields ());
 
       // Receive the MDN data
       final InputStream aConnIS = aConn.getInputStream ();
@@ -649,9 +651,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Create the HTTP connection
     final String sUrl = aPartnership.getAS2URL ();
-    final boolean bOutput = true;
-    final boolean bInput = true;
-    final boolean bUseCaches = false;
     final EHttpMethod eRequestMethod = EHttpMethod.POST;
     // decide on the connection type to use according to the MimeBodyPart:
     // If it contains the data, (and no DataHandler), then use HttpUrlClient,
@@ -659,6 +658,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final IAS2HttpConnection aConn;
     if (!getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
     {
+      final boolean bOutput = true;
+      final boolean bInput = true;
+      final boolean bUseCaches = false;
       aConn = getHttpURLConnection (sUrl, bOutput, bInput, bUseCaches, eRequestMethod, getSession ().getHttpProxy ());
     }
     else
@@ -712,7 +714,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       }
       else
-      {// HttpClient option
+      {
+        // HttpClient option
         // Transfer the data
         final StopWatch aSW = StopWatch.createdStarted ();
         aConn.send (aMsgIS);

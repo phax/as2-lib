@@ -39,8 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -59,7 +57,6 @@ import javax.mail.internet.InternetHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.MessageParameters;
@@ -465,7 +462,7 @@ public final class HTTPHelper
 
   /**
    * Send a simple HTTP response that only contains the HTTP status code and the
-   * respective descriptive text.
+   * respective descriptive text. An empty header map us used.
    *
    * @param aResponseHandler
    *        The response handler to be used.
@@ -486,28 +483,6 @@ public final class HTTPHelper
       aData.write (sHTTPLine.getBytes (CHttp.HTTP_CHARSET));
 
       aResponseHandler.sendHttpResponse (nResponseCode, new HttpHeaderMap (), aData);
-    }
-  }
-
-  /**
-   * Copy headers from an HTTP connection to an InternetHeaders object
-   *
-   * @param aFromConn
-   *        Connection - source. May not be <code>null</code>.
-   * @param aHeaders
-   *        Headers - destination. May not be <code>null</code>.
-   * @throws OpenAS2Exception
-   *         in case of error
-   */
-  public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn,
-                                      @Nonnull final HttpHeaderMap aHeaders) throws OpenAS2Exception
-  {
-    for (final Map.Entry <String, List <String>> aConnHeader : aFromConn.getHeaderFields ().entrySet ())
-    {
-      final String sHeaderName = aConnHeader.getKey ();
-      if (sHeaderName != null)
-        for (final String sHeaderValue : aConnHeader.getValue ())
-          aHeaders.addHeader (sHeaderName, sHeaderValue);
     }
   }
 

@@ -369,7 +369,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-    HTTPHelper.copyHttpHeaders (aConn, aMDN.headers ());
+    aMDN.headers ().addAllHeaders (aConn.getHeaderFields ());
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream aMDNStream = null;
