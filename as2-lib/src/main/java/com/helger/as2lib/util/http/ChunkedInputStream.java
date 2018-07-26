@@ -16,88 +16,97 @@ import org.slf4j.LoggerFactory;
  *
  * @author Ziv Harpaz
  */
-@SuppressWarnings ({ "WeakerAccess", "unused" })
 public class ChunkedInputStream extends FilterInputStream
 {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (ChunkedInputStream.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (ChunkedInputStream.class);
   /*
    * Number of bytes left in current chunk
    */
-  int nLeft = 0;
-  final InputStream aIS;
-  boolean afterFirstChunk = false;
+  private int m_nLeft = 0;
+  private final InputStream m_aIS;
+  private boolean m_bAfterFirstChunk = false;
 
-  public ChunkedInputStream (@Nonnull InputStream is)
+  public ChunkedInputStream (@Nonnull final InputStream aIS)
   {
-    super (is);
-    aIS = is;
+    super (aIS);
+    m_aIS = aIS;
   }
 
   @Override
   public final int read () throws IOException
   {
-    if (nLeft < 0)
+    if (m_nLeft < 0)
       return -1;
-    if (nLeft == 0)
+
+    if (m_nLeft == 0)
     {
-      if (afterFirstChunk)
+      if (m_bAfterFirstChunk)
       {
         // read the CRLF after chunk data
-        HTTPHelper.readTillNexLine (aIS);
+        HTTPHelper.readTillNexLine (m_aIS);
       }
       else
       {
-        afterFirstChunk = true;
+        m_bAfterFirstChunk = true;
       }
-      nLeft = HTTPHelper.readChunkLen (aIS);
-      s_aLogger.debug ("Read chunk size:{}", nLeft);
+
+      m_nLeft = HTTPHelper.readChunkLen (m_aIS);
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Read chunk size: " + m_nLeft);
+
       // check for end of data
-      if (nLeft <= 0)
+      if (m_nLeft <= 0)
       {
         // No more chunks means EOF
-        nLeft = -1; // mark end of stream
+        m_nLeft = -1;
+        // mark end of stream
         return -1;
       }
     }
-    nLeft--;
+    m_nLeft--;
     return super.read ();
   }
 
   @Override
-  public final int read (@Nonnull byte [] b, int nOffset, int nLength) throws IOException
+  public final int read (@Nonnull final byte [] aBuf, final int nOffset, final int nLength) throws IOException
   {
-    if (nLeft < 0)
+    if (m_nLeft < 0)
       return -1;
-    int readCount = 0;
-    while (nLength > readCount)
+    int nReadCount = 0;
+    int nRealOffset = nOffset;
+    while (nLength > nReadCount)
     {
-      if (nLeft == 0)
+      if (m_nLeft == 0)
       {
-        if (afterFirstChunk)
+        if (m_bAfterFirstChunk)
         {
           // read the CRLF after chunk data
-          HTTPHelper.readTillNexLine (aIS);
+          HTTPHelper.readTillNexLine (m_aIS);
         }
         else
         {
-          afterFirstChunk = true;
+          m_bAfterFirstChunk = true;
         }
-        nLeft = HTTPHelper.readChunkLen (aIS);
-        s_aLogger.trace ("Read chunk size:{}", nLeft);
+
+        m_nLeft = HTTPHelper.readChunkLen (m_aIS);
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Read chunk size: " + m_nLeft);
+
         // check for end of data
-        if (nLeft <= 0)
+        if (m_nLeft <= 0)
         {
           // No more chunks means EOF
-          nLeft = -1; // mark end of stream
-          return readCount > 0 ? readCount : -1;
+          m_nLeft = -1;
+          // mark end of stream
+          return nReadCount > 0 ? nReadCount : -1;
         }
       }
-      int ret = super.read (b, nOffset, Math.min (nLength - readCount, nLeft));
-      nOffset += ret;
-      nLeft -= ret;
-      readCount += ret;
-    }
-    return readCount;
-  }
 
+      final int ret = super.read (aBuf, nRealOffset, Math.min (nLength - nReadCount, m_nLeft));
+      nRealOffset += ret;
+      m_nLeft -= ret;
+      nReadCount += ret;
+    }
+    return nReadCount;
+  }
 }

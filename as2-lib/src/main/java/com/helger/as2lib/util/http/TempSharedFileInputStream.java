@@ -38,12 +38,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
 import javax.mail.util.SharedFileInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.mutable.MutableLong;
 
 /**
  * Stores the content of the input {@link InputStream} in a temporary file, and
@@ -53,61 +56,16 @@ import com.helger.commons.io.file.FilenameHelper;
 public class TempSharedFileInputStream extends SharedFileInputStream
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (TempSharedFileInputStream.class);
-  private final File tempFile;
-  private final InputStream srcIS;
-  private final int num = 0;
 
-  private TempSharedFileInputStream (@Nonnull final File file, @Nonnull final InputStream is) throws IOException
-  {
-    super (file);
-    srcIS = is;
-    tempFile = file;
-  }
+  private final File m_aTempFile;
+  private final InputStream m_aSrcIS;
 
-  /**
-   * Stores the content of the input {@link InputStream} in a temporary file (in
-   * the system temporary directory, and opens {@link SharedFileInputStream} on
-   * that file.
-   *
-   * @param aIS
-   *        {@link InputStream} to read from
-   * @param name
-   *        name to use in the temporary file to link it to the delivered
-   *        message. May be null
-   * @return {@link TempSharedFileInputStream} on the created temporary file.
-   * @throws IOException
-   */
-  static TempSharedFileInputStream getTempSharedFileInputStream (@Nonnull final InputStream aIS,
-                                                                 final String name) throws IOException
+  private TempSharedFileInputStream (@Nonnull final File aFile,
+                                     @Nonnull @WillNotClose final InputStream aSrcIS) throws IOException
   {
-    final File aDest = storeContentToTempFile (aIS, name);
-    return new TempSharedFileInputStream (aDest, aIS);
-  }
-
-  /**
-   * Stores the content of the input {@link InputStream} in a temporary file (in
-   * the system temporary directory.
-   *
-   * @param aIS
-   *        {@link InputStream} to read from
-   * @param name
-   *        name to use in the temporary file to link it to the delivered
-   *        message. May be null
-   * @return The created {@link File}
-   * @throws IOException
-   */
-  protected static File storeContentToTempFile (@Nonnull final InputStream aIS, final String name) throws IOException
-  {
-    // create temp file and write steam content to it
-    // name may contain ":" on Windows and that would fail the tests!
-    final String suffix = null == name ? "tmp" : FilenameHelper.getAsSecureValidASCIIFilename (name);
-    final File aDest = File.createTempFile ("TempSharedFileInputStream", suffix);
-    try (final FileOutputStream aOS = new FileOutputStream (aDest))
-    {
-      final long transferred = org.apache.commons.io.IOUtils.copyLarge (aIS, aOS);
-      LOGGER.debug ("%l bytes copied to %s", transferred, aDest.getAbsolutePath ());
-      return aDest;
-    }
+    super (aFile);
+    m_aSrcIS = aSrcIS;
+    m_aTempFile = aFile;
   }
 
   /**
@@ -117,13 +75,15 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   @Override
   public void close () throws IOException
   {
-    LOGGER.debug ("close() called, doing nothing.");
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("close() called, doing nothing.");
   }
 
   /**
    * finalize - closes also the input stream, and deletes the backing file
    */
   @Override
+  // TODO get rid of this
   public void finalize () throws IOException
   {
     try
@@ -140,17 +100,74 @@ public class TempSharedFileInputStream extends SharedFileInputStream
 
   /**
    * closeAll - closes the input stream, and deletes the backing file
+   *
+   * @throws IOException
+   *         in case of error
    */
   public void closeAll () throws IOException
   {
-    srcIS.close ();
+    m_aSrcIS.close ();
     super.close ();
-    if (tempFile.exists ())
+    if (m_aTempFile.exists ())
     {
-      if (!tempFile.delete ())
+      if (!m_aTempFile.delete ())
       {
-        LOGGER.error ("Failed to delete file {}", tempFile.getAbsolutePath ());
+        LOGGER.error ("Failed to delete file {}", m_aTempFile.getAbsolutePath ());
       }
     }
+  }
+
+  /**
+   * Stores the content of the input {@link InputStream} in a temporary file (in
+   * the system temporary directory.
+   *
+   * @param aIS
+   *        {@link InputStream} to read from
+   * @param sName
+   *        name to use in the temporary file to link it to the delivered
+   *        message. May be null
+   * @return The created {@link File}
+   * @throws IOException
+   *         in case of IO error
+   */
+  @Nonnull
+  protected static File storeContentToTempFile (@Nonnull final InputStream aIS,
+                                                @Nonnull final String sName) throws IOException
+  {
+    // create temp file and write steam content to it
+    // name may contain ":" on Windows and that would fail the tests!
+    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (sName != null ? sName : "tmp");
+    final File aDestFile = File.createTempFile ("AS2TempSharedFileIS", sSuffix);
+
+    try (final FileOutputStream aOS = new FileOutputStream (aDestFile))
+    {
+      final MutableLong aCount = new MutableLong (0);
+      StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aCount);
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info (aCount.longValue () + " bytes copied to " + aDestFile.getAbsolutePath ());
+    }
+    return aDestFile;
+  }
+
+  /**
+   * Stores the content of the input {@link InputStream} in a temporary file (in
+   * the system temporary directory, and opens {@link SharedFileInputStream} on
+   * that file.
+   *
+   * @param aIS
+   *        {@link InputStream} to read from
+   * @param sName
+   *        name to use in the temporary file to link it to the delivered
+   *        message. May be null
+   * @return {@link TempSharedFileInputStream} on the created temporary file.
+   * @throws IOException
+   *         in case of IO error
+   */
+  @Nonnull
+  public static TempSharedFileInputStream getTempSharedFileInputStream (@Nonnull @WillNotClose final InputStream aIS,
+                                                                        @Nonnull final String sName) throws IOException
+  {
+    final File aDest = storeContentToTempFile (aIS, sName);
+    return new TempSharedFileInputStream (aDest, aIS);
   }
 }

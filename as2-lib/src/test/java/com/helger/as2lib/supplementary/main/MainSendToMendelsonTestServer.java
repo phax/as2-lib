@@ -35,8 +35,10 @@ package com.helger.as2lib.supplementary.main;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
+
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +55,6 @@ import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
 import com.helger.security.keystore.EKeyStoreType;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 
 /**
  * Test class to send an AS2 messages to the Mendelson test server.
@@ -121,8 +120,8 @@ public final class MainSendToMendelsonTestServer
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message
-    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings,
-                                                                                                    aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
+                                                        .sendSynchronous (aSettings, aRequest);
     if (aResponse.hasException ())
       LOGGER.info (aResponse.getAsString ());
 

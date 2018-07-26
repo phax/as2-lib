@@ -48,6 +48,7 @@ import javax.activation.DataSource;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.mail.Header;
@@ -205,7 +206,7 @@ public final class HTTPHelper
           for (;;)
           {
             // First get hex chunk length; followed by CRLF
-            int nBlocklen = readChunkLen (aDataIS);
+            final int nBlocklen = readChunkLen (aDataIS);
             // Zero length is end of chunks
             if (nBlocklen == 0)
               break;
@@ -417,8 +418,8 @@ public final class HTTPHelper
           {
             // chunked encoding. Use also file backed stream as the message
             // might be large
-            TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
-                                                                                                    aMsg.getMessageID ());
+            final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
+                                                                                                          aMsg.getMessageID ());
             is = sis;
             aMsg.setTempSharedFileInputStream (sis);
           }
@@ -495,6 +496,8 @@ public final class HTTPHelper
    *        Connection - source. May not be <code>null</code>.
    * @param aHeaders
    *        Headers - destination. May not be <code>null</code>.
+   * @throws OpenAS2Exception
+   *         in case of error
    */
   public static void copyHttpHeaders (@Nonnull final IAS2HttpConnection aFromConn,
                                       @Nonnull final HttpHeaderMap aHeaders) throws OpenAS2Exception
@@ -518,10 +521,10 @@ public final class HTTPHelper
    * @throws IOException
    *         if stream ends during chunk length read
    */
-  public static int readChunkLen (InputStream aIS) throws IOException
+  public static int readChunkLen (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {
     int nRes = 0;
-    boolean headersStarted = false;
+    boolean bHeadersStarted = false;
     for (;;)
     {
       int ch = aIS.read ();
@@ -539,10 +542,10 @@ public final class HTTPHelper
             ch -= '0';
           else
             if (ch == ';')
-              headersStarted = true;
+              bHeadersStarted = true;
             else
               continue;
-      if (!headersStarted)
+      if (!bHeadersStarted)
         nRes = (nRes * 16) + ch;
     }
     return nRes;
@@ -556,12 +559,14 @@ public final class HTTPHelper
    * @throws IOException
    *         if stream ends during chunk length read
    */
-  public static void readTillNexLine (InputStream aIS) throws IOException
+  public static void readTillNexLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {
     while (true)
     {
-      final int n = aIS.read ();
-      if (n == '\n')
+      final int ch = aIS.read ();
+      if (ch < 0)
+        throw new EOFException ();
+      if (ch == '\n')
         break;
     }
   }

@@ -1,52 +1,53 @@
 package com.helger.as2lib.util.http;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import javax.mail.util.SharedFileInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import javax.mail.util.SharedFileInputStream;
 
-public class TempSharedFileInputStreamTest
+import org.junit.Test;
+
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+
+/**
+ * Test class of class {@link TempSharedFileInputStream}.
+ * 
+ * @author Ziv Harpaz
+ */
+public final class TempSharedFileInputStreamTest
 {
-  @Before
-  public void setUp () throws Exception
-  {}
-
-  @After
-  public void tearDown () throws Exception
-  {}
-
   @Test
   public void testGetTempSharedFileInputStream () throws Exception
   {
-    String inData = "123456";
-    InputStream is = new ByteArrayInputStream (inData.getBytes ());
-    SharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName");
-
-    ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-    org.apache.commons.io.IOUtils.copy (sis, baos);
-    String res = baos.toString ();
-    assertEquals ("read the data", inData, res);
-    sis.close ();
+    final String inData = "123456";
+    try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ());
+        final SharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
+    {
+      final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
+      org.apache.commons.io.IOUtils.copy (sis, baos);
+      final String res = baos.toString ();
+      assertEquals ("read the data", inData, res);
+      sis.close ();
+    }
   }
 
   @Test
   public void testStoreContentToTempFile () throws Exception
   {
-    String inData = "123456";
-    String name = "xxy";
-    InputStream is = new ByteArrayInputStream (inData.getBytes ());
-    File file = TempSharedFileInputStream.storeContentToTempFile (is, name);
-    assertTrue ("Temp file exists", file.exists ());
-    assertTrue ("Temp file name includes given name", file.getName ().indexOf (name) > 0);
-    // noinspection ResultOfMethodCallIgnored
-    file.delete ();
+    final String inData = "123456";
+    final String name = "xxy";
+    try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ()))
+    {
+      final File file = TempSharedFileInputStream.storeContentToTempFile (is, name);
+      assertTrue ("Temp file exists", file.exists ());
+      assertTrue ("Temp file name includes given name", file.getName ().indexOf (name) > 0);
+      // noinspection ResultOfMethodCallIgnored
+      file.delete ();
+    }
   }
 
   @Test
@@ -54,13 +55,14 @@ public class TempSharedFileInputStreamTest
   {
     for (int i = 0; i < 10000; i++)
     {
-      String inData = "123456";
-      InputStream is = new ByteArrayInputStream (inData.getBytes ());
-      TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName");
-      int t = sis.read ();
-      assertEquals (t, inData.charAt (0));
-      sis.closeAll ();
-
+      final String inData = "123456";
+      try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ());
+          final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
+      {
+        final int t = sis.read ();
+        assertEquals (t, inData.charAt (0));
+        sis.closeAll ();
+      }
     }
   }
 }

@@ -71,47 +71,41 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
    *
    * @param aSocket
    *        Socket to read from. May not be <code>null</code>.
-   * @param nonUpwardClosing
+   * @param bNonUpwardClosing
    *        When true, closing the {@link InputStream} will not close the
    *        {@link Socket}
    */
-  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket, final boolean nonUpwardClosing)
+  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket, final boolean bNonUpwardClosing)
   {
     ValueEnforcer.notNull (aSocket, "Socket");
     m_aSocket = aSocket;
-    m_bNonUpwardClosing = nonUpwardClosing;
+    m_bNonUpwardClosing = bNonUpwardClosing;
   }
 
   /**
    * According to instance initialization, will either return the regular
    * {@link InputStream}, or a {@link NonClosingInputStream} that when closed,
    * will not close in source stream. This is useful when working with
-   * {@link java.net.SocketInputStream}, as close() on a socket stream closes
-   * the {@link Socket}
+   * <code>java.net.SocketInputStream</code> as close() on a socket stream
+   * closes the {@link Socket}
    *
    * @return {@link InputStream}
    * @throws IOException
+   *         in case of error
    */
   @Nonnull
   public InputStream getInputStream () throws IOException
   {
     if (m_bNonUpwardClosing)
-      return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocket.getInputStream ()));
+      return getNonUpwardClosingInputStream ();
     return StreamHelper.getBuffered (m_aSocket.getInputStream ());
   }
 
-  /**
-   * Returns an {@link InputStream}, that when closed, will not close in source
-   * stream. This is useful when working with
-   * {@link java.net.SocketInputStream}, as close() on a socket stream closes
-   * the {@link Socket}
-   *
-   * @return {@link InputStream}
-   * @throws IOException
-   */
   @Nonnull
   public InputStream getNonUpwardClosingInputStream () throws IOException
   {
+    // Use "NonClosing" internally to that the returned stream is easily
+    // discovered as "buffered"
     return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocket.getInputStream ()));
   }
 }

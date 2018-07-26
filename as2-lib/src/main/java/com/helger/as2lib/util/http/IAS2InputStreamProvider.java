@@ -56,8 +56,8 @@ public interface IAS2InputStreamProvider
   /**
    * Returns an {@link InputStream}, that when closed, will not close in source
    * stream. This is useful when working with
-   * {@link java.net.SocketInputStream}, as close() on a socket stream closes
-   * the {@link Socket}
+   * <code>java.net.SocketInputStream</code>, as close() on a socket stream
+   * closes the {@link Socket}
    *
    * @return Never <code>null</code>
    * @throws IOException
