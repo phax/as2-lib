@@ -44,6 +44,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -60,6 +61,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   private MimeBodyPart m_aData;
   private IMessageMDN m_aMDN;
+  private TempSharedFileInputStream m_TempSharedFileInputStream;
 
   public AbstractMessage ()
   {}
@@ -191,5 +193,16 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
     // write the message's MDN
     aOOS.writeObject (m_aMDN);
+  }
+
+  @Nullable
+  public TempSharedFileInputStream getTempSharedFileInputStream ()
+  {
+    return m_TempSharedFileInputStream;
+  }
+
+  public void setTempSharedFileInputStream (@Nullable final TempSharedFileInputStream aTempSharedFileInputStream)
+  {
+    m_TempSharedFileInputStream = aTempSharedFileInputStream;
   }
 }

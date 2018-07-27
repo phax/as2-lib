@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
+import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.CHttpHeader;
 
@@ -120,4 +121,9 @@ public interface IMessage extends IBaseMessage
   boolean isRequestingMDN ();
 
   boolean isRequestingAsynchMDN ();
+
+  @Nullable
+  TempSharedFileInputStream getTempSharedFileInputStream ();
+
+  void setTempSharedFileInputStream (@Nullable TempSharedFileInputStream m_TempSharedFileInputStream);
 }

@@ -76,7 +76,7 @@ public class ProcessorException extends OpenAS2Exception
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
     m_aProcessor = aProcessor;
-    m_aCauses = new CommonsArrayList<> (aCauses);
+    m_aCauses = new CommonsArrayList <> (aCauses);
   }
 
   @Nonnull

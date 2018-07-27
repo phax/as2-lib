@@ -109,10 +109,10 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     catch (final IOException ex)
     {
       LOGGER.error ("Failed to dump HTTP request to file " +
-                       aDestinationFile.getAbsolutePath () +
-                       " and message stub " +
-                       aMsg,
-                       ex);
+                    aDestinationFile.getAbsolutePath () +
+                    " and message stub " +
+                    aMsg,
+                    ex);
     }
   }
 

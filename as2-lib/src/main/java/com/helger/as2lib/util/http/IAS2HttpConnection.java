@@ -34,35 +34,87 @@ package com.helger.as2lib.util.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
+import java.io.OutputStream;
+import java.net.URL;
 
 import javax.annotation.Nonnull;
 
+import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.http.HttpHeaderMap;
+
 /**
- * Provider interface to retrieve an AS2 {@link InputStream}.
+ * Interface for Http connection, for set and get headers, content, etc.
  *
- * @author Philip Helger
+ * @author Ziv Harpaz
  */
-public interface IAS2InputStreamProvider
+public interface IAS2HttpConnection
 {
   /**
-   * @return Never <code>null</code>
-   * @throws IOException
-   *         In case of error
+   * Set an HTTP header
+   *
+   * @param sName
+   *        Header name
+   * @param sValue
+   *        Header value
    */
-  @Nonnull
-  InputStream getInputStream () throws IOException;
+  void setHttpHeader (@Nonnull String sName, @Nonnull String sValue);
 
   /**
-   * Returns an {@link InputStream}, that when closed, will not close in source
-   * stream. This is useful when working with
-   * <code>java.net.SocketInputStream</code>, as close() on a socket stream
-   * closes the {@link Socket}
-   *
-   * @return Never <code>null</code>
+   * @return URL
+   * @throws OpenAS2Exception
+   *         in case of error
+   */
+  URL getURL () throws OpenAS2Exception;
+
+  /**
+   * @return OutputStream
    * @throws IOException
-   *         In case of error
+   *         in case of error
+   */
+  OutputStream getOutputStream () throws IOException;
+
+  /**
+   * @return InputStream
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of error
+   */
+  InputStream getInputStream () throws OpenAS2Exception, IOException;
+
+  /**
+   * @return response HTTP Status as integer
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of error
+   */
+  int getResponseCode () throws OpenAS2Exception, IOException;
+
+  /**
+   * @return the response message
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of error
+   */
+  String getResponseMessage () throws OpenAS2Exception, IOException;
+
+  /**
+   * @return the headers of the request
+   * @throws OpenAS2Exception
+   *         in case of error
    */
   @Nonnull
-  InputStream getNonUpwardClosingInputStream () throws IOException;
+  HttpHeaderMap getHeaderFields () throws OpenAS2Exception;
+
+  /**
+   * Close the connection
+   */
+  void disconnect ();
+
+  default public void send (final InputStream toSend) throws OpenAS2Exception, IOException
+  {
+    throw new OpenAS2Exception ("Method not implemented in class " + this.getClass ().getName ());
+  }
 }

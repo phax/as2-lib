@@ -116,6 +116,9 @@ public class AS2ClientSettings implements Serializable
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
 
+  private boolean m_bLargeFileSupport = false; // avoid holding full file data
+                                               // in memory
+
   public AS2ClientSettings ()
   {}
 
@@ -686,5 +689,20 @@ public class AS2ClientSettings implements Serializable
   public HttpHeaderMap customHeaders ()
   {
     return m_aCustomHeaders;
+  }
+
+  public boolean isLargeFileSupport ()
+  {
+    return m_bLargeFileSupport;
+  }
+
+  /**
+   * @param bLargeFileSupport
+   *        <code>true</code> to enable support for large files, i.e. avoid
+   *        holding all file in memory
+   */
+  public void setLargeFileSupport (final boolean bLargeFileSupport)
+  {
+    m_bLargeFileSupport = bLargeFileSupport;
   }
 }
