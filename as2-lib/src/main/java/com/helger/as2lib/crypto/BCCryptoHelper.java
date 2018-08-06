@@ -135,9 +135,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     {
       s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
-      LOGGER.info ("Using directory " +
-                   s_aDumpDecryptedDirectory.getAbsolutePath () +
-                   " to dump all decrypted body parts to.");
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Using directory " +
+                     s_aDumpDecryptedDirectory.getAbsolutePath () +
+                     " to dump all decrypted AS2 body parts to.");
     }
     else
       s_aDumpDecryptedDirectory = null;
@@ -177,7 +179,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   /**
    * Set the security provider name to use.
-   * 
+   *
    * @param sSecurityProviderName
    *        The provider name. May neither be <code>null</code> nor empty.
    * @return this for chaining
@@ -264,7 +266,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
   @Nonnull
   @ReturnsMutableCopy
-  private static byte [] _getAsciiBytes (@Nonnull final String sString)
+  private static byte [] _getAllAsciiBytes (@Nonnull final String sString)
   {
     final char [] aChars = sString.toCharArray ();
     final int nLength = aChars.length;
@@ -300,11 +302,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (bIncludeHeaders)
     {
       // Start hashing the header
-      final byte [] aCRLF = _getAsciiBytes (CHttp.EOL);
+      final byte [] aCRLF = _getAllAsciiBytes (CHttp.EOL);
       final Enumeration <String> aHeaderLines = aPart.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {
-        aMessageDigest.update (_getAsciiBytes (aHeaderLines.nextElement ()));
+        aMessageDigest.update (_getAllAsciiBytes (aHeaderLines.nextElement ()));
         aMessageDigest.update (aCRLF);
       }
 

@@ -97,6 +97,9 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA");
 
+  public static final ECryptoAlgorithmSign DEFAULT_RFC_3851 = DIGEST_SHA1;
+  public static final ECryptoAlgorithmSign DEFAULT_RFC_5751 = DIGEST_SHA_256;
+
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
   private final String m_sBCAlgorithmName;

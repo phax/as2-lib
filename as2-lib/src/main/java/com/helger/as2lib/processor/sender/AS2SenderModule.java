@@ -59,7 +59,6 @@ import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionException;
-import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
@@ -245,21 +244,20 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   protected String calculateAndStoreMIC (@Nonnull final AS2Message aMsg) throws Exception
   {
     final Partnership aPartnership = aMsg.partnership ();
-    final String sDispositionOptions = aPartnership.getAS2MDNOptions ();
-    final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("DispositionOptions=" + aDispositionOptions);
 
     // Calculate and get the original mic
     final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null ||
                                          aPartnership.getEncryptAlgorithm () != null ||
                                          aPartnership.getCompressionType () != null;
 
+    // For sending, we need to use the Signing algorithm defined in the partnership
+    // If no valid algorithm is defined, fall back to the defaults
+    final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
+    final ECryptoAlgorithmSign eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrDefault (aPartnership.getSigningAlgorithm (),
+                                                                                            bUseRFC3851MICAlg ? ECryptoAlgorithmSign.DEFAULT_RFC_3851
+                                                                                                              : ECryptoAlgorithmSign.DEFAULT_RFC_5751);
     final String sMIC = AS2Helper.getCryptoHelper ()
-                                 .calculateMIC (aMsg.getData (),
-                                                aDispositionOptions.getFirstMICAlg (),
-                                                bIncludeHeadersInMIC);
+                                 .calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calculated MIC: '" + sMIC + "'");
 
