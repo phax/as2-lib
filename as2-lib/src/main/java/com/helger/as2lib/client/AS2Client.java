@@ -171,7 +171,7 @@ public class AS2Client
         // We want an sync MDN
 
         // This field must be set to a valid email address
-        aPartnership.setAS2MDNTo ("as2-lib@example.com");
+        aPartnership.setAS2MDNTo (aSettings.getSenderEmailAddress ());
         // This field must be null - otherwise async MDN!
         aPartnership.setAS2ReceiptDeliveryOption (null);
       }
