@@ -3,19 +3,21 @@ package com.helger.as2lib.util.http;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import javax.mail.util.SharedFileInputStream;
 
 import org.junit.Test;
 
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 
 /**
  * Test class of class {@link TempSharedFileInputStream}.
- * 
+ *
  * @author Ziv Harpaz
  */
 public final class TempSharedFileInputStreamTest
@@ -25,11 +27,11 @@ public final class TempSharedFileInputStreamTest
   {
     final String inData = "123456";
     try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ());
-        final SharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
+        final SharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName");
+        final NonBlockingByteArrayOutputStream baos = new NonBlockingByteArrayOutputStream ())
     {
-      final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-      org.apache.commons.io.IOUtils.copy (sis, baos);
-      final String res = baos.toString ();
+      StreamHelper.copyInputStreamToOutputStream (sis, baos);
+      final String res = baos.getAsString (StandardCharsets.ISO_8859_1);
       assertEquals ("read the data", inData, res);
       sis.close ();
     }
@@ -40,7 +42,7 @@ public final class TempSharedFileInputStreamTest
   {
     final String inData = "123456";
     final String name = "xxy";
-    try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ()))
+    try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes (StandardCharsets.ISO_8859_1)))
     {
       final File file = TempSharedFileInputStream.storeContentToTempFile (is, name);
       assertTrue ("Temp file exists", file.exists ());

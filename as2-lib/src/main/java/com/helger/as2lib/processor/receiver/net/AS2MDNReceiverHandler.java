@@ -118,10 +118,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
-      DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
-                                                             aResponseHandler,
-                                                             aMsg);
-      aData = org.apache.commons.io.IOUtils.toByteArray (aDataSourceBody.getInputStream ());
+      final DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
+                                                                   aResponseHandler,
+                                                                   aMsg);
+      aData = StreamHelper.getAllBytes (aDataSourceBody.getInputStream ());
 
       // Asynch MDN 2007-03-12
       // check if the requested URL is defined in attribute "as2_receipt_option"
@@ -293,7 +293,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       String sOriginalMIC;
       File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
+      try (
+          final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
       {
         // Get the original mic from the first line of pending information
         // file
