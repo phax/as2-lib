@@ -167,8 +167,8 @@ public class AS2Client
     else
     {
       // We want an sync MDN
-      // This field must be set
-      aPartnership.setAS2MDNTo (aSettings.getSenderAS2ID ());
+      // This field must be set to a valid email address
+      aPartnership.setAS2MDNTo ("as2-lib@example.com");
       // This field must be null - otherwise async MDN!
       aPartnership.setAS2ReceiptDeliveryOption (null);
     }
@@ -295,8 +295,8 @@ public class AS2Client
   }
 
   /**
-   * Callback method that is invoked before the main sending. This may be used
-   * to customize the message.
+   * Callback method that is invoked before the main sending. This may be used to
+   * customize the message.
    *
    * @param aSettings
    *        Client settings. Never <code>null</code>.
