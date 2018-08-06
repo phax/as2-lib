@@ -251,11 +251,22 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                          aPartnership.getCompressionType () != null;
 
     // For sending, we need to use the Signing algorithm defined in the partnership
-    // If no valid algorithm is defined, fall back to the defaults
-    final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
-    final ECryptoAlgorithmSign eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrDefault (aPartnership.getSigningAlgorithm (),
-                                                                                            bUseRFC3851MICAlg ? ECryptoAlgorithmSign.DEFAULT_RFC_3851
-                                                                                                              : ECryptoAlgorithmSign.DEFAULT_RFC_5751);
+    ECryptoAlgorithmSign eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (aPartnership.getSigningAlgorithm ());
+    if (eSigningAlgorithm == null)
+    {
+      // If no valid algorithm is defined, fall back to the defaults
+      final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
+      eSigningAlgorithm = bUseRFC3851MICAlg ? ECryptoAlgorithmSign.DEFAULT_RFC_3851
+                                            : ECryptoAlgorithmSign.DEFAULT_RFC_5751;
+
+      if (LOGGER.isWarnEnabled ())
+        LOGGER.warn ("The partnership signing algorithm name '" +
+                     aPartnership.getSigningAlgorithm () +
+                     "' is unknown. Fallbacking back to the default '" +
+                     eSigningAlgorithm.getID () +
+                     "'");
+    }
+
     final String sMIC = AS2Helper.getCryptoHelper ()
                                  .calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
     if (LOGGER.isDebugEnabled ())
