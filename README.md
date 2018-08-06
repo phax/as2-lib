@@ -24,6 +24,10 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.2.0 - work in progress
+  * Added support for large file transmission (using Apache HttpClient) - thanks to @zharpaz for the PRs :D
+  * AS2 client now has the possibility to **not** request an MDN at all
+  * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-server/issues/52))
 * v4.1.1 - 2018-07-27
   * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-server/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.

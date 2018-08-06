@@ -100,6 +100,7 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
@@ -125,6 +126,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File s_aDumpDecryptedDirectory;
+  private static final String DEFAULT_SECURITY_PROVIDER_NAME = PBCProvider.getProvider ().getName ();
 
   static
   {
@@ -140,6 +142,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     else
       s_aDumpDecryptedDirectory = null;
   }
+
+  private String m_sSecurityProviderName = DEFAULT_SECURITY_PROVIDER_NAME;
 
   public BCCryptoHelper ()
   {
@@ -161,6 +165,21 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
+  @Nonempty
+  public String getSecurityProviderName ()
+  {
+    return m_sSecurityProviderName;
+  }
+
+  @Nonnull
+  public BCCryptoHelper setSecurityProviderName (@Nonnull @Nonempty final String sSecurityProviderName)
+  {
+    ValueEnforcer.notEmpty (sSecurityProviderName, "SecurityProviderName");
+    m_sSecurityProviderName = sSecurityProviderName;
+    return this;
+  }
+
+  @Nonnull
   public KeyStore createNewKeyStore (@Nonnull final IKeyStoreType aKeyStoreType) throws KeyStoreException,
                                                                                  NoSuchProviderException
   {
@@ -168,7 +187,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     {
       // Try with BouncyCastle first (e.g. PKCS12)
       // Important, because JDK PKCS12 is partially case insensitive
-      return aKeyStoreType.getKeyStore (PBCProvider.getProvider ());
+      return aKeyStoreType.getKeyStore (m_sSecurityProviderName);
     }
     catch (final Exception ex)
     {
@@ -264,7 +283,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
-    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), PBCProvider.getProvider ());
+    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), m_sSecurityProviderName);
 
     if (bIncludeHeaders)
     {
@@ -387,7 +406,7 @@ public final class BCCryptoHelper implements ICryptoHelper
         aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       e.printStackTrace ();
       System.out.println ("Exception in SMIMEEnveloped:" + e.getMessage () + "\ncause:" + e.getCause ());
@@ -439,9 +458,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     final ASN1ObjectIdentifier aEncAlg = eAlgorithm.getOID ();
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
-    aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (PBCProvider.getProvider ()));
+    aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (m_sSecurityProviderName));
 
-    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (PBCProvider.getProvider ())
+    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (m_sSecurityProviderName)
                                                                                   .build ();
     final MimeBodyPart aEncData = aGen.generate (aPart, aEncryptor);
     return aEncData;
@@ -502,7 +521,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // adding the smime attributes above to the signed attributes that
     // will be generated as part of the signature. The encryption algorithm
     // used is taken from the key - in this RSA with PKCS1Padding
-    aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (PBCProvider.getProvider ())
+    aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (m_sSecurityProviderName)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
                                                                             .build (eAlgorithm.getSignAlgorithmName (),
                                                                                     aPrivateKey,
@@ -523,10 +542,10 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  private static X509Certificate _verifyFindCertificate (@Nullable final X509Certificate aX509Cert,
-                                                         final boolean bUseCertificateInBodyPart,
-                                                         @Nonnull final SMIMESignedParser aSignedParser) throws CMSException,
-                                                                                                         GeneralSecurityException
+  private X509Certificate _verifyFindCertificate (@Nullable final X509Certificate aX509Cert,
+                                                  final boolean bUseCertificateInBodyPart,
+                                                  @Nonnull final SMIMESignedParser aSignedParser) throws CMSException,
+                                                                                                  GeneralSecurityException
   {
     X509Certificate aRealX509Cert = aX509Cert;
     if (bUseCertificateInBodyPart)
@@ -549,7 +568,7 @@ public final class BCCryptoHelper implements ICryptoHelper
             LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
-        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (PBCProvider.getProvider ())
+        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName)
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
           if (LOGGER.isWarnEnabled ())
@@ -592,7 +611,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
-    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (PBCProvider.getProvider ())
+    final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (m_sSecurityProviderName)
                                                                                                             .build (),
                                                                    aMainPart,
                                                                    EContentTransferEncoding.AS2_DEFAULT.getID ());
@@ -607,7 +626,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     aRealX509Cert.checkValidity ();
 
     // Verify certificate
-    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (PBCProvider.getProvider ())
+    final SignerInformationVerifier aSIV = new JcaSimpleSignerInfoVerifierBuilder ().setProvider (m_sSecurityProviderName)
                                                                                     .build (aRealX509Cert.getPublicKey ());
 
     for (final SignerInformation aSignerInfo : aSignedParser.getSignerInfos ().getSigners ())
