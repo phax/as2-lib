@@ -204,8 +204,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return <code>true</code> if the name is not <code>null</code> and
-   *         contained in the sender IDs.
+   * @return <code>true</code> if the name is not <code>null</code> and contained
+   *         in the sender IDs.
    */
   public boolean containsSenderID (@Nullable final String sKey)
   {
@@ -372,8 +372,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return <code>true</code> if the name is not <code>null</code> and
-   *         contained in the receiver IDs.
+   * @return <code>true</code> if the name is not <code>null</code> and contained
+   *         in the receiver IDs.
    */
   public boolean containsReceiverID (@Nullable final String sKey)
   {
@@ -429,8 +429,8 @@ public class Partnership implements Serializable
    * @param sKey
    *        The key to be used. May not be <code>null</code>.
    * @param sValue
-   *        The value to be used. If <code>null</code> an existing attribute
-   *        with the provided name will be removed.
+   *        The value to be used. If <code>null</code> an existing attribute with
+   *        the provided name will be removed.
    * @return {@link EChange#CHANGED} if something changed. Never
    *         <code>null</code>.
    */
@@ -458,8 +458,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Get the value associated with the given attribute name or the default
-   * values.
+   * Get the value associated with the given attribute name or the default values.
    *
    * @param sKey
    *        Attribute name to search. May be <code>null</code>.
@@ -488,7 +487,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return The URL to send the async MDN to. May be <code>null</code>.
+   * @return The URL to send the MDN to. May be <code>null</code>.
    * @see #getAS2ReceiptDeliveryOption()
    */
   @Nullable
@@ -498,7 +497,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Set the URL to send the async MDN to. When setting it, also set it with
+   * Set the URL to send the MDN to. For async MDN also call
    * {@link #setAS2ReceiptDeliveryOption(String)}.
    *
    * @param sValue
@@ -562,7 +561,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Set the return URL for async MDN when sending messages.
+   * Set the return URL for async MDNs when sending messages.
    *
    * @param sValue
    *        The async MDN url. May be <code>null</code>.
@@ -577,8 +576,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Set the return URL for async MDN when sending messages. When setting it,
-   * also set it with {@link #setAS2MDNTo(String)}.
+   * Set the return URL for async MDNs when sending messages. When setting it,
+   * also set {@link #setAS2MDNTo(String)}.
    *
    * @param sValue
    *        The async MDN url. May be <code>null</code>.
@@ -952,9 +951,9 @@ public class Partnership implements Serializable
 
   /**
    * @return <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g.
-   *         <code>sha1</code>) should be used, <code>false</code> if the new
-   *         RFC 5751 MIC algorithm names (e.g. <code>sha-1</code>) should be
-   *         used. Default is <code>false</code>.
+   *         <code>sha1</code>) should be used, <code>false</code> if the new RFC
+   *         5751 MIC algorithm names (e.g. <code>sha-1</code>) should be used.
+   *         Default is <code>false</code>.
    * @since 2.2.7
    */
   public boolean isRFC3851MICAlgs ()
@@ -1009,9 +1008,8 @@ public class Partnership implements Serializable
    *
    * @param aPartnership
    *        The partnership to compare to. May not be <code>null</code>.
-   * @return <code>true</code> if sender and receiver IDs of this partnership
-   *         are present in the sender and receiver IDs of the provided
-   *         partnership.
+   * @return <code>true</code> if sender and receiver IDs of this partnership are
+   *         present in the sender and receiver IDs of the provided partnership.
    */
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
