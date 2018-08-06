@@ -62,6 +62,8 @@ import com.helger.security.keystore.IKeyStoreType;
  */
 public class AS2ClientSettings implements Serializable
 {
+  /** By default an MDN is requested. */
+  public static final boolean DEFAULT_IS_MDN_REQUESTED = true;
   /**
    * The default MDN options to be used.
    *
@@ -106,6 +108,7 @@ public class AS2ClientSettings implements Serializable
   private ECryptoAlgorithmSign m_eSignAlgo;
   private ECompressionType m_eCompressionType;
   private boolean m_bCompressBeforeSigning = true;
+  private boolean m_bMDNRequested = DEFAULT_IS_MDN_REQUESTED;
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
   private String m_sAsyncMDNUrl;
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
@@ -130,8 +133,7 @@ public class AS2ClientSettings implements Serializable
    * @param aFile
    *        The key store file. May not be <code>null</code>.
    * @param sPassword
-   *        The password used to open the key store. May not be
-   *        <code>null</code>.
+   *        The password used to open the key store. May not be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -179,8 +181,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Change the behavior if all changes to the keystore should trigger a saving
-   * to the original file.
+   * Change the behavior if all changes to the keystore should trigger a saving to
+   * the original file.
    *
    * @param bSaveKeyStoreChangesToFile
    *        <code>true</code> if key store changes should be written back to the
@@ -195,8 +197,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return <code>true</code> if key store changes should be written back to
-   *         the file, <code>false</code> if not.
+   * @return <code>true</code> if key store changes should be written back to the
+   *         file, <code>false</code> if not.
    */
   public boolean isSaveKeyStoreChangesToFile ()
   {
@@ -264,11 +266,10 @@ public class AS2ClientSettings implements Serializable
    * @param sAS2ID
    *        Receiver AS2 ID. May not be <code>null</code>.
    * @param sKeyAlias
-   *        Alias into the keystore for identifying the receivers certificate.
-   *        May not be <code>null</code>.
+   *        Alias into the keystore for identifying the receivers certificate. May
+   *        not be <code>null</code>.
    * @param sAS2URL
-   *        Destination URL to send the request to. May not be <code>null</code>
-   *        .
+   *        Destination URL to send the request to. May not be <code>null</code> .
    * @return this for chaining
    */
   @Nonnull
@@ -293,8 +294,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The receivers key alias in the keystore. May be <code>null</code>
-   *         if not set.
+   * @return The receivers key alias in the keystore. May be <code>null</code> if
+   *         not set.
    * @see #setReceiverData(String, String, String)
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
@@ -305,8 +306,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The destination URL to send the request to. May be
-   *         <code>null</code> if not set.
+   * @return The destination URL to send the request to. May be <code>null</code>
+   *         if not set.
    * @see #setReceiverData(String, String, String)
    */
   @Nullable
@@ -333,8 +334,8 @@ public class AS2ClientSettings implements Serializable
 
   /**
    * @return The explicit certificate of the recipient. This might be used to
-   *         dynamically add it to the certificate factory for dynamic
-   *         partnership handling (like in PEPPOL). May be <code>null</code>.
+   *         dynamically add it to the certificate factory for dynamic partnership
+   *         handling (like in PEPPOL). May be <code>null</code>.
    * @see #setReceiverCertificate(X509Certificate)
    */
   @Nullable
@@ -408,8 +409,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Enable or disable the compression of the message. Note: compression
-   * requires the receiver to support AS2 version 1.1!
+   * Enable or disable the compression of the message. Note: compression requires
+   * the receiver to support AS2 version 1.1!
    *
    * @param eCompressionType
    *        The compression type to use. Pass <code>null</code> to not compress
@@ -467,8 +468,7 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The partnership name to be used. May be <code>null</code> if not
-   *         set.
+   * @return The partnership name to be used. May be <code>null</code> if not set.
    * @see #setPartnershipName(String)
    */
   @Nullable
@@ -478,8 +478,34 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding
-   * to the 'Disposition-Notification-Options' header) may be <code>null</code>.
+   * Determine if an MDN is requested at all.
+   * 
+   * @param bMDNRequested
+   *        <code>true</code> to request an MDN (is the default),
+   *        <code>false</code> to not request one.
+   * @return this for chaining
+   * @since 4.2.0
+   */
+  @Nonnull
+  public AS2ClientSettings setMDNRequested (final boolean bMDNRequested)
+  {
+    m_bMDNRequested = bMDNRequested;
+    return this;
+  }
+
+  /**
+   * @return <code>true</code> if an MDN is requested at all (sync or async),
+   *         <code>false</code> if not.
+   * @since 4.2.0
+   */
+  public boolean isMDNRequested ()
+  {
+    return m_bMDNRequested;
+  }
+
+  /**
+   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding to
+   * the 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
    * @param sMDNOptions
    *        The <code>Disposition-Notification-Options</code> String to be used.
@@ -498,8 +524,8 @@ public class AS2ClientSettings implements Serializable
    * Set the MDN options to be used.
    *
    * @param aDispositionOptions
-   *        The <code>Disposition-Notification-Options</code> structured object
-   *        to be used. May not be <code>null</code>.
+   *        The <code>Disposition-Notification-Options</code> structured object to
+   *        be used. May not be <code>null</code>.
    * @return this for chaining
    * @see #setMDNOptions(String)
    */
@@ -515,8 +541,8 @@ public class AS2ClientSettings implements Serializable
    * the 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
    * @return The MDN options (<code>Disposition-Notification-Options</code>
-   *         header) to be used. May be <code>null</code>. The default is
-   *         defined in {@link #DEFAULT_MDN_OPTIONS}.
+   *         header) to be used. May be <code>null</code>. The default is defined
+   *         in {@link #DEFAULT_MDN_OPTIONS}.
    * @see #setMDNOptions(DispositionOptions)
    * @see #setMDNOptions(String)
    */
@@ -540,8 +566,8 @@ public class AS2ClientSettings implements Serializable
    * Set the asynchronous MDN URL to be used.
    *
    * @param sAsyncMDNUrl
-   *        May be <code>null</code> in which case a synchronous MDN is
-   *        requested (which is also the default).
+   *        May be <code>null</code> in which case a synchronous MDN is requested
+   *        (which is also the default).
    * @return this for chaining
    * @since 3.0.4
    */
@@ -553,8 +579,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The URL for the asynchronous MDN. If this is <code>null</code> than
-   *         a synchronous MDN is requested. By default a synchronous MDN is
+   * @return The URL for the asynchronous MDN. If this is <code>null</code> than a
+   *         synchronous MDN is requested. By default a synchronous MDN is
    *         requested.
    * @since 3.0.4
    */
@@ -576,8 +602,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Set the Message ID format. This string may contain placeholders as
-   * supported by the <code>com.helger.as2lib.params</code> parameters parsers.
+   * Set the Message ID format. This string may contain placeholders as supported
+   * by the <code>com.helger.as2lib.params</code> parameters parsers.
    *
    * @param sMessageIDFormat
    *        The message ID format to use. May not be <code>null</code>.
@@ -591,8 +617,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The message ID format to use. Never <code>null</code>. It defaults
-   *         to {@value #DEFAULT_MESSAGE_ID_FORMAT}.
+   * @return The message ID format to use. Never <code>null</code>. It defaults to
+   *         {@value #DEFAULT_MESSAGE_ID_FORMAT}.
    * @see #DEFAULT_MESSAGE_ID_FORMAT
    * @see #setMessageIDFormat(String)
    */
@@ -618,9 +644,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The number of retries to be performed. May be &le; 0 meaning that
-   *         no retry will happen. The default value is
-   *         {@link #DEFAULT_RETRY_COUNT}.
+   * @return The number of retries to be performed. May be &le; 0 meaning that no
+   *         retry will happen. The default value is {@link #DEFAULT_RETRY_COUNT}.
    * @see #setRetryCount(int)
    */
   public int getRetryCount ()

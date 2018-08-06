@@ -158,22 +158,33 @@ public class AS2Client
     if (aSettings.hasMDNOptions ())
       aPartnership.setAS2MDNOptions (aSettings.getMDNOptions ());
 
-    if (aSettings.isAsyncMDNRequested ())
+    if (aSettings.isMDNRequested ())
     {
-      // We want an async MDN
-      aPartnership.setAS2MDNTo (aSettings.getAsyncMDNUrl ());
-      aPartnership.setAS2ReceiptDeliveryOption (aSettings.getAsyncMDNUrl ());
+      if (aSettings.isAsyncMDNRequested ())
+      {
+        // We want an async MDN
+        aPartnership.setAS2MDNTo (aSettings.getAsyncMDNUrl ());
+        aPartnership.setAS2ReceiptDeliveryOption (aSettings.getAsyncMDNUrl ());
+      }
+      else
+      {
+        // We want an sync MDN
+
+        // This field must be set to a valid email address
+        aPartnership.setAS2MDNTo ("as2-lib@example.com");
+        // This field must be null - otherwise async MDN!
+        aPartnership.setAS2ReceiptDeliveryOption (null);
+      }
     }
     else
     {
-      // We want an sync MDN
-      // This field must be set to a valid email address
-      aPartnership.setAS2MDNTo ("as2-lib@example.com");
-      // This field must be null - otherwise async MDN!
+      // We don't want an MDN
+      aPartnership.setAS2MDNTo (null);
       aPartnership.setAS2ReceiptDeliveryOption (null);
     }
 
     if (aSettings.getCompressionType () != null)
+
     {
       aPartnership.setCompressionType (aSettings.getCompressionType ());
       aPartnership.setCompressionMode (aSettings.isCompressBeforeSigning () ? CPartnershipIDs.COMPRESS_BEFORE_SIGNING
