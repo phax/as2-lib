@@ -157,7 +157,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    * Generate a HttpClient connection. It works with streams and avoids holding
    * whole messge in memory. note that bOutput, bInput, and bUseCaches are not
    * supported
-   * 
+   *
    * @param sUrl
    * @param eRequestMethod
    * @param aProxy

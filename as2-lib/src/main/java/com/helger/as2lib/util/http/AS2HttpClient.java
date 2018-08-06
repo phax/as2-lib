@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
 
@@ -107,9 +108,13 @@ public class AS2HttpClient implements IAS2HttpConnection
       {
         // Create SSL context
         final SSLContext aSSLCtx = AbstractHttpSenderModule.createSSLContext ();
+        if (aSSLCtx != null)
+          aClientBuilder.setSSLContext (aSSLCtx);
+
         // Get hostname verifier
         final HostnameVerifier aHV = AbstractHttpSenderModule.createHostnameVerifier ();
-        aClientBuilder.setSSLContext (aSSLCtx).setSSLHostnameVerifier (aHV);
+        if (aHV != null)
+          aClientBuilder.setSSLHostnameVerifier (aHV);
       }
       m_aCloseableHttpClient = aClientBuilder.build ();
       m_aRequestBuilder = RequestBuilder.create (eRequestMethod.getName ()).setUri (aUri).setConfig (aConf);
@@ -221,15 +226,15 @@ public class AS2HttpClient implements IAS2HttpConnection
    */
   public int getResponseCode () throws OpenAS2Exception
   {
+    // message was not sent yet, not response
+    if (m_aCloseableHttpResponse == null)
+    {
+      throw new OpenAS2Exception ("No response as message was not yet sent");
+    }
     try
     {
-      // message was not sent yet, not response
-      if (m_aCloseableHttpResponse == null)
-      {
-        throw new OpenAS2Exception ("No response as message was not yet sent");
-      }
-      final StatusLine status = m_aCloseableHttpResponse.getStatusLine ();
-      return status.getStatusCode ();
+      final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
+      return aStatusLine.getStatusCode ();
     }
     catch (final Exception e)
     {
@@ -247,13 +252,15 @@ public class AS2HttpClient implements IAS2HttpConnection
     {
       throw new OpenAS2Exception ("No response as message was not yet sent");
     }
-    final StatusLine status = m_aCloseableHttpResponse.getStatusLine ();
-    return status.getReasonPhrase ();
+    final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
+    return aStatusLine.getReasonPhrase ();
   }
 
   /**
-   * Get the headers of the request
+   * @return the headers of the request
    */
+  @Nonnull
+  @ReturnsMutableCopy
   public HttpHeaderMap getHeaderFields () throws OpenAS2Exception
   {
     // message was not sent yet, not response
@@ -261,11 +268,12 @@ public class AS2HttpClient implements IAS2HttpConnection
     {
       throw new OpenAS2Exception ("No response as message was not yet sent");
     }
-    final Header [] headers = m_aCloseableHttpResponse.getAllHeaders ();
-    final HttpHeaderMap res = new HttpHeaderMap ();
-    for (final Header h : headers)
-      res.addHeader (h.getName (), h.getValue ());
-    return res;
+
+    final Header [] aHeaders = m_aCloseableHttpResponse.getAllHeaders ();
+    final HttpHeaderMap ret = new HttpHeaderMap ();
+    for (final Header aHeader : aHeaders)
+      ret.addHeader (aHeader.getName (), aHeader.getValue ());
+    return ret;
   }
 
   /**
@@ -280,10 +288,10 @@ public class AS2HttpClient implements IAS2HttpConnection
       if (m_aCloseableHttpClient != null)
         m_aCloseableHttpClient.close ();
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
       if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Exception while closing HttpClient connection: " + this.toString ());
+        LOGGER.error ("Exception while closing HttpClient connection: " + this.toString (), ex);
     }
   }
 
@@ -323,14 +331,14 @@ public class AS2HttpClient implements IAS2HttpConnection
         }
       }
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Exception while setting proxy. Continue without proxy. aProxy:" +
                       aProxy.address () +
                       "-" +
                       (null != aProxy.type () ? aProxy.type ().name () : "null"),
-                      e);
+                      ex);
     }
   }
 }
