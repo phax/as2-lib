@@ -120,11 +120,11 @@ public final class HTTPHelper
     public IHTTPOutgoingDumper apply (@Nonnull final IBaseMessage aMsg)
     {
       return new HTTPOutgoingDumperFileBased (new File (m_aDumpDirectory,
-                                                        "as2-outgoing-" +
-                                                                          Long.toString (System.currentTimeMillis ()) +
-                                                                          "-" +
-                                                                          Integer.toString (m_aCounter.getAndIncrement ()) +
-                                                                          ".http"));
+        "as2-outgoing-" +
+          Long.toString (System.currentTimeMillis ()) +
+          "-" +
+          Integer.toString (m_aCounter.getAndIncrement ()) +
+          ".http"));
     }
   }
 
@@ -400,39 +400,37 @@ public final class HTTPHelper
     final String sReceivedContentType = aReceivedContentType.toString ();
     byte [] aBytePayLoad = null;
     DataSource aPayload;
-    if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
+    final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
+    if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON) &&
+      sContentLength == null)
     {
+      // Large file support on,AND No "Content-Length" header present
       InputStream is = aIS;
-      final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
-      if (sContentLength == null)
+      final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
+      if (sTransferEncoding != null)
       {
-        // No "Content-Length" header present
-        final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
-        if (sTransferEncoding != null)
+        // Remove all whitespaces in the value
+        if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
         {
-          // Remove all whitespaces in the value
-          if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
-          {
-            // chunked encoding. Use also file backed stream as the message
-            // might be large
-            final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
-                                                                                                          aMsg.getMessageID ());
-            is = sis;
-            aMsg.setTempSharedFileInputStream (sis);
-          }
-          else
-          {
-            // No "Content-Length" and unsupported "Transfer-Encoding"
-            sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
-            throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
-          }
+          // chunked encoding. Use also file backed stream as the message
+          // might be large
+          final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
+            aMsg.getMessageID ());
+          is = sis;
+          aMsg.setTempSharedFileInputStream (sis);
         }
         else
         {
-          // No "Content-Length" and no "Transfer-Encoding"
+          // No "Content-Length" and unsupported "Transfer-Encoding"
           sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
-          throw new IOException ("Content-Length missing");
+          throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
+      }
+      else
+      {
+        // No "Content-Length" and no "Transfer-Encoding"
+        sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
+        throw new IOException ("Content-Length missing");
       }
       // Content-length present, or chunked encoding
       aPayload = new InputStreamDataSource (is,
@@ -441,7 +439,7 @@ public final class HTTPHelper
                                             true);
     }
     else
-    { // Large message support off
+    { // Large message support off or content-length exists
       // Read the message body - no Content-Transfer-Encoding handling
       aBytePayLoad = readHttpPayload (aIS, aResponseHandler, aMsg);
       aPayload = new ByteArrayDataSource (aBytePayLoad, sReceivedContentType, null);
