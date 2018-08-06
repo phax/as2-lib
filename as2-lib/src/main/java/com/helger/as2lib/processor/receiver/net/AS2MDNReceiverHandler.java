@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
@@ -74,6 +75,7 @@ import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -293,8 +295,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       String sOriginalMIC;
       File aPendingFile;
-      try (
-          final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
+      try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
       {
         // Get the original mic from the first line of pending information
         // file
@@ -311,12 +312,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       /*
-       * original code just did string compare - returnmic.equals(originalmic).
-       * Sadly this is not good enough as the mic fields are
-       * "base64string, algorithm" taken from a rfc822 style
-       * Returned-Content-MIC header and rfc822 headers can contain spaces all
-       * over the place. (not to mention comments!). Simple fix - delete all
-       * spaces.
+       * original code just did string compare - returnmic.equals(originalmic). Sadly
+       * this is not good enough as the mic fields are "base64string, algorithm" taken
+       * from a rfc822 style Returned-Content-MIC header and rfc822 headers can
+       * contain spaces all over the place. (not to mention comments!). Simple fix -
+       * delete all spaces.
        */
       if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
       {
@@ -370,7 +370,18 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-    aMDN.headers ().addAllHeaders (aConn.getHeaderFields ());
+    if (true)
+    {
+      // Workaround for #48
+      for (final Map.Entry <String, ICommonsList <String>> aEntry : aConn.getHeaderFields ())
+        for (final String sValue : aEntry.getValue ())
+          aMDN.headers ().addHeader (aEntry.getKey (), sValue);
+    }
+    else
+    {
+      // Bug in ph-commons 9.1.3 :(
+      aMDN.headers ().addAllHeaders (aConn.getHeaderFields ());
+    }
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream aMDNStream = null;
