@@ -164,6 +164,10 @@ public final class BCCryptoHelper implements ICryptoHelper
     });
   }
 
+  /**
+   * @return The security provider name to use. <code>BC</code> by default.
+   * @since 4.2.0
+   */
   @Nonnull
   @Nonempty
   public String getSecurityProviderName ()
@@ -171,6 +175,14 @@ public final class BCCryptoHelper implements ICryptoHelper
     return m_sSecurityProviderName;
   }
 
+  /**
+   * Set the security provider name to use.
+   * 
+   * @param sSecurityProviderName
+   *        The provider name. May neither be <code>null</code> nor empty.
+   * @return this for chaining
+   * @since 4.2.0
+   */
   @Nonnull
   public BCCryptoHelper setSecurityProviderName (@Nonnull @Nonempty final String sSecurityProviderName)
   {
