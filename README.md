@@ -30,7 +30,7 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
   * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-server/issues/52))
   * Added workaround for bug in `HttpHeaderMap.addAllHeaders` (see [#48](https://github.com/phax/as2-server/issues/48))
   * Using the correct signing algorithm for the MIC, according to the partnership definitions (see [#50](https://github.com/phax/as2-server/issues/50))
-* v4.1.1 - 2018-07-27
+* v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
   * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-server/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.
   * Partnership attribute `blockerrormdn` is now only evaluated for MDNs that are created based on errors
