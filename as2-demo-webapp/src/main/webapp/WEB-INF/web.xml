@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    The FreeBSD Copyright
+    Copyright 1994-2008 The FreeBSD Project. All rights reserved.
+    Copyright (C) 2013-2018 Philip Helger philip[at]helger[dot]com
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+       1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+
+       2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY
+    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    The views and conclusions contained in the software and documentation
+    are those of the authors and should not be interpreted as representing
+    official policies, either expressed or implied, of the FreeBSD Project.
+
+-->
+<web-app
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  version="3.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+  metadata-complete="true">
+  <description>as2-lib Demo WebApp</description>
+  <listener>
+    <listener-class>com.helger.as2servlet.AS2WebAppListener</listener-class>
+  </listener>
+  <servlet>
+    <servlet-name>AS2ReceiveServlet</servlet-name>
+    <servlet-class>com.helger.as2servlet.AS2ReceiveServlet</servlet-class>
+    <init-param>
+      <param-name>as2-servlet-config-filename</param-name>
+      <param-value>config/config.xml</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AS2ReceiveServlet</servlet-name>
+    <url-pattern>/as2</url-pattern>
+  </servlet-mapping>
+</web-app>

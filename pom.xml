@@ -82,6 +82,13 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>ph-oton-parent-pom</artifactId>
+        <version>8.0.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
       <dependency>
         <groupId>com.helger</groupId>
@@ -118,5 +125,6 @@
     <module>as2-lib</module>
     <module>as2-partnership-mongodb</module>
     <module>as2-servlet</module>
+    <module>as2-demo-webapp</module>
   </modules>
 </project>
