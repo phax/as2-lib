@@ -27,18 +27,18 @@ The subproject `as2-servlet` is licensed under the Apache 2 license.
 * v4.2.0 - work in progress
   * Added support for large file transmission (using Apache HttpClient) - thanks to @zharpaz for the PRs :D
   * AS2 client now has the possibility to **not** request an MDN at all
-  * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-server/issues/52))
-  * Added workaround for bug in `HttpHeaderMap.addAllHeaders` (see [#48](https://github.com/phax/as2-server/issues/48))
-  * Using the correct signing algorithm for the MIC, according to the partnership definitions (see [#50](https://github.com/phax/as2-server/issues/50))
+  * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-lib/issues/52))
+  * Added workaround for bug in `HttpHeaderMap.addAllHeaders` (see [#48](https://github.com/phax/as2-lib/issues/48))
+  * Using the correct signing algorithm for the MIC, according to the partnership definitions (see [#50](https://github.com/phax/as2-lib/issues/50))
 * v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
-  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-server/issues/42))
+  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-lib/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.
   * Partnership attribute `blockerrormdn` is now only evaluated for MDNs that are created based on errors
-  * MDNs now also use the partner attribute `content_transfer_encoding` and `content_transfer_encoding_receive` (see [#43](https://github.com/phax/as2-server/issues/43))
+  * MDNs now also use the partner attribute `content_transfer_encoding` and `content_transfer_encoding_receive` (see [#43](https://github.com/phax/as2-lib/issues/43))
 * v4.1.0 - 2018-06-20
   * The random parameters class now supports creating random values that are longer than 10 characters
   * Fixed OSGI ServiceProvider configuration
-  * Added support for new encryption algorithms (see [#38](https://github.com/phax/as2-server/issues/38))
+  * Added support for new encryption algorithms (see [#38](https://github.com/phax/as2-lib/issues/38))
   * Added new system property `AS2.httpDumpDirectoryOutgoing` to easily dump outgoing transmissions
   * Renamed system property for dumping incoming HTTP transmissions from `AS2.httpDumpDirectory` to `AS2.httpDumpDirectoryIncoming` to avoid confusion. The old name can still be used but emits a warning.
   * Modules `MDNFileModule` and `MessageFileModule` now got a new attribute `charset` to define the charset to be used to dump the information. 
