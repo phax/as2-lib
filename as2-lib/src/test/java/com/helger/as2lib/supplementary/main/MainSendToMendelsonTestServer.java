@@ -35,6 +35,7 @@ package com.helger.as2lib.supplementary.main;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
 import javax.activation.DataHandler;
@@ -100,12 +101,16 @@ public final class MainSendToMendelsonTestServer
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_384;
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
-                                                      .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                      .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                      .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
-    aSettings.setEncryptAndSign (ECryptoAlgorithmCrypt.CRYPT_3DES, eSignAlgo);
-    aSettings.setCompress (ECompressionType.ZLIB, false);
+    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
+    final boolean bCompress = false;
+
+    if (eSignAlgo != null)
+      aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
+                                                        .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
+                                                        .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                        .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+    aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
+    aSettings.setCompress (ECompressionType.ZLIB, bCompress);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
@@ -113,10 +118,10 @@ public final class MainSendToMendelsonTestServer
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    // aRequest.setData (new File
-    // ("src/test/resources/mendelson/testcontent.attachment"),
-    // StandardCharsets.ISO_8859_1);
-    aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
+    if (false)
+      aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
+    else
+      aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // Send message
