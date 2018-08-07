@@ -42,6 +42,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
+import com.helger.security.keystore.KeyStoreHelper;
 
 /**
  * Base interface for a certificate factory that can store to a file.
@@ -65,8 +66,8 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    * file. The default value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
    *
    * @param bSaveChangesToFile
-   *        <code>true</code> to enable auto-saving, <code>false</code> to
-   *        disable it.
+   *        <code>true</code> to enable auto-saving, <code>false</code> to disable
+   *        it.
    */
   void setSaveChangesToFile (boolean bSaveChangesToFile);
 
@@ -90,7 +91,9 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 
   default void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
-    final InputStream aFIS = FileHelper.getInputStream (new File (sFilename));
+    final InputStream aFIS = KeyStoreHelper.getResourceProvider ().getInputStream (sFilename);
+    if (aFIS == null)
+      throw new OpenAS2Exception ("Failed to load certificates from '" + sFilename + "'");
     load (aFIS, aPassword);
   }
 
@@ -109,6 +112,7 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 
   default void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
+    // Must be File by default
     final OutputStream fOut = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
     save (fOut, aPassword);
   }
