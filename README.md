@@ -120,12 +120,13 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
   * compression according to RFC 5402 is now supported so that this is no fully AS2 1.1 compatible
 
 # Maven usage
+
 Add the following to your `pom.xml` to use this artifact:
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.1.0</version>
+  <version>4.1.1</version>
 </dependency>
 ```
 
@@ -134,7 +135,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.1.0</version>
+  <version>4.1.1</version>
 </dependency>
 ```
 
@@ -143,7 +144,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.1.0</version>
+  <version>4.1.1</version>
 </dependency>
 ```
 
