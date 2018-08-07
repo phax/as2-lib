@@ -43,6 +43,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.http.HttpHeaderMap;
+import com.helger.commons.string.StringHelper;
 
 /**
  * AS2 Http connection, Implemented as HttpURLConnection.
@@ -121,8 +122,11 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
     for (final Map.Entry <String, List <String>> aEntry : m_aHttpURLConnection.getHeaderFields ().entrySet ())
     {
       final String sName = aEntry.getKey ();
-      for (final String sValue : aEntry.getValue ())
-        ret.addHeader (sName, sValue);
+      // Sometimes the status line (like 'HTTP/1.1 200 OK') comes as a header with no
+      // name
+      if (StringHelper.hasText (sName))
+        for (final String sValue : aEntry.getValue ())
+          ret.addHeader (sName, sValue);
     }
     return ret;
   }
