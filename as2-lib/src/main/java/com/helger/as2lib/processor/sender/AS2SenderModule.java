@@ -203,28 +203,27 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * From RFC 4130 section 7.3.1:
    * <ul>
    * <li>For any signed messages, the MIC to be returned is calculated on the
-   * RFC1767/RFC3023 MIME header and content. Canonicalization on the MIME
-   * headers MUST be performed before the MIC is calculated, since the sender
-   * requesting the signed receipt was also REQUIRED to canonicalize.</li>
-   * <li>For encrypted, unsigned messages, the MIC to be returned is calculated
-   * on the decrypted RFC 1767/RFC3023 MIME header and content. The content
-   * after decryption MUST be canonicalized before the MIC is calculated.</li>
+   * RFC1767/RFC3023 MIME header and content. Canonicalization on the MIME headers
+   * MUST be performed before the MIC is calculated, since the sender requesting
+   * the signed receipt was also REQUIRED to canonicalize.</li>
+   * <li>For encrypted, unsigned messages, the MIC to be returned is calculated on
+   * the decrypted RFC 1767/RFC3023 MIME header and content. The content after
+   * decryption MUST be canonicalized before the MIC is calculated.</li>
    * <li>For unsigned, unencrypted messages, the MIC MUST be calculated over the
-   * message contents without the MIME or any other RFC 2822 headers, since
-   * these are sometimes altered or reordered by Mail Transport Agents
-   * (MTAs).</li>
+   * message contents without the MIME or any other RFC 2822 headers, since these
+   * are sometimes altered or reordered by Mail Transport Agents (MTAs).</li>
    * </ul>
    * So headers must be included if signing or crypting is enabled.<br>
    * <br>
    * From RFC 5402 section 4.1:
    * <ul>
-   * <li>MIC Calculation for Signed Message: For any signed message, the MIC to
-   * be returned is calculated over the same data that was signed in the
-   * original message as per [AS1]. The signed content will be a MIME bodypart
-   * that contains either compressed or uncompressed data.</li>
-   * <li>MIC Calculation for Encrypted, Unsigned Message: For encrypted,
-   * unsigned messages, the MIC to be returned is calculated over the
-   * uncompressed data content including all MIME header fields and any applied
+   * <li>MIC Calculation for Signed Message: For any signed message, the MIC to be
+   * returned is calculated over the same data that was signed in the original
+   * message as per [AS1]. The signed content will be a MIME bodypart that
+   * contains either compressed or uncompressed data.</li>
+   * <li>MIC Calculation for Encrypted, Unsigned Message: For encrypted, unsigned
+   * messages, the MIC to be returned is calculated over the uncompressed data
+   * content including all MIME header fields and any applied
    * Content-Transfer-Encoding.</li>
    * <li>MIC Calculation for Unencrypted, Unsigned Message: For unsigned,
    * unencrypted messages, the MIC is calculated over the uncompressed data
@@ -252,7 +251,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // For sending, we need to use the Signing algorithm defined in the
     // partnership
-    ECryptoAlgorithmSign eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (aPartnership.getSigningAlgorithm ());
+    final String sSigningAlgorithm = aPartnership.getSigningAlgorithm ();
+    ECryptoAlgorithmSign eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSigningAlgorithm);
     if (eSigningAlgorithm == null)
     {
       // If no valid algorithm is defined, fall back to the defaults
@@ -262,7 +262,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       if (LOGGER.isWarnEnabled ())
         LOGGER.warn ("The partnership signing algorithm name '" +
-                     aPartnership.getSigningAlgorithm () +
+                     sSigningAlgorithm +
                      "' is unknown. Fallbacking back to the default '" +
                      eSigningAlgorithm.getID () +
                      "'");
