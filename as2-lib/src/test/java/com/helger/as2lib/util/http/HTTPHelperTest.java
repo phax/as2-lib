@@ -177,7 +177,7 @@ public final class HTTPHelperTest
   @Test (expected = EOFException.class)
   public void testReadChunkLenEOS () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1".getBytes (StandardCharsets.UTF_8));
     HTTPHelper.readChunkLen (noNewLine);
     fail ("An EOFException should have been thrown");
   }
@@ -185,7 +185,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadChunkLenWithHeader () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1A;name=value\r\n".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1A;name=value\r\n".getBytes (StandardCharsets.UTF_8));
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 26, res);
   }
@@ -193,7 +193,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadChunkLenNoHeader () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1f\n".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1f\n".getBytes (StandardCharsets.UTF_8));
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 31, res);
   }
@@ -201,7 +201,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadChunkLenEmpty () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("\n".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("\n".getBytes (StandardCharsets.UTF_8));
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 0, res);
   }
@@ -210,14 +210,14 @@ public final class HTTPHelperTest
   public void testReadHttpRequestRegularMessage () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes ());
+    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
     // non stream
     AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
     IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
     // stream
-    is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes ());
+    is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
     aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
     mockStreamProvider = new MockAS2InputStreamProvider (is);
@@ -230,14 +230,14 @@ public final class HTTPHelperTest
   public void testReadHttpRequestStreamMessage () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes ());
+    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
     // non stream
     AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
     IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
     // stream
-    is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes ());
+    is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
     aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
     mockStreamProvider = new MockAS2InputStreamProvider (is);
@@ -250,7 +250,7 @@ public final class HTTPHelperTest
   public void testNoLengthMessageRegular () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes ());
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // non stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
@@ -262,7 +262,7 @@ public final class HTTPHelperTest
   public void testNoLengthMessageStream () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes ());
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
@@ -274,7 +274,7 @@ public final class HTTPHelperTest
   public void testBadTRansferEncodingMessageRegular () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes ());
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
@@ -286,7 +286,7 @@ public final class HTTPHelperTest
   public void testBadTRansferEncodingMessageStream () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes ());
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
