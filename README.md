@@ -33,7 +33,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Using the correct signing algorithm for the MIC, according to the partnership definitions (see [#50](https://github.com/phax/as2-lib/issues/50))
     * Added new subproject `as2-demo-webapp` to provide a simple to use stub for a web application receiving AS2 messages (see [#36](https://github.com/phax/as2-lib/issues/36))
 * v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
-  * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-lib/issues/42))
+  * The existence of just the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending anymore (see [#42](https://github.com/phax/as2-lib/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.
   * Partnership attribute `blockerrormdn` is now only evaluated for MDNs that are created based on errors
   * MDNs now also use the partner attribute `content_transfer_encoding` and `content_transfer_encoding_receive` (see [#43](https://github.com/phax/as2-lib/issues/43))
