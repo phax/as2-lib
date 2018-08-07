@@ -21,15 +21,17 @@ This project is used in my following other projects:
 The subproject `as2-lib` is licensed under the FreeBSD License.
 The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
 The subproject `as2-servlet` is licensed under the Apache 2 license. 
+The subproject `as2-demo-webapp` is licensed under the Apache 2 license. 
 
 # News and noteworthy
 
 * v4.2.0 - work in progress
-  * Added support for large file transmission (using Apache HttpClient) - thanks to @zharpaz for the PRs :D
-  * AS2 client now has the possibility to **not** request an MDN at all
-  * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-lib/issues/52))
-  * Added workaround for bug in `HttpHeaderMap.addAllHeaders` (see [#48](https://github.com/phax/as2-lib/issues/48))
-  * Using the correct signing algorithm for the MIC, according to the partnership definitions (see [#50](https://github.com/phax/as2-lib/issues/50))
+    * Added support for large file transmission (using Apache HttpClient) - thanks to @zharpaz for the PRs :D
+    * AS2 client now has the possibility to **not** request an MDN at all
+    * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-lib/issues/52))
+    * Added workaround for bug in `HttpHeaderMap.addAllHeaders` (see [#48](https://github.com/phax/as2-lib/issues/48))
+    * Using the correct signing algorithm for the MIC, according to the partnership definitions (see [#50](https://github.com/phax/as2-lib/issues/50))
+    * Added new subproject `as2-demo-webapp` to provide a simple to use stub for a web application receiving AS2 messages (see [#36](https://github.com/phax/as2-lib/issues/36))
 * v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
   * The existence of the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending (see [#42](https://github.com/phax/as2-lib/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.
