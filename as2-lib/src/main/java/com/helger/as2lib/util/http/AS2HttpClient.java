@@ -39,13 +39,11 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,7 +64,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.http.EHttpMethod;
@@ -79,10 +76,10 @@ import com.helger.commons.http.HttpHeaderMap;
  */
 public class AS2HttpClient implements IAS2HttpConnection
 {
-  private RequestBuilder m_aRequestBuilder;
+  private final RequestBuilder m_aRequestBuilder;
   private PipedInputStream m_aPipedInputStream;
   private PipedOutputStream m_aPipedOutputStream;
-  private CloseableHttpClient m_aCloseableHttpClient;
+  private final CloseableHttpClient m_aCloseableHttpClient;
   private CloseableHttpResponse m_aCloseableHttpResponse;
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpClient.class);
 
@@ -90,44 +87,30 @@ public class AS2HttpClient implements IAS2HttpConnection
                         final int nConnectTimeout,
                         final int nReadTimeout,
                         @Nonnull final EHttpMethod eRequestMethod,
-                        @Nullable final Proxy aProxy) throws OpenAS2Exception
+                        @Nullable final Proxy aProxy,
+                        @Nullable final SSLContext aSSLContext,
+                        @Nullable final HostnameVerifier aHV)
   {
-    try
-    {
-      // set configuration
-      final RequestConfig.Builder aConfBuilder = RequestConfig.custom ()
-                                                              .setConnectionRequestTimeout (nConnectTimeout)
-                                                              .setConnectTimeout (nConnectTimeout)
-                                                              .setSocketTimeout (nReadTimeout);
-      // add proxy if exists
-      _setProxyToRequestConfig (aConfBuilder, aProxy);
-      final RequestConfig aConf = aConfBuilder.build ();
-      final URI aUri = new URI (sUrl);
-      final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ();
-      if (aUri.getScheme ().toLowerCase (Locale.ROOT).equals ("https"))
-      {
-        // Create SSL context
-        final SSLContext aSSLCtx = AbstractHttpSenderModule.createSSLContext ();
-        if (aSSLCtx != null)
-          aClientBuilder.setSSLContext (aSSLCtx);
+    // set configuration
+    final RequestConfig.Builder aConfBuilder = RequestConfig.custom ()
+                                                            .setConnectionRequestTimeout (nConnectTimeout)
+                                                            .setConnectTimeout (nConnectTimeout)
+                                                            .setSocketTimeout (nReadTimeout);
+    // add proxy if exists
+    _setProxyToRequestConfig (aConfBuilder, aProxy);
+    final RequestConfig aConf = aConfBuilder.build ();
+    final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ();
+    if (aSSLContext != null)
+      aClientBuilder.setSSLContext (aSSLContext);
+    if (aHV != null)
+      aClientBuilder.setSSLHostnameVerifier (aHV);
 
-        // Get hostname verifier
-        final HostnameVerifier aHV = AbstractHttpSenderModule.createHostnameVerifier ();
-        if (aHV != null)
-          aClientBuilder.setSSLHostnameVerifier (aHV);
-      }
-      m_aCloseableHttpClient = aClientBuilder.build ();
-      m_aRequestBuilder = RequestBuilder.create (eRequestMethod.getName ()).setUri (aUri).setConfig (aConf);
-    }
-    catch (final URISyntaxException | GeneralSecurityException e)
-    {
-      LOGGER.error ("Exception in AS2HttpClient constructor", e);
-      throw new OpenAS2Exception (e.getMessage ());
-    }
+    m_aCloseableHttpClient = aClientBuilder.build ();
+    m_aRequestBuilder = RequestBuilder.create (eRequestMethod.getName ()).setUri (sUrl).setConfig (aConf);
   }
 
   /**
-   * Set an HTTP header (replacing existing value
+   * Set an HTTP header (replacing existing value)
    *
    * @param sName
    *        Header name
@@ -150,11 +133,11 @@ public class AS2HttpClient implements IAS2HttpConnection
       uri = m_aRequestBuilder.getUri ();
       return uri.toURL ();
     }
-    catch (final Exception e)
+    catch (final MalformedURLException ex)
     {
       if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Failed to get URL from connection, URI: " + (uri == null ? "null" : uri.toASCIIString ()));
-      throw new OpenAS2Exception (e.getCause ());
+        LOGGER.error ("Failed to get URL from connection, URI: " + uri.toASCIIString (), ex);
+      throw new OpenAS2Exception (ex.getCause ());
     }
   }
 
@@ -203,7 +186,6 @@ public class AS2HttpClient implements IAS2HttpConnection
     m_aRequestBuilder.setEntity (new InputStreamEntity (toSend));
     final HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build ();
     m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
-
   }
 
   /**
@@ -301,7 +283,7 @@ public class AS2HttpClient implements IAS2HttpConnection
    * @param aConfBuilder
    *        {@link RequestConfig.Builder} to set
    * @param aProxy
-   *        My by null, in such case nothing is done.
+   *        My by <code>null</code>, in such case nothing is done.
    */
   private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
                                                 @Nullable final Proxy aProxy)
@@ -317,7 +299,7 @@ public class AS2HttpClient implements IAS2HttpConnection
           final InetAddress aInetAddr = aISocketAdress.getAddress ();
           if (null != aInetAddr)
           {
-            final HttpHost aHost = new HttpHost (aInetAddr);
+            final HttpHost aHost = new HttpHost (aInetAddr, aISocketAdress.getPort ());
             aConfBuilder.setProxy (aHost);
           }
           else
@@ -331,7 +313,7 @@ public class AS2HttpClient implements IAS2HttpConnection
         }
       }
     }
-    catch (final Exception ex)
+    catch (final RuntimeException ex)
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Exception while setting proxy. Continue without proxy. aProxy:" +

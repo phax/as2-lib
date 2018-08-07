@@ -38,6 +38,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,9 +52,11 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpURLConnection;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.EHttpMethod;
+import com.helger.commons.url.EURLProtocol;
 import com.helger.commons.ws.HostnameVerifierVerifyAll;
 import com.helger.commons.ws.TrustManagerTrustAll;
 
@@ -84,7 +87,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    */
   @Nonnull
   @OverrideOnDemand
-  public static SSLContext createSSLContext () throws GeneralSecurityException
+  public SSLContext createSSLContext () throws GeneralSecurityException
   {
     // Trust all server certificates
     final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
@@ -105,7 +108,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    */
   @Nullable
   @OverrideOnDemand
-  public static HostnameVerifier createHostnameVerifier ()
+  public HostnameVerifier createHostnameVerifier ()
   {
     return new HostnameVerifierVerifyAll ();
   }
@@ -159,20 +162,42 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    * supported
    *
    * @param sUrl
+   *        URL to connect to
    * @param eRequestMethod
+   *        HTTP Request method to use. May not be <code>null</code>.
    * @param aProxy
+   *        Optional proxy to use. May be <code>null</code>.
    * @return a {@link AS2HttpClient} object to work with
    * @throws OpenAS2Exception
+   *         If something goes wrong
    */
   @Nonnull
   public AS2HttpClient getHttpClient (@Nonnull @Nonempty final String sUrl,
                                       @Nonnull final EHttpMethod eRequestMethod,
                                       @Nullable final Proxy aProxy) throws OpenAS2Exception
   {
+    ValueEnforcer.notEmpty (sUrl, "URL");
+    SSLContext aSSLCtx = null;
+    HostnameVerifier aHV = null;
+    if (EURLProtocol.HTTPS.isUsedInURL (sUrl.toLowerCase (Locale.ROOT)))
+    {
+      // Create SSL context and HostnameVerifier
+      try
+      {
+        aSSLCtx = createSSLContext ();
+      }
+      catch (final GeneralSecurityException ex)
+      {
+        throw new OpenAS2Exception ("Error creating SSL Context", ex);
+      }
+      aHV = createHostnameVerifier ();
+    }
     return new AS2HttpClient (sUrl,
                               getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS),
                               getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS),
                               eRequestMethod,
-                              aProxy);
+                              aProxy,
+                              aSSLCtx,
+                              aHV);
   }
 }
