@@ -4,16 +4,14 @@ import static com.helger.as2lib.params.MessageParameters.ATTR_LARGE_FILE_SUPPORT
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import javax.activation.DataSource;
+import javax.annotation.Nonnull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.AS2Message;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
 public final class HTTPHelperTest
@@ -178,7 +177,7 @@ public final class HTTPHelperTest
   @Test (expected = EOFException.class)
   public void testReadChunkLenEOS () throws Exception
   {
-    final InputStream noNewLine = new ByteArrayInputStream ("1".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1".getBytes ());
     HTTPHelper.readChunkLen (noNewLine);
     fail ("An EOFException should have been thrown");
   }
@@ -186,7 +185,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadChunkLenWithHeader () throws Exception
   {
-    final InputStream noNewLine = new ByteArrayInputStream ("1A;name=value\r\n".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1A;name=value\r\n".getBytes ());
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 26, res);
   }
@@ -194,7 +193,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadChunkLenNoHeader () throws Exception
   {
-    final InputStream noNewLine = new ByteArrayInputStream ("1f\n".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1f\n".getBytes ());
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 31, res);
   }
@@ -202,7 +201,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadChunkLenEmpty () throws Exception
   {
-    final InputStream noNewLine = new ByteArrayInputStream ("\n".getBytes ());
+    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("\n".getBytes ());
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 0, res);
   }
@@ -210,22 +209,18 @@ public final class HTTPHelperTest
   @Test
   public void testReadHttpRequestRegularMessage () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = mock (IAS2HttpResponseHandler.class);
-    InputStream is = new ByteArrayInputStream (m_sRegularMessage.getBytes ());
+    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes ());
     // non stream
     AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-    AS2InputStreamProviderSocket mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
     // stream
-    is = new ByteArrayInputStream (m_sRegularMessage.getBytes ());
+    is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes ());
     aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-    mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
     assertTrue ("Compare regular and stream read",
                 _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
@@ -234,22 +229,18 @@ public final class HTTPHelperTest
   @Test
   public void testReadHttpRequestStreamMessage () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = mock (IAS2HttpResponseHandler.class);
-    InputStream is = new ByteArrayInputStream (m_sChunkedMessage.getBytes ());
+    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes ());
     // non stream
     AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-    AS2InputStreamProviderSocket mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
     // stream
-    is = new ByteArrayInputStream (m_sChunkedMessage.getBytes ());
+    is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes ());
     aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-    mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
     assertTrue ("Compare regular and stream read",
                 _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
@@ -258,61 +249,52 @@ public final class HTTPHelperTest
   @Test (expected = IOException.class)
   public void testNoLengthMessageRegular () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = mock (IAS2HttpResponseHandler.class);
-    final InputStream is = new ByteArrayInputStream (m_sNoLengthMessage.getBytes ());
+    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes ());
     // non stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-    final AS2InputStreamProviderSocket mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
   }
 
   @Test (expected = IOException.class)
   public void testNoLengthMessageStream () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = mock (IAS2HttpResponseHandler.class);
-    InputStream is = new ByteArrayInputStream (m_sNoLengthMessage.getBytes ());
+    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes ());
     // stream
-    is = new ByteArrayInputStream (m_sNoLengthMessage.getBytes ());
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-    final AS2InputStreamProviderSocket mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
   }
 
   @Test (expected = IOException.class)
   public void testBadTRansferEncodingMessageRegular () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = mock (IAS2HttpResponseHandler.class);
-    final InputStream is = new ByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes ());
+    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes ());
     // stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
-    final AS2InputStreamProviderSocket mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
   }
 
   @Test (expected = IOException.class)
   public void testBadTRansferEncodingMessageStream () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = mock (IAS2HttpResponseHandler.class);
-    final InputStream is = new ByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes ());
+    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes ());
     // stream
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
-    final AS2InputStreamProviderSocket mockStreamProvider = mock (AS2InputStreamProviderSocket.class);
-    when (mockStreamProvider.getInputStream ()).thenReturn (is);
-    when (mockStreamProvider.getNonUpwardClosingInputStream ()).thenReturn (is);
+    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
   }
 
-  private static boolean _compareLineByLine (final InputStream is1, final InputStream is2)
+  private static boolean _compareLineByLine (@Nonnull final InputStream is1, @Nonnull final InputStream is2)
   {
     final ICommonsList <String> aLines1 = StreamHelper.readStreamLines (is1, StandardCharsets.ISO_8859_1);
     final ICommonsList <String> aLines2 = StreamHelper.readStreamLines (is2, StandardCharsets.ISO_8859_1);
