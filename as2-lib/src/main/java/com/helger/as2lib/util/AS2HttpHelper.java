@@ -33,16 +33,49 @@
 package com.helger.as2lib.util;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.ParseException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.http.HttpHeaderMap;
+import com.helger.commons.string.StringHelper;
 
 @Immutable
 public final class AS2HttpHelper
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpHelper.class);
+
   private AS2HttpHelper ()
   {}
+
+  @Nullable
+  public static ContentType parseContentType (@Nullable final String sContentType)
+  {
+    if (StringHelper.hasText (sContentType))
+      try
+      {
+        return new ContentType (sContentType);
+      }
+      catch (final ParseException ex)
+      {
+        // Something went wrong
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Error parsing Content-Type", ex);
+      }
+    return null;
+  }
+
+  @Nullable
+  public static String getCleanContentType (@Nullable final String sContentType)
+  {
+    final ContentType aCT = parseContentType (sContentType);
+    return aCT != null ? aCT.toString () : null;
+  }
 
   @Nonnull
   public static InternetHeaders getAsInternetHeaders (@Nonnull final HttpHeaderMap aHeaders)

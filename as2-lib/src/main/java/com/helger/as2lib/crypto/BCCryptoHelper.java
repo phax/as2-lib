@@ -96,7 +96,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
@@ -227,7 +227,10 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // Content-Type is sthg like this if encrypted:
     // application/pkcs7-mime; name=smime.p7m; smime-type=enveloped-data
-    final ContentType aContentType = new ContentType (aPart.getContentType ());
+    final ContentType aContentType = AS2HttpHelper.parseContentType (aPart.getContentType ());
+    if (aContentType == null)
+      return false;
+
     final String sBaseType = aContentType.getBaseType ().toLowerCase (Locale.US);
     if (!sBaseType.equals ("application/pkcs7-mime"))
       return false;
@@ -240,7 +243,10 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     ValueEnforcer.notNull (aPart, "Part");
 
-    final ContentType aContentType = new ContentType (aPart.getContentType ());
+    final ContentType aContentType = AS2HttpHelper.parseContentType (aPart.getContentType ());
+    if (aContentType == null)
+      return false;
+
     final String sBaseType = aContentType.getBaseType ();
     return sBaseType.equalsIgnoreCase ("multipart/signed");
   }
@@ -249,19 +255,14 @@ public final class BCCryptoHelper implements ICryptoHelper
   {
     ValueEnforcer.notNull (sContentType, "ContentType");
 
-    try
-    {
-      // Content-Type is sthg like this if compressed:
-      // application/pkcs7-mime; smime-type=compressed-data; name=smime.p7z
-      final ContentType aContentType = new ContentType (sContentType);
+    // Content-Type is sthg like this if compressed:
+    // application/pkcs7-mime; smime-type=compressed-data; name=smime.p7z
+    final ContentType aContentType = AS2HttpHelper.parseContentType (sContentType);
+    if (aContentType == null)
+      return false;
 
-      final String sSmimeType = aContentType.getParameter ("smime-type");
-      return sSmimeType != null && sSmimeType.equalsIgnoreCase ("compressed-data");
-    }
-    catch (final MessagingException ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
+    final String sSmimeType = aContentType.getParameter ("smime-type");
+    return sSmimeType != null && sSmimeType.equalsIgnoreCase ("compressed-data");
   }
 
   @Nonnull

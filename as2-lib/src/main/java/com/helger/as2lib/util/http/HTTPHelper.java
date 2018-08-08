@@ -51,7 +51,6 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.mail.Header;
 import javax.mail.MessagingException;
-import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 
 import org.slf4j.Logger;
@@ -60,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.MessageParameters;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
@@ -120,11 +120,11 @@ public final class HTTPHelper
     public IHTTPOutgoingDumper apply (@Nonnull final IBaseMessage aMsg)
     {
       return new HTTPOutgoingDumperFileBased (new File (m_aDumpDirectory,
-        "as2-outgoing-" +
-          Long.toString (System.currentTimeMillis ()) +
-          "-" +
-          Integer.toString (m_aCounter.getAndIncrement ()) +
-          ".http"));
+                                                        "as2-outgoing-" +
+                                                                          Long.toString (System.currentTimeMillis ()) +
+                                                                          "-" +
+                                                                          Integer.toString (m_aCounter.getAndIncrement ()) +
+                                                                          ".http"));
     }
   }
 
@@ -248,9 +248,9 @@ public final class HTTPHelper
   }
 
   /**
-   * Read the first line of the HTTP request InputStream and parse out HTTP
-   * method (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version
-   * (e.g. "HTTP/1.1")
+   * Read the first line of the HTTP request InputStream and parse out HTTP method
+   * (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version (e.g.
+   * "HTTP/1.1")
    *
    * @param aIS
    *        Stream to read the first line from
@@ -299,8 +299,8 @@ public final class HTTPHelper
   }
 
   /**
-   * @return the dumper for incoming HTTP requests or <code>null</code> if none
-   *         is present
+   * @return the dumper for incoming HTTP requests or <code>null</code> if none is
+   *         present
    * @since 3.0.1
    */
   @Nullable
@@ -325,8 +325,8 @@ public final class HTTPHelper
   /**
    * @param aMsg
    *        The message for which a dumper should be created.
-   * @return the dumper for outgoing HTTP requests or <code>null</code> if none
-   *         is present. Must be closed afterwards!
+   * @return the dumper for outgoing HTTP requests or <code>null</code> if none is
+   *         present. Must be closed afterwards!
    * @since 3.0.1
    */
   @Nullable
@@ -396,13 +396,12 @@ public final class HTTPHelper
 
     // Generate DataSource
     // Put received data in a MIME body part
-    final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
-    final String sReceivedContentType = aReceivedContentType.toString ();
+    final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
+
     byte [] aBytePayLoad = null;
     DataSource aPayload;
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
-    if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON) &&
-      sContentLength == null)
+    if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON) && sContentLength == null)
     {
       // Large file support on,AND No "Content-Length" header present
       InputStream is = aIS;
@@ -415,7 +414,7 @@ public final class HTTPHelper
           // chunked encoding. Use also file backed stream as the message
           // might be large
           final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
-            aMsg.getMessageID ());
+                                                                                                        aMsg.getMessageID ());
           is = sis;
           aMsg.setTempSharedFileInputStream (sis);
         }

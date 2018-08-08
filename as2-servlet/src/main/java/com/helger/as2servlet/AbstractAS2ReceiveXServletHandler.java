@@ -21,14 +21,10 @@ import java.io.IOException;
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.ParseException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.helger.commons.http.CHttpHeader;
-import com.helger.mail.datasource.ByteArrayDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,14 +33,17 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.session.AS2Session;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.http.EHttpVersion;
+import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.servlet.ServletHelper;
 import com.helger.web.scope.IRequestWebScope;
 import com.helger.xservlet.handler.IXServletHandler;
@@ -60,8 +59,8 @@ import com.helger.xservlet.handler.IXServletHandler;
 public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHandler
 {
   /**
-   * The name of the Servlet's init-parameter from which the absolute path to
-   * the configuration file is read.
+   * The name of the Servlet's init-parameter from which the absolute path to the
+   * configuration file is read.
    */
   public static final String SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME = "as2-servlet-config-filename";
 
@@ -166,20 +165,16 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     // Handle the incoming message, and return the MDN if necessary
     final String sClientInfo = aHttpRequest.getRemoteAddr () + ":" + aHttpRequest.getRemotePort ();
 
-    //for large file support, handleIncomingMessage takes DataSource
-    DataSource aPayload;
-    try {
-      // Put received data in a MIME body part
-      final ContentType aReceivedContentType = new ContentType(aMsg.getHeader(CHttpHeader.CONTENT_TYPE));
-      final String sReceivedContentType = aReceivedContentType.toString();
-      aPayload = new ByteArrayDataSource(
-        aMsgData,
-        sReceivedContentType,
-        null);
-    } catch (ParseException e){
-      LOGGER.error("Exception while building DataSource", e);
-      throw new ServletException(e.getMessage());
-    }
+    // for large file support, handleIncomingMessage takes DataSource
+    final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
+    if (sReceivedContentType == null)
+      throw new ServletException ("Incoming message does not contain a valid Content-Type: '" +
+                                  aMsg.getHeader (CHttpHeader.CONTENT_TYPE) +
+                                  "'");
+
+    // Put received data in a MIME body part
+    final DataSource aPayload = new ByteArrayDataSource (aMsgData, sReceivedContentType, null);
+
     // This call internally invokes the AS2ServletSBDModule
     getReceiverModule ().createHandler ().handleIncomingMessage (sClientInfo, aPayload, aMsg, aResponseHandler);
   }

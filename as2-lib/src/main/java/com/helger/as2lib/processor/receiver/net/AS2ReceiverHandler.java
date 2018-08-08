@@ -48,7 +48,6 @@ import javax.activation.FileDataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
-import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
@@ -78,6 +77,7 @@ import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
@@ -276,9 +276,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           // Compress using stream
           if (LOGGER.isDebugEnabled ())
           {
-            StringBuilder partInf = new StringBuilder ();
-            MimeBodyPart part = aMsg.getData ();
-            Enumeration <String> lines = part.getAllHeaderLines ();
+            final StringBuilder partInf = new StringBuilder ();
+            final MimeBodyPart part = aMsg.getData ();
+            final Enumeration <String> lines = part.getAllHeaderLines ();
             while (lines.hasMoreElements ())
             {
               partInf.append (lines.nextElement ()).append ("\n");
@@ -287,11 +287,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             LOGGER.debug (partInf.toString ());
           }
 
-          SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser (aMsg.getData (), 8 * 1024);// TODO:
-                                                                                                              // get
-                                                                                                              // buffer
-                                                                                                              // from
-                                                                                                              // configuration
+          final SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser (aMsg.getData (), 8 * 1024);// TODO:
+          // get
+          // buffer
+          // from
+          // configuration
           aDecompressedPart = SMIMEUtil.toMimeBodyPart (smimeCompressedParser.getContent (aExpander));
         }
         else
@@ -403,8 +403,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * This method can be used to handle an incoming HTTP message AFTER the
-   * headers where extracted.
+   * This method can be used to handle an incoming HTTP message AFTER the headers
+   * where extracted.
    *
    * @param sClientInfo
    *        Client connection info
@@ -430,8 +430,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       try
       {
         // Put received data in a MIME body part
-        final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
-        final String sReceivedContentType = aReceivedContentType.toString ();
+        final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
 
         final MimeBodyPart aReceivedPart = new MimeBodyPart ();
         aReceivedPart.setDataHandler (new DataHandler (aMsgData));
@@ -588,9 +587,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             // if large file support is on, the message does not hold the actual
             // data. in order to get the data for the MDN, a new message that
             // will take the data from the file that was written should be used
-            String sStoredFileName = aMsg.attrs ().getAsString (ATTR_STORED_FILE_NAME);
-            FileDataSource aFileDataSource = new FileDataSource (sStoredFileName);
-            DataHandler aDataFromFile = new DataHandler (aFileDataSource);
+            final String sStoredFileName = aMsg.attrs ().getAsString (ATTR_STORED_FILE_NAME);
+            final FileDataSource aFileDataSource = new FileDataSource (sStoredFileName);
+            final DataHandler aDataFromFile = new DataHandler (aFileDataSource);
             aMsg.getData ().setDataHandler (aDataFromFile);
           }
           sendMDN (sClientInfo,
@@ -625,14 +624,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     finally
     {
       // close the temporary shared stream if it exists
-      TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
+      final TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
       if (null != sis)
       {
         try
         {
           sis.closeAll ();
         }
-        catch (IOException e)
+        catch (final IOException e)
         {
           LOGGER.error ("Exception while closing TempSharedFileInputStream", e);
         }

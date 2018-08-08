@@ -39,7 +39,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeUtility;
@@ -48,6 +47,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
@@ -149,8 +149,7 @@ public final class MimeBodyPartFuncTest
     final byte [] aData = StreamHelper.getAllBytes (aIS);
 
     // Extract content type
-    final ContentType aReceivedContentType = new ContentType (aHeaders.getHeader (CHttpHeader.CONTENT_TYPE)[0]);
-    final String sReceivedContentType = aReceivedContentType.toString ();
+    final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aHeaders.getHeader (CHttpHeader.CONTENT_TYPE)[0]);
 
     final MimeBodyPart aReceivedPart = new MimeBodyPart ();
     aReceivedPart.setDataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null).getAsDataHandler ());

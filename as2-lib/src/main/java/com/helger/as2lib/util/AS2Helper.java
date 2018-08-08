@@ -215,15 +215,15 @@ public final class AS2Helper
    * @param aSession
    *        AS2 session to be used. May not be <code>null</code>.
    * @param aMsg
-   *        The source AS2 message for which the MDN is to be created. May not
-   *        be <code>null</code>.
+   *        The source AS2 message for which the MDN is to be created. May not be
+   *        <code>null</code>.
    * @param aDisposition
    *        The disposition - either success or error. May not be
    *        <code>null</code>.
    * @param sText
    *        The text to be send. May not be <code>null</code>.
-   * @return The created MDN object which is already attached to the passed
-   *         source AS2 message.
+   * @return The created MDN object which is already attached to the passed source
+   *         AS2 message.
    * @throws Exception
    *         In case of an error
    */
@@ -385,9 +385,9 @@ public final class AS2Helper
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
-    final ContentType aReportType = new ContentType (aReportParts.getContentType ());
+    final ContentType aReportType = AS2HttpHelper.parseContentType (aReportParts.getContentType ());
 
-    if (aReportType.getBaseType ().equalsIgnoreCase ("multipart/report"))
+    if (aReportType != null && aReportType.getBaseType ().equalsIgnoreCase ("multipart/report"))
     {
       final int nReportCount = aReportParts.getCount ();
       for (int j = 0; j < nReportCount; j++)
@@ -403,12 +403,12 @@ public final class AS2Helper
           {
             final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
             aMdn.attrs ().putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
-            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
-                                 aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                                 aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
-                                 aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+            aMdn.attrs ()
+                .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+            aMdn.attrs ()
+                .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+            aMdn.attrs ()
+                .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
             aMdn.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
             aMdn.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }

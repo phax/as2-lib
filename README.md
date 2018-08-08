@@ -34,6 +34,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Added new subproject `as2-demo-webapp` to provide a simple to use stub for a web application receiving AS2 messages (see [#36](https://github.com/phax/as2-lib/issues/36))
     * Loading of keystores now also works from classpath by default. Based on https://github.com/phax/as2-peppol-server/issues/2
     * Deprecated `AS2ClientRequest.setData (File)` in favour of `AS2ClientRequest.setData (File, Charset)` (see [#45](https://github.com/phax/as2-lib/issues/45))
+    * `Content-Type` handling was improved all over the place to avoid exception in case of error (see [#33](https://github.com/phax/as2-lib/issues/33))
 * v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
   * The existence of just the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending anymore (see [#42](https://github.com/phax/as2-lib/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.

@@ -43,7 +43,6 @@ import java.security.cert.X509Certificate;
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.mail.MessagingException;
-import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
@@ -129,8 +128,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
 
-      final ContentType aReceivedContentType = new ContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
-      final String sReceivedContentType = aReceivedContentType.toString ();
+      final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
 
       final MimeBodyPart aReceivedPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMsg.headers ()), aData);
       aMsg.setData (aReceivedPart);
@@ -293,8 +291,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       String sOriginalMIC;
       File aPendingFile;
-      try (
-          final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
+      try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
       {
         // Get the original mic from the first line of pending information
         // file
@@ -311,12 +308,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       /*
-       * original code just did string compare - returnmic.equals(originalmic).
-       * Sadly this is not good enough as the mic fields are
-       * "base64string, algorithm" taken from a rfc822 style
-       * Returned-Content-MIC header and rfc822 headers can contain spaces all
-       * over the place. (not to mention comments!). Simple fix - delete all
-       * spaces.
+       * original code just did string compare - returnmic.equals(originalmic). Sadly
+       * this is not good enough as the mic fields are "base64string, algorithm" taken
+       * from a rfc822 style Returned-Content-MIC header and rfc822 headers can
+       * contain spaces all over the place. (not to mention comments!). Simple fix -
+       * delete all spaces.
        */
       if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
       {
