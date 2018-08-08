@@ -78,8 +78,8 @@ public class AS2ClientRequest
 
   /**
    * @param sSubject
-   *        The subject to use. May neither be <code>null</code> nor empty. Has
-   *        no impact on the MIME part creation. Just declarative.
+   *        The subject to use. May neither be <code>null</code> nor empty. Has no
+   *        impact on the MIME part creation. Just declarative.
    */
   public AS2ClientRequest (@Nonnull @Nonempty final String sSubject)
   {
@@ -124,22 +124,27 @@ public class AS2ClientRequest
 
   /**
    * Set the content of the {@link File} as a payload. No charset is applied and
-   * therefore no content type starting with "text/" may be used. The name of
-   * the file is used as the payload file name.
+   * therefore no content type starting with "text/" may be used. The name of the
+   * file is used as the payload file name.<br>
+   * Don't use that API - use the one with the explicit charset, otherwise you may
+   * run into an exception if neither signing nor encryption nor compression is
+   * used!
    *
    * @param aFile
    *        {@link File} to read the content from. Never <code>null</code>.
    * @return this
+   * @see #setData(File, Charset)
    */
   @Nonnull
+  @Deprecated
   public AS2ClientRequest setData (@Nonnull final File aFile)
   {
     return setData (aFile, (Charset) null);
   }
 
   /**
-   * Set the content of the {@link File} as a payload. If no charset is applied
-   * ( <code>null</code>) no content type starting with "text/" may be used. The
+   * Set the content of the {@link File} as a payload. If no charset is applied (
+   * <code>null</code>) no content type starting with "text/" may be used. The
    * name of the file is used as the payload file name.
    *
    * @param aFile
@@ -165,8 +170,7 @@ public class AS2ClientRequest
    * applied and therefore no content type starting with "text/" may be used.
    *
    * @param aIS
-   *        {@link InputStream} to read the content from. Never
-   *        <code>null</code>.
+   *        {@link InputStream} to read the content from. Never <code>null</code>.
    * @return this
    */
   @Nonnull
@@ -180,8 +184,7 @@ public class AS2ClientRequest
    * applied and therefore no content type starting with "text/" may be used.
    *
    * @param aIS
-   *        {@link InputStream} to read the content from. Never
-   *        <code>null</code>.
+   *        {@link InputStream} to read the content from. Never <code>null</code>.
    * @param aCharset
    *        Charset to use. If it is <code>null</code> the content is set as a
    *        byte array, if not <code>null</code> the content is set as a String.
@@ -234,8 +237,8 @@ public class AS2ClientRequest
 
   /**
    * Set the filename to be used to name the content. This will add a
-   * <code>Content-Disposition: attachment; filename=...</code> header to the
-   * MIME part
+   * <code>Content-Disposition: attachment; filename=...</code> header to the MIME
+   * part
    *
    * @param sFilename
    *        Filename to use. May be <code>null</code> to indicate none (also the
@@ -254,8 +257,8 @@ public class AS2ClientRequest
    * determined by the data type that defines the body.
    *
    * @param eCTE
-   *        CTE to be used. May be <code>null</code> in which case the default
-   *        CTE is used.
+   *        CTE to be used. May be <code>null</code> in which case the default CTE
+   *        is used.
    * @return this for chaining
    * @since 3.0.4
    */
