@@ -90,6 +90,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -439,44 +440,49 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Set all custom headers first (so that they are overridden with the
     // mandatory ones in here)
-    aMsg.headers ().forEachSingleHeader (aConn::setHttpHeader);
+    // Use HttpHeaderMap and not String to ensure name casing is identical!
+    final HttpHeaderMap aHeaderMap = aMsg.headers ().getClone ();
 
-    aConn.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-    aConn.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+    aHeaderMap.setHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+    aHeaderMap.setHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-    aConn.setHttpHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aConn.setHttpHeader (CHttpHeader.MESSAGE_ID, aMsg.getMessageID ());
+    aHeaderMap.setHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
+    aHeaderMap.setHeader (CHttpHeader.MESSAGE_ID, aMsg.getMessageID ());
     // make sure this is the encoding used in the msg, run TBF1
-    aConn.setHttpHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aConn.setHttpHeader (CHttpHeader.CONTENT_TYPE, aMsg.getContentType ());
-    aConn.setHttpHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
-    aConn.setHttpHeader (CHttpHeader.RECIPIENT_ADDRESS, aPartnership.getAS2URL ());
-    aConn.setHttpHeader (CHttpHeader.AS2_FROM, aPartnership.getSenderAS2ID ());
-    aConn.setHttpHeader (CHttpHeader.AS2_TO, aPartnership.getReceiverAS2ID ());
-    aConn.setHttpHeader (CHttpHeader.SUBJECT, aMsg.getSubject ());
-    aConn.setHttpHeader (CHttpHeader.FROM, aPartnership.getSenderEmail ());
+    aHeaderMap.setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aHeaderMap.setHeader (CHttpHeader.CONTENT_TYPE, aMsg.getContentType ());
+    aHeaderMap.setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
+    aHeaderMap.setHeader (CHttpHeader.RECIPIENT_ADDRESS, aPartnership.getAS2URL ());
+    aHeaderMap.setHeader (CHttpHeader.AS2_FROM, aPartnership.getSenderAS2ID ());
+    aHeaderMap.setHeader (CHttpHeader.AS2_TO, aPartnership.getReceiverAS2ID ());
+    aHeaderMap.setHeader (CHttpHeader.SUBJECT, aMsg.getSubject ());
+    aHeaderMap.setHeader (CHttpHeader.FROM, aPartnership.getSenderEmail ());
     // Set when compression is enabled
-    aConn.setHttpHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING));
+    aHeaderMap.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING,
+                          aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING));
 
     // Determine where to send the MDN to (legacy field)
     final String sDispTo = aPartnership.getAS2MDNTo ();
     if (sDispTo != null)
-      aConn.setHttpHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, sDispTo);
+      aHeaderMap.setHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO, sDispTo);
 
     // MDN requirements
     final String sDispositionNotificationOptions = aPartnership.getAS2MDNOptions ();
     if (sDispositionNotificationOptions != null)
-      aConn.setHttpHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS, sDispositionNotificationOptions);
+      aHeaderMap.setHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS, sDispositionNotificationOptions);
 
     // Async MDN 2007-03-12
     final String sReceiptDeliveryOption = aPartnership.getAS2ReceiptDeliveryOption ();
     if (sReceiptDeliveryOption != null)
-      aConn.setHttpHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION, sReceiptDeliveryOption);
+      aHeaderMap.setHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION, sReceiptDeliveryOption);
 
     // As of 2007-06-01
     final String sContententDisposition = aMsg.getContentDisposition ();
     if (sContententDisposition != null)
-      aConn.setHttpHeader (CHttpHeader.CONTENT_DISPOSITION, sContententDisposition);
+      aHeaderMap.setHeader (CHttpHeader.CONTENT_DISPOSITION, sContententDisposition);
+
+    // Set once, after all were collected
+    aHeaderMap.forEachSingleHeader (aConn::setHttpHeader);
   }
 
   /**
