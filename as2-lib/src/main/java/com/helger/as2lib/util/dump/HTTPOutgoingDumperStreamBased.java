@@ -100,7 +100,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 
   public void dumpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    final String sHeaderLine = sName + "=" + sValue + CHttp.EOL;
+    final String sHeaderLine = sName + ": " + sValue + CHttp.EOL;
     _write (sHeaderLine.getBytes (CHttp.HTTP_CHARSET));
     m_nHeaders++;
   }
