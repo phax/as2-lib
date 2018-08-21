@@ -53,8 +53,11 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
+import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.mime.CMimeType;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
 
 /**
@@ -82,6 +85,9 @@ public final class MainSendToMendelsonTestServer
     if (false)
       aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.6", 8080));
 
+    if (false)
+      HTTPHelper.setHTTPOutgoingDumperFactory (x -> new HTTPOutgoingDumperStreamBased (System.out));
+
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
     aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/mendelson/key1.pfx"), "test");
@@ -100,9 +106,10 @@ public final class MainSendToMendelsonTestServer
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_384;
-    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
-    final boolean bCompress = false;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
+    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES256_CBC;
+    final ECompressionType eCompress = ECompressionType.ZLIB;
+    final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
 
     if (eSignAlgo != null)
       aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
@@ -110,7 +117,7 @@ public final class MainSendToMendelsonTestServer
                                                         .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                         .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
-    aSettings.setCompress (ECompressionType.ZLIB, bCompress);
+    aSettings.setCompress (eCompress, bCompressBeforeSigning);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
@@ -123,6 +130,8 @@ public final class MainSendToMendelsonTestServer
     else
       aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
+    if (false)
+      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
