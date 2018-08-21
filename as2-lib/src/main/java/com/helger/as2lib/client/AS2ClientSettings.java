@@ -62,6 +62,10 @@ import com.helger.security.keystore.IKeyStoreType;
  */
 public class AS2ClientSettings implements Serializable
 {
+  /**
+   * If compression and signing are enabled, compression happens before singing
+   */
+  public static final boolean DEFAULT_COMPRESS_BEFORE_SIGNING = true;
   /** By default an MDN is requested. */
   public static final boolean DEFAULT_IS_MDN_REQUESTED = true;
   /**
@@ -88,6 +92,7 @@ public class AS2ClientSettings implements Serializable
   public static final int DEFAULT_CONNECT_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_CONNECT_TIMEOUT_MS;
   /** Default read timeout: 60 seconds */
   public static final int DEFAULT_READ_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_READ_TIMEOUT_MS;
+  public static final boolean DEFAULT_LARGE_FILE_SUPPORT_ENABLED = false;
 
   private IKeyStoreType m_aKeyStoreType = EKeyStoreType.PKCS12;
   private File m_aKeyStoreFile;
@@ -107,7 +112,7 @@ public class AS2ClientSettings implements Serializable
   private ECryptoAlgorithmCrypt m_eCryptAlgo;
   private ECryptoAlgorithmSign m_eSignAlgo;
   private ECompressionType m_eCompressionType;
-  private boolean m_bCompressBeforeSigning = true;
+  private boolean m_bCompressBeforeSigning = DEFAULT_COMPRESS_BEFORE_SIGNING;
   private boolean m_bMDNRequested = DEFAULT_IS_MDN_REQUESTED;
   private String m_sMDNOptions = DEFAULT_MDN_OPTIONS;
   private String m_sAsyncMDNUrl;
@@ -119,8 +124,8 @@ public class AS2ClientSettings implements Serializable
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
 
-  private boolean m_bLargeFileSupport = false; // avoid holding full file data
-                                               // in memory
+  // avoid holding full file data in memory
+  private boolean m_bLargeFileSupport = DEFAULT_LARGE_FILE_SUPPORT_ENABLED;
 
   public AS2ClientSettings ()
   {}
@@ -417,7 +422,8 @@ public class AS2ClientSettings implements Serializable
    *        the message (that is also the default).
    * @param bCompressBeforeSigning
    *        <code>true</code> to compress the data before it is signed,
-   *        <code>false</code> to sign first and than compress the message.
+   *        <code>false</code> to sign first and than compress the message. The
+   *        default is <code>true</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -479,7 +485,7 @@ public class AS2ClientSettings implements Serializable
 
   /**
    * Determine if an MDN is requested at all.
-   * 
+   *
    * @param bMDNRequested
    *        <code>true</code> to request an MDN (is the default),
    *        <code>false</code> to not request one.

@@ -184,7 +184,6 @@ public class AS2Client
     }
 
     if (aSettings.getCompressionType () != null)
-
     {
       aPartnership.setCompressionType (aSettings.getCompressionType ());
       aPartnership.setCompressionMode (aSettings.isCompressBeforeSigning () ? CPartnershipIDs.COMPRESS_BEFORE_SIGNING
