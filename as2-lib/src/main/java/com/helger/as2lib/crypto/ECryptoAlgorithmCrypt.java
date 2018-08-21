@@ -53,9 +53,14 @@ public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
   CRYPT_CAST5 ("cast5", CMSAlgorithm.CAST5_CBC),
   CRYPT_IDEA ("idea", CMSAlgorithm.IDEA_CBC),
   CRYPT_RC2 ("rc2", PKCSObjectIdentifiers.RC2_CBC),
+  // Mendelson only accepts "cbc" padding - no "ccm" and no "gcm"
   CRYPT_AES128_CBC ("aes128-cbc", CMSAlgorithm.AES128_CBC),
   CRYPT_AES192_CBC ("aes192-cbc", CMSAlgorithm.AES192_CBC),
-  CRYPT_AES256_CBC ("aes256-cbc", CMSAlgorithm.AES256_CBC);
+  CRYPT_AES256_CBC ("aes256-cbc", CMSAlgorithm.AES256_CBC),
+  // Added in 4.2.0
+  CRYPT_AES128_GCM ("aes128-gcm", CMSAlgorithm.AES128_GCM),
+  CRYPT_AES192_GCM ("aes192-gcm", CMSAlgorithm.AES192_GCM),
+  CRYPT_AES256_GCM ("aes256-gcm", CMSAlgorithm.AES256_GCM);
 
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
