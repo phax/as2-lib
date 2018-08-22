@@ -96,6 +96,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.WrappedOutputStream;
+import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
@@ -301,8 +302,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
     aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
-    // TODO use constant
-    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TYPE, "application/octet-stream");
+    aMsg.headers ()
+        .addHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compressed data with " +
