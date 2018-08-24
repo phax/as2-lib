@@ -43,6 +43,7 @@ import javax.annotation.WillNotClose;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.security.keystore.IKeyStoreType;
 
 /**
@@ -113,8 +114,7 @@ public interface ICryptoHelper
    *
    * @param sContentType
    *        The content type to be checked. May not be <code>null</code>.
-   * @return <code>true</code> if it is compressed, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if it is compressed, <code>false</code> otherwise.
    * @throws OpenAS2Exception
    *         In case something goes wrong.
    */
@@ -143,7 +143,8 @@ public interface ICryptoHelper
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,
                         @Nonnull X509Certificate aCert,
-                        @Nonnull ECryptoAlgorithmCrypt eAlgorithm) throws Exception;
+                        @Nonnull ECryptoAlgorithmCrypt eAlgorithm,
+                        @Nonnull @Nonempty String sContentTransferEncoding) throws Exception;
 
   @Nonnull
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,

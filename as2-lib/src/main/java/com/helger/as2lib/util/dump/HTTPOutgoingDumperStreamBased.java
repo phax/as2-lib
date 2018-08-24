@@ -35,6 +35,7 @@ package com.helger.as2lib.util.dump;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillCloseWhenClosed;
 
@@ -88,9 +89,14 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 
   private void _write (@Nonnull final byte [] aBytes)
   {
+    _write (aBytes, 0, aBytes.length);
+  }
+
+  private void _write (@Nonnull final byte [] aBytes, @Nonnegative final int nOfs, @Nonnegative final int nLen)
+  {
     try
     {
-      m_aOS.write (aBytes, 0, aBytes.length);
+      m_aOS.write (aBytes, nOfs, nLen);
     }
     catch (final IOException ex)
     {
@@ -118,6 +124,11 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   public void dumpPayload (final int nByte)
   {
     _write (nByte);
+  }
+
+  public void dumpPayload (@Nonnull final byte [] aBytes, @Nonnegative final int nOfs, @Nonnegative final int nLen)
+  {
+    _write (aBytes, nOfs, nLen);
   }
 
   @Override

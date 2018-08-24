@@ -366,8 +366,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-    // Bug in ph-commons 9.1.3!
-    aMDN.headers ().addAllHeaders (aConn.getHeaderFields ());
+    // Bug in ph-commons 9.1.3 in addAllHeaders!
+    aMDN.headers ().addAllHeaders (aConn.getResponseHeaderFields ());
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream aMDNStream = null;

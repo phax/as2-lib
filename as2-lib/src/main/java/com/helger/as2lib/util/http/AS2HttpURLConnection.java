@@ -59,64 +59,38 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
     m_aHttpURLConnection = aConnection;
   }
 
-  /**
-   * Set an HTTP header
-   *
-   * @param sName
-   *        Header name
-   * @param sValue
-   *        Header value
-   */
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
     m_aHttpURLConnection.setRequestProperty (sName, sValue);
   }
 
-  /**
-   * Get URL
-   */
   public URL getURL ()
   {
     return m_aHttpURLConnection.getURL ();
   }
 
-  /**
-   * Get OutputStream
-   */
   public OutputStream getOutputStream () throws IOException
   {
     return m_aHttpURLConnection.getOutputStream ();
   }
 
-  /**
-   * Get InputStream
-   */
   public InputStream getInputStream () throws IOException
   {
     return m_aHttpURLConnection.getInputStream ();
   }
 
-  /**
-   * Get response HTTP Status as integer
-   */
   public int getResponseCode () throws IOException
   {
     return m_aHttpURLConnection.getResponseCode ();
   }
 
-  /**
-   * Get the response message
-   */
   public String getResponseMessage () throws IOException
   {
     return m_aHttpURLConnection.getResponseMessage ();
   }
 
-  /**
-   * Get the headers of the request
-   */
   @Nonnull
-  public HttpHeaderMap getHeaderFields ()
+  public HttpHeaderMap getResponseHeaderFields ()
   {
     final HttpHeaderMap ret = new HttpHeaderMap ();
     for (final Map.Entry <String, List <String>> aEntry : m_aHttpURLConnection.getHeaderFields ().entrySet ())
@@ -131,9 +105,6 @@ public class AS2HttpURLConnection implements IAS2HttpConnection
     return ret;
   }
 
-  /**
-   * Close the connection
-   */
   public void disconnect ()
   {
     m_aHttpURLConnection.disconnect ();

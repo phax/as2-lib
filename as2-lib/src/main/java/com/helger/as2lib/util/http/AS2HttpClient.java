@@ -142,8 +142,8 @@ public class AS2HttpClient implements IAS2HttpConnection
   }
 
   /**
-   * Provides an output stream so user can write message content to it. Starts
-   * the sending to caller can start write to the received stream
+   * Provides an output stream so user can write message content to it. Starts the
+   * sending to caller can start write to the received stream
    *
    * @return OutputStream to write message body to
    */
@@ -238,12 +238,9 @@ public class AS2HttpClient implements IAS2HttpConnection
     return aStatusLine.getReasonPhrase ();
   }
 
-  /**
-   * @return the headers of the request
-   */
   @Nonnull
   @ReturnsMutableCopy
-  public HttpHeaderMap getHeaderFields () throws OpenAS2Exception
+  public HttpHeaderMap getResponseHeaderFields () throws OpenAS2Exception
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)

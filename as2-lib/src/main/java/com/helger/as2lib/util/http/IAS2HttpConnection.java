@@ -101,12 +101,12 @@ public interface IAS2HttpConnection
   String getResponseMessage () throws OpenAS2Exception, IOException;
 
   /**
-   * @return the headers of the request
+   * @return the headers of the response
    * @throws OpenAS2Exception
    *         in case of error
    */
   @Nonnull
-  HttpHeaderMap getHeaderFields () throws OpenAS2Exception;
+  HttpHeaderMap getResponseHeaderFields () throws OpenAS2Exception;
 
   /**
    * Close the connection
@@ -115,7 +115,7 @@ public interface IAS2HttpConnection
 
   /**
    * // TODO kick this from the interface
-   * 
+   *
    * @param toSend
    *        InputStream to send
    * @throws OpenAS2Exception

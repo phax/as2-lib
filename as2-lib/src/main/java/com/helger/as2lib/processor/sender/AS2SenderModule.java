@@ -47,6 +47,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeUtility;
 
 import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
@@ -289,21 +290,20 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   @Nonnull
   protected MimeBodyPart compress (@Nonnull final IMessage aMsg,
                                    @Nonnull final MimeBodyPart aData,
-                                   @Nonnull final ECompressionType eCompressionType) throws SMIMEException,
-                                                                                     MessagingException
+                                   @Nonnull final ECompressionType eCompressionType,
+                                   @Nonnull @Nonempty final String sContentTransferEncoding) throws SMIMEException,
+                                                                                             MessagingException
   {
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
     // Content-Transfer-Encoding to use
-    final String sCTE = aMsg.partnership ()
-                            .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
-    aCompressedGenerator.setContentTransferEncoding (sCTE);
+    aCompressedGenerator.setContentTransferEncoding (sContentTransferEncoding);
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
-    aMsg.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
+    aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
     aMsg.headers ()
-        .addHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
+        .setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Compressed data with " +
@@ -339,12 +339,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       bCompressBeforeSign = aPartnership.isCompressBeforeSign ();
     }
 
+    // Get Content-Transfer-Encoding to use
+    final String sContentTransferEncoding = aMsg.partnership ()
+                                                .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+
     if (eCompressionType != null && bCompressBeforeSign)
     {
       // Compress before sign
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message before signing...");
-      aDataBP = compress (aMsg, aDataBP, eCompressionType);
+      aDataBP = compress (aMsg, aDataBP, eCompressionType, sContentTransferEncoding);
 
       // Replace the message data, because it is the basis for the MIC
       aMsg.setData (aDataBP);
@@ -400,7 +404,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Compress after sign
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message after signing...");
-      aDataBP = compress (aMsg, aDataBP, eCompressionType);
+      aDataBP = compress (aMsg, aDataBP, eCompressionType, sContentTransferEncoding);
     }
 
     // Encrypt the data if requested
@@ -412,7 +416,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (eCryptAlgorithm == null)
         throw new OpenAS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
 
-      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm);
+      aDataBP = AS2Helper.getCryptoHelper ()
+                         .encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, sContentTransferEncoding);
+      aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypted data with " +
@@ -446,19 +452,18 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     aHeaderMap.setHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
     aHeaderMap.setHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+    aHeaderMap.setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
+    aHeaderMap.setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
 
     aHeaderMap.setHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aHeaderMap.setHeader (CHttpHeader.MESSAGE_ID, aMsg.getMessageID ());
-    // make sure this is the encoding used in the msg, run TBF1
-    aHeaderMap.setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aHeaderMap.setHeader (CHttpHeader.CONTENT_TYPE, aMsg.getContentType ());
-    aHeaderMap.setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
     aHeaderMap.setHeader (CHttpHeader.RECIPIENT_ADDRESS, aPartnership.getAS2URL ());
     aHeaderMap.setHeader (CHttpHeader.AS2_FROM, aPartnership.getSenderAS2ID ());
     aHeaderMap.setHeader (CHttpHeader.AS2_TO, aPartnership.getReceiverAS2ID ());
     aHeaderMap.setHeader (CHttpHeader.SUBJECT, aMsg.getSubject ());
     aHeaderMap.setHeader (CHttpHeader.FROM, aPartnership.getSenderEmail ());
-    // Set when compression is enabled
+    // Set when compression or encryption is enabled
     aHeaderMap.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING,
                           aMsg.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING));
 
@@ -509,8 +514,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
-      // Bug in ph-commons 9.1.3!
-      aMDN.headers ().addAllHeaders (aConn.getHeaderFields ());
+      // Bug in ph-commons 9.1.3 in addAllHeaders!
+      aMDN.headers ().addAllHeaders (aConn.getResponseHeaderFields ());
 
       // Receive the MDN data
       final InputStream aConnIS = aConn.getInputStream ();
@@ -705,6 +710,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
         OutputStream aMsgOS = aConn.getOutputStream ();
+        if (true)
+        {
+          final String sCTE = aMsg.headers ().getFirstHeaderValue (CHttpHeader.CONTENT_TRANSFER_ENCODING);
+          if (sCTE != null)
+          {
+            // Use the specified CTE
+            aMsgOS = MimeUtility.encode (aMsgOS, sCTE);
+          }
+        }
 
         // This stream dumps the HTTP
         if (aOutgoingDumper != null)
@@ -719,6 +733,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
               super.write (b);
               aOutgoingDumper.dumpPayload (b);
             }
+
+            @Override
+            public final void write (final byte [] aBytes, final int nOfs, final int nLen) throws IOException
+            {
+              super.write (aBytes, nOfs, nLen);
+              aOutgoingDumper.dumpPayload (aBytes, nOfs, nLen);
+            }
           };
         }
 
@@ -729,7 +750,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
         aSW.stop ();
         LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-
       }
       else
       {

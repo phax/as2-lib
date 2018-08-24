@@ -453,9 +453,10 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final ECryptoAlgorithmCrypt eAlgorithm) throws GeneralSecurityException,
-                                                                                SMIMEException,
-                                                                                CMSException
+                               @Nonnull final ECryptoAlgorithmCrypt eAlgorithm,
+                               @Nonnull @Nonempty final String sContentTransferEncoding) throws GeneralSecurityException,
+                                                                                         SMIMEException,
+                                                                                         CMSException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -474,6 +475,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final SMIMEEnvelopedGenerator aGen = new SMIMEEnvelopedGenerator ();
     aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (m_sSecurityProviderName));
+    aGen.setContentTransferEncoding (sContentTransferEncoding);
 
     final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (m_sSecurityProviderName)
                                                                                   .build ();

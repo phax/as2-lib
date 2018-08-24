@@ -45,8 +45,8 @@ import javax.annotation.Nonnull;
 public interface IHTTPOutgoingDumper extends AutoCloseable
 {
   /**
-   * Get notified on a single outgoing HTTP headers. For HTTP headers usually
-   * the ISO-8859-1 charset is used.
+   * Get notified on a single outgoing HTTP headers. For HTTP headers usually the
+   * ISO-8859-1 charset is used.
    *
    * @param sName
    *        HTTP header name. Never <code>null</code>.
@@ -68,6 +68,19 @@ public interface IHTTPOutgoingDumper extends AutoCloseable
    *        Current byte
    */
   void dumpPayload (int nByte);
+
+  /**
+   * Dump a single payload byte. May not throw an IOException!
+   *
+   * @param aBytes
+   *        bytes
+   * @param nOfs
+   *        Offset into the array
+   * @param nLen
+   *        Number of bytes to write
+   * @since 4.2.0
+   */
+  void dumpPayload (byte [] aBytes, int nOfs, int nLen);
 
   /**
    * Called after the payload was emitted.
