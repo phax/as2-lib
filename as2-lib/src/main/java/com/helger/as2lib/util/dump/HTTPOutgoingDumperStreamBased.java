@@ -70,6 +70,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     m_aOS = aOS;
   }
 
+  @Nonnull
   protected final OutputStream getWrappedOS ()
   {
     return m_aOS;
