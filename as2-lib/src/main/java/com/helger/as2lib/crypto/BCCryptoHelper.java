@@ -81,7 +81,6 @@ import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedParser;
@@ -434,12 +433,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     MimeBodyPart aDecryptedDataBodyPart;
     if (bLargeFileOn)
     {
-      aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (BouncyCastleProvider.PROVIDER_NAME)));
+      aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName)));
     }
     else
     {
-      final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (BouncyCastleProvider.PROVIDER_NAME));
-
+      final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName));
       if (s_aDumpDecryptedDirectory != null)
       {
         _dumpDecrypted (aDecryptedData);
