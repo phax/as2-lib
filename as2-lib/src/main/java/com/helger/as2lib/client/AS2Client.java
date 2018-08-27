@@ -154,24 +154,24 @@ public class AS2Client
     aPartnership.setProtocol (AS2Message.PROTOCOL_AS2);
     aPartnership.setMessageIDFormat (aSettings.getMessageIDFormat ());
 
-    // We want a sync MDN:
-    if (aSettings.hasMDNOptions ())
-      aPartnership.setAS2MDNOptions (aSettings.getMDNOptions ());
-
     if (aSettings.isMDNRequested ())
     {
+      // We want an MDN
+
+      // This field must be set to a valid email address
+      aPartnership.setAS2MDNTo (aSettings.getSenderEmailAddress ());
+
+      // signed MDN requested?
+      aPartnership.setAS2MDNOptions (aSettings.getMDNOptions ());
+
       if (aSettings.isAsyncMDNRequested ())
       {
         // We want an async MDN
-        aPartnership.setAS2MDNTo (aSettings.getAsyncMDNUrl ());
         aPartnership.setAS2ReceiptDeliveryOption (aSettings.getAsyncMDNUrl ());
       }
       else
       {
         // We want an sync MDN
-
-        // This field must be set to a valid email address
-        aPartnership.setAS2MDNTo (aSettings.getSenderEmailAddress ());
         // This field must be null - otherwise async MDN!
         aPartnership.setAS2ReceiptDeliveryOption (null);
       }
@@ -181,6 +181,7 @@ public class AS2Client
       // We don't want an MDN
       aPartnership.setAS2MDNTo (null);
       aPartnership.setAS2ReceiptDeliveryOption (null);
+      aPartnership.setAS2MDNOptions (null);
     }
 
     if (aSettings.getCompressionType () != null)
