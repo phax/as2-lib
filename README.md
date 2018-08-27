@@ -35,6 +35,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Loading of keystores now also works from classpath by default. Based on https://github.com/phax/as2-peppol-server/issues/2
     * Deprecated `AS2ClientRequest.setData (File)` in favour of `AS2ClientRequest.setData (File, Charset)` (see [#45](https://github.com/phax/as2-lib/issues/45))
     * `Content-Type` handling was improved all over the place to avoid exception in case of error (see [#33](https://github.com/phax/as2-lib/issues/33))
+    * Added new class `HTTPIncomingDumperStreamBased` 
 * v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
   * The existence of just the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending anymore (see [#42](https://github.com/phax/as2-lib/issues/42))
   * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.
