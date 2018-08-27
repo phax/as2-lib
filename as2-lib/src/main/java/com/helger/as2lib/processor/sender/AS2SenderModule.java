@@ -669,7 +669,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final MimeBodyPart aSecuredMimePart,
-                             @Nonnull final String sMIC) throws OpenAS2Exception, IOException, MessagingException
+                             @Nullable final String sMIC) throws OpenAS2Exception, IOException, MessagingException
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -793,6 +793,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           if (aPartnership.getAS2ReceiptDeliveryOption () == null)
           {
             // go ahead to receive sync MDN
+            // Note: If an MDN is requested, a MIC is present
+            assert sMIC != null;
             receiveSyncMDN (aMsg, aConn, sMIC);
 
             if (LOGGER.isInfoEnabled ())
@@ -840,7 +842,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Calculate MIC after compress/sign/crypt was handled, because the
       // message data might change if compression before signing is active.
-      final String sMIC = calculateAndStoreMIC (aMsg);
+      final String sMIC;
+      if (aMsg.isRequestingMDN ())
+        sMIC = calculateAndStoreMIC (aMsg);
+      else
+        sMIC = null;
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
