@@ -565,7 +565,7 @@ public class AS2ClientSettings implements Serializable
    */
   public boolean hasMDNOptions ()
   {
-    return StringHelper.hasText (m_sMDNOptions);
+    return m_sMDNOptions != null;
   }
 
   /**
