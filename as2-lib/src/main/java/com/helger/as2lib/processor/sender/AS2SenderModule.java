@@ -278,6 +278,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     if (aPartnership.getAS2ReceiptDeliveryOption () != null)
     {
+      // Async MDN is requested
       // if yes : PA_AS2_RECEIPT_OPTION != null
       // then keep the original mic & message id.
       // then wait for the another HTTP call by receivers

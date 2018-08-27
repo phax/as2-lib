@@ -539,18 +539,6 @@ public class Partnership implements Serializable
   /**
    * @return The return URL for async MDN when sending messages. May be
    *         <code>null</code>.
-   * @deprecated Use {@link #getAS2ReceiptDeliveryOption()} instead
-   */
-  @Deprecated
-  @Nullable
-  public String getAS2ReceiptOption ()
-  {
-    return getAS2ReceiptDeliveryOption ();
-  }
-
-  /**
-   * @return The return URL for async MDN when sending messages. May be
-   *         <code>null</code>.
    * @see #getAS2MDNTo()
    * @since 3.0.4
    */
@@ -558,21 +546,6 @@ public class Partnership implements Serializable
   public String getAS2ReceiptDeliveryOption ()
   {
     return getAttribute (CPartnershipIDs.PA_AS2_RECEIPT_DELIVERY_OPTION);
-  }
-
-  /**
-   * Set the return URL for async MDNs when sending messages.
-   *
-   * @param sValue
-   *        The async MDN url. May be <code>null</code>.
-   * @return {@link EChange}
-   * @deprecated Use {@link #setAS2ReceiptDeliveryOption(String)} instead
-   */
-  @Deprecated
-  @Nonnull
-  public EChange setAS2ReceiptOption (@Nullable final String sValue)
-  {
-    return setAS2ReceiptDeliveryOption (sValue);
   }
 
   /**
