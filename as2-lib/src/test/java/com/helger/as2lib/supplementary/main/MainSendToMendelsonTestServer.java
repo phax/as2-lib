@@ -53,9 +53,11 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
+import com.helger.as2lib.util.dump.HTTPIncomingDumperStreamBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.debug.GlobalDebug;
+import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
@@ -87,6 +89,8 @@ public final class MainSendToMendelsonTestServer
 
     if (false)
       HTTPHelper.setHTTPOutgoingDumperFactory (x -> new HTTPOutgoingDumperStreamBased (System.out));
+    if (false)
+      HTTPHelper.setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperStreamBased (new NonClosingOutputStream (System.out)));
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
@@ -116,6 +120,10 @@ public final class MainSendToMendelsonTestServer
                                                         .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
                                                         .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
                                                         .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+
+    if (false)
+      aSettings.setMDNOptions ("");
+
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
