@@ -44,6 +44,7 @@ import javax.mail.util.SharedFileInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableLong;
@@ -106,14 +107,14 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    */
   public void closeAll () throws IOException
   {
-    m_aSrcIS.close ();
-    super.close ();
-    if (m_aTempFile.exists ())
+    try
     {
-      if (!m_aTempFile.delete ())
-      {
-        LOGGER.error ("Failed to delete file {}", m_aTempFile.getAbsolutePath ());
-      }
+      m_aSrcIS.close ();
+      super.close ();
+    }
+    finally
+    {
+      FileOperationManager.INSTANCE.deleteFileIfExisting (m_aTempFile);
     }
   }
 
@@ -124,8 +125,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    * @param aIS
    *        {@link InputStream} to read from
    * @param sName
-   *        name to use in the temporary file to link it to the delivered
-   *        message. May be null
+   *        name to use in the temporary file to link it to the delivered message.
+   *        May be null
    * @return The created {@link File}
    * @throws IOException
    *         in case of IO error
@@ -157,8 +158,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    * @param aIS
    *        {@link InputStream} to read from
    * @param sName
-   *        name to use in the temporary file to link it to the delivered
-   *        message. May be null
+   *        name to use in the temporary file to link it to the delivered message.
+   *        May be null
    * @return {@link TempSharedFileInputStream} on the created temporary file.
    * @throws IOException
    *         in case of IO error
