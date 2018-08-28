@@ -51,8 +51,8 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageMDNParameters;
-import com.helger.commons.http.CHttp;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.system.ENewLineMode;
 
 /**
  * Store an MDN to a file
@@ -104,25 +104,28 @@ public class MDNFileModule extends AbstractStorageModule
   @Nonnull
   protected InputStream getMDNStream (@Nonnull final IMessageMDN aMdn)
   {
+    final String sNewLine = ENewLineMode.DEFAULT.getText ();
+
     final StringBuilder aSB = new StringBuilder ();
 
     // write HTTP headers to the string buffer
-    aSB.append ("MDN Headers:").append (CHttp.EOL);
+    aSB.append ("MDN Headers:").append (sNewLine);
 
     // Should use ISO-8859-1 charset for HTTP headers
-    aMdn.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL));
+    aMdn.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (sNewLine));
 
     // Empty line
-    aSB.append (CHttp.EOL);
+    aSB.append (sNewLine);
 
     // write attributes to the string buffer
-    aSB.append ("MDN Attributes:").append (CHttp.EOL);
+    aSB.append ("MDN Attributes:").append (sNewLine);
     for (final Map.Entry <String, String> aEntry : aMdn.attrs ().entrySet ())
     {
-      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (CHttp.EOL);
+      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (sNewLine);
     }
+
     // finally, write the MDN text
-    aSB.append ("Text:").append (CHttp.EOL).append (aMdn.getText ());
+    aSB.append ("Text:").append (sNewLine).append (aMdn.getText ());
 
     return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes (getCharset ()));
   }
