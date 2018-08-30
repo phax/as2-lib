@@ -35,6 +35,7 @@ package com.helger.as2lib.supplementary.main;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
 import javax.activation.DataHandler;
@@ -55,24 +56,37 @@ import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperStreamBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
 
 /**
- * Test class to send an AS2 messages to the Mendelson test server.
+ * Philip's internal playground to send to Mendelson test server - don't rely on
+ * this. See {@link MainSendToMendelsonTestServer} instead.
  *
  * @author Philip Helger
  */
-public final class MainSendToMendelsonTestServer
+public final class MainSendToMendelsonTestServerPlayground
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServer.class);
+  static
+  {
+    if (false)
+      System.setProperty ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+  }
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServerPlayground.class);
 
   public static void main (final String [] args) throws Exception
   {
-    Proxy aHttpProxy = null;
+    // Enable or disable debug mode
     if (false)
-      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("1.2.3.4", 8080));
+      GlobalDebug.setDebugModeDirect (false);
+
+    Proxy aHttpProxy = null;
+    if (true)
+      aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.6", 8080));
 
     if (false)
       HTTPHelper.setHTTPOutgoingDumperFactory (x -> new HTTPOutgoingDumperStreamBased (System.out));
@@ -102,10 +116,14 @@ public final class MainSendToMendelsonTestServer
     final ECompressionType eCompress = ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
 
-    aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
-                                                      .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
-                                                      .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
-                                                      .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+    if (eSignAlgo != null)
+      aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
+                                                        .setMICAlgImportance (DispositionOptions.IMPORTANCE_REQUIRED)
+                                                        .setProtocol (DispositionOptions.PROTOCOL_PKCS7_SIGNATURE)
+                                                        .setProtocolImportance (DispositionOptions.IMPORTANCE_REQUIRED));
+
+    if (false)
+      aSettings.setMDNOptions ("");
 
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
@@ -116,8 +134,13 @@ public final class MainSendToMendelsonTestServer
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
+    if (false)
+      aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
+    else
+      aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
+    if (false)
+      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
