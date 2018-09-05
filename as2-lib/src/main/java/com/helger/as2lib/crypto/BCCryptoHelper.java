@@ -43,6 +43,8 @@ import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -125,10 +127,39 @@ public final class BCCryptoHelper implements ICryptoHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File s_aDumpDecryptedDirectory;
-  private static final String DEFAULT_SECURITY_PROVIDER_NAME = PBCProvider.getProvider ().getName ();
+  private static final String DEFAULT_SECURITY_PROVIDER_NAME;
 
   static
   {
+    // Differentiate between BC and BC FIPS
+    String sProvName;
+    try
+    {
+      // Try regular BC first
+      Class.forName ("org.bouncycastle.jce.provider.BouncyCastleProvider");
+      // Use for correct initialization
+      sProvName = PBCProvider.getProvider ().getName ();
+    }
+    catch (final Exception ex1)
+    {
+      try
+      {
+        // BC FIPS seconds
+        final Class <?> aBCFPClass = Class.forName ("org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider");
+        sProvName = "BCFIPS";
+        if (Security.getProvider (sProvName) == null)
+        {
+          // Create and add a new one
+          Security.addProvider ((Provider) aBCFPClass.getConstructor ().newInstance ());
+        }
+      }
+      catch (final Exception ex2)
+      {
+        throw new IllegalStateException ("Neither regular BouncyCastle nor BouncyCastle FIPS are in the classpath");
+      }
+    }
+    DEFAULT_SECURITY_PROVIDER_NAME = sProvName;
+
     final String sDumpDecryptedDirectory = SystemProperties.getPropertyValueOrNull ("AS2.dumpDecryptedDirectory");
     if (StringHelper.hasText (sDumpDecryptedDirectory))
     {
