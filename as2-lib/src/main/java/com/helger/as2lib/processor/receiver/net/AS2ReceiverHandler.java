@@ -403,8 +403,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * This method can be used to handle an incoming HTTP message AFTER the headers
-   * where extracted.
+   * This method can be used to handle an incoming HTTP message AFTER the
+   * headers where extracted.
    *
    * @param sClientInfo
    *        Client connection info
@@ -417,7 +417,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
    *        synchronous MDN.
    */
   public void handleIncomingMessage (@Nonnull final String sClientInfo,
-                                     @Nonnull final DataSource aMsgData,
+                                     @Nullable final DataSource aMsgData,
                                      @Nonnull final AS2Message aMsg,
                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
