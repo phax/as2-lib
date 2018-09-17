@@ -89,13 +89,13 @@ public final class TempSharedFileInputStreamTest
   {
     for (int i = 0; i < 10000; i++)
     {
-      final String inData = "123456";
-      try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ());
-          final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
+      final String sSrcData = "123456";
+      try (final InputStream is = new NonBlockingByteArrayInputStream (sSrcData.getBytes (StandardCharsets.ISO_8859_1));
+          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
       {
-        final int t = sis.read ();
-        assertEquals (t, inData.charAt (0));
-        sis.closeAll ();
+        final int t = aSharedIS.read ();
+        assertEquals (t, sSrcData.charAt (0));
+        aSharedIS.closeAll ();
       }
     }
   }
