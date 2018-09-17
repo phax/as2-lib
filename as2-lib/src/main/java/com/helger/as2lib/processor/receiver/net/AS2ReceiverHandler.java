@@ -287,11 +287,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             LOGGER.debug (partInf.toString ());
           }
 
-          final SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser (aMsg.getData (), 8 * 1024);// TODO:
-          // get
-          // buffer
-          // from
-          // configuration
+          final SMIMECompressedParser smimeCompressedParser = new SMIMECompressedParser (aMsg.getData (), 8 * 1024);
+          // TODO: get buffer from configuration
           aDecompressedPart = SMIMEUtil.toMimeBodyPart (smimeCompressedParser.getContent (aExpander));
         }
         else
