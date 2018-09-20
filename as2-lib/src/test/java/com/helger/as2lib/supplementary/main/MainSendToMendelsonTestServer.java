@@ -113,6 +113,7 @@ public final class MainSendToMendelsonTestServer
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
     aSettings.setReadTimeoutMS (10_000);
+    aSettings.setLargeFileSupport (false);
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
