@@ -73,7 +73,7 @@ public class Partnership implements Serializable
     setName (sName);
   }
 
-  public void setName (@Nonnull final String sName)
+  public final void setName (@Nonnull final String sName)
   {
     m_sName = ValueEnforcer.notNull (sName, "Name");
   }
@@ -204,8 +204,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return <code>true</code> if the name is not <code>null</code> and contained
-   *         in the sender IDs.
+   * @return <code>true</code> if the name is not <code>null</code> and
+   *         contained in the sender IDs.
    */
   public boolean containsSenderID (@Nullable final String sKey)
   {
@@ -372,8 +372,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return <code>true</code> if the name is not <code>null</code> and contained
-   *         in the receiver IDs.
+   * @return <code>true</code> if the name is not <code>null</code> and
+   *         contained in the receiver IDs.
    */
   public boolean containsReceiverID (@Nullable final String sKey)
   {
@@ -429,8 +429,8 @@ public class Partnership implements Serializable
    * @param sKey
    *        The key to be used. May not be <code>null</code>.
    * @param sValue
-   *        The value to be used. If <code>null</code> an existing attribute with
-   *        the provided name will be removed.
+   *        The value to be used. If <code>null</code> an existing attribute
+   *        with the provided name will be removed.
    * @return {@link EChange#CHANGED} if something changed. Never
    *         <code>null</code>.
    */
@@ -458,7 +458,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Get the value associated with the given attribute name or the default values.
+   * Get the value associated with the given attribute name or the default
+   * values.
    *
    * @param sKey
    *        Attribute name to search. May be <code>null</code>.
@@ -924,9 +925,9 @@ public class Partnership implements Serializable
 
   /**
    * @return <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g.
-   *         <code>sha1</code>) should be used, <code>false</code> if the new RFC
-   *         5751 MIC algorithm names (e.g. <code>sha-1</code>) should be used.
-   *         Default is <code>false</code>.
+   *         <code>sha1</code>) should be used, <code>false</code> if the new
+   *         RFC 5751 MIC algorithm names (e.g. <code>sha-1</code>) should be
+   *         used. Default is <code>false</code>.
    * @since 2.2.7
    */
   public boolean isRFC3851MICAlgs ()
@@ -981,8 +982,9 @@ public class Partnership implements Serializable
    *
    * @param aPartnership
    *        The partnership to compare to. May not be <code>null</code>.
-   * @return <code>true</code> if sender and receiver IDs of this partnership are
-   *         present in the sender and receiver IDs of the provided partnership.
+   * @return <code>true</code> if sender and receiver IDs of this partnership
+   *         are present in the sender and receiver IDs of the provided
+   *         partnership.
    */
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
