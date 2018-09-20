@@ -263,7 +263,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
       // If the Sent Directory option is set, move the transmitted file to
       // the sent directory
-      if (containsKey (ATTR_SENT_DIRECTORY))
+      if (attrs ().containsKey (ATTR_SENT_DIRECTORY))
       {
         File aSentFile = null;
         try
@@ -316,22 +316,22 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   {
     final MessageParameters aParams = new MessageParameters (aMsg);
 
-    final String sDefaults = getAsString (ATTR_DEFAULTS);
+    final String sDefaults = attrs ().getAsString (ATTR_DEFAULTS);
     if (sDefaults != null)
       aParams.setParameters (sDefaults);
 
     final String sFilename = aFile.getName ();
-    final String sFormat = getAsString (ATTR_FORMAT);
+    final String sFormat = attrs ().getAsString (ATTR_FORMAT);
     if (sFormat != null)
     {
-      final String sDelimiters = getAsString (ATTR_DELIMITERS, ".-");
+      final String sDelimiters = attrs ().getAsString (ATTR_DELIMITERS, ".-");
       aParams.setParameters (sFormat, sDelimiters, sFilename);
     }
 
     try
     {
       final byte [] aData = SimpleFileIO.getAllFileBytes (aFile);
-      String sContentType = getAsString (ATTR_MIMETYPE);
+      String sContentType = attrs ().getAsString (ATTR_MIMETYPE);
       if (sContentType == null)
       {
         // Default to application/octet-stream
@@ -367,7 +367,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
       // add below statement will tell the receiver to save the filename
       // as the one sent by sender. 2007-06-01
-      final String sSendFilename = getAsString (ATTR_SENDFILENAME);
+      final String sSendFilename = attrs ().getAsString (ATTR_SENDFILENAME);
       if ("true".equals (sSendFilename))
       {
         final String sMAFilename = aMsg.attrs ().getAsString (CFileAttribute.MA_FILENAME);

@@ -133,8 +133,8 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   {
     try
     {
-      final String sAddress = getAsString (ATTR_ADDRESS);
-      final int nPort = getAsInt (ATTR_PORT, 0);
+      final String sAddress = attrs ().getAsString (ATTR_ADDRESS);
+      final int nPort = attrs ().getAsInt (ATTR_PORT, 0);
       m_aMainThread = new MainThread (this, sAddress, nPort);
       m_aMainThread.setUncaughtExceptionHandler (BasicThreadFactory.getDefaultUncaughtExceptionHandler ());
       m_aMainThread.start ();
@@ -178,12 +178,12 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sErrorFilename = aParams.format (getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
+      final String sErrorFilename = aParams.format (attrs ().getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
       final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
       final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
                                                             FilenameHelper.getAsSecureValidFilename (sErrorFilename));
       // Default false for backwards compatibility reason
-      final boolean bStoreBody = getAsBoolean (ATTR_ERROR_STORE_BODY, false);
+      final boolean bStoreBody = attrs ().getAsBoolean (ATTR_ERROR_STORE_BODY, false);
 
       final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
       try

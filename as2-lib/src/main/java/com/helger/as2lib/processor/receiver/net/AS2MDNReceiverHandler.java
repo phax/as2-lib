@@ -285,13 +285,15 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
       final String sPendingInfoFile = getModule ().getSession ()
                                                   .getMessageProcessor ()
+                                                  .attrs ()
                                                   .getAsString (ATTR_PENDINGMDNINFO) +
                                       "/" +
                                       AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
 
       String sOriginalMIC;
       File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
+      try (
+          final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
       {
         // Get the original mic from the first line of pending information
         // file
@@ -308,11 +310,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       /*
-       * original code just did string compare - returnmic.equals(originalmic). Sadly
-       * this is not good enough as the mic fields are "base64string, algorithm" taken
-       * from a rfc822 style Returned-Content-MIC header and rfc822 headers can
-       * contain spaces all over the place. (not to mention comments!). Simple fix -
-       * delete all spaces.
+       * original code just did string compare - returnmic.equals(originalmic).
+       * Sadly this is not good enough as the mic fields are
+       * "base64string, algorithm" taken from a rfc822 style
+       * Returned-Content-MIC header and rfc822 headers can contain spaces all
+       * over the place. (not to mention comments!). Simple fix - delete all
+       * spaces.
        */
       if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
       {
@@ -334,7 +337,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("delete pendinginfo file : " +
                      aPendingInfoFile.getName () +
                      " from pending folder : " +
-                     getModule ().getSession ().getMessageProcessor ().getAsString (ATTR_PENDINGMDN) +
+                     getModule ().getSession ().getMessageProcessor ().attrs ().getAsString (ATTR_PENDINGMDN) +
                      aMsg.getLoggingText ());
       if (!aPendingInfoFile.delete ())
       {

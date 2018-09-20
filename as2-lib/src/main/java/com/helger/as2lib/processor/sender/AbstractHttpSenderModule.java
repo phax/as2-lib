@@ -130,8 +130,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aConn.setDoInput (bInput);
       aConn.setUseCaches (bUseCaches);
       aConn.setRequestMethod (eRequestMethod.getName ());
-      aConn.setConnectTimeout (getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS));
-      aConn.setReadTimeout (getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS));
+      aConn.setConnectTimeout (attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS));
+      aConn.setReadTimeout (attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS));
 
       if (aConn instanceof HttpsURLConnection)
       {
@@ -193,8 +193,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aHV = createHostnameVerifier ();
     }
     return new AS2HttpClient (sUrl,
-                              getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS),
-                              getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS),
+                              attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS),
+                              attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS),
                               eRequestMethod,
                               aProxy,
                               aSSLCtx,

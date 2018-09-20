@@ -78,7 +78,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     if (!sAction.equals (m_sModuleAction))
       return false;
 
-    final String sModProtocol = getAsString (ATTR_PROTOCOL);
+    final String sModProtocol = attrs ().getAsString (ATTR_PROTOCOL);
     if (sModProtocol == null)
       return false;
     return sModProtocol.equals (aMsg.getProtocol ());
@@ -99,7 +99,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   @Nonnull
   protected Charset getCharset ()
   {
-    final String sCharsetName = getAsString (ATTR_CHARSET);
+    final String sCharsetName = attrs ().getAsString (ATTR_CHARSET);
     final Charset aCharset = CharsetHelper.getCharsetFromNameOrNull (sCharsetName);
     return aCharset != null ? aCharset : SystemHelper.getSystemCharset ();
   }
@@ -145,7 +145,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected void store (@Nonnull final File aMsgFile, @Nonnull @WillClose final InputStream aIS) throws IOException
   {
-    final String sTempDirname = getAsString (ATTR_TEMPDIR);
+    final String sTempDirname = attrs ().getAsString (ATTR_TEMPDIR);
     if (sTempDirname != null)
     {
       // write the data to a temporary directory first

@@ -94,7 +94,7 @@ public class MessageFileModule extends AbstractStorageModule
     }
 
     // Store message headers and attributes
-    final String sHeaderFilename = getAsString (ATTR_HEADER);
+    final String sHeaderFilename = attrs ().getAsString (ATTR_HEADER);
     if (sHeaderFilename != null)
     {
       try

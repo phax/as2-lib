@@ -95,7 +95,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
 
     {
       // Provided as an attribute?
-      final String sTriesLeft = getAsString (IProcessorResenderModule.OPTION_RETRIES);
+      final String sTriesLeft = attrs ().getAsString (IProcessorResenderModule.OPTION_RETRIES);
       final int nRetriesAttr = StringParser.parseInt (sTriesLeft, -1);
       if (nRetriesAttr >= 0)
         if (nRetries < 0)

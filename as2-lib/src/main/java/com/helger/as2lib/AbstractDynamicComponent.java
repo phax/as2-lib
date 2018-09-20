@@ -40,16 +40,25 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.string.ToStringGenerator;
 
-public abstract class AbstractDynamicComponent extends StringMap implements IDynamicComponent
+public abstract class AbstractDynamicComponent implements IDynamicComponent
 {
   protected final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
+  private final StringMap m_aAttrs = new StringMap ();
   private IAS2Session m_aSession;
+
+  @Nonnull
+  @ReturnsMutableObject
+  public final StringMap attrs ()
+  {
+    return m_aAttrs;
+  }
 
   @Nonnull
   public String getName ()
@@ -60,7 +69,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
   @Nonnull
   public final String getAttributeAsStringRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
-    final String sValue = getAsString (sKey);
+    final String sValue = attrs ().getAsString (sKey);
     if (sValue == null)
       throw new InvalidParameterException ("Parameter not found", this, sKey, null);
     return sValue;
@@ -68,7 +77,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
 
   public final int getAttributeAsIntRequired (@Nonnull final String sKey) throws InvalidParameterException
   {
-    final int nValue = getAsInt (sKey, Integer.MIN_VALUE);
+    final int nValue = attrs ().getAsInt (sKey, Integer.MIN_VALUE);
     if (nValue == Integer.MIN_VALUE)
       throw new InvalidParameterException ("Parameter not found", this, sKey, null);
     return nValue;
@@ -87,7 +96,7 @@ public abstract class AbstractDynamicComponent extends StringMap implements IDyn
                                     @Nullable final IStringMap aParameters) throws OpenAS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
-    putAllIn (aParameters);
+    attrs ().putAllIn (aParameters);
   }
 
   @Override

@@ -639,7 +639,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nullable final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    final boolean bLargeFileSupportOn = aOwner.getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON);
+    final boolean bLargeFileSupportOn = aOwner.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON);
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("Incoming connection " + sClientInfo);
 

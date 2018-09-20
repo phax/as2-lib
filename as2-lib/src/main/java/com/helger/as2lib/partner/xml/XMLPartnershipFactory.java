@@ -79,7 +79,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
   public void setFilename (final String filename)
   {
-    putIn (ATTR_FILENAME, filename);
+    attrs ().putIn (ATTR_FILENAME, filename);
   }
 
   public String getFilename () throws InvalidParameterException
@@ -261,7 +261,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     final String sFilename = getFilename ();
 
-    if (!containsKey (ATTR_DISABLE_BACKUP))
+    if (!attrs ().containsKey (ATTR_DISABLE_BACKUP))
     {
       final File aBackupFile = _getUniqueBackupFile (sFilename);
 

@@ -306,8 +306,8 @@ public class AS2Client
   }
 
   /**
-   * Callback method that is invoked before the main sending. This may be used to
-   * customize the message.
+   * Callback method that is invoked before the main sending. This may be used
+   * to customize the message.
    *
    * @param aSettings
    *        Client settings. Never <code>null</code>.
@@ -389,10 +389,10 @@ public class AS2Client
         final AS2SenderModule aSender = m_aAS2SenderModuleFactory.get ();
         aSender.initDynamicComponent (aSession, null);
         // Set connect and read timeout
-        aSender.putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
-        aSender.putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
+        aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
+        aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
         // Register large file support from caller
-        aSender.putIn (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON, aSettings.isLargeFileSupport ());
+        aSender.attrs ().putIn (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON, aSettings.isLargeFileSupport ());
 
         // Add all custom headers
         aMsg.headers ().setAllHeaders (aSettings.customHeaders ());

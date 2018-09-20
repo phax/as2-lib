@@ -65,12 +65,12 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
 
   public void setInterval (final long nSeconds)
   {
-    putIn (ATTR_POLLING_INTERVAL, nSeconds);
+    attrs ().putIn (ATTR_POLLING_INTERVAL, nSeconds);
   }
 
   public long getInterval ()
   {
-    return getAsLong (ATTR_POLLING_INTERVAL, 0L);
+    return attrs ().getAsLong (ATTR_POLLING_INTERVAL, 0L);
   }
 
   public abstract void poll ();

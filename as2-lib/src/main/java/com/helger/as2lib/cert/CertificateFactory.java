@@ -111,7 +111,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
     try
     {
-      final String sKeyStoreType = getAsString (ATTR_TYPE);
+      final String sKeyStoreType = attrs ().getAsString (ATTR_TYPE);
       final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType,
                                                                                            DEFAULT_KEY_STORE_TYPE);
       m_aKeyStore = createNewKeyStore (eKeyStoreType);
@@ -215,7 +215,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
   public void setFilename (@Nullable final String sFilename)
   {
-    putIn (ATTR_FILENAME, sFilename);
+    attrs ().putIn (ATTR_FILENAME, sFilename);
   }
 
   @Nonnull
@@ -234,7 +234,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
   public void setPassword (@Nonnull final char [] aPassword)
   {
-    putIn (ATTR_PASSWORD, new String (aPassword));
+    attrs ().putIn (ATTR_PASSWORD, new String (aPassword));
   }
 
   @Nonnull
@@ -245,12 +245,12 @@ public class CertificateFactory extends AbstractCertificateFactory implements
 
   public void setSaveChangesToFile (final boolean bSaveChangesToFile)
   {
-    putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile);
+    attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile);
   }
 
   public boolean isSaveChangesToFile ()
   {
-    return getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE, DEFAULT_SAVE_CHANGES_TO_FILE);
+    return attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE, DEFAULT_SAVE_CHANGES_TO_FILE);
   }
 
   /**
