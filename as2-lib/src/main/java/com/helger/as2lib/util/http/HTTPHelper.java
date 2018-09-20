@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -77,6 +78,7 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -184,8 +186,6 @@ public final class HTTPHelper
     ValueEnforcer.notNull (aResponseHandler, "ResponseHandler");
     ValueEnforcer.notNull (aMsg, "Msg");
 
-    final DataInputStream aDataIS = new DataInputStream (aIS);
-
     // Retrieve the message content
     byte [] aData = null;
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
@@ -199,26 +199,9 @@ public final class HTTPHelper
         if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
         {
           // chunked encoding
-          int nLength = 0;
-          for (;;)
-          {
-            // First get hex chunk length; followed by CRLF
-            final int nBlocklen = readChunkLen (aDataIS);
-            // Zero length is end of chunks
-            if (nBlocklen == 0)
-              break;
-            // Ok, now read new chunk
-            final int nNewlen = nLength + nBlocklen;
-            final byte [] aNewData = new byte [nNewlen];
-            if (nLength > 0)
-              System.arraycopy (aData, 0, aNewData, 0, nLength);
-            aDataIS.readFully (aNewData, nLength, nBlocklen);
-            aData = aNewData;
-            nLength = nNewlen;
-            // And now the CRLF after the chunk;
-            readTillNexLine (aDataIS);
-          }
-          aMsg.headers ().setContentLength (nLength);
+          final ChunkedInputStream aChunkedIS = new ChunkedInputStream (aIS);
+          aData = StreamHelper.getAllBytes (aChunkedIS);
+          aMsg.headers ().setContentLength (aData.length);
         }
         else
         {
@@ -239,6 +222,7 @@ public final class HTTPHelper
       // "Content-Length" is present
       // Receive the transmission's data
       // XX if a value > 2GB comes in, this will fail!!
+      final DataInputStream aDataIS = new DataInputStream (aIS);
       final int nContentSize = Integer.parseInt (sContentLength);
       aData = new byte [nContentSize];
       aDataIS.readFully (aData);
@@ -248,9 +232,9 @@ public final class HTTPHelper
   }
 
   /**
-   * Read the first line of the HTTP request InputStream and parse out HTTP method
-   * (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version (e.g.
-   * "HTTP/1.1")
+   * Read the first line of the HTTP request InputStream and parse out HTTP
+   * method (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version
+   * (e.g. "HTTP/1.1")
    *
    * @param aIS
    *        Stream to read the first line from
@@ -299,8 +283,8 @@ public final class HTTPHelper
   }
 
   /**
-   * @return the dumper for incoming HTTP requests or <code>null</code> if none is
-   *         present
+   * @return the dumper for incoming HTTP requests or <code>null</code> if none
+   *         is present
    * @since 3.0.1
    */
   @Nullable
@@ -325,8 +309,8 @@ public final class HTTPHelper
   /**
    * @param aMsg
    *        The message for which a dumper should be created.
-   * @return the dumper for outgoing HTTP requests or <code>null</code> if none is
-   *         present. Must be closed afterwards!
+   * @return the dumper for outgoing HTTP requests or <code>null</code> if none
+   *         is present. Must be closed afterwards!
    * @since 3.0.1
    */
   @Nullable
@@ -404,7 +388,7 @@ public final class HTTPHelper
     if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON) && sContentLength == null)
     {
       // Large file support on,AND No "Content-Length" header present
-      InputStream is = aIS;
+      InputStream aRealIS = aIS;
       final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
       if (sTransferEncoding != null)
       {
@@ -413,10 +397,10 @@ public final class HTTPHelper
         {
           // chunked encoding. Use also file backed stream as the message
           // might be large
-          final TempSharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
-                                                                                                        aMsg.getMessageID ());
-          is = sis;
-          aMsg.setTempSharedFileInputStream (sis);
+          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
+                                                                                                              aMsg.getMessageID ());
+          aRealIS = aSharedIS;
+          aMsg.setTempSharedFileInputStream (aSharedIS);
         }
         else
         {
@@ -432,7 +416,7 @@ public final class HTTPHelper
         throw new IOException ("Content-Length missing");
       }
       // Content-length present, or chunked encoding
-      aPayload = new InputStreamDataSource (is,
+      aPayload = new InputStreamDataSource (aRealIS,
                                             aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
                                             sReceivedContentType,
                                             true);
@@ -449,7 +433,7 @@ public final class HTTPHelper
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
                                            aBytePayLoad != null ? aBytePayLoad
-                                                                : "Large File Support: body was not read yet".getBytes (),
+                                                                : "Large File Support: body was not read yet".getBytes (StandardCharsets.ISO_8859_1),
                                            aMsg);
 
     return aPayload;
