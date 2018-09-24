@@ -16,6 +16,7 @@
  */
 package com.helger.as2servlet;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 
 import javax.activation.DataSource;
@@ -42,6 +43,7 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.http.EHttpVersion;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.servlet.ServletHelper;
@@ -204,7 +206,24 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     final AS2OutputStreamCreatorHttpServletResponse aResponseHandler = new AS2OutputStreamCreatorHttpServletResponse (aHttpResponse);
 
     // Read the S/MIME content in a byte array - memory!
-    final byte [] aMsgData = HTTPHelper.readHttpPayload (aHttpRequest.getInputStream (), aResponseHandler, aMsg);
+    // Chunked encoding was already handled, so read "as-is"
+    final long nContentLength = aHttpRequest.getContentLengthLong ();
+    if (nContentLength > Integer.MAX_VALUE)
+      throw new IllegalStateException ("Currently only payload with up to 2GB can be handled!");
+
+    final byte [] aMsgData;
+    if (nContentLength >= 0)
+    {
+      // Length is known
+      aMsgData = new byte [(int) nContentLength];
+      final DataInputStream aDataIS = new DataInputStream (aHttpRequest.getInputStream ());
+      aDataIS.readFully (aMsgData);
+    }
+    else
+    {
+      // Length is unknown
+      aMsgData = StreamHelper.getAllBytes (aHttpRequest.getInputStream ());
+    }
 
     // Dump on demand
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
