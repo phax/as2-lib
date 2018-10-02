@@ -137,6 +137,36 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
     return m_sBCAlgorithmName;
   }
 
+  /**
+   * @return <code>true</code> if this is an algorithm defined by RFC 3851,
+   *         <code>false</code> otherwise. Please note that some algorithms are
+   *         contained in both algorithm sets!
+   * @since 4.2.0
+   */
+  public boolean isRFC3851Algorithm ()
+  {
+    return this == DIGEST_MD5 ||
+           this == DIGEST_SHA1 ||
+           this == DIGEST_SHA256 ||
+           this == DIGEST_SHA384 ||
+           this == DIGEST_SHA512;
+  }
+
+  /**
+   * @return <code>true</code> if this is an algorithm defined by RFC 5751,
+   *         <code>false</code> otherwise. Please note that some algorithms are
+   *         contained in both algorithm sets!
+   * @since 4.2.0
+   */
+  public boolean isRFC5751Algorithm ()
+  {
+    return this == DIGEST_MD5 ||
+           this == DIGEST_SHA_1 ||
+           this == DIGEST_SHA_256 ||
+           this == DIGEST_SHA_384 ||
+           this == DIGEST_SHA_512;
+  }
+
   @Nullable
   public static ECryptoAlgorithmSign getFromIDOrNull (@Nullable final String sID)
   {
