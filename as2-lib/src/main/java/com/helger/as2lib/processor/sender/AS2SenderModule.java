@@ -87,6 +87,7 @@ import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.CHttpHeader;
@@ -292,12 +293,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  protected MimeBodyPart compress (@Nonnull final IMessage aMsg,
-                                   @Nonnull final MimeBodyPart aData,
-                                   @Nonnull final ECompressionType eCompressionType,
-                                   @Nonnull @Nonempty final String sContentTransferEncoding) throws SMIMEException,
-                                                                                             MessagingException
+  public static MimeBodyPart compressMimeBodyPart (@Nonnull final MimeBodyPart aData,
+                                                   @Nonnull final ECompressionType eCompressionType,
+                                                   @Nonnull @Nonempty final String sContentTransferEncoding) throws SMIMEException
   {
+    ValueEnforcer.notNull (aData, "Data");
+    ValueEnforcer.notNull (eCompressionType, "CompressionType");
+    ValueEnforcer.notEmpty (sContentTransferEncoding, "ContentTransferEncoding");
+
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
     // Content-Transfer-Encoding to use
@@ -305,6 +308,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
+
+    return aCompressedBodyPart;
+  }
+
+  @Nonnull
+  protected MimeBodyPart compress (@Nonnull final IMessage aMsg,
+                                   @Nonnull final MimeBodyPart aData,
+                                   @Nonnull final ECompressionType eCompressionType,
+                                   @Nonnull @Nonempty final String sContentTransferEncoding) throws SMIMEException,
+                                                                                             MessagingException
+  {
+    final MimeBodyPart aCompressedBodyPart = compressMimeBodyPart (aData, eCompressionType, sContentTransferEncoding);
+
     aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
     aMsg.headers ()
         .setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
@@ -318,6 +334,74 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                     aMsg.getLoggingText ());
 
     return aCompressedBodyPart;
+  }
+
+  @Nonnull
+  public static MimeBodyPart secureMimeBodyPart (@Nonnull final MimeBodyPart aSrcPart,
+                                                 @Nonnull @Nonempty final String sContentTransferEncoding,
+                                                 @Nullable final ECompressionType eCompressionType,
+                                                 final boolean bCompressBeforeSign,
+                                                 @Nullable final ECryptoAlgorithmSign eSignAlgorithm,
+                                                 @Nullable final X509Certificate aSenderCert,
+                                                 @Nullable final PrivateKey aSenderKey,
+                                                 final boolean bIncludeCertificateInSignedContent,
+                                                 final boolean bUseRFC3851MICAlg,
+                                                 @Nullable final ECryptoAlgorithmCrypt eCryptAlgorithm,
+                                                 @Nullable final X509Certificate aReceiverCert) throws Exception
+  {
+    ValueEnforcer.notNull (aSrcPart, "SrcPart");
+    ValueEnforcer.notEmpty (sContentTransferEncoding, "ContentTransferEncoding");
+    if (eSignAlgorithm != null)
+    {
+      ValueEnforcer.notNull (aSenderCert, "SenderCert");
+      ValueEnforcer.notNull (aSenderKey, "SenderKey");
+    }
+    if (eCryptAlgorithm != null)
+    {
+      ValueEnforcer.notNull (aReceiverCert, "ReceiverCert");
+    }
+
+    MimeBodyPart aDataBP = aSrcPart;
+
+    if (eCompressionType != null && bCompressBeforeSign)
+    {
+      // Compress before sign
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Compressing outbound message before signing...");
+      aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, sContentTransferEncoding);
+    }
+
+    if (eSignAlgorithm != null)
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Signing outbound message...");
+      aDataBP = AS2Helper.getCryptoHelper ()
+                         .sign (aDataBP,
+                                aSenderCert,
+                                aSenderKey,
+                                eSignAlgorithm,
+                                bIncludeCertificateInSignedContent,
+                                bUseRFC3851MICAlg,
+                                sContentTransferEncoding);
+    }
+
+    if (eCompressionType != null && !bCompressBeforeSign)
+    {
+      // Compress after sign
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Compressing outbound message after signing...");
+      aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, sContentTransferEncoding);
+    }
+
+    if (eCryptAlgorithm != null)
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Encrypting outbound message...");
+      aDataBP = AS2Helper.getCryptoHelper ()
+                         .encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, sContentTransferEncoding);
+    }
+
+    return aDataBP;
   }
 
   @Nonnull
@@ -392,7 +476,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                 aSenderKey,
                                 eSignAlgorithm,
                                 bIncludeCertificateInSignedContent,
-                                bUseRFC3851MICAlg);
+                                bUseRFC3851MICAlg,
+                                sContentTransferEncoding);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signed data with " +
@@ -422,7 +507,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       aDataBP = AS2Helper.getCryptoHelper ()
                          .encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, sContentTransferEncoding);
-      aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+      // That does not work
+      if (false)
+        aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypted data with " +

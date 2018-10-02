@@ -114,7 +114,8 @@ public interface ICryptoHelper
    *
    * @param sContentType
    *        The content type to be checked. May not be <code>null</code>.
-   * @return <code>true</code> if it is compressed, <code>false</code> otherwise.
+   * @return <code>true</code> if it is compressed, <code>false</code>
+   *         otherwise.
    * @throws OpenAS2Exception
    *         In case something goes wrong.
    */
@@ -179,6 +180,9 @@ public interface ICryptoHelper
    *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
    *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
    *        algorithm names (e.g. <code>sha-1</code>).
+   * @param sContentTransferEncoding
+   *        The Content-Transfer-Encoding to be used. May neither be
+   *        <code>null</code> nor empty (since 4.2.0). Default was "base64".
    * @return The signed MIME body part. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -189,7 +193,8 @@ public interface ICryptoHelper
                      @Nonnull PrivateKey aKey,
                      @Nonnull ECryptoAlgorithmSign eAlgorithm,
                      boolean bIncludeCertificateInSignedContent,
-                     boolean bUseOldRFC3851MicAlgs) throws Exception;
+                     boolean bUseOldRFC3851MicAlgs,
+                     @Nonnull @Nonempty String sContentTransferEncoding) throws Exception;
 
   /**
    * Verify the specified Mime Body part against the part certificate

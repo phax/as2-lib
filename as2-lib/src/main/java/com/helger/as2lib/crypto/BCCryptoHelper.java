@@ -347,7 +347,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-         final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ()))
+        final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ()))
     {
       aPart.getDataHandler ().writeTo (aOS);
     }
@@ -490,12 +490,15 @@ public final class BCCryptoHelper implements ICryptoHelper
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
+    ValueEnforcer.notEmpty (sContentTransferEncoding, "ContentTransferEncoding");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.encrypt; X509 subject=" +
                     aX509Cert.getSubjectX500Principal ().getName () +
                     "; algorithm=" +
-                    eAlgorithm);
+                    eAlgorithm +
+                    "; CTE=" +
+                    sContentTransferEncoding);
 
     // Check if the certificate is expired or active.
     aX509Cert.checkValidity ();
@@ -518,15 +521,17 @@ public final class BCCryptoHelper implements ICryptoHelper
                             @Nonnull final PrivateKey aPrivateKey,
                             @Nonnull final ECryptoAlgorithmSign eAlgorithm,
                             final boolean bIncludeCertificateInSignedContent,
-                            final boolean bUseOldRFC3851MicAlgs) throws GeneralSecurityException,
-                                                                 SMIMEException,
-                                                                 MessagingException,
-                                                                 OperatorCreationException
+                            final boolean bUseOldRFC3851MicAlgs,
+                            @Nonnull @Nonempty final String sContentTransferEncoding) throws GeneralSecurityException,
+                                                                                      SMIMEException,
+                                                                                      MessagingException,
+                                                                                      OperatorCreationException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
     ValueEnforcer.notNull (eAlgorithm, "Algorithm");
+    ValueEnforcer.notEmpty (sContentTransferEncoding, "ContentTransferEncoding");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.sign; X509 subject=" +
@@ -534,7 +539,9 @@ public final class BCCryptoHelper implements ICryptoHelper
                     "; algorithm=" +
                     eAlgorithm +
                     "; includeCertificateInSignedContent=" +
-                    bIncludeCertificateInSignedContent);
+                    bIncludeCertificateInSignedContent +
+                    "; CTE=" +
+                    sContentTransferEncoding);
 
     // Check if the certificate is expired or active.
     aX509Cert.checkValidity ();
@@ -560,6 +567,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // create the generator for creating an smime/signed message
     final SMIMESignedGenerator aSGen = new SMIMESignedGenerator (bUseOldRFC3851MicAlgs ? SMIMESignedGenerator.RFC3851_MICALGS
                                                                                        : SMIMESignedGenerator.RFC5751_MICALGS);
+    aSGen.setContentTransferEncoding (sContentTransferEncoding);
 
     // aSGen.addSigner (aPrivKey, aX509Cert, aSignDigest.getId ());
 

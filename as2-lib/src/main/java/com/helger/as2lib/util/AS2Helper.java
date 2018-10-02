@@ -185,7 +185,8 @@ public final class AS2Helper
                                                                     aSenderKey,
                                                                     eMICAlg,
                                                                     bIncludeCertificateInSignedContent,
-                                                                    bUseOldRFC3851MicAlgs);
+                                                                    bUseOldRFC3851MicAlgs,
+                                                                    EContentTransferEncoding.BASE64.getID ());
         aMdn.setData (aSignedReport);
       }
       catch (final CertificateNotFoundException | KeyNotFoundException ex)
@@ -215,15 +216,15 @@ public final class AS2Helper
    * @param aSession
    *        AS2 session to be used. May not be <code>null</code>.
    * @param aMsg
-   *        The source AS2 message for which the MDN is to be created. May not be
-   *        <code>null</code>.
+   *        The source AS2 message for which the MDN is to be created. May not
+   *        be <code>null</code>.
    * @param aDisposition
    *        The disposition - either success or error. May not be
    *        <code>null</code>.
    * @param sText
    *        The text to be send. May not be <code>null</code>.
-   * @return The created MDN object which is already attached to the passed source
-   *         AS2 message.
+   * @return The created MDN object which is already attached to the passed
+   *         source AS2 message.
    * @throws Exception
    *         In case of an error
    */

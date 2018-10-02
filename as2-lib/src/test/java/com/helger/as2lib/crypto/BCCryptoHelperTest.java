@@ -50,6 +50,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.junit.Test;
 
 import com.helger.as2lib.util.AS2Helper;
+import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
 import com.helger.commons.exception.InitializationException;
 import com.helger.commons.http.CHttpHeader;
@@ -99,26 +100,219 @@ public final class BCCryptoHelperTest
     final MimeBodyPart aPart = new MimeBodyPart ();
     aPart.setText ("Hello world");
 
-    for (final ECryptoAlgorithmSign eAlgo : ECryptoAlgorithmSign.values ())
+    for (int nIncludeCert = 0; nIncludeCert < 2; ++nIncludeCert)
+      for (final ECryptoAlgorithmSign eAlgo : ECryptoAlgorithmSign.values ())
+      {
+        final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
+                                              .sign (aPart,
+                                                     (X509Certificate) PKE.getCertificate (),
+                                                     PKE.getPrivateKey (),
+                                                     eAlgo,
+                                                     nIncludeCert == 1,
+                                                     eAlgo.isRFC3851Algorithm (),
+                                                     EContentTransferEncoding.BASE64.getID ());
+        assertNotNull (aSigned);
+
+        final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
+        assertNotNull (aContentTypes);
+        assertEquals (1, aContentTypes.length);
+        final String sContentType = aContentTypes[0];
+        final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
+                                      eAlgo.getID () +
+                                      "; \r\n\tboundary=\"----=_Part";
+        assertTrue (sContentType + " does not start with " + sExpectedStart, sContentType.startsWith (sExpectedStart));
+      }
+  }
+
+  @Test
+  public void testSignWithAllCTEs () throws Exception
+  {
+    final MimeBodyPart aPart = new MimeBodyPart ();
+    aPart.setText ("Hello world");
+
+    for (final EContentTransferEncoding eCTE : EContentTransferEncoding.values ())
     {
       final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
                                             .sign (aPart,
                                                    (X509Certificate) PKE.getCertificate (),
                                                    PKE.getPrivateKey (),
-                                                   eAlgo,
+                                                   ECryptoAlgorithmSign.DIGEST_SHA_512,
+                                                   true,
                                                    false,
-                                                   eAlgo.isRFC3851Algorithm ());
+                                                   eCTE.getID ());
       assertNotNull (aSigned);
 
       final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
       assertNotNull (aContentTypes);
       assertEquals (1, aContentTypes.length);
       final String sContentType = aContentTypes[0];
-      final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
-                                    eAlgo.getID () +
-                                    "; \r\n\tboundary=\"----=_Part";
+      final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-512; \r\n\tboundary=\"----=_Part";
       assertTrue (sContentType + " does not start with " + sExpectedStart, sContentType.startsWith (sExpectedStart));
     }
+  }
+
+  @Test
+  public void testSign_Base64 () throws Exception
+  {
+    final MimeBodyPart aPart = new MimeBodyPart ();
+    aPart.setText ("Hello world", StandardCharsets.ISO_8859_1.name ());
+
+    final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
+                                          .sign (aPart,
+                                                 (X509Certificate) PKE.getCertificate (),
+                                                 PKE.getPrivateKey (),
+                                                 ECryptoAlgorithmSign.DIGEST_SHA_256,
+                                                 false,
+                                                 false,
+                                                 EContentTransferEncoding.BASE64.getID ());
+    assertNotNull (aSigned);
+
+    final String sBoundary = AS2HttpHelper.parseContentType (aSigned.getContentType ()).getParameter ("boundary");
+    assertNotNull (sBoundary);
+
+    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+    aSigned.writeTo (aBAOS);
+
+    final String sExpectedStart = "Content-Type: multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-256; \r\n" +
+                                  "\tboundary=\"" +
+                                  sBoundary +
+                                  "\"\r\n" +
+                                  "\r\n" +
+                                  "--" +
+                                  sBoundary +
+                                  "\r\n" +
+                                  "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+                                  "Content-Transfer-Encoding: 7bit\r\n" +
+                                  "\r\n" +
+                                  "Hello world\r\n" +
+                                  "--" +
+                                  sBoundary +
+                                  "\r\n" +
+                                  "Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data\r\n" +
+                                  "Content-Transfer-Encoding: base64\r\n" +
+                                  "Content-Disposition: attachment; filename=\"smime.p7s\"\r\n" +
+                                  "Content-Description: S/MIME Cryptographic Signature\r\n" +
+                                  "\r\n" +
+                                  "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAADGCAhsw\r\n" +
+                                  "ggIXAgEBMIG3MIGuMSYwJAYJKoZIhvcNAQkBFhdyb3NldHRhbmV0QG1lbmRlbHNvbi5kZTELMAkG\r\n" +
+                                  "A1UEBhMCREUxDzANBgNVBAgTBkJlcmxpbjEPMA0GA1UEBxMGQmVybGluMSIwIAYDVQQKExltZW5k\r\n" +
+                                  "ZWxzb24tZS1jb21tZXJjZSBHbWJIMSIwIAYDVQQLExltZW5kZWxzb24tZS1jb21tZXJjZSBHbWJI\r\n" +
+                                  "MQ0wCwYDVQQDEwRtZW5kAgRDjv27MA0GCWCGSAFlAwQCAQUAoIG2MBgGCSqGSIb3DQEJAzELBgkq\r\n";
+    final String sExpectedEnd = "\r\n" + "--" + sBoundary + "--\r\n";
+    final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
+    assertTrue (sReal.startsWith (sExpectedStart));
+    assertTrue (sReal.endsWith (sExpectedEnd));
+  }
+
+  @Test
+  public void testSign_Binary () throws Exception
+  {
+    final MimeBodyPart aPart = new MimeBodyPart ();
+    aPart.setText ("Hello world", StandardCharsets.ISO_8859_1.name ());
+
+    final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
+                                          .sign (aPart,
+                                                 (X509Certificate) PKE.getCertificate (),
+                                                 PKE.getPrivateKey (),
+                                                 ECryptoAlgorithmSign.DIGEST_SHA_256,
+                                                 false,
+                                                 false,
+                                                 EContentTransferEncoding.BINARY.getID ());
+    assertNotNull (aSigned);
+
+    final String sBoundary = AS2HttpHelper.parseContentType (aSigned.getContentType ()).getParameter ("boundary");
+    assertNotNull (sBoundary);
+
+    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+    aSigned.writeTo (aBAOS);
+
+    final String sExpectedStart = "Content-Type: multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-256; \r\n" +
+                                  "\tboundary=\"" +
+                                  sBoundary +
+                                  "\"\r\n" +
+                                  "\r\n" +
+                                  "--" +
+                                  sBoundary +
+                                  "\r\n" +
+                                  "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+                                  "Content-Transfer-Encoding: 7bit\r\n" +
+                                  "\r\n" +
+                                  "Hello world\r\n" +
+                                  "--" +
+                                  sBoundary +
+                                  "\r\n" +
+                                  "Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data\r\n" +
+                                  "Content-Transfer-Encoding: binary\r\n" +
+                                  "Content-Disposition: attachment; filename=\"smime.p7s\"\r\n" +
+                                  "Content-Description: S/MIME Cryptographic Signature\r\n" +
+                                  "\r\n";
+    final String sExpectedEnd = "\r\n" + "--" + sBoundary + "--\r\n";
+    final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
+    assertTrue (sReal.startsWith (sExpectedStart));
+    assertTrue (sReal.endsWith (sExpectedEnd));
+  }
+
+  @Test
+  public void testSign_QuotedPrintable () throws Exception
+  {
+    final MimeBodyPart aPart = new MimeBodyPart ();
+    aPart.setText ("Hello world", StandardCharsets.ISO_8859_1.name ());
+
+    final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
+                                          .sign (aPart,
+                                                 (X509Certificate) PKE.getCertificate (),
+                                                 PKE.getPrivateKey (),
+                                                 ECryptoAlgorithmSign.DIGEST_SHA_256,
+                                                 false,
+                                                 false,
+                                                 EContentTransferEncoding.QUOTED_PRINTABLE.getID ());
+    assertNotNull (aSigned);
+
+    final String sBoundary = AS2HttpHelper.parseContentType (aSigned.getContentType ()).getParameter ("boundary");
+    assertNotNull (sBoundary);
+
+    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+    aSigned.writeTo (aBAOS);
+
+    final String sExpectedStart = "Content-Type: multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-256; \r\n" +
+                                  "\tboundary=\"" +
+                                  sBoundary +
+                                  "\"\r\n" +
+                                  "\r\n" +
+                                  "--" +
+                                  sBoundary +
+                                  "\r\n" +
+                                  "Content-Type: text/plain; charset=ISO-8859-1\r\n" +
+                                  "Content-Transfer-Encoding: 7bit\r\n" +
+                                  "\r\n" +
+                                  "Hello world\r\n" +
+                                  "--" +
+                                  sBoundary +
+                                  "\r\n" +
+                                  "Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data\r\n" +
+                                  "Content-Transfer-Encoding: quoted-printable\r\n" +
+                                  "Content-Disposition: attachment; filename=\"smime.p7s\"\r\n" +
+                                  "Content-Description: S/MIME Cryptographic Signature\r\n" +
+                                  "\r\n" +
+                                  "0=80=06=09*=86H=86=F7\r\n" +
+                                  "=01=07=02=A0=800=80=02=01=011=0F0\r\n" +
+                                  "=06=09`=86H=01e=03=04=02=01=05=000=80=06=09*=86H=86=F7\r\n" +
+                                  "=01=07=01=00=001=82=02=1B0=82=02=17=02=01=010=81=B70=81=AE1&0$=06=09*=86H=\r\n" +
+                                  "=86=F7\r\n" +
+                                  "=01=09=01=16=17rosettanet@mendelson.de1=0B0=09=06=03U=04=06=13=02DE1=0F0\r\n" +
+                                  "=06=03U=04=08=13=06Berlin1=0F0\r\n" +
+                                  "=06=03U=04=07=13=06Berlin1\"0 =06=03U=04\r\n" +
+                                  "=13=19mendelson-e-commerce GmbH1\"0 =06=03U=04=0B=13=19mendelson-e-commerce =\r\n" +
+                                  "GmbH1\r\n" +
+                                  "0=0B=06=03U=04=03=13=04mend=02=04C=8E=FD=BB0\r\n" +
+                                  "=06=09`=86H=01e=03=04=02=01=05=00=A0=81=B60=18=06=09*=86H=86=F7\r\n" +
+                                  "=01=09=031=0B=06=09*=86H=86=F7\r\n" +
+                                  "=01=07=010=1C=06=09*=86H=86=F7\r\n" +
+                                  "=01=09=051=0F=17\r\n";
+    final String sExpectedEnd = "\r\n" + "--" + sBoundary + "--\r\n";
+    final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
+    assertTrue (sReal.startsWith (sExpectedStart));
+    assertTrue (sReal.endsWith (sExpectedEnd));
   }
 
   @Test
@@ -138,6 +332,30 @@ public final class BCCryptoHelperTest
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
                          aEncrypted.getHeader (CHttpHeader.CONTENT_TYPE));
+      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" },
+                         aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
+    }
+  }
+
+  @Test
+  public void testEncryptWithAllCTEs () throws Exception
+  {
+    final MimeBodyPart aPart = new MimeBodyPart ();
+    aPart.setText ("Hello world");
+
+    for (final EContentTransferEncoding eCTE : EContentTransferEncoding.values ())
+    {
+      final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ()
+                                               .encrypt (aPart,
+                                                         CERT_ENCRYPT,
+                                                         ECryptoAlgorithmCrypt.CRYPT_AES256_GCM,
+                                                         eCTE.getID ());
+      assertNotNull (aEncrypted);
+
+      assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
+                         aEncrypted.getHeader (CHttpHeader.CONTENT_TYPE));
+      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" },
+                         aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
     }
   }
 
