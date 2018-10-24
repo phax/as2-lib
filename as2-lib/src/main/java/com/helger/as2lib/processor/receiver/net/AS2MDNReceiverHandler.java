@@ -357,7 +357,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
           LOGGER.error ("Error delete pending file " + aPendingFile);
       }
     }
-    catch (final Exception ex)
+    catch (final IOException | ComponentNotFoundException ex)
     {
       LOGGER.error ("Error checking async MDN", ex);
       return false;

@@ -70,14 +70,15 @@ public class ImmediateResenderModule extends AbstractResenderModule
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
 
-    String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null
+                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");
       sResendAction = IProcessorSenderModule.DO_SEND;
     }
 
-    final String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+    final String sRetries = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
     int nRetries;
     if (sRetries != null)
       nRetries = Integer.parseInt (sRetries);
@@ -89,7 +90,9 @@ public class ImmediateResenderModule extends AbstractResenderModule
     }
 
     // Update the retries - decrement here
-    aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nRetries - 1));
+    nRetries--;
+    if (aOptions != null)
+      aOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (nRetries));
 
     // Send again
     getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);

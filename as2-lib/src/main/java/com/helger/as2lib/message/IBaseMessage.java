@@ -72,7 +72,7 @@ public interface IBaseMessage extends Serializable
   }
 
   @Nullable
-  default String getHeaderCombined (@Nonnull final String sName, @Nullable final String sDelimiter)
+  default String getHeaderCombined (@Nonnull final String sName, @Nonnull final String sDelimiter)
   {
     return headers ().getHeaderCombined (sName, sDelimiter);
   }

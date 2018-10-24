@@ -85,7 +85,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    */
   @Override
   // TODO get rid of this
-  public void finalize () throws IOException
+  protected void finalize () throws IOException
   {
     try
     {
@@ -125,8 +125,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    * @param aIS
    *        {@link InputStream} to read from
    * @param sName
-   *        name to use in the temporary file to link it to the delivered message.
-   *        May be null
+   *        name to use in the temporary file to link it to the delivered
+   *        message. May be null
    * @return The created {@link File}
    * @throws IOException
    *         in case of IO error
@@ -158,8 +158,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    * @param aIS
    *        {@link InputStream} to read from
    * @param sName
-   *        name to use in the temporary file to link it to the delivered message.
-   *        May be null
+   *        name to use in the temporary file to link it to the delivered
+   *        message. May be null
    * @return {@link TempSharedFileInputStream} on the created temporary file.
    * @throws IOException
    *         in case of IO error

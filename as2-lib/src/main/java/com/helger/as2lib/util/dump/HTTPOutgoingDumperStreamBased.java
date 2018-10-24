@@ -105,6 +105,12 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     }
   }
 
+  public void start (@Nonnull final String sURL)
+  {
+    final String sLine = "# Starting AS2 transmission to '" + sURL + "'" + CHttp.EOL;
+    _write (sLine.getBytes (CHttp.HTTP_CHARSET));
+  }
+
   public void dumpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
     final String sHeaderLine = sName + ": " + sValue + CHttp.EOL;

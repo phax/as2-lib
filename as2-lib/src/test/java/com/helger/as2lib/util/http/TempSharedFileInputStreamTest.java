@@ -43,6 +43,7 @@ import javax.mail.util.SharedFileInputStream;
 
 import org.junit.Test;
 
+import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -79,8 +80,7 @@ public final class TempSharedFileInputStreamTest
       final File file = TempSharedFileInputStream.storeContentToTempFile (is, name);
       assertTrue ("Temp file exists", file.exists ());
       assertTrue ("Temp file name includes given name", file.getName ().indexOf (name) > 0);
-      // noinspection ResultOfMethodCallIgnored
-      file.delete ();
+      FileOperations.deleteFileIfExisting (file);
     }
   }
 
@@ -91,7 +91,8 @@ public final class TempSharedFileInputStreamTest
     {
       final String sSrcData = "123456";
       try (final InputStream is = new NonBlockingByteArrayInputStream (sSrcData.getBytes (StandardCharsets.ISO_8859_1));
-          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
+          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (is,
+                                                                                                              "myName"))
       {
         final int t = aSharedIS.read ();
         assertEquals (t, sSrcData.charAt (0));

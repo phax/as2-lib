@@ -44,6 +44,8 @@ import org.junit.Test;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Test class for class {@link ChunkedInputStream}.
  *
@@ -52,6 +54,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 public final class ChunkedInputStreamTest
 {
   @Test (expected = EOFException.class)
+  @SuppressFBWarnings ("RR_NOT_CHECKED")
   public void readBufferFromEmpty () throws Exception
   {
     final InputStream empty = new NonBlockingByteArrayInputStream ("".getBytes ());

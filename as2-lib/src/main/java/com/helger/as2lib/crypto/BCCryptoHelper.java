@@ -346,10 +346,10 @@ public final class BCCryptoHelper implements ICryptoHelper
     }
 
     // No need to canonicalize here - see issue #12
-    try (final DigestOutputStream aDOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aOS = MimeUtility.encode (aDOS, aPart.getEncoding ()))
+    try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
+        final OutputStream aEncodedOS = MimeUtility.encode (aDigestOS, aPart.getEncoding ()))
     {
-      aPart.getDataHandler ().writeTo (aOS);
+      aPart.getDataHandler ().writeTo (aEncodedOS);
     }
 
     // Build result digest array

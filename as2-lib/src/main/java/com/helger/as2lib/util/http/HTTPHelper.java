@@ -356,8 +356,6 @@ public final class HTTPHelper
   {
     // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
-    if (aIS == null)
-      throw new IllegalStateException ("Failed to open InputStream from " + aISP);
 
     // Read the HTTP meta data
     final String [] aRequest = _readRequestInfo (aIS);

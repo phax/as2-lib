@@ -37,12 +37,15 @@ import java.io.InputStream;
 
 import javax.annotation.Nonnull;
 
+import com.helger.commons.ValueEnforcer;
+
 class MockAS2InputStreamProvider implements IAS2InputStreamProvider
 {
   private final InputStream m_aIS;
 
   public MockAS2InputStreamProvider (@Nonnull final InputStream aIS)
   {
+    ValueEnforcer.notNull (aIS, "IS");
     m_aIS = aIS;
   }
 

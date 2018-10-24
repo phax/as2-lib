@@ -111,14 +111,15 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       final File aResendFile = AS2IOHelper.getUniqueFile (aResendDir, getFilename ());
       try (final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile)))
       {
-        String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+        String sResendAction = aOptions == null ? null
+                                                : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
         if (sResendAction == null)
         {
           LOGGER.warn ("The resending method is missing - default to message sending!");
           sResendAction = IProcessorSenderModule.DO_SEND;
         }
 
-        String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+        String sRetries = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
         if (sRetries == null)
         {
           if (LOGGER.isWarnEnabled ())

@@ -100,7 +100,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
   }
 
   @Override
-  public boolean equals (@Nullable final Object o)
+  public boolean equals (final Object o)
   {
     return super.equals (o);
   }

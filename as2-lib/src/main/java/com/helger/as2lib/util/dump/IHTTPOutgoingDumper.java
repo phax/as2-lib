@@ -33,8 +33,11 @@
 package com.helger.as2lib.util.dump;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
+
+import com.helger.commons.io.stream.WrappedOutputStream;
 
 /**
  * Base interface to dump outgoing HTTP requests
@@ -45,8 +48,18 @@ import javax.annotation.Nonnull;
 public interface IHTTPOutgoingDumper extends AutoCloseable
 {
   /**
-   * Get notified on a single outgoing HTTP headers. For HTTP headers usually the
-   * ISO-8859-1 charset is used.
+   * Called when a new outgoing connection is initiated.
+   *
+   * @param sUrl
+   *        The URL to which a connection is established.
+   * @since 4.2.0
+   */
+  default void start (@Nonnull final String sUrl)
+  {}
+
+  /**
+   * Get notified on a single outgoing HTTP headers. For HTTP headers usually
+   * the ISO-8859-1 charset is used.
    *
    * @param sName
    *        HTTP header name. Never <code>null</code>.
@@ -93,4 +106,25 @@ public interface IHTTPOutgoingDumper extends AutoCloseable
    */
   default void close () throws IOException
   {}
+
+  @Nonnull
+  default WrappedOutputStream getDumpOS (@Nonnull final OutputStream aBaseOS)
+  {
+    return new WrappedOutputStream (aBaseOS)
+    {
+      @Override
+      public final void write (final int b) throws IOException
+      {
+        super.write (b);
+        dumpPayload (b);
+      }
+
+      @Override
+      public final void write (final byte [] aBytes, final int nOfs, final int nLen) throws IOException
+      {
+        super.write (aBytes, nOfs, nLen);
+        dumpPayload (aBytes, nOfs, nLen);
+      }
+    };
+  }
 }

@@ -69,7 +69,7 @@ public interface IDynamicComponent extends Serializable
    *
    * @return name of the component
    */
-  @Nonnull
+  @Nullable
   String getName ();
 
   /**

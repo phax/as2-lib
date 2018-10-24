@@ -50,9 +50,11 @@ import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
 import org.bouncycastle.mail.smime.SMIMECompressed;
 import org.bouncycastle.mail.smime.SMIMECompressedParser;
+import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,7 +308,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           LOGGER.info ("Successfully decompressed incoming AS2 message" + aMsg.getLoggingText ());
       }
     }
-    catch (final Exception ex)
+    catch (final SMIMEException | CMSException | MessagingException ex)
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Error decompressing received message", ex);
@@ -636,7 +638,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  public void handle (@Nullable final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
+  public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
     final boolean bLargeFileSupportOn = aOwner.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON);

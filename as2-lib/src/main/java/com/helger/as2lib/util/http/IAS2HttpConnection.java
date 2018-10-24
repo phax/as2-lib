@@ -112,19 +112,4 @@ public interface IAS2HttpConnection
    * Close the connection
    */
   void disconnect ();
-
-  /**
-   * // TODO kick this from the interface
-   *
-   * @param toSend
-   *        InputStream to send
-   * @throws OpenAS2Exception
-   *         In case of error
-   * @throws IOException
-   *         In case of error
-   */
-  default public void send (final InputStream toSend) throws OpenAS2Exception, IOException
-  {
-    throw new OpenAS2Exception ("Method not implemented in class " + this.getClass ().getName ());
-  }
 }

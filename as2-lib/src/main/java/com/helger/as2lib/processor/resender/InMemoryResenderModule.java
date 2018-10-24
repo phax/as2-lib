@@ -81,7 +81,8 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     // Get the action to be used
-    String sResendAction = (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null
+                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");
@@ -89,7 +90,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     }
 
     // Get the number of retries
-    final String sRetries = (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
+    final String sRetries = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RETRIES);
     int nRetries;
     if (sRetries != null)
       nRetries = Integer.parseInt (sRetries);
