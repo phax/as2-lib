@@ -43,7 +43,7 @@ import javax.annotation.WillNotClose;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.commons.annotation.Nonempty;
+import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
 
 /**
@@ -145,7 +145,7 @@ public interface ICryptoHelper
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,
                         @Nonnull X509Certificate aCert,
                         @Nonnull ECryptoAlgorithmCrypt eAlgorithm,
-                        @Nonnull @Nonempty String sContentTransferEncoding) throws Exception;
+                        @Nonnull EContentTransferEncoding eCTE) throws Exception;
 
   @Nonnull
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
@@ -180,9 +180,9 @@ public interface ICryptoHelper
    *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
    *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
    *        algorithm names (e.g. <code>sha-1</code>).
-   * @param sContentTransferEncoding
-   *        The Content-Transfer-Encoding to be used. May neither be
-   *        <code>null</code> nor empty (since 4.2.0). Default was "base64".
+   * @param eCTE
+   *        The Content-Transfer-Encoding to be used. May not be
+   *        <code>null</code>.
    * @return The signed MIME body part. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -194,7 +194,7 @@ public interface ICryptoHelper
                      @Nonnull ECryptoAlgorithmSign eAlgorithm,
                      boolean bIncludeCertificateInSignedContent,
                      boolean bUseOldRFC3851MicAlgs,
-                     @Nonnull @Nonempty String sContentTransferEncoding) throws Exception;
+                     @Nonnull EContentTransferEncoding eCTE) throws Exception;
 
   /**
    * Verify the specified Mime Body part against the part certificate

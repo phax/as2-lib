@@ -47,7 +47,7 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2InputStreamProvider;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.codec.IDecoder;
+import com.helger.commons.codec.IByteArrayCodec;
 import com.helger.commons.codec.IdentityCodec;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.string.StringHelper;
@@ -105,20 +105,21 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
       else
       {
         // Decode data if necessary
-        final IDecoder <byte [], byte []> aDecoder = aCTE.createDecoder ();
+        final IByteArrayCodec aCodec = aCTE.createCodec ();
+
         // TODO: Handle decoding when large file support is on
-        if (!(aDecoder instanceof IdentityCodec <?>) && aPayload instanceof ByteArrayDataSource)
+        if (!(aCodec instanceof IdentityCodec <?>) && aPayload instanceof ByteArrayDataSource)
         {
-          byte [] actualBytes = ((ByteArrayDataSource) aPayload).directGetBytes ();
+          byte [] aActualBytes = ((ByteArrayDataSource) aPayload).directGetBytes ();
           // Remember original length before continuing
-          final int nOriginalContentLength = actualBytes.length;
+          final int nOriginalContentLength = aActualBytes.length;
 
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
                          sContentTransferEncoding +
                          "' - decoding");
-          actualBytes = aDecoder.getDecoded (actualBytes);
-          aPayload = new ByteArrayDataSource (actualBytes, aPayload.getContentType (), aPayload.getName ());
+          aActualBytes = aCodec.getDecoded (aActualBytes);
+          aPayload = new ByteArrayDataSource (aActualBytes, aPayload.getContentType (), aPayload.getName ());
 
           // Remember that we potentially did something
           aMsg.attrs ().putIn (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);

@@ -42,6 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -83,6 +84,7 @@ import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
+import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpConnection;
@@ -97,7 +99,6 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
@@ -197,7 +198,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
       aMsg.attrs ().putIn (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
     }
-    catch (final Exception ex)
+    catch (final IOException ex)
     {
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
@@ -295,16 +296,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   @Nonnull
   public static MimeBodyPart compressMimeBodyPart (@Nonnull final MimeBodyPart aData,
                                                    @Nonnull final ECompressionType eCompressionType,
-                                                   @Nonnull @Nonempty final String sContentTransferEncoding) throws SMIMEException
+                                                   @Nonnull final EContentTransferEncoding eCTE) throws SMIMEException
   {
     ValueEnforcer.notNull (aData, "Data");
     ValueEnforcer.notNull (eCompressionType, "CompressionType");
-    ValueEnforcer.notEmpty (sContentTransferEncoding, "ContentTransferEncoding");
+    ValueEnforcer.notNull (eCTE, "ContentTransferEncoding");
 
     final SMIMECompressedGenerator aCompressedGenerator = new SMIMECompressedGenerator ();
 
     // Content-Transfer-Encoding to use
-    aCompressedGenerator.setContentTransferEncoding (sContentTransferEncoding);
+    aCompressedGenerator.setContentTransferEncoding (eCTE.getID ());
 
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
@@ -313,15 +314,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  protected MimeBodyPart compress (@Nonnull final IMessage aMsg,
-                                   @Nonnull final MimeBodyPart aData,
-                                   @Nonnull final ECompressionType eCompressionType,
-                                   @Nonnull @Nonempty final String sContentTransferEncoding) throws SMIMEException,
-                                                                                             MessagingException
+  private MimeBodyPart _compressOriginal (@Nonnull final IMessage aMsg,
+                                          @Nonnull final MimeBodyPart aData,
+                                          @Nonnull final ECompressionType eCompressionType,
+                                          @Nonnull final EContentTransferEncoding eCTE) throws SMIMEException,
+                                                                                        MessagingException
   {
-    final MimeBodyPart aCompressedBodyPart = compressMimeBodyPart (aData, eCompressionType, sContentTransferEncoding);
+    final MimeBodyPart aCompressedBodyPart = compressMimeBodyPart (aData, eCompressionType, eCTE);
 
-    aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+    aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
     aMsg.headers ()
         .setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
 
@@ -336,11 +337,25 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return aCompressedBodyPart;
   }
 
+  private static void _log (@Nonnull final MimeBodyPart aMimePart, @Nonnull final String sContext) throws IOException,
+                                                                                                   MessagingException
+  {
+    if (false)
+    {
+      LOGGER.info ("[[" + sContext + "]]");
+      final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+      aMimePart.writeTo (aBAOS);
+      LOGGER.info (aBAOS.getAsString (StandardCharsets.ISO_8859_1));
+      LOGGER.info ("[[END]]");
+    }
+  }
+
   @Nonnull
   public static MimeBodyPart secureMimeBodyPart (@Nonnull final MimeBodyPart aSrcPart,
-                                                 @Nonnull @Nonempty final String sContentTransferEncoding,
+                                                 @Nonnull final EContentTransferEncoding eCTE,
                                                  @Nullable final ECompressionType eCompressionType,
                                                  final boolean bCompressBeforeSign,
+                                                 @Nullable final Consumer <MimeBodyPart> aCompressBeforeSignCallback,
                                                  @Nullable final ECryptoAlgorithmSign eSignAlgorithm,
                                                  @Nullable final X509Certificate aSenderCert,
                                                  @Nullable final PrivateKey aSenderKey,
@@ -350,7 +365,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                  @Nullable final X509Certificate aReceiverCert) throws Exception
   {
     ValueEnforcer.notNull (aSrcPart, "SrcPart");
-    ValueEnforcer.notEmpty (sContentTransferEncoding, "ContentTransferEncoding");
+    ValueEnforcer.notNull (eCTE, "ContentTransferEncoding");
+    if (eCompressionType != null)
+    {
+      if (bCompressBeforeSign)
+        ValueEnforcer.notNull (aCompressBeforeSignCallback, "CompressBeforeSignCallback");
+    }
     if (eSignAlgorithm != null)
     {
       ValueEnforcer.notNull (aSenderCert, "SenderCert");
@@ -362,13 +382,18 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
 
     MimeBodyPart aDataBP = aSrcPart;
+    _log (aDataBP, "source");
 
     if (eCompressionType != null && bCompressBeforeSign)
     {
       // Compress before sign
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message before signing...");
-      aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, sContentTransferEncoding);
+      aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, eCTE);
+      _log (aDataBP, "compressBeforeSign");
+
+      // Invoke callback, so that source of MIC can be set
+      aCompressBeforeSignCallback.accept (aDataBP);
     }
 
     if (eSignAlgorithm != null)
@@ -382,7 +407,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                 eSignAlgorithm,
                                 bIncludeCertificateInSignedContent,
                                 bUseRFC3851MICAlg,
-                                sContentTransferEncoding);
+                                eCTE);
+      _log (aDataBP, "signed");
     }
 
     if (eCompressionType != null && !bCompressBeforeSign)
@@ -390,25 +416,28 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Compress after sign
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message after signing...");
-      aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, sContentTransferEncoding);
+      aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, eCTE);
+      _log (aDataBP, "compressAfterSign");
     }
 
     if (eCryptAlgorithm != null)
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypting outbound message...");
-      aDataBP = AS2Helper.getCryptoHelper ()
-                         .encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, sContentTransferEncoding);
+      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, eCTE);
+      _log (aDataBP, "encrypted");
     }
 
     return aDataBP;
   }
 
   @Nonnull
-  protected MimeBodyPart secure (@Nonnull final IMessage aMsg) throws Exception
+  private MimeBodyPart _secureOriginal (@Nonnull final IMessage aMsg,
+                                        @Nonnull final EContentTransferEncoding eCTE) throws Exception
   {
     // Set up encrypt/sign variables
     MimeBodyPart aDataBP = aMsg.getData ();
+    _log (aDataBP, "source");
 
     final Partnership aPartnership = aMsg.partnership ();
     final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
@@ -427,16 +456,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       bCompressBeforeSign = aPartnership.isCompressBeforeSign ();
     }
 
-    // Get Content-Transfer-Encoding to use
-    final String sContentTransferEncoding = aMsg.partnership ()
-                                                .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
-
     if (eCompressionType != null && bCompressBeforeSign)
     {
       // Compress before sign
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message before signing...");
-      aDataBP = compress (aMsg, aDataBP, eCompressionType, sContentTransferEncoding);
+      aDataBP = _compressOriginal (aMsg, aDataBP, eCompressionType, eCTE);
+      _log (aDataBP, "compressBeforeSign");
 
       // Replace the message data, because it is the basis for the MIC
       aMsg.setData (aDataBP);
@@ -477,7 +503,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                 eSignAlgorithm,
                                 bIncludeCertificateInSignedContent,
                                 bUseRFC3851MICAlg,
-                                sContentTransferEncoding);
+                                eCTE);
+      _log (aDataBP, "signed");
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signed data with " +
@@ -493,7 +520,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Compress after sign
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message after signing...");
-      aDataBP = compress (aMsg, aDataBP, eCompressionType, sContentTransferEncoding);
+      aDataBP = _compressOriginal (aMsg, aDataBP, eCompressionType, eCTE);
+      _log (aDataBP, "compressAfterSign");
     }
 
     // Encrypt the data if requested
@@ -505,11 +533,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (eCryptAlgorithm == null)
         throw new OpenAS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
 
-      aDataBP = AS2Helper.getCryptoHelper ()
-                         .encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, sContentTransferEncoding);
-      // That does not work
-      if (false)
-        aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, eCTE);
+
+      _log (aDataBP, "encrypted");
+
+      aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypted data with " +
@@ -521,6 +549,111 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
 
     return aDataBP;
+  }
+
+  @Nonnull
+  protected MimeBodyPart secure (@Nonnull final IMessage aMsg,
+                                 @Nonnull final EContentTransferEncoding eCTE) throws Exception
+  {
+    if (false)
+      return _secureOriginal (aMsg, eCTE);
+
+    final Partnership aPartnership = aMsg.partnership ();
+    final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
+
+    // Get compression parameters
+    // If compression is enabled, by default is is compressed before signing
+    ECompressionType eCompressionType = null;
+    boolean bCompressBeforeSign = true;
+    Consumer <MimeBodyPart> aCompressBeforeSignCallback = null;
+    {
+      final String sCompressionType = aPartnership.getCompressionType ();
+      if (sCompressionType != null)
+      {
+        eCompressionType = ECompressionType.getFromIDCaseInsensitiveOrNull (sCompressionType);
+        if (eCompressionType == null)
+          throw new OpenAS2Exception ("The compression type '" + sCompressionType + "' is not supported!");
+
+        bCompressBeforeSign = aPartnership.isCompressBeforeSign ();
+
+        if (bCompressBeforeSign)
+        {
+          // Replace the message data, because it is the basis for the MIC
+          aCompressBeforeSignCallback = mp -> aMsg.setData (mp);
+        }
+      }
+    }
+
+    // Get signing parameters
+    ECryptoAlgorithmSign eSignAlgorithm = null;
+    X509Certificate aSenderCert = null;
+    PrivateKey aSenderKey = null;
+    boolean bIncludeCertificateInSignedContent = false;
+    boolean bUseRFC3851MICAlg = false;
+    {
+      final String sSignAlgorithm = aPartnership.getSigningAlgorithm ();
+      if (sSignAlgorithm != null)
+      {
+        aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
+        aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
+        eSignAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSignAlgorithm);
+        if (eSignAlgorithm == null)
+          throw new OpenAS2Exception ("The signing algorithm '" + sSignAlgorithm + "' is not supported!");
+
+        // Include certificate in signed content?
+        final ETriState eIncludeCertificateInSignedContent = aMsg.partnership ()
+                                                                 .getIncludeCertificateInSignedContent ();
+        if (eIncludeCertificateInSignedContent.isDefined ())
+        {
+          // Use per partnership
+          bIncludeCertificateInSignedContent = eIncludeCertificateInSignedContent.getAsBooleanValue ();
+        }
+        else
+        {
+          // Use global value
+          bIncludeCertificateInSignedContent = getSession ().isCryptoSignIncludeCertificateInBodyPart ();
+        }
+
+        // Use old MIC algorithms?
+        bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
+      }
+    }
+
+    // Get encryption parameters
+    ECryptoAlgorithmCrypt eCryptAlgorithm = null;
+    X509Certificate aReceiverCert = null;
+    {
+      final String sCryptAlgorithm = aPartnership.getEncryptAlgorithm ();
+      if (sCryptAlgorithm != null)
+      {
+        aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
+        eCryptAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sCryptAlgorithm);
+        if (eCryptAlgorithm == null)
+          throw new OpenAS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
+      }
+    }
+
+    // Set CTE once here - required for stream creation later on!
+    aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
+    if (eCompressionType != null && eSignAlgorithm == null && eCryptAlgorithm == null)
+    {
+      // Compression only - set the respective content type
+      aMsg.headers ()
+          .setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
+    }
+
+    return secureMimeBodyPart (aMsg.getData (),
+                               eCTE,
+                               eCompressionType,
+                               bCompressBeforeSign,
+                               aCompressBeforeSignCallback,
+                               eSignAlgorithm,
+                               aSenderCert,
+                               aSenderKey,
+                               bIncludeCertificateInSignedContent,
+                               bUseRFC3851MICAlg,
+                               eCryptAlgorithm,
+                               aReceiverCert);
   }
 
   /**
@@ -781,8 +914,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final boolean bUseCaches = false;
       aConn = getHttpURLConnection (sUrl, bOutput, bInput, bUseCaches, eRequestMethod, getSession ().getHttpProxy ());
     }
+
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
+      if (aOutgoingDumper != null)
+        aOutgoingDumper.start (sUrl);
+
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
@@ -794,45 +931,35 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aConn.getURL ().getPort ());
 
+      final String sCTE = aMsg.headers ().getFirstHeaderValue (CHttpHeader.CONTENT_TRANSFER_ENCODING);
+      final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrDefault (sCTE,
+                                                                                                        EContentTransferEncoding.AS2_DEFAULT);
+
       final InputStream aMsgIS = aSecuredMimePart.getInputStream ();
 
-      if (!attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
+      if (attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
+      {
+        // HttpClient option
+
+        // Transfer the data
+        final StopWatch aSW = StopWatch.createdStarted ();
+        final long nBytes = ((AS2HttpClient) aConn).send (aMsgIS, eCTE, aOutgoingDumper);
+        aSW.stop ();
+        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      }
+      else
       {
         // Note: closing this stream causes connection abort errors on some AS2
         // servers
         OutputStream aMsgOS = aConn.getOutputStream ();
-        if (true)
-        {
-          final String sCTE = aMsg.headers ().getFirstHeaderValue (CHttpHeader.CONTENT_TRANSFER_ENCODING);
-          if (sCTE != null)
-          {
-            // Use the specified CTE
-            aMsgOS = MimeUtility.encode (aMsgOS, sCTE);
-          }
-        }
-
         // This stream dumps the HTTP
         if (aOutgoingDumper != null)
         {
           // Overwrite the used OutputStream to additionally log to the debug
           // OutputStream
-          aMsgOS = new WrappedOutputStream (aMsgOS)
-          {
-            @Override
-            public final void write (final int b) throws IOException
-            {
-              super.write (b);
-              aOutgoingDumper.dumpPayload (b);
-            }
-
-            @Override
-            public final void write (final byte [] aBytes, final int nOfs, final int nLen) throws IOException
-            {
-              super.write (aBytes, nOfs, nLen);
-              aOutgoingDumper.dumpPayload (aBytes, nOfs, nLen);
-            }
-          };
+          aMsgOS = aOutgoingDumper.getDumpOS (aMsgOS);
         }
+        aMsgOS = MimeUtility.encode (aMsgOS, eCTE.getID ());
 
         // Transfer the data
         final StopWatch aSW = StopWatch.createdStarted ();
@@ -841,18 +968,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
         aSW.stop ();
         LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-      }
-      else
-      {
-        // HttpClient option
-        // Transfer the data
-        final StopWatch aSW = StopWatch.createdStarted ();
-        aConn.send (aMsgIS);
-        aSW.stop ();
-        // TODO: count sent bytes
-        // LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes,
-        // aSW) + aMsg.getLoggingText ());
-
       }
 
       if (aOutgoingDumper != null)
@@ -927,8 +1042,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     try
     {
+      // Get Content-Transfer-Encoding to use
+      final String sContentTransferEncoding = aMsg.partnership ()
+                                                  .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+      final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrDefault (sContentTransferEncoding,
+                                                                                                        EContentTransferEncoding.AS2_DEFAULT);
+
       // compress and/or sign and/or encrypt the message if needed
-      final MimeBodyPart aSecuredData = secure (aMsg);
+      final MimeBodyPart aSecuredData = secure (aMsg, eCTE);
 
       // Calculate MIC after compress/sign/crypt was handled, because the
       // message data might change if compression before signing is active.

@@ -62,7 +62,6 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
-import com.helger.commons.io.stream.WrappedOutputStream;
 import com.helger.commons.timing.StopWatch;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
@@ -121,17 +120,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       // This stream dumps the HTTP
       if (aOutgoingDumper != null)
-      {
-        aMsgOS = new WrappedOutputStream (aMsgOS)
-        {
-          @Override
-          public final void write (final int b) throws IOException
-          {
-            super.write (b);
-            aOutgoingDumper.dumpPayload (b);
-          }
-        };
-      }
+        aMsgOS = aOutgoingDumper.getDumpOS (aMsgOS);
 
       // Transfer the data
       final InputStream aMessageIS = aMdn.getData ().getInputStream ();

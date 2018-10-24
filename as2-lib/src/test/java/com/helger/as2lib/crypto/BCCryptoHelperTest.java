@@ -110,7 +110,7 @@ public final class BCCryptoHelperTest
                                                      eAlgo,
                                                      nIncludeCert == 1,
                                                      eAlgo.isRFC3851Algorithm (),
-                                                     EContentTransferEncoding.BASE64.getID ());
+                                                     EContentTransferEncoding.BASE64);
         assertNotNull (aSigned);
 
         final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
@@ -139,7 +139,7 @@ public final class BCCryptoHelperTest
                                                    ECryptoAlgorithmSign.DIGEST_SHA_512,
                                                    true,
                                                    false,
-                                                   eCTE.getID ());
+                                                   eCTE);
       assertNotNull (aSigned);
 
       final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
@@ -164,7 +164,7 @@ public final class BCCryptoHelperTest
                                                  ECryptoAlgorithmSign.DIGEST_SHA_256,
                                                  false,
                                                  false,
-                                                 EContentTransferEncoding.BASE64.getID ());
+                                                 EContentTransferEncoding.BASE64);
     assertNotNull (aSigned);
 
     final String sBoundary = AS2HttpHelper.parseContentType (aSigned.getContentType ()).getParameter ("boundary");
@@ -217,7 +217,7 @@ public final class BCCryptoHelperTest
                                                  ECryptoAlgorithmSign.DIGEST_SHA_256,
                                                  false,
                                                  false,
-                                                 EContentTransferEncoding.BINARY.getID ());
+                                                 EContentTransferEncoding.BINARY);
     assertNotNull (aSigned);
 
     final String sBoundary = AS2HttpHelper.parseContentType (aSigned.getContentType ()).getParameter ("boundary");
@@ -265,7 +265,7 @@ public final class BCCryptoHelperTest
                                                  ECryptoAlgorithmSign.DIGEST_SHA_256,
                                                  false,
                                                  false,
-                                                 EContentTransferEncoding.QUOTED_PRINTABLE.getID ());
+                                                 EContentTransferEncoding.QUOTED_PRINTABLE);
     assertNotNull (aSigned);
 
     final String sBoundary = AS2HttpHelper.parseContentType (aSigned.getContentType ()).getParameter ("boundary");
@@ -324,10 +324,7 @@ public final class BCCryptoHelperTest
     for (final ECryptoAlgorithmCrypt eAlgo : ECryptoAlgorithmCrypt.values ())
     {
       final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ()
-                                               .encrypt (aPart,
-                                                         CERT_ENCRYPT,
-                                                         eAlgo,
-                                                         EContentTransferEncoding.BASE64.getID ());
+                                               .encrypt (aPart, CERT_ENCRYPT, eAlgo, EContentTransferEncoding.BASE64);
       assertNotNull (aEncrypted);
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
@@ -349,7 +346,7 @@ public final class BCCryptoHelperTest
                                                .encrypt (aPart,
                                                          CERT_ENCRYPT,
                                                          ECryptoAlgorithmCrypt.CRYPT_AES256_GCM,
-                                                         eCTE.getID ());
+                                                         eCTE);
       assertNotNull (aEncrypted);
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
@@ -369,7 +366,7 @@ public final class BCCryptoHelperTest
                                              .encrypt (aPart,
                                                        CERT_ENCRYPT,
                                                        ECryptoAlgorithmCrypt.CRYPT_3DES,
-                                                       EContentTransferEncoding.BASE64.getID ());
+                                                       EContentTransferEncoding.BASE64);
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     aEncrypted.writeTo (aBAOS);
 
@@ -396,7 +393,7 @@ public final class BCCryptoHelperTest
                                              .encrypt (aPart,
                                                        CERT_ENCRYPT,
                                                        ECryptoAlgorithmCrypt.CRYPT_3DES,
-                                                       EContentTransferEncoding.BINARY.getID ());
+                                                       EContentTransferEncoding.BINARY);
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     aEncrypted.writeTo (aBAOS);
 
@@ -419,7 +416,7 @@ public final class BCCryptoHelperTest
                                              .encrypt (aPart,
                                                        CERT_ENCRYPT,
                                                        ECryptoAlgorithmCrypt.CRYPT_3DES,
-                                                       EContentTransferEncoding.QUOTED_PRINTABLE.getID ());
+                                                       EContentTransferEncoding.QUOTED_PRINTABLE);
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     aEncrypted.writeTo (aBAOS);
 

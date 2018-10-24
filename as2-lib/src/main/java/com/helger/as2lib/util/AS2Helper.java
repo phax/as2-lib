@@ -186,7 +186,7 @@ public final class AS2Helper
                                                                     eMICAlg,
                                                                     bIncludeCertificateInSignedContent,
                                                                     bUseOldRFC3851MicAlgs,
-                                                                    EContentTransferEncoding.BASE64.getID ());
+                                                                    EContentTransferEncoding.BASE64);
         aMdn.setData (aSignedReport);
       }
       catch (final CertificateNotFoundException | KeyNotFoundException ex)

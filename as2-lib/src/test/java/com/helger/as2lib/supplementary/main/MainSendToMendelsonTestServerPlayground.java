@@ -85,10 +85,10 @@ public final class MainSendToMendelsonTestServerPlayground
       GlobalDebug.setDebugModeDirect (false);
 
     Proxy aHttpProxy = null;
-    if (true)
+    if (false)
       aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.6", 8080));
 
-    if (false)
+    if (true)
       HTTPHelper.setHTTPOutgoingDumperFactory (x -> new HTTPOutgoingDumperStreamBased (System.out));
     if (false)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperStreamBased (new NonClosingOutputStream (System.out)));
@@ -139,8 +139,10 @@ public final class MainSendToMendelsonTestServerPlayground
     else
       aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
-    if (false)
-      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
+
+    // Mendelson cannot handle any other CTE than BINARY!
+    aSettings.setLargeFileSupport (true);
+    aRequest.setContentTransferEncoding (EContentTransferEncoding.BINARY);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)

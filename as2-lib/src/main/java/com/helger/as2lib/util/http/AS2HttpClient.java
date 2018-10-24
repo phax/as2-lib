@@ -45,8 +45,11 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
@@ -64,10 +67,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
+import com.helger.commons.io.stream.CountingInputStream;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
  * Http connection, Implemented as HttpClient.
@@ -142,11 +148,12 @@ public class AS2HttpClient implements IAS2HttpConnection
   }
 
   /**
-   * Provides an output stream so user can write message content to it. Starts the
-   * sending to caller can start write to the received stream
+   * Provides an output stream so user can write message content to it. Starts
+   * the sending to caller can start write to the received stream
    *
    * @return OutputStream to write message body to
    */
+  @Nonnull
   public OutputStream getOutputStream () throws IOException
   {
     if (m_aPipedOutputStream == null)
@@ -169,7 +176,7 @@ public class AS2HttpClient implements IAS2HttpConnection
       try
       {
         final HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build ();
-        System.out.println ("Runnable: calling execute");
+        LOGGER.info ("Runnable: calling execute");
         m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
       }
       catch (final Exception e)
@@ -181,11 +188,51 @@ public class AS2HttpClient implements IAS2HttpConnection
     aSenderThread.start ();
   }
 
-  public void send (final InputStream toSend) throws IOException
+  /**
+   * @param aISToSend
+   *        InputStream to send. May not be <code>null</code>.
+   * @param eCTE
+   *        Content-Transfer-Encoding to be used. May not be <code>null</code>.
+   * @param aOutgoingDumper
+   *        Optional outgoing dumper
+   * @return bytes sent. Must be &ge; 0.
+   * @throws IOException
+   *         In case of error
+   */
+  @Nonnegative
+  public long send (@Nonnull final InputStream aISToSend,
+                    @Nonnull final EContentTransferEncoding eCTE,
+                    @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws IOException
   {
-    m_aRequestBuilder.setEntity (new InputStreamEntity (toSend));
+    final CountingInputStream aCIS = new CountingInputStream (aISToSend);
+    final InputStreamEntity aISE = new InputStreamEntity (aCIS)
+    {
+      @Override
+      public InputStream getContent () throws IOException
+      {
+        // Only writeTo should be used
+        throw new UnsupportedOperationException ();
+      }
+
+      @Override
+      public void writeTo (@Nonnull final OutputStream aOS) throws IOException
+      {
+        // Use MIME encoding here
+        try (OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
+            final OutputStream aEncodedOS = MimeUtility.encode (aDebugOS, eCTE.getID ()))
+        {
+          super.writeTo (aEncodedOS);
+        }
+        catch (final MessagingException ex)
+        {
+          throw new IllegalStateException ("Failed to encode OutputStream with " + eCTE, ex);
+        }
+      }
+    };
+    m_aRequestBuilder.setEntity (aISE);
     final HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build ();
     m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
+    return aCIS.getBytesRead ();
   }
 
   /**
@@ -197,9 +244,8 @@ public class AS2HttpClient implements IAS2HttpConnection
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-    {
-      throw new OpenAS2Exception ("No response as message was not yet sent");
-    }
+      throw new OpenAS2Exception ("No response as message was yet sent");
+
     return m_aCloseableHttpResponse.getEntity ().getContent ();
   }
 
@@ -210,9 +256,8 @@ public class AS2HttpClient implements IAS2HttpConnection
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-    {
-      throw new OpenAS2Exception ("No response as message was not yet sent");
-    }
+      throw new OpenAS2Exception ("No response as message was yet sent");
+
     try
     {
       final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
@@ -231,9 +276,8 @@ public class AS2HttpClient implements IAS2HttpConnection
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-    {
-      throw new OpenAS2Exception ("No response as message was not yet sent");
-    }
+      throw new OpenAS2Exception ("No response as message was yet sent");
+
     final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
     return aStatusLine.getReasonPhrase ();
   }
@@ -244,9 +288,7 @@ public class AS2HttpClient implements IAS2HttpConnection
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-    {
-      throw new OpenAS2Exception ("No response as message was not yet sent");
-    }
+      throw new OpenAS2Exception ("No response as message was yet sent");
 
     final Header [] aHeaders = m_aCloseableHttpResponse.getAllHeaders ();
     final HttpHeaderMap ret = new HttpHeaderMap ();
