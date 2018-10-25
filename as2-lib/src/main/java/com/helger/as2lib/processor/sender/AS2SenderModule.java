@@ -322,9 +322,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     if (false)
     {
       LOGGER.info ("[[" + sContext + "]]");
-      final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-      aMimePart.writeTo (aBAOS);
-      LOGGER.info (aBAOS.getAsString (StandardCharsets.ISO_8859_1));
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
+      {
+        aMimePart.writeTo (aBAOS);
+        LOGGER.info (aBAOS.getAsString (StandardCharsets.ISO_8859_1));
+      }
       LOGGER.info ("[[END]]");
     }
   }
