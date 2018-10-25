@@ -44,6 +44,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Added new encryption algorithms (AES with GCM padding)
     * Requires ph-web 9.0.5 or newer
     * Required ph-commons 9.1.8. to ensure case sensitive HTTP header names (see [ph-commons ä11](https://github.com/phax/ph-commons/issues/11))
+    * Storing the outgoing MIC as an attribute in the message (see [#74](https://github.com/phax/as2-lib/issues/74))
 * v4.1.1 - 2018-07-27 - **please use only with ph-commons 9.1.4 or newer**
     * The existence of just the header `Disposition-Notification-Options` without `Disposition-Notification-To` does not trigger MDN sending anymore (see [#42](https://github.com/phax/as2-lib/issues/42))
     * Fixed overwriting of existing `Content-Transfer-Encoding` when receiving messages.
