@@ -5,6 +5,7 @@
 [![Join the chat at https://gitter.im/phax/as2-lib](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/phax/as2-lib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 AS2 is a transport protocol specified in [RFC 4130](http://www.ietf.org/rfc/rfc4130.txt).
+AS2 version 1.1 adding compression is specified in [RFC 5402](http://www.ietf.org/rfc/rfc5402.txt).
 The MDN is specified in [RFC 3798](http://www.ietf.org/rfc/rfc3798.txt).
 Algorithm names are defined in [RFC 5751](https://www.ietf.org/rfc/rfc5751.txt) which superseedes [RFC 3851](https://www.ietf.org/rfc/rfc3851.txt);
 
