@@ -280,6 +280,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                  .calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Calculated MIC: '" + sMIC + "'");
+    aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_MIC, sMIC);
 
     if (aPartnership.getAS2ReceiptDeliveryOption () != null)
     {

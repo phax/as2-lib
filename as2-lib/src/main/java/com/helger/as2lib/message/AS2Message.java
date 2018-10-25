@@ -51,6 +51,8 @@ public class AS2Message extends AbstractMessage
   public static final String ATTRIBUTE_RECEIVED_ENCRYPTED = "as2msg.received.encrypted";
   public static final String ATTRIBUTE_RECEIVED_SIGNED = "as2msg.received.signed";
   public static final String ATTRIBUTE_RECEIVED_COMPRESSED = "as2msg.received.compressed";
+  /** Optional attribute storing the created MIC (see #74) */
+  public static final String ATTRIBUTE_MIC = "MIC";
 
   public static final String PROTOCOL_AS2 = "as2";
   public static final String DEFAULT_ID_FORMAT = CAS2Info.NAME +
