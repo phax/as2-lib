@@ -218,7 +218,7 @@ public class AS2HttpClient implements IAS2HttpConnection
       public void writeTo (@Nonnull final OutputStream aOS) throws IOException
       {
         // Use MIME encoding here
-        try (OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
+        try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
             final OutputStream aEncodedOS = MimeUtility.encode (aDebugOS, eCTE.getID ()))
         {
           super.writeTo (aEncodedOS);
