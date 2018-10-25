@@ -59,6 +59,7 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
 
@@ -73,7 +74,10 @@ public final class MainSendToMendelsonTestServerPlayground
   static
   {
     if (false)
-      System.setProperty ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+      SystemProperties.setPropertyValue ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+
+    // Required for Content-Transfer-Encoding other than binary!
+    SystemProperties.setPropertyValue ("sun.net.http.allowRestrictedHeaders", "true");
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServerPlayground.class);
@@ -113,8 +117,8 @@ public final class MainSendToMendelsonTestServerPlayground
     // identical
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
     final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES128_CBC;
-    final ECompressionType eCompress = true ? null : ECompressionType.ZLIB;
-    final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
+    final ECompressionType eCompress = ECompressionType.ZLIB;
+    final boolean bCompressBeforeSigning = true;
 
     if (eSignAlgo != null)
       aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
@@ -131,6 +135,7 @@ public final class MainSendToMendelsonTestServerPlayground
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
     aSettings.setReadTimeoutMS (10_000);
+    aSettings.setLargeFileSupport (true);
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
@@ -140,7 +145,7 @@ public final class MainSendToMendelsonTestServerPlayground
       aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
-    aSettings.setLargeFileSupport (false);
+    // "CTE" and "compress before sign" have impact on MIC matching
     aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message

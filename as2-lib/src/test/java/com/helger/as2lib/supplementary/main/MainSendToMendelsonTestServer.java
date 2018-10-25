@@ -57,6 +57,7 @@ import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
 
@@ -67,6 +68,12 @@ import com.helger.security.keystore.EKeyStoreType;
  */
 public final class MainSendToMendelsonTestServer
 {
+  static
+  {
+    // Required for Content-Transfer-Encoding other than binary!
+    SystemProperties.setPropertyValue ("sun.net.http.allowRestrictedHeaders", "true");
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServer.class);
 
   public static void main (final String [] args) throws Exception
@@ -99,7 +106,7 @@ public final class MainSendToMendelsonTestServer
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
-    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
+    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES128_CBC;
     final ECompressionType eCompress = ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
 
@@ -120,7 +127,6 @@ public final class MainSendToMendelsonTestServer
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
     aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
-    // Mendelson cannot handle any other CTE than BINARY!
     aRequest.setContentTransferEncoding (EContentTransferEncoding.BINARY);
 
     // Send message

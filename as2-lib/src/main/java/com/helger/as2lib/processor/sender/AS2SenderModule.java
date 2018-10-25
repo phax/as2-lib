@@ -308,6 +308,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // Content-Transfer-Encoding to use
     aCompressedGenerator.setContentTransferEncoding (eCTE.getID ());
 
+    // This call might modify the original mime part and add "Content-Type" and
+    // "Content-Transfer-Encoding" header
     final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData,
                                                                             eCompressionType.createOutputCompressor ());
 
@@ -369,7 +371,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, eCTE);
       _log (aDataBP, "compressBeforeSign");
 
-      // Invoke callback, so that source of MIC can be set
+      // Invoke callback, so that source of MIC can be calculated later
       aCompressBeforeSignCallback.accept (aDataBP);
     }
 
@@ -490,6 +492,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // Set CTE once here - required for stream creation later on!
     aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
+    if (eCompressionType != null || eCryptAlgorithm != null)
+    {
+      // Header is needed when compression or encryption is enabled
+      if (aMsg.getData ().getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING) == null)
+        aMsg.getData ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
+    }
     if (eCompressionType != null && eSignAlgorithm == null && eCryptAlgorithm == null)
     {
       // Compression only - set the respective content type
@@ -747,7 +755,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final MimeBodyPart aSecuredMimePart,
-                             @Nullable final String sMIC) throws OpenAS2Exception, IOException, MessagingException
+                             @Nullable final String sMIC,
+                             @Nonnull final EContentTransferEncoding eCTE) throws OpenAS2Exception,
+                                                                           IOException,
+                                                                           MessagingException
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -785,10 +796,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
       aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aConn.getURL ().getPort ());
-
-      final String sCTE = aMsg.headers ().getFirstHeaderValue (CHttpHeader.CONTENT_TRANSFER_ENCODING);
-      final EContentTransferEncoding eCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrDefault (sCTE,
-                                                                                                        EContentTransferEncoding.AS2_DEFAULT);
 
       final InputStream aMsgIS = aSecuredMimePart.getInputStream ();
 
@@ -918,7 +925,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
       aMsg.setContentType (aSecuredData.getContentType ());
 
-      _sendViaHTTP (aMsg, aSecuredData, sMIC);
+      _sendViaHTTP (aMsg, aSecuredData, sMIC, eCTE);
     }
     catch (final HttpResponseException ex)
     {
