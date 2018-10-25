@@ -111,9 +111,9 @@ public final class MainSendToMendelsonTestServerPlayground
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
-    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
-    final ECompressionType eCompress = ECompressionType.ZLIB;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
+    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES128_CBC;
+    final ECompressionType eCompress = true ? null : ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
 
     if (eSignAlgo != null)
@@ -140,9 +140,8 @@ public final class MainSendToMendelsonTestServerPlayground
       aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
-    // Mendelson cannot handle any other CTE than BINARY!
-    aSettings.setLargeFileSupport (true);
-    aRequest.setContentTransferEncoding (EContentTransferEncoding.BINARY);
+    aSettings.setLargeFileSupport (false);
+    aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)

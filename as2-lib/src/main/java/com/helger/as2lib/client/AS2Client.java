@@ -379,7 +379,7 @@ public class AS2Client
         if (bHasRetries)
           aHandleOptions.put (IProcessorResenderModule.OPTION_RETRIES, Integer.toString (aSettings.getRetryCount ()));
 
-        // It's a partnership property
+        // Content-Transfer-Encoding is a partnership property
         aPartnership.setContentTransferEncodingSend (aRequest.getContentTransferEncoding ());
         aPartnership.setContentTransferEncodingReceive (aRequest.getContentTransferEncoding ());
 

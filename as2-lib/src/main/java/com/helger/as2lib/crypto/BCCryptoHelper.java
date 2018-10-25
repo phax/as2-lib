@@ -337,7 +337,8 @@ public final class BCCryptoHelper implements ICryptoHelper
       final Enumeration <String> aHeaderLines = aPart.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {
-        aMessageDigest.update (_getAllAsciiBytes (aHeaderLines.nextElement ()));
+        final String sHeaderLine = aHeaderLines.nextElement ();
+        aMessageDigest.update (_getAllAsciiBytes (sHeaderLine));
         aMessageDigest.update (aCRLF);
       }
 
@@ -511,8 +512,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (m_sSecurityProviderName)
                                                                                   .build ();
-    final MimeBodyPart aEncData = aGen.generate (aPart, aEncryptor);
-    return aEncData;
+    final MimeBodyPart aEncryptedPart = aGen.generate (aPart, aEncryptor);
+    return aEncryptedPart;
   }
 
   @Nonnull
@@ -567,6 +568,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     // create the generator for creating an smime/signed message
     final SMIMESignedGenerator aSGen = new SMIMESignedGenerator (bUseOldRFC3851MicAlgs ? SMIMESignedGenerator.RFC3851_MICALGS
                                                                                        : SMIMESignedGenerator.RFC5751_MICALGS);
+    // set the content-transfer-encoding for the CMS block (enveloped data,
+    // signature, etc...) in the message.
     aSGen.setContentTransferEncoding (eCTE.getID ());
 
     // aSGen.addSigner (aPrivKey, aX509Cert, aSignDigest.getId ());
@@ -574,7 +577,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     // add a signer to the generator - this specifies we are using SHA1 and
     // adding the smime attributes above to the signed attributes that
     // will be generated as part of the signature. The encryption algorithm
-    // used is taken from the key - in this RSA with PKCS1Padding
+    // used is taken from the key
     aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (m_sSecurityProviderName)
                                                                             .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
                                                                             .build (eAlgorithm.getSignAlgorithmName (),
@@ -587,12 +590,16 @@ public final class BCCryptoHelper implements ICryptoHelper
       aSGen.addCertificates (aCertStore);
     }
 
+    // This does the main signing.
+    // The next call also might modify the source part (!) by adding
+    // "Content-Type" and "Content-Transfer-Encoding" headers if they would be
+    // missing
     final MimeMultipart aSignedData = aSGen.generate (aPart);
 
-    final MimeBodyPart aTmpBody = new MimeBodyPart ();
-    aTmpBody.setContent (aSignedData);
-    aTmpBody.setHeader (CHttpHeader.CONTENT_TYPE, aSignedData.getContentType ());
-    return aTmpBody;
+    final MimeBodyPart aSignedPart = new MimeBodyPart ();
+    aSignedPart.setContent (aSignedData);
+    aSignedPart.setHeader (CHttpHeader.CONTENT_TYPE, aSignedData.getContentType ());
+    return aSignedPart;
   }
 
   @Nonnull

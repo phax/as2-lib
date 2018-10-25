@@ -44,6 +44,7 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
@@ -170,7 +171,7 @@ public class DispositionType implements Serializable
   @Nonnull
   public static DispositionType createFromString (@Nullable final String sDisposition) throws OpenAS2Exception
   {
-    if (sDisposition == null)
+    if (StringHelper.hasNoText (sDisposition))
       throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition);
 
     try

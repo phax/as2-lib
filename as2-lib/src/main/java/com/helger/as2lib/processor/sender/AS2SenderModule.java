@@ -313,30 +313,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return aCompressedBodyPart;
   }
 
-  @Nonnull
-  private MimeBodyPart _compressOriginal (@Nonnull final IMessage aMsg,
-                                          @Nonnull final MimeBodyPart aData,
-                                          @Nonnull final ECompressionType eCompressionType,
-                                          @Nonnull final EContentTransferEncoding eCTE) throws SMIMEException,
-                                                                                        MessagingException
-  {
-    final MimeBodyPart aCompressedBodyPart = compressMimeBodyPart (aData, eCompressionType, eCTE);
-
-    aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
-    aMsg.headers ()
-        .setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Compressed data with " +
-                    eCompressionType +
-                    " to " +
-                    aCompressedBodyPart.getContentType () +
-                    ":" +
-                    aMsg.getLoggingText ());
-
-    return aCompressedBodyPart;
-  }
-
   private static void _log (@Nonnull final MimeBodyPart aMimePart, @Nonnull final String sContext) throws IOException,
                                                                                                    MessagingException
   {
@@ -400,6 +376,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signing outbound message...");
+
       aDataBP = AS2Helper.getCryptoHelper ()
                          .sign (aDataBP,
                                 aSenderCert,
@@ -432,132 +409,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  private MimeBodyPart _secureOriginal (@Nonnull final IMessage aMsg,
-                                        @Nonnull final EContentTransferEncoding eCTE) throws Exception
-  {
-    // Set up encrypt/sign variables
-    MimeBodyPart aDataBP = aMsg.getData ();
-    _log (aDataBP, "source");
-
-    final Partnership aPartnership = aMsg.partnership ();
-    final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
-
-    // Check compression parameters
-    // If compression is enabled, by default is is compressed before signing
-    final String sCompressionType = aPartnership.getCompressionType ();
-    ECompressionType eCompressionType = null;
-    boolean bCompressBeforeSign = true;
-    if (sCompressionType != null)
-    {
-      eCompressionType = ECompressionType.getFromIDCaseInsensitiveOrNull (sCompressionType);
-      if (eCompressionType == null)
-        throw new OpenAS2Exception ("The compression type '" + sCompressionType + "' is not supported!");
-
-      bCompressBeforeSign = aPartnership.isCompressBeforeSign ();
-    }
-
-    if (eCompressionType != null && bCompressBeforeSign)
-    {
-      // Compress before sign
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Compressing outbound message before signing...");
-      aDataBP = _compressOriginal (aMsg, aDataBP, eCompressionType, eCTE);
-      _log (aDataBP, "compressBeforeSign");
-
-      // Replace the message data, because it is the basis for the MIC
-      aMsg.setData (aDataBP);
-    }
-
-    // Sign the data if requested
-    final String sSignAlgorithm = aPartnership.getSigningAlgorithm ();
-    if (sSignAlgorithm != null)
-    {
-      final X509Certificate aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
-      final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
-      final ECryptoAlgorithmSign eSignAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSignAlgorithm);
-      if (eSignAlgorithm == null)
-        throw new OpenAS2Exception ("The signing algorithm '" + sSignAlgorithm + "' is not supported!");
-
-      // Include certificate in signed content?
-      boolean bIncludeCertificateInSignedContent;
-      final ETriState eIncludeCertificateInSignedContent = aMsg.partnership ().getIncludeCertificateInSignedContent ();
-      if (eIncludeCertificateInSignedContent.isDefined ())
-      {
-        // Use per partnership
-        bIncludeCertificateInSignedContent = eIncludeCertificateInSignedContent.getAsBooleanValue ();
-      }
-      else
-      {
-        // Use global value
-        bIncludeCertificateInSignedContent = getSession ().isCryptoSignIncludeCertificateInBodyPart ();
-      }
-
-      // Use old MIC algorithms?
-      final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
-
-      // Main signing
-      aDataBP = AS2Helper.getCryptoHelper ()
-                         .sign (aDataBP,
-                                aSenderCert,
-                                aSenderKey,
-                                eSignAlgorithm,
-                                bIncludeCertificateInSignedContent,
-                                bUseRFC3851MICAlg,
-                                eCTE);
-      _log (aDataBP, "signed");
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Signed data with " +
-                      eSignAlgorithm +
-                      " to " +
-                      aDataBP.getContentType () +
-                      ":" +
-                      aMsg.getLoggingText ());
-    }
-
-    if (eCompressionType != null && !bCompressBeforeSign)
-    {
-      // Compress after sign
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Compressing outbound message after signing...");
-      aDataBP = _compressOriginal (aMsg, aDataBP, eCompressionType, eCTE);
-      _log (aDataBP, "compressAfterSign");
-    }
-
-    // Encrypt the data if requested
-    final String sCryptAlgorithm = aPartnership.getEncryptAlgorithm ();
-    if (sCryptAlgorithm != null)
-    {
-      final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
-      final ECryptoAlgorithmCrypt eCryptAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sCryptAlgorithm);
-      if (eCryptAlgorithm == null)
-        throw new OpenAS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
-
-      aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, eCTE);
-
-      _log (aDataBP, "encrypted");
-
-      aMsg.headers ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
-
-      if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Encrypted data with " +
-                      eCryptAlgorithm +
-                      " to " +
-                      aDataBP.getContentType () +
-                      ":" +
-                      aMsg.getLoggingText ());
-    }
-
-    return aDataBP;
-  }
-
-  @Nonnull
   protected MimeBodyPart secure (@Nonnull final IMessage aMsg,
                                  @Nonnull final EContentTransferEncoding eCTE) throws Exception
   {
-    if (false)
-      return _secureOriginal (aMsg, eCTE);
-
     final Partnership aPartnership = aMsg.partnership ();
     final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
 

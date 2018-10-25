@@ -138,7 +138,8 @@ public class AS2ClientSettings implements Serializable
    * @param aFile
    *        The key store file. May not be <code>null</code>.
    * @param sPassword
-   *        The password used to open the key store. May not be <code>null</code>.
+   *        The password used to open the key store. May not be
+   *        <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -186,8 +187,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Change the behavior if all changes to the keystore should trigger a saving to
-   * the original file.
+   * Change the behavior if all changes to the keystore should trigger a saving
+   * to the original file.
    *
    * @param bSaveKeyStoreChangesToFile
    *        <code>true</code> if key store changes should be written back to the
@@ -202,8 +203,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return <code>true</code> if key store changes should be written back to the
-   *         file, <code>false</code> if not.
+   * @return <code>true</code> if key store changes should be written back to
+   *         the file, <code>false</code> if not.
    */
   public boolean isSaveKeyStoreChangesToFile ()
   {
@@ -271,10 +272,11 @@ public class AS2ClientSettings implements Serializable
    * @param sAS2ID
    *        Receiver AS2 ID. May not be <code>null</code>.
    * @param sKeyAlias
-   *        Alias into the keystore for identifying the receivers certificate. May
-   *        not be <code>null</code>.
+   *        Alias into the keystore for identifying the receivers certificate.
+   *        May not be <code>null</code>.
    * @param sAS2URL
-   *        Destination URL to send the request to. May not be <code>null</code> .
+   *        Destination URL to send the request to. May not be <code>null</code>
+   *        .
    * @return this for chaining
    */
   @Nonnull
@@ -299,8 +301,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The receivers key alias in the keystore. May be <code>null</code> if
-   *         not set.
+   * @return The receivers key alias in the keystore. May be <code>null</code>
+   *         if not set.
    * @see #setReceiverData(String, String, String)
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
@@ -311,8 +313,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The destination URL to send the request to. May be <code>null</code>
-   *         if not set.
+   * @return The destination URL to send the request to. May be
+   *         <code>null</code> if not set.
    * @see #setReceiverData(String, String, String)
    */
   @Nullable
@@ -339,8 +341,8 @@ public class AS2ClientSettings implements Serializable
 
   /**
    * @return The explicit certificate of the recipient. This might be used to
-   *         dynamically add it to the certificate factory for dynamic partnership
-   *         handling (like in PEPPOL). May be <code>null</code>.
+   *         dynamically add it to the certificate factory for dynamic
+   *         partnership handling (like in PEPPOL). May be <code>null</code>.
    * @see #setReceiverCertificate(X509Certificate)
    */
   @Nullable
@@ -414,8 +416,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Enable or disable the compression of the message. Note: compression requires
-   * the receiver to support AS2 version 1.1!
+   * Enable or disable the compression of the message. Note: compression
+   * requires the receiver to support AS2 version 1.1!
    *
    * @param eCompressionType
    *        The compression type to use. Pass <code>null</code> to not compress
@@ -474,7 +476,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The partnership name to be used. May be <code>null</code> if not set.
+   * @return The partnership name to be used. May be <code>null</code> if not
+   *         set.
    * @see #setPartnershipName(String)
    */
   @Nullable
@@ -510,8 +513,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding to
-   * the 'Disposition-Notification-Options' header) may be <code>null</code>.
+   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding
+   * to the 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
    * @param sMDNOptions
    *        The <code>Disposition-Notification-Options</code> String to be used.
@@ -530,8 +533,8 @@ public class AS2ClientSettings implements Serializable
    * Set the MDN options to be used.
    *
    * @param aDispositionOptions
-   *        The <code>Disposition-Notification-Options</code> structured object to
-   *        be used. May not be <code>null</code>.
+   *        The <code>Disposition-Notification-Options</code> structured object
+   *        to be used. May not be <code>null</code>.
    * @return this for chaining
    * @see #setMDNOptions(String)
    */
@@ -547,8 +550,8 @@ public class AS2ClientSettings implements Serializable
    * the 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
    * @return The MDN options (<code>Disposition-Notification-Options</code>
-   *         header) to be used. May be <code>null</code>. The default is defined
-   *         in {@link #DEFAULT_MDN_OPTIONS}.
+   *         header) to be used. May be <code>null</code>. The default is
+   *         defined in {@link #DEFAULT_MDN_OPTIONS}.
    * @see #setMDNOptions(DispositionOptions)
    * @see #setMDNOptions(String)
    */
@@ -572,8 +575,8 @@ public class AS2ClientSettings implements Serializable
    * Set the asynchronous MDN URL to be used.
    *
    * @param sAsyncMDNUrl
-   *        May be <code>null</code> in which case a synchronous MDN is requested
-   *        (which is also the default).
+   *        May be <code>null</code> in which case a synchronous MDN is
+   *        requested (which is also the default).
    * @return this for chaining
    * @since 3.0.4
    */
@@ -585,8 +588,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The URL for the asynchronous MDN. If this is <code>null</code> than a
-   *         synchronous MDN is requested. By default a synchronous MDN is
+   * @return The URL for the asynchronous MDN. If this is <code>null</code> than
+   *         a synchronous MDN is requested. By default a synchronous MDN is
    *         requested.
    * @since 3.0.4
    */
@@ -608,8 +611,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * Set the Message ID format. This string may contain placeholders as supported
-   * by the <code>com.helger.as2lib.params</code> parameters parsers.
+   * Set the Message ID format. This string may contain placeholders as
+   * supported by the <code>com.helger.as2lib.params</code> parameters parsers.
    *
    * @param sMessageIDFormat
    *        The message ID format to use. May not be <code>null</code>.
@@ -623,8 +626,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The message ID format to use. Never <code>null</code>. It defaults to
-   *         {@value #DEFAULT_MESSAGE_ID_FORMAT}.
+   * @return The message ID format to use. Never <code>null</code>. It defaults
+   *         to {@value #DEFAULT_MESSAGE_ID_FORMAT}.
    * @see #DEFAULT_MESSAGE_ID_FORMAT
    * @see #setMessageIDFormat(String)
    */
@@ -650,8 +653,9 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The number of retries to be performed. May be &le; 0 meaning that no
-   *         retry will happen. The default value is {@link #DEFAULT_RETRY_COUNT}.
+   * @return The number of retries to be performed. May be &le; 0 meaning that
+   *         no retry will happen. The default value is
+   *         {@link #DEFAULT_RETRY_COUNT}.
    * @see #setRetryCount(int)
    */
   public int getRetryCount ()
@@ -731,9 +735,13 @@ public class AS2ClientSettings implements Serializable
    * @param bLargeFileSupport
    *        <code>true</code> to enable support for large files, i.e. avoid
    *        holding all file in memory
+   * @return this for chaining
+   * @since 4.2.0
    */
-  public void setLargeFileSupport (final boolean bLargeFileSupport)
+  @Nonnull
+  public AS2ClientSettings setLargeFileSupport (final boolean bLargeFileSupport)
   {
     m_bLargeFileSupport = bLargeFileSupport;
+    return this;
   }
 }
