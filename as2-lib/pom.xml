@@ -46,6 +46,7 @@
   <description>Open AS2 fork - library part</description>
   <url>https://github.com/phax/as2-lib/as2-lib</url>
   <inceptionYear>2013</inceptionYear>
+  
   <licenses>
     <license>
       <name>BSD</name>
@@ -53,6 +54,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -88,6 +90,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <resources>
       <!-- Don't specify the targetPath because this leads to a broken JAR file 

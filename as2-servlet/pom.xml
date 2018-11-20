@@ -30,6 +30,7 @@
   <description>AS2 receival servlet</description>
   <url>https://github.com/phax/as2-lib/as2-servlet</url>
   <inceptionYear>2015</inceptionYear>
+
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -37,6 +38,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -65,6 +67,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>

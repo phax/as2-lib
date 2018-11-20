@@ -27,8 +27,17 @@
   <artifactId>as2-demo-webapp</artifactId>
   <packaging>war</packaging>
   <name>as2-demo-webapp</name>
+  <url>https://github.com/phax/as2-lib/as2-demo-webapp</url>
   <inceptionYear>2018</inceptionYear>
   
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
