@@ -27,7 +27,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.2.0 - work in progress
+* v4.2.0 - 2018-11-21
     * Added support for large file transmission (using Apache HttpClient) - thanks to @zharpaz for the PRs :D
     * AS2 client now has the possibility to **not** request an MDN at all
     * It's now possible to use a different Security Provider besides BouncyCastle (see [#52](https://github.com/phax/as2-lib/issues/52))
@@ -139,7 +139,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.1.1</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 
@@ -148,7 +148,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.1.1</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 
@@ -157,7 +157,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.1.1</version>
+  <version>4.2.0</version>
 </dependency>
 ```
 
