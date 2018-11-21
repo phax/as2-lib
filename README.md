@@ -23,7 +23,6 @@ The subproject `as2-lib` is licensed under the FreeBSD License.
 The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
 The subproject `as2-servlet` is licensed under the Apache 2 license. 
 The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
-The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
