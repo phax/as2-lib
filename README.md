@@ -26,6 +26,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.2.1 - 2018-11-26
+    * Updated to ph-commons 9.2.0
 * v4.2.0 - 2018-11-21
     * Added support for large file transmission (using Apache HttpClient) - thanks to @zharpaz for the PRs :D
     * AS2 client now has the possibility to **not** request an MDN at all
