@@ -581,16 +581,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (aMsg.isRequestingMDN ())
         {
           // Transmit a success MDN if requested
-          if (aMsg.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON))
-          {
-            // if large file support is on, the message does not hold the actual
-            // data. in order to get the data for the MDN, a new message that
-            // will take the data from the file that was written should be used
-            final String sStoredFileName = aMsg.attrs ().getAsString (ATTR_STORED_FILE_NAME);
-            final FileDataSource aFileDataSource = new FileDataSource (sStoredFileName);
-            final DataHandler aDataFromFile = new DataHandler (aFileDataSource);
-            aMsg.getData ().setDataHandler (aDataFromFile);
-          }
           sendMDN (sClientInfo,
                    aResponseHandler,
                    aMsg,
