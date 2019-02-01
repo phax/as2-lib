@@ -24,6 +24,9 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
   metadata-complete="true">
   <description>as2-lib Demo WebApp</description>
+  <error-page>
+    <location>/index.html</location>
+  </error-page>
   <listener>
     <listener-class>com.helger.as2servlet.AS2WebAppListener</listener-class>
   </listener>
