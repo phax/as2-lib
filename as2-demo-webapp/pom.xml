@@ -142,7 +142,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.2</version>
         <executions>
           <execution>
             <id>default-war</id>
