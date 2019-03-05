@@ -61,20 +61,32 @@ public class NoModuleException extends OpenAS2Exception
   }
 
   @Nullable
-  public String getAction ()
+  public final String getAction ()
   {
     return m_sAction;
   }
 
   @Nullable
-  public IMessage getMsg ()
+  public final IMessage getMsg ()
   {
     return m_aMsg;
   }
 
+  /**
+   * @return All options as a mutable.
+   * @deprecated Use {@link #options()} instead.
+   */
+  @Deprecated
   @Nullable
-  @ReturnsMutableObject ("design")
-  public ICommonsMap <String, Object> getOptions ()
+  @ReturnsMutableObject
+  public final ICommonsMap <String, Object> getOptions ()
+  {
+    return options ();
+  }
+
+  @Nullable
+  @ReturnsMutableObject
+  public final ICommonsMap <String, Object> options ()
   {
     return m_aOptions;
   }
@@ -82,7 +94,7 @@ public class NoModuleException extends OpenAS2Exception
   @Nonnull
   public String getAsString ()
   {
-    return getAsString (getAction (), getMsg (), getOptions ());
+    return getAsString (m_sAction, m_aMsg, m_aOptions);
   }
 
   @Nonnull

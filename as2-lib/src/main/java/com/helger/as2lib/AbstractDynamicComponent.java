@@ -47,6 +47,11 @@ import com.helger.commons.concurrent.SimpleReadWriteLock;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * Abstract implementation of {@link IDynamicComponent}.
+ * 
+ * @author Philip Helger
+ */
 public abstract class AbstractDynamicComponent implements IDynamicComponent
 {
   protected final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();

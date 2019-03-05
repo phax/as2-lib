@@ -43,6 +43,12 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.string.ToStringGenerator;
 
+/**
+ * Abstract base implementation for {@link IProcessorActiveModule} derived from
+ * {@link AbstractProcessorModule}.
+ * 
+ * @author Philip Helger
+ */
 public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
 {
   private boolean m_bRunning;

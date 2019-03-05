@@ -123,6 +123,8 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   public static final String DISP_SUCCESS = DP_VERIFIED +
                                             "There is no guarantee however that the EDI Interchange was syntactically correct, or was received by the EDI application/translator.";
 
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractActiveNetModule.class);
+
   private MainThread m_aMainThread;
 
   public AbstractActiveNetModule ()
@@ -170,6 +172,16 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   public void handleError (@Nonnull final IMessage aMsg, @Nonnull final OpenAS2Exception aSrcEx)
   {
+    if (LOGGER.isTraceEnabled ())
+      LOGGER.trace ("Handling error in " +
+                    ClassHelper.getClassLocalName (this.getClass ()) +
+                    " for message with ID " +
+                    aMsg.getMessageID () +
+                    " and exception " +
+                    ClassHelper.getClassLocalName (aSrcEx.getClass ()) +
+                    " with error " +
+                    aSrcEx.getMessage ());
+
     aSrcEx.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
     aSrcEx.terminate ();
 
@@ -215,8 +227,6 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   protected static final class ConnectionThread extends Thread
   {
-    private static final Logger LOGGER = LoggerFactory.getLogger (ConnectionThread.class);
-
     private final AbstractActiveNetModule m_aOwner;
     private final Socket m_aSocket;
 
@@ -251,8 +261,6 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   protected static class MainThread extends Thread
   {
-    private static final Logger LOGGER = LoggerFactory.getLogger (MainThread.class);
-
     private final AbstractActiveNetModule m_aOwner;
     private final ServerSocket m_aServerSocket;
     private volatile boolean m_bTerminated;

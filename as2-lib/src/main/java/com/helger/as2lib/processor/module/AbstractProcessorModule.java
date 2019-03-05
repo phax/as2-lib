@@ -34,6 +34,12 @@ package com.helger.as2lib.processor.module;
 
 import com.helger.as2lib.AbstractDynamicComponent;
 
+/**
+ * Abstract implementation of {@link IProcessorModule} based on
+ * {@link AbstractDynamicComponent}.
+ *
+ * @author Philip Helger
+ */
 public abstract class AbstractProcessorModule extends AbstractDynamicComponent implements IProcessorModule
 {
   /* empty */

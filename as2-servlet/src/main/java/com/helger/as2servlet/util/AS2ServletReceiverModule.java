@@ -22,7 +22,7 @@ import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 /**
  * A specialized {@link AS2ReceiverModule} implementation that disables the
  * active parts.
- * 
+ *
  * @author Philip Helger
  */
 public final class AS2ServletReceiverModule extends AS2ReceiverModule
@@ -30,12 +30,14 @@ public final class AS2ServletReceiverModule extends AS2ReceiverModule
   @Override
   public void doStart () throws OpenAS2Exception
   {
+    // Would start a thread - so don't do it
     throw new UnsupportedOperationException ("Never start this module!");
   }
 
   @Override
   public void doStop () throws OpenAS2Exception
   {
+    // Would stop a thread - so don't do it
     throw new UnsupportedOperationException ("Never stop this module!");
   }
 }

@@ -580,6 +580,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         if (aMsg.isRequestingMDN ())
         {
+          if (LOGGER.isTraceEnabled ())
+            LOGGER.trace ("AS2 message is requesting an MDN");
+
           // Transmit a success MDN if requested
           if (aMsg.attrs ().getAsBoolean (ATTR_LARGE_FILE_SUPPORT_ON))
           {
@@ -600,6 +603,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         }
         else
         {
+          if (LOGGER.isTraceEnabled ())
+            LOGGER.trace ("AS2 message is not requesting an MDN - just sending HTTP 200 (OK)");
+
           // Just send a HTTP OK
           HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
           if (LOGGER.isInfoEnabled ())

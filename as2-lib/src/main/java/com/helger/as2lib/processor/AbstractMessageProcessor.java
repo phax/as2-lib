@@ -65,6 +65,9 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
 
   private final ICommonsList <IProcessorModule> m_aModules = new CommonsArrayList <> ();
 
+  protected AbstractMessageProcessor ()
+  {}
+
   public void addModule (@Nonnull final IProcessorModule aModule)
   {
     ValueEnforcer.notNull (aModule, "Module");
@@ -140,23 +143,42 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
       }
   }
 
+  /**
+   * Execution the provided action with the registered modules.
+   *
+   * @param sAction
+   *        Action to execute. Never <code>null</code>.
+   * @param aMsg
+   *        Message it is about. Never <code>null</code>.
+   * @param aOptions
+   *        Optional options map to be used. May be <code>null</code>.
+   * @throws ProcessorException
+   */
   protected final void executeAction (@Nonnull final String sAction,
                                       @Nonnull final IMessage aMsg,
                                       @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
   {
     final ICommonsList <Throwable> aCauses = new CommonsArrayList <> ();
-    IProcessorModule aModuleFound = null;
+    final ICommonsList <IProcessorModule> aModulesFound = new CommonsArrayList <> ();
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("  handling action '" +
+                    sAction +
+                    "' on message '" +
+                    aMsg.getMessageID () +
+                    "' with options " +
+                    aOptions);
 
     final ICommonsList <IProcessorModule> aAllModules = getAllModules ();
     for (final IProcessorModule aModule : aAllModules)
       if (aModule.canHandle (sAction, aMsg, aOptions))
       {
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("  handling action '" + sAction + "' with module " + aModule);
+
         try
         {
-          if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("  handling action '" + sAction + "' with module " + aModule);
-
-          aModuleFound = aModule;
+          aModulesFound.add (aModule);
           aModule.handle (sAction, aMsg, aOptions);
         }
         catch (final OpenAS2Exception ex)
@@ -164,10 +186,16 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
           aCauses.add (ex);
         }
       }
+      else
+      {
+        if (LOGGER.isTraceEnabled ())
+          LOGGER.trace ("  Not handling action '" + sAction + "' with module " + aModule);
+      }
 
     if (aCauses.isNotEmpty ())
       throw new ProcessorException (this, aCauses);
-    if (aModuleFound == null)
+
+    if (aModulesFound.isEmpty ())
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("  no modules found for '" + sAction + "'; modules are: " + aAllModules);
@@ -175,6 +203,6 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
     }
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("  action '" + sAction + "' was handled by module " + aModuleFound);
+      LOGGER.debug ("  action '" + sAction + "' was handled by modules " + aModulesFound);
   }
 }
