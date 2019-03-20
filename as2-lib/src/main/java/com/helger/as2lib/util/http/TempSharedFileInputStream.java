@@ -85,18 +85,19 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    */
   @Override
   // TODO get rid of this
-  protected void finalize () throws IOException
+  protected void finalize () throws Throwable
   {
     try
     {
-      super.finalize ();
       closeAll ();
     }
     catch (final Throwable t)
     {
       LOGGER.error ("Exception in finalize()", t);
-      throw new IOException (t.getClass ().getName () + ":" + t.getMessage ());
     }
+
+    // Call at the end
+    super.finalize ();
   }
 
   /**

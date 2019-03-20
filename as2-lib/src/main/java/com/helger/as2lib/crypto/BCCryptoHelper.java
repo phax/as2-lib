@@ -155,7 +155,8 @@ public final class BCCryptoHelper implements ICryptoHelper
       }
       catch (final Exception ex2)
       {
-        throw new IllegalStateException ("Neither regular BouncyCastle nor BouncyCastle FIPS are in the classpath");
+        throw new IllegalStateException ("Neither regular BouncyCastle nor BouncyCastle FIPS are in the classpath",
+                                         ex2);
       }
     }
     DEFAULT_SECURITY_PROVIDER_NAME = sProvName;
@@ -441,21 +442,18 @@ public final class BCCryptoHelper implements ICryptoHelper
     {
       if (bLargeFileOn)
       {
-        SMIMEEnvelopedParser aEnvelope;
-        aEnvelope = new SMIMEEnvelopedParser (aPart);
+        final SMIMEEnvelopedParser aEnvelope = new SMIMEEnvelopedParser (aPart);
         aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
       }
       else
       {
-        SMIMEEnveloped aEnvelope;
-        aEnvelope = new SMIMEEnveloped (aPart);
+        final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
         aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
       }
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      e.printStackTrace ();
-      System.out.println ("Exception in SMIMEEnveloped:" + e.getMessage () + "\ncause:" + e.getCause ());
+      LOGGER.error ("Error retrieving RecipientInformation", ex);
     }
 
     if (aRecipient == null)

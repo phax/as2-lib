@@ -179,11 +179,11 @@ public class AS2HttpClient implements IAS2HttpConnection
         LOGGER.info ("Runnable: calling execute");
         m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
       }
-      catch (final Exception e)
+      catch (final Exception ex)
       {
-        e.printStackTrace ();
+        LOGGER.error ("Runnable: Error in background sending", ex);
       }
-      System.out.println ("Runnable: Thread exiting");
+      LOGGER.info ("Runnable: Thread exiting");
     });
     aSenderThread.start ();
   }
