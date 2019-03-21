@@ -26,6 +26,9 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.2.2 - 2019-03-21
+    * Fixed code quality
+    * Fixes the [as2-server issue #22](https://github.com/phax/as2-server/issues/22) 
 * v4.2.1 - 2018-11-26
     * Updated to ph-commons 9.2.0
 * v4.2.0 - 2018-11-21
@@ -140,7 +143,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.2.0</version>
+  <version>4.2.2</version>
 </dependency>
 ```
 
@@ -149,7 +152,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.2.0</version>
+  <version>4.2.2</version>
 </dependency>
 ```
 
@@ -158,7 +161,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.2.0</version>
+  <version>4.2.2</version>
 </dependency>
 ```
 
