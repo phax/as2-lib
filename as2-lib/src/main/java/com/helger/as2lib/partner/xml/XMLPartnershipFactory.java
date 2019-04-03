@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.WillClose;
 
 import org.slf4j.Logger;
@@ -75,8 +76,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
 
-  private static final String PARTNER_NAME = Partner.PARTNER_NAME;
-  private static final String PARTNERSHIP_NAME = Partner.PARTNER_NAME;
+  private static final String ATTR_PARTNER_NAME = Partner.PARTNER_NAME;
+  private static final String ATTR_PARTNERSHIP_NAME = Partner.PARTNER_NAME;
   private static final Logger LOGGER = LoggerFactory.getLogger (XMLPartnershipFactory.class);
 
   public void setFilename (final String filename)
@@ -98,6 +99,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     refreshPartnershipFactory ();
   }
 
+  @OverridingMethodsMustInvokeSuper
   public void refreshPartnershipFactory () throws OpenAS2Exception
   {
     try
@@ -171,7 +173,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   public Partner loadPartner (@Nonnull final IMicroElement ePartner) throws OpenAS2Exception
   {
     // Name is required
-    final StringMap aAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartner, PARTNER_NAME);
+    final StringMap aAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartner, ATTR_PARTNER_NAME);
     return new Partner (aAttrs);
   }
 
@@ -192,7 +194,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final IStringMap aPartnerAttrs = AS2XMLHelper.getAllAttrsWithLowercaseName (ePartner);
 
     // check for a partner name, and look up in partners list if one is found
-    final String sPartnerName = aPartnerAttrs.getAsString (PARTNER_NAME);
+    final String sPartnerName = aPartnerAttrs.getAsString (ATTR_PARTNER_NAME);
     if (sPartnerName != null)
     {
       // Resolve name from existing partners
@@ -229,9 +231,9 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     // Name attribute is required
     final IStringMap aPartnershipAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
-                                                                                                PARTNERSHIP_NAME);
+                                                                                                ATTR_PARTNERSHIP_NAME);
 
-    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAsString (PARTNERSHIP_NAME));
+    final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAsString (ATTR_PARTNERSHIP_NAME));
 
     // load the sender and receiver information
     loadPartnerIDs (ePartnership, aAllPartners, aPartnership, true);
@@ -244,7 +246,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   @Nonnull
-  private File _getUniqueBackupFile (final String sFilename)
+  private static File _getUniqueBackupFile (@Nonnull final String sFilename)
   {
     long nIndex = 0;
     File aBackupFile;
@@ -289,7 +291,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     for (final Partnership aPartnership : getAllPartnerships ())
     {
       final IMicroElement ePartnership = eRoot.appendElement ("partnership");
-      ePartnership.setAttribute (PARTNERSHIP_NAME, aPartnership.getName ());
+      ePartnership.setAttribute (ATTR_PARTNERSHIP_NAME, aPartnership.getName ());
 
       final IMicroElement eSender = ePartnership.appendElement ("sender");
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllSenderIDs ().entrySet ())
