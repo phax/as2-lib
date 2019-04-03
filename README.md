@@ -26,6 +26,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.3.0 - work in progress
+    * Moved interface `IRefreshablePartnershipFactory` from project as2-server to this project
 * v4.2.2 - 2019-03-21
     * Fixed code quality
     * Fixes the [as2-server issue #22](https://github.com/phax/as2-server/issues/22) 

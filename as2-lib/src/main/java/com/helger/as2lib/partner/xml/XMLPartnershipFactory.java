@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.partner.IRefreshablePartnershipFactory;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.PartnershipMap;
 import com.helger.as2lib.session.IAS2Session;
@@ -68,7 +69,8 @@ import com.helger.xml.microdom.serialize.MicroWriter;
  *
  * @author joseph mcverry
  */
-public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartners
+public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartners implements
+                                   IRefreshablePartnershipFactory
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
@@ -93,14 +95,15 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     super.initDynamicComponent (session, parameters);
 
-    refresh ();
+    refreshPartnershipFactory ();
   }
 
-  public void refresh () throws OpenAS2Exception
+  public void refreshPartnershipFactory () throws OpenAS2Exception
   {
     try
     {
-      load (FileHelper.getInputStream (new File (getFilename ())));
+      final File aFile = new File (getFilename ());
+      load (FileHelper.getInputStream (aFile));
     }
     catch (final Exception ex)
     {
@@ -116,9 +119,11 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     if (aIS != null)
     {
       final IMicroDocument aDocument = MicroReader.readMicroXML (aIS);
-      final IMicroElement root = aDocument.getDocumentElement ();
+      if (aDocument == null)
+        throw new OpenAS2Exception ("Failed to read the XML partnership information");
 
-      for (final IMicroElement eRootNode : root.getAllChildElements ())
+      final IMicroElement aRoot = aDocument.getDocumentElement ();
+      for (final IMicroElement eRootNode : aRoot.getAllChildElements ())
       {
         final String sNodeName = eRootNode.getTagName ();
 
