@@ -28,6 +28,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 * v4.3.0 - work in progress
     * Moved interface `IRefreshablePartnershipFactory` from project as2-server to this project
+    * Improved support for large file transmission - thanks to @zharpaz for the PR (see [#78](https://github.com/phax/as2-lib/pull/78))
 * v4.2.2 - 2019-03-21
     * Fixed code quality
     * Fixes the [as2-server issue #22](https://github.com/phax/as2-server/issues/22) 
