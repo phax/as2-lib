@@ -132,7 +132,9 @@ public interface ICryptoHelper
    *        <code>true</code> if the MIME headers should be included,
    *        <code>false</code> if only the content should be used.
    * @return The calculated MIC and never <code>null</code>. This is the
-   *         Base64-encoded message digest of the specified algorithm.
+   *         Base64-encoded message digest of the specified algorithm. The exact
+   *         layout must be
+   *         <code>&lt;Base64EncodedMIC&gt;, &lt;MICAlgorithmID&gt;</code>
    * @throws Exception
    *         In case something goes wrong.
    */
