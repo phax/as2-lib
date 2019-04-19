@@ -33,7 +33,6 @@
 package com.helger.as2lib.processor.receiver.net;
 
 import static com.helger.as2lib.params.MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON;
-import static com.helger.as2lib.params.MessageParameters.ATTR_STORED_FILE_NAME;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -44,7 +43,6 @@ import java.util.Enumeration;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
