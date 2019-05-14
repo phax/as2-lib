@@ -44,7 +44,7 @@
   </developers>
   <properties>
     <!-- 2.5.x is a BOM -->
-    <groovy.version>2.5.6</groovy.version>
+    <groovy.version>2.5.7</groovy.version>
   </properties>
   <dependencyManagement>
     <dependencies>
