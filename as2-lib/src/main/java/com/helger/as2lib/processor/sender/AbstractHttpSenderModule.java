@@ -37,7 +37,6 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -47,7 +46,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import com.helger.as2lib.AS2GlobalSettings;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.AS2HttpClient;
@@ -91,10 +89,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   {
     // Trust all server certificates
     final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
-    final SecureRandom aSecureRandom = AS2GlobalSettings.getSecureRandom ();
-    // If aSecureRandom stays null it is also okay
-
-    aSSLCtx.init (null, new TrustManager [] { new TrustManagerTrustAll () }, aSecureRandom);
+    aSSLCtx.init (null, new TrustManager [] { new TrustManagerTrustAll () }, null);
     return aSSLCtx;
   }
 

@@ -37,11 +37,9 @@ import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.AS2GlobalSettings;
-
 public class RandomParameters extends AbstractParameterParser
 {
-  private static final Random s_aRandom = AS2GlobalSettings.getRandom ();
+  private static final Random s_aRandom = new Random ();
 
   @Override
   @Deprecated
