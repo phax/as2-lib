@@ -26,7 +26,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.3.0 - work in progress
+* v4.3.0 - 2019-05-17
     * Moved interface `IRefreshablePartnershipFactory` from project as2-server to this project
     * Improved support for large file transmission - thanks to @zharpaz for the PR (see [#78](https://github.com/phax/as2-lib/pull/78))
     * Removed class `AS2GlobalSettings`
@@ -148,7 +148,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.2.2</version>
+  <version>4.3.0</version>
 </dependency>
 ```
 
@@ -157,7 +157,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.2.2</version>
+  <version>4.3.0</version>
 </dependency>
 ```
 
@@ -166,7 +166,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.2.2</version>
+  <version>4.3.0</version>
 </dependency>
 ```
 
