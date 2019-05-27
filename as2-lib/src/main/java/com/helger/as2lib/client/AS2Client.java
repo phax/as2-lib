@@ -242,9 +242,18 @@ public class AS2Client
   {
     // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
-    aParams.putIn (CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
-    aParams.putIn (CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
-    aParams.putIn (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
+    if (aSettings.getKeyStoreFile () != null)
+    {
+      aParams.putIn (CertificateFactory.ATTR_TYPE, aSettings.getKeyStoreType ().getID ());
+      aParams.putIn (CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
+      aParams.putIn (CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
+      aParams.putIn (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
+    }
+    else
+    {
+      // No file provided - no storage
+      aParams.putIn (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, false);
+    }
 
     final CertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
