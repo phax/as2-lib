@@ -263,18 +263,21 @@ public final class HTTPHelperTest
   public void testReadHttpRequestStreamMessage () throws Exception
   {
     final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
-    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
+
     // non stream
+    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
     AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, false);
     IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
+
     // stream
     is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
     aMsg = new AS2Message ();
     aMsg.attrs ().putIn (ATTR_LARGE_FILE_SUPPORT_ON, true);
     mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, mockedResponseHandler, aMsg);
+
     assertTrue ("Compare regular and stream read",
                 _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
   }

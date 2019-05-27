@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
-import javax.annotation.WillNotClose;
+import javax.annotation.WillClose;
 import javax.mail.util.SharedFileInputStream;
 
 import org.slf4j.Logger;
@@ -59,13 +59,10 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   private static final Logger LOGGER = LoggerFactory.getLogger (TempSharedFileInputStream.class);
 
   private final File m_aTempFile;
-  private final InputStream m_aSrcIS;
 
-  private TempSharedFileInputStream (@Nonnull final File aFile,
-                                     @Nonnull @WillNotClose final InputStream aSrcIS) throws IOException
+  private TempSharedFileInputStream (@Nonnull final File aFile) throws IOException
   {
     super (aFile);
-    m_aSrcIS = aSrcIS;
     m_aTempFile = aFile;
   }
 
@@ -110,7 +107,6 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   {
     try
     {
-      m_aSrcIS.close ();
       super.close ();
     }
     finally
@@ -133,7 +129,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *         in case of IO error
    */
   @Nonnull
-  protected static File storeContentToTempFile (@Nonnull final InputStream aIS,
+  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS,
                                                 @Nonnull final String sName) throws IOException
   {
     // create temp file and write steam content to it
@@ -146,7 +142,9 @@ public class TempSharedFileInputStream extends SharedFileInputStream
       final MutableLong aCount = new MutableLong (0);
       StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aCount);
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info (aCount.longValue () + " bytes copied to " + aDestFile.getAbsolutePath ());
+        // Avoid logging in tests
+        if (aCount.longValue () > 1024)
+          LOGGER.info (aCount.longValue () + " bytes copied to " + aDestFile.getAbsolutePath ());
     }
     return aDestFile;
   }
@@ -166,10 +164,11 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *         in case of IO error
    */
   @Nonnull
-  public static TempSharedFileInputStream getTempSharedFileInputStream (@Nonnull @WillNotClose final InputStream aIS,
+  public static TempSharedFileInputStream getTempSharedFileInputStream (@Nonnull @WillClose final InputStream aIS,
                                                                         @Nonnull final String sName) throws IOException
   {
+    // IS is closed inside the copying
     final File aDest = storeContentToTempFile (aIS, sName);
-    return new TempSharedFileInputStream (aDest, aIS);
+    return new TempSharedFileInputStream (aDest);
   }
 }

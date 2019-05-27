@@ -37,7 +37,6 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -79,6 +78,7 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -175,60 +175,6 @@ public final class HTTPHelper
     while (aEnum.hasMoreElements ())
       ret.add ((String) aEnum.nextElement ());
     return ret;
-  }
-
-  @Nonnull
-  public static byte [] readHttpPayload (@Nonnull final InputStream aIS,
-                                         @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                         @Nonnull final IMessage aMsg) throws IOException
-  {
-    ValueEnforcer.notNull (aIS, "InputStream");
-    ValueEnforcer.notNull (aResponseHandler, "ResponseHandler");
-    ValueEnforcer.notNull (aMsg, "Msg");
-
-    // Retrieve the message content
-    byte [] aData = null;
-    final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
-    if (sContentLength == null)
-    {
-      // No "Content-Length" header present
-      final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
-      if (sTransferEncoding != null)
-      {
-        // Remove all whitespaces in the value
-        if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
-        {
-          // chunked encoding
-          final ChunkedInputStream aChunkedIS = new ChunkedInputStream (aIS);
-          aData = StreamHelper.getAllBytes (aChunkedIS);
-          aMsg.headers ().setContentLength (aData.length);
-        }
-        else
-        {
-          // No "Content-Length" and unsupported "Transfer-Encoding"
-          sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
-          throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
-        }
-      }
-      else
-      {
-        // No "Content-Length" and no "Transfer-Encoding"
-        sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
-        throw new IOException ("Content-Length missing");
-      }
-    }
-    else
-    {
-      // "Content-Length" is present
-      // Receive the transmission's data
-      // XX if a value > 2GB comes in, this will fail!!
-      final DataInputStream aDataIS = new DataInputStream (aIS);
-      final int nContentSize = Integer.parseInt (sContentLength);
-      aData = new byte [nContentSize];
-      aDataIS.readFully (aData);
-    }
-
-    return aData;
   }
 
   /**
@@ -413,7 +359,7 @@ public final class HTTPHelper
       if (sTransferEncoding != null)
       {
         // Remove all whitespaces in the value
-        if (sTransferEncoding.replaceAll ("\\s+", "").equalsIgnoreCase ("chunked"))
+        if (RegExHelper.stringReplacePattern ("\\s+", sTransferEncoding, "").equalsIgnoreCase ("chunked"))
         {
           // chunked encoding. Use also file backed stream as the message
           // might be large
@@ -425,16 +371,17 @@ public final class HTTPHelper
         else
         {
           // No "Content-Length" and unsupported "Transfer-Encoding"
-          sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
+          sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
           throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
         }
       }
       else
       {
         // No "Content-Length" and no "Transfer-Encoding"
-        sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_LENGTH_REQUIRED);
+        sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
         throw new IOException ("Content-Length missing");
       }
+
       // Content-length present, or chunked encoding
       aPayload = new InputStreamDataSource (aRealIS,
                                             aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
@@ -442,9 +389,48 @@ public final class HTTPHelper
                                             true);
     }
     else
-    { // Large message support off or content-length exists
+    {
+      // Large message support off or content-length exists
       // Read the message body - no Content-Transfer-Encoding handling
-      aBytePayLoad = readHttpPayload (aIS, aResponseHandler, aMsg);
+      // Retrieve the message content
+      if (sContentLength != null)
+      {
+        // "Content-Length" is present
+        // Receive the transmission's data
+        // FIXME if a value > 2GB comes in, this will fail!!
+        final DataInputStream aDataIS = new DataInputStream (aIS);
+        final int nContentSize = Integer.parseInt (sContentLength);
+        aBytePayLoad = new byte [nContentSize];
+        aDataIS.readFully (aBytePayLoad);
+      }
+      else
+      {
+        // No "Content-Length" header present
+        final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
+        if (sTransferEncoding != null)
+        {
+          // Remove all whitespaces in the value
+          if (RegExHelper.stringReplacePattern ("\\s+", sTransferEncoding, "").equalsIgnoreCase ("chunked"))
+          {
+            // chunked encoding
+            final ChunkedInputStream aChunkedIS = new ChunkedInputStream (aIS);
+            aBytePayLoad = StreamHelper.getAllBytes (aChunkedIS);
+            aMsg.headers ().setContentLength (aBytePayLoad.length);
+          }
+          else
+          {
+            // No "Content-Length" and unsupported "Transfer-Encoding"
+            sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
+            throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
+          }
+        }
+        else
+        {
+          // No "Content-Length" and no "Transfer-Encoding"
+          sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
+          throw new IOException ("Content-Length missing");
+        }
+      }
       aPayload = new ByteArrayDataSource (aBytePayLoad, sReceivedContentType, null);
     }
 

@@ -35,7 +35,6 @@ package com.helger.as2lib.processor.sender;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -57,9 +56,10 @@ import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
-import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
+import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpConnection;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.timing.StopWatch;
@@ -87,24 +87,16 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
     // Create a HTTP connection
     final String sUrl = aMsg.getAsyncMDNurl ();
-    final boolean bOutput = true;
-    final boolean bInput = true;
-    final boolean bUseCaches = false;
     final EHttpMethod eRequestMethod = EHttpMethod.POST;
-    // MDN is a small message. We will always use HttpURLConnection
-    final IAS2HttpConnection aConn = getHttpURLConnection (sUrl,
-                                                           bOutput,
-                                                           bInput,
-                                                           bUseCaches,
-                                                           eRequestMethod,
-                                                           getSession ().getHttpProxy ());
+    // MDN is a small message. We will always use CHttp
+    final IAS2HttpConnection aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
 
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-      final AS2HttpHeaderWrapperHttpURLConnection aHeaderWrapper = new AS2HttpHeaderWrapperHttpURLConnection (aConn,
+      final AS2HttpHeaderSetter aHeaderWrapper = new AS2HttpHeaderSetter (aConn,
                                                                                                               aOutgoingDumper);
       aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
@@ -136,11 +128,11 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
-      if (nResponseCode != HttpURLConnection.HTTP_OK &&
-          nResponseCode != HttpURLConnection.HTTP_CREATED &&
-          nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
-          nResponseCode != HttpURLConnection.HTTP_PARTIAL &&
-          nResponseCode != HttpURLConnection.HTTP_NO_CONTENT)
+      if (nResponseCode != CHttp.HTTP_OK &&
+          nResponseCode != CHttp.HTTP_CREATED &&
+          nResponseCode != CHttp.HTTP_ACCEPTED &&
+          nResponseCode != CHttp.HTTP_NO_CONTENT &&
+          nResponseCode != CHttp.HTTP_PARTIAL_CONTENT)
       {
         if (LOGGER.isErrorEnabled ())
           LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
