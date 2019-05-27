@@ -294,6 +294,17 @@ public final class HTTPHelper
   }
 
   /**
+   * @return the dumper factory for incoming HTTP requests. Never
+   *         <code>null</code>.
+   * @since 4.3.1
+   */
+  @Nonnull
+  public static ISupplier <? extends IHTTPIncomingDumper> getHTTPIncomingDumperFactory ()
+  {
+    return s_aRWLock.readLocked ( () -> s_aHTTPIncomingDumperFactory);
+  }
+
+  /**
    * Set the factory for creating dumper for incoming HTTP requests.
    *
    * @param aHttpDumperFactory
@@ -317,6 +328,17 @@ public final class HTTPHelper
   public static IHTTPOutgoingDumper getHTTPOutgoingDumper (@Nonnull final IBaseMessage aMsg)
   {
     return s_aRWLock.readLocked ( () -> s_aHTTPOutgoingDumperFactory.apply (aMsg));
+  }
+
+  /**
+   * @return The factory used to create outgoing dumper objects. Never
+   *         <code>null</code>.
+   * @since 4.3.1
+   */
+  @Nonnull
+  public static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> getHTTPOutgoingDumperFactory ()
+  {
+    return s_aRWLock.readLocked ( () -> s_aHTTPOutgoingDumperFactory);
   }
 
   /**
