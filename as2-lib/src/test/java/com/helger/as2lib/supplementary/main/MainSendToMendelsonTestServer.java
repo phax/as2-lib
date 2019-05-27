@@ -120,9 +120,7 @@ public final class MainSendToMendelsonTestServer
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
     aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
-
-    if (false)
-      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
+    aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
