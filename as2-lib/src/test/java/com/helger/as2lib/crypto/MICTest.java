@@ -2,6 +2,7 @@ package com.helger.as2lib.crypto;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.nio.charset.StandardCharsets;
 
@@ -23,16 +24,11 @@ public final class MICTest
     assertEquals (m1, m2);
   }
 
-  @Test (expected = IllegalArgumentException.class)
-  public void testParseInvalidNull ()
+  @Test
+  public void testParseEmpty ()
   {
-    MIC.parse (null);
-  }
-
-  @Test (expected = IllegalArgumentException.class)
-  public void testParseInvalidEmpty ()
-  {
-    MIC.parse ("");
+    assertNull (MIC.parse (null));
+    assertNull (MIC.parse (""));
   }
 
   @Test (expected = IllegalArgumentException.class)

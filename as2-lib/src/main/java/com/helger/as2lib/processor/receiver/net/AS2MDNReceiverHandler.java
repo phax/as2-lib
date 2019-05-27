@@ -313,15 +313,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
-      /*
-       * original code just did string compare - returnmic.equals(originalmic).
-       * Sadly this is not good enough as the mic fields are
-       * "base64string, algorithm" taken from a rfc822 style
-       * Returned-Content-MIC header and rfc822 headers can contain spaces all
-       * over the place. (not to mention comments!). Simple fix - delete all
-       * spaces.
-       */
-      if (aOriginalMIC == null || !aReturnMIC.equals (aOriginalMIC))
+      if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: " +

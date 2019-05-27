@@ -66,16 +66,16 @@ import com.helger.security.keystore.KeyStoreHelper;
  */
 public final class BCCryptoHelperTest
 {
-  private static final String PATH = "src/test/resources/mendelson/key1.pfx";
+  private static final String PATH = "src/test/resources/mendelson/key3.pfx";
   private static final KeyStore KS = KeyStoreHelper.loadKeyStore (EKeyStoreType.PKCS12, PATH, "test").getKeyStore ();
-  private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key1", "test".toCharArray ())
+  private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key3", "test".toCharArray ())
                                                            .getKeyEntry ();
   private static final X509Certificate CERT_ENCRYPT;
   static
   {
     try
     {
-      CERT_ENCRYPT = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key2.cer");
+      CERT_ENCRYPT = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
     }
     catch (final CertificateException ex)
     {
@@ -94,6 +94,7 @@ public final class BCCryptoHelperTest
     }
   }
 
+  @SuppressWarnings ("deprecation")
   @Test
   public void testSignWithAllAlgorithms () throws Exception
   {
@@ -102,26 +103,28 @@ public final class BCCryptoHelperTest
 
     for (int nIncludeCert = 0; nIncludeCert < 2; ++nIncludeCert)
       for (final ECryptoAlgorithmSign eAlgo : ECryptoAlgorithmSign.values ())
-      {
-        final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
-                                              .sign (aPart,
-                                                     (X509Certificate) PKE.getCertificate (),
-                                                     PKE.getPrivateKey (),
-                                                     eAlgo,
-                                                     nIncludeCert == 1,
-                                                     eAlgo.isRFC3851Algorithm (),
-                                                     EContentTransferEncoding.BASE64);
-        assertNotNull (aSigned);
+        if (eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_MD5 && eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_SHA1)
+        {
+          final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
+                                                .sign (aPart,
+                                                       (X509Certificate) PKE.getCertificate (),
+                                                       PKE.getPrivateKey (),
+                                                       eAlgo,
+                                                       nIncludeCert == 1,
+                                                       eAlgo.isRFC3851Algorithm (),
+                                                       EContentTransferEncoding.BASE64);
+          assertNotNull (aSigned);
 
-        final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
-        assertNotNull (aContentTypes);
-        assertEquals (1, aContentTypes.length);
-        final String sContentType = aContentTypes[0];
-        final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
-                                      eAlgo.getID () +
-                                      "; \r\n\tboundary=\"----=_Part";
-        assertTrue (sContentType + " does not start with " + sExpectedStart, sContentType.startsWith (sExpectedStart));
-      }
+          final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
+          assertNotNull (aContentTypes);
+          assertEquals (1, aContentTypes.length);
+          final String sContentType = aContentTypes[0];
+          final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
+                                        eAlgo.getID () +
+                                        "; \r\n\tboundary=\"----=_Part";
+          assertTrue (sContentType + " does not start with " + sExpectedStart,
+                      sContentType.startsWith (sExpectedStart));
+        }
   }
 
   @Test
@@ -193,11 +196,11 @@ public final class BCCryptoHelperTest
                                   "Content-Disposition: attachment; filename=\"smime.p7s\"\r\n" +
                                   "Content-Description: S/MIME Cryptographic Signature\r\n" +
                                   "\r\n" +
-                                  "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAADGCAhsw\r\n" +
-                                  "ggIXAgEBMIG3MIGuMSYwJAYJKoZIhvcNAQkBFhdyb3NldHRhbmV0QG1lbmRlbHNvbi5kZTELMAkG\r\n" +
-                                  "A1UEBhMCREUxDzANBgNVBAgTBkJlcmxpbjEPMA0GA1UEBxMGQmVybGluMSIwIAYDVQQKExltZW5k\r\n" +
-                                  "ZWxzb24tZS1jb21tZXJjZSBHbWJIMSIwIAYDVQQLExltZW5kZWxzb24tZS1jb21tZXJjZSBHbWJI\r\n" +
-                                  "MQ0wCwYDVQQDEwRtZW5kAgRDjv27MA0GCWCGSAFlAwQCAQUAoIG2MBgGCSqGSIb3DQEJAzELBgkq\r\n";
+                                  "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAADGCAqgw\r\n" +
+                                  "ggKkAgEBMIHDMIG6MSMwIQYJKoZIhvcNAQkBFhRzZXJ2aWNlQG1lbmRlbHNvbi5kZTELMAkGA1UE\r\n" +
+                                  "BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMSIwIAYDVQQKDBltZW5kZWxz\r\n" +
+                                  "b24tZS1jb21tZXJjZSBHbWJIMSEwHwYDVQQLDBhEbyBub3QgdXNlIGluIHByb2R1Y3Rpb24xHTAb\r\n" +
+                                  "BgNVBAMMFG1lbmRlbHNvbiB0ZXN0IGtleSAzAgRaKlscMA0GCWCGSAFlAwQCAQUAoIG2MBgGCSqG\r\n";
     final String sExpectedEnd = "\r\n" + "--" + sBoundary + "--\r\n";
     final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     assertTrue (sReal.startsWith (sExpectedStart));
@@ -297,20 +300,20 @@ public final class BCCryptoHelperTest
                                   "0=80=06=09*=86H=86=F7\r\n" +
                                   "=01=07=02=A0=800=80=02=01=011=0F0\r\n" +
                                   "=06=09`=86H=01e=03=04=02=01=05=000=80=06=09*=86H=86=F7\r\n" +
-                                  "=01=07=01=00=001=82=02=1B0=82=02=17=02=01=010=81=B70=81=AE1&0$=06=09*=86H=\r\n" +
+                                  "=01=07=01=00=001=82=02=A80=82=02=A4=02=01=010=81=C30=81=BA1#0!=06=09*=86H=\r\n" +
                                   "=86=F7\r\n" +
-                                  "=01=09=01=16=17rosettanet@mendelson.de1=0B0=09=06=03U=04=06=13=02DE1=0F0\r\n" +
-                                  "=06=03U=04=08=13=06Berlin1=0F0\r\n" +
-                                  "=06=03U=04=07=13=06Berlin1\"0 =06=03U=04\r\n" +
-                                  "=13=19mendelson-e-commerce GmbH1\"0 =06=03U=04=0B=13=19mendelson-e-commerce =\r\n" +
-                                  "GmbH1\r\n" +
-                                  "0=0B=06=03U=04=03=13=04mend=02=04C=8E=FD=BB0\r\n" +
+                                  "=01=09=01=16=14service@mendelson.de1=0B0=09=06=03U=04=06=13=02DE1=0F0\r\n" +
+                                  "=06=03U=04=08=0C=06Berlin1=0F0\r\n" +
+                                  "=06=03U=04=07=0C=06Berlin1\"0 =06=03U=04\r\n" +
+                                  "=0C=19mendelson-e-commerce GmbH1!0=1F=06=03U=04=0B=0C=18Do not use in produ=\r\n" +
+                                  "ction1=1D0=1B=06=03U=04=03=0C=14mendelson test key 3=02=04Z*[=1C0\r\n" +
                                   "=06=09`=86H=01e=03=04=02=01=05=00=A0=81=B60=18=06=09*=86H=86=F7\r\n" +
                                   "=01=09=031=0B=06=09*=86H=86=F7\r\n" +
                                   "=01=07=010=1C=06=09*=86H=86=F7\r\n" +
                                   "=01=09=051=0F=17\r\n";
     final String sExpectedEnd = "\r\n" + "--" + sBoundary + "--\r\n";
     final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
+    // assertEquals (sReal, sExpectedStart);
     assertTrue (sReal.startsWith (sExpectedStart));
     assertTrue (sReal.endsWith (sExpectedEnd));
   }
@@ -375,11 +378,12 @@ public final class BCCryptoHelperTest
                                   "Content-Disposition: attachment; filename=\"smime.p7m\"\r\n" +
                                   "Content-Description: S/MIME Encrypted Message\r\n" +
                                   "\r\n" +
-                                  "MIAGCSqGSIb3DQEHA6CAMIACAQAxggFTMIIBTwIBADCBtzCBrjEmMCQGCSqGSIb3DQEJARYXcm9z\r\n" +
-                                  "ZXR0YW5ldEBtZW5kZWxzb24uZGUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIEwZCZXJsaW4xDzANBgNV\r\n" +
-                                  "BAcTBkJlcmxpbjEiMCAGA1UEChMZbWVuZGVsc29uLWUtY29tbWVyY2UgR21iSDEiMCAGA1UECxMZ\r\n" +
-                                  "bWVuZGVsc29uLWUtY29tbWVyY2UgR21iSDENMAsGA1UEAxMEbWVuZAIEQ4798zANBgkqhkiG9w0B\r\n";
+                                  "MIAGCSqGSIb3DQEHA6CAMIACAQAxggHgMIIB3AIBADCBwzCBujEjMCEGCSqGSIb3DQEJARYUc2Vy\r\n" +
+                                  "dmljZUBtZW5kZWxzb24uZGUxCzAJBgNVBAYTAkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcM\r\n" +
+                                  "BkJlcmxpbjEiMCAGA1UECgwZbWVuZGVsc29uLWUtY29tbWVyY2UgR21iSDEhMB8GA1UECwwYRG8g\r\n" +
+                                  "bm90IHVzZSBpbiBwcm9kdWN0aW9uMR0wGwYDVQQDDBRtZW5kZWxzb24gdGVzdCBrZXkgNAIEWipb\r\n";
     final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
+    // assertEquals (sReal, sExpectedStart);
     assertTrue (sReal.startsWith (sExpectedStart));
   }
 
@@ -426,16 +430,16 @@ public final class BCCryptoHelperTest
                                   "Content-Description: S/MIME Encrypted Message\r\n" +
                                   "\r\n" +
                                   "0=80=06=09*=86H=86=F7\r\n" +
-                                  "=01=07=03=A0=800=80=02=01=001=82=01S0=82=01O=02=01=000=81=B70=81=AE1&0$=06=\r\n" +
-                                  "=09*=86H=86=F7\r\n" +
-                                  "=01=09=01=16=17rosettanet@mendelson.de1=0B0=09=06=03U=04=06=13=02DE1=0F0\r\n" +
-                                  "=06=03U=04=08=13=06Berlin1=0F0\r\n" +
-                                  "=06=03U=04=07=13=06Berlin1\"0 =06=03U=04\r\n" +
-                                  "=13=19mendelson-e-commerce GmbH1\"0 =06=03U=04=0B=13=19mendelson-e-commerce =\r\n" +
-                                  "GmbH1\r\n" +
-                                  "0=0B=06=03U=04=03=13=04mend=02=04C=8E=FD=F30\r\n" +
+                                  "=01=07=03=A0=800=80=02=01=001=82=01=E00=82=01=DC=02=01=000=81=C30=81=BA1#0!=\r\n" +
+                                  "=06=09*=86H=86=F7\r\n" +
+                                  "=01=09=01=16=14service@mendelson.de1=0B0=09=06=03U=04=06=13=02DE1=0F0\r\n" +
+                                  "=06=03U=04=08=0C=06Berlin1=0F0\r\n" +
+                                  "=06=03U=04=07=0C=06Berlin1\"0 =06=03U=04\r\n" +
+                                  "=0C=19mendelson-e-commerce GmbH1!0=1F=06=03U=04=0B=0C=18Do not use in produ=\r\n" +
+                                  "ction1=1D0=1B=06=03U=04=03=0C=14mendelson test key 4=02=04Z*[=C80\r\n" +
                                   "=06=09*=86H=86=F7\r\n";
     final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
+    // assertEquals (sReal, sExpectedStart);
     assertTrue (sReal.startsWith (sExpectedStart));
   }
 }

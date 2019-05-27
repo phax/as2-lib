@@ -677,14 +677,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final MIC aReturnMIC = MIC.parse (sReturnMIC);
 
       // Catch ReturnMIC == null in case the attribute is simply missing
-      if (sReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
+      if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
       {
         // file was sent completely but the returned mic was not matched,
         // don't know it needs or needs not to be resent ? it's depended on
         // what! anyway, just log the warning message here.
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
-                       aOriginalMIC +
+                       aOriginalMIC.getAsAS2String () +
                        "' return mic: '" +
                        sReturnMIC +
                        "'" +

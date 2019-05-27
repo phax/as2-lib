@@ -158,7 +158,9 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   public boolean isRFC3851Algorithm ()
   {
-    return this == DIGEST_MD5 ||
+    return this == DIGEST_RSA_MD5 ||
+           this == DIGEST_RSA_SHA1 ||
+           this == DIGEST_MD5 ||
            this == DIGEST_SHA1 ||
            this == DIGEST_SHA256 ||
            this == DIGEST_SHA384 ||

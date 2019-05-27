@@ -145,11 +145,11 @@ public class MIC implements Serializable
                                        .getToString ();
   }
 
-  @Nonnull
+  @Nullable
   public static MIC parse (@Nullable final String sMIC)
   {
     if (StringHelper.hasNoText (sMIC))
-      throw new IllegalArgumentException ("An empty MIC is invalid");
+      return null;
 
     final StringTokenizer st = new StringTokenizer (sMIC, ", \t\r\n");
 

@@ -57,7 +57,6 @@ import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
-import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
 
@@ -68,12 +67,6 @@ import com.helger.security.keystore.EKeyStoreType;
  */
 public final class MainSendToMendelsonTestServer
 {
-  static
-  {
-    // Required for Content-Transfer-Encoding other than binary!
-    SystemProperties.setPropertyValue ("sun.net.http.allowRestrictedHeaders", "true");
-  }
-
   private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServer.class);
 
   public static void main (final String [] args) throws Exception
@@ -89,16 +82,16 @@ public final class MainSendToMendelsonTestServer
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
-    aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/mendelson/key1.pfx"), "test");
+    aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/mendelson/key3.pfx"), "test");
 
     // Fixed sender
-    aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key1");
+    aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key3");
 
     // Fixed receiver - key alias must be "mendelsontestAS2"
     aSettings.setReceiverData ("mendelsontestAS2",
                                "mendelsontestAS2",
                                "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
-    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key2.cer");
+    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
     // AS2 stuff
@@ -126,7 +119,7 @@ public final class MainSendToMendelsonTestServer
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
     aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
-    aRequest.setContentTransferEncoding (EContentTransferEncoding.BINARY);
+    aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
