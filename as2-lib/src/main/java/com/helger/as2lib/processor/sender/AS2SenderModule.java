@@ -57,6 +57,8 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.crypto.IMICMatchingHandler;
+import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
@@ -111,8 +113,33 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2SenderModule.class);
 
+  private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
+
   public AS2SenderModule ()
   {}
+
+  /**
+   * @return The current MIC matching handler. Never <code>null</code>.
+   * @since 4.4.0
+   */
+  @Nonnull
+  public final IMICMatchingHandler getMICMatchingHandler ()
+  {
+    return m_aMICMatchingHandler;
+  }
+
+  /**
+   * Set the MIC matching handler to used.
+   *
+   * @param aMICMatchingHandler
+   *        The new handler. May not be <code>null</code>.
+   * @since 4.4.0
+   */
+  public final void setMICMatchingHandler (@Nonnull final IMICMatchingHandler aMICMatchingHandler)
+  {
+    ValueEnforcer.notNull (aMICMatchingHandler, "MICMatchingHandler");
+    m_aMICMatchingHandler = aMICMatchingHandler;
+  }
 
   public boolean canHandle (@Nonnull final String sAction,
                             @Nonnull final IMessage aMsg,
@@ -682,20 +709,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
       {
         // file was sent completely but the returned mic was not matched,
-        // don't know it needs or needs not to be resent ? it's depended on
-        // what! anyway, just log the warning message here.
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
-                       aOriginalMIC.getAsAS2String () +
-                       "' return mic: '" +
-                       sReturnMIC +
-                       "'" +
-                       aMsg.getLoggingText ());
+        m_aMICMatchingHandler.onMICMismatch (aMsg,
+                                             aOriginalMIC == null ? null : aOriginalMIC.getAsAS2String (),
+                                             sReturnMIC);
       }
       else
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("MIC is matched, MIC: " + sReturnMIC + aMsg.getLoggingText ());
+        m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
       }
 
       try

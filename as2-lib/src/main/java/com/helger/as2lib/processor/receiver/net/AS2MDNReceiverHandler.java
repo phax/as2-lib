@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
+import com.helger.as2lib.crypto.IMICMatchingHandler;
+import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
@@ -90,6 +92,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2MDNReceiverHandler.class);
 
   private final AS2MDNReceiverModule m_aModule;
+  private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
 
   public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
@@ -97,9 +100,32 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   }
 
   @Nonnull
-  public AS2MDNReceiverModule getModule ()
+  public final AS2MDNReceiverModule getModule ()
   {
     return m_aModule;
+  }
+
+  /**
+   * @return The current MIC matching handler. Never <code>null</code>.
+   * @since 4.4.0
+   */
+  @Nonnull
+  public final IMICMatchingHandler getMICMatchingHandler ()
+  {
+    return m_aMICMatchingHandler;
+  }
+
+  /**
+   * Set the MIC matching handler to used.
+   *
+   * @param aMICMatchingHandler
+   *        The new handler. May not be <code>null</code>.
+   * @since 4.4.0
+   */
+  public final void setMICMatchingHandler (@Nonnull final IMICMatchingHandler aMICMatchingHandler)
+  {
+    ValueEnforcer.notNull (aMICMatchingHandler, "MICMatchingHandler");
+    m_aMICMatchingHandler = aMICMatchingHandler;
   }
 
   public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
@@ -273,8 +299,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    * @param aMsg
    *        Message
    * @return true if mdn processed
+   * @throws OpenAS2Exception
+   *         In case of error; e.g. MIC mismatch
    */
-  public boolean checkAsyncMDN (final AS2Message aMsg)
+  public boolean checkAsyncMDN (@Nonnull final AS2Message aMsg) throws OpenAS2Exception
   {
     try
     {
@@ -315,18 +343,13 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("MIC IS NOT MATCHED, original mic: " +
-                       sOriginalMIC +
-                       " return mic: " +
-                       sReturnMIC +
-                       aMsg.getLoggingText ());
+        m_aMICMatchingHandler.onMICMismatch (aMsg, sOriginalMIC, sReturnMIC);
         return false;
       }
 
+      m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
+
       // delete the pendinginfo & pending file if mic is matched
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("mic is matched, mic: " + sReturnMIC + aMsg.getLoggingText ());
 
       final File aPendingInfoFile = new File (sPendingInfoFile);
       if (LOGGER.isInfoEnabled ())
