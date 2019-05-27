@@ -54,18 +54,31 @@ import com.helger.commons.lang.EnumHelper;
  */
 public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
+  /** See compatibility note in RFC 5751, section 3.4.3.1 */
+  @Deprecated
+  @DevelopersNote ("Use DIGEST_MD5 instead")
+  DIGEST_RSA_MD5("rsa-md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
+
+  /** See compatibility note in RFC 5751, section 3.4.3.1 */
+  @Deprecated
+  @DevelopersNote ("Use DIGEST_SHA1 or DIGEST_SHA_1 instead")
+  DIGEST_RSA_SHA1("rsa-sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+
   /** Same for RFC 3851 and RFC 5751 */
   DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
+
   /**
    * Old version as of RFC 3851.
    */
   @DevelopersNote ("Use DIGEST_SHA_1 instead")
   DIGEST_SHA1("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+
   /**
    * Old version as of RFC 3851.
    */
   @DevelopersNote ("Use DIGEST_SHA_256 instead")
   DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+
   /**
    * Old version as of RFC 3851.
    */

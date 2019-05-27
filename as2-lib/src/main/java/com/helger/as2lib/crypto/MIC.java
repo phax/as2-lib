@@ -97,11 +97,15 @@ public class MIC implements Serializable
    *        Source algorithm. May not be <code>null</code>.
    * @return The unified algorithm. Never <code>null</code>.
    */
+  @SuppressWarnings ("deprecation")
   @Nonnull
   private static ECryptoAlgorithmSign _getUnified (@Nonnull final ECryptoAlgorithmSign eAlgorithm)
   {
     switch (eAlgorithm)
     {
+      case DIGEST_RSA_MD5:
+        return ECryptoAlgorithmSign.DIGEST_MD5;
+      case DIGEST_RSA_SHA1:
       case DIGEST_SHA1:
         return ECryptoAlgorithmSign.DIGEST_SHA_1;
       case DIGEST_SHA256:

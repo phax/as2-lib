@@ -53,13 +53,22 @@ public final class MICTest
     MIC.parse ("VGVzdA==, blub");
   }
 
+  @SuppressWarnings ("deprecation")
   @Test
   public void testIssue75 ()
   {
     final byte [] aBytes = "abc".getBytes (StandardCharsets.ISO_8859_1);
 
-    MIC m1 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_SHA_1);
-    MIC m2 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_SHA1);
+    MIC m1 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_RSA_MD5);
+    MIC m2 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_MD5);
+    assertEquals (m1, m2);
+
+    m1 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_RSA_SHA1);
+    m2 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_SHA1);
+    assertEquals (m1, m2);
+
+    m1 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_SHA_1);
+    m2 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_SHA1);
     assertEquals (m1, m2);
 
     m1 = new MIC (aBytes, ECryptoAlgorithmSign.DIGEST_SHA_256);
