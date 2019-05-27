@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
@@ -76,7 +77,6 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -357,7 +357,7 @@ public final class HTTPHelper
       if (sTransferEncoding != null)
       {
         // Remove all whitespaces in the value
-        if (RegExHelper.stringReplacePattern ("\\s+", sTransferEncoding, "").equalsIgnoreCase ("chunked"))
+        if (AS2Helper.getWithoutSpaces (sTransferEncoding).equalsIgnoreCase ("chunked"))
         {
           // chunked encoding. Use also file backed stream as the message
           // might be large

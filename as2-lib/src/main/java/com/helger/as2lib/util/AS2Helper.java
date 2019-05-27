@@ -69,6 +69,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.mail.cte.EContentTransferEncoding;
 
@@ -98,7 +99,7 @@ public final class AS2Helper
   }
 
   /**
-   * Create and fill the Mdn parameter
+   * Create and fill the MDN parameter
    *
    * @param aSession
    *        Session to retrieve the certificate factory for signing
@@ -417,5 +418,11 @@ public final class AS2Helper
             LOGGER.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());
       }
     }
+  }
+
+  @Nonnull
+  public static String getWithoutSpaces (@Nonnull final String s)
+  {
+    return RegExHelper.stringReplacePattern ("\\s+", s, "");
   }
 }

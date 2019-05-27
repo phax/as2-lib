@@ -317,7 +317,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
        * over the place. (not to mention comments!). Simple fix - delete all
        * spaces.
        */
-      if (sOriginalMIC == null || !sReturnMIC.replaceAll ("\\s+", "").equals (sOriginalMIC.replaceAll ("\\s+", "")))
+      if (sOriginalMIC == null ||
+          !AS2Helper.getWithoutSpaces (sReturnMIC).equals (AS2Helper.getWithoutSpaces (sOriginalMIC)))
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: " +
