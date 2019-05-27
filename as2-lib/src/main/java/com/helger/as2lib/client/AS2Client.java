@@ -67,6 +67,7 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.functional.ISupplier;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.timing.StopWatch;
 
 /**
@@ -240,23 +241,33 @@ public class AS2Client
   protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
                                          @Nonnull final AS2Session aSession) throws OpenAS2Exception
   {
-    // Dynamically add certificate factory
     final StringMap aParams = new StringMap ();
-    if (aSettings.getKeyStoreFile () != null)
-    {
-      aParams.putIn (CertificateFactory.ATTR_TYPE, aSettings.getKeyStoreType ().getID ());
-      aParams.putIn (CertificateFactory.ATTR_FILENAME, aSettings.getKeyStoreFile ().getAbsolutePath ());
-      aParams.putIn (CertificateFactory.ATTR_PASSWORD, aSettings.getKeyStorePassword ());
-      aParams.putIn (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, aSettings.isSaveKeyStoreChangesToFile ());
-    }
-    else
-    {
-      // No file provided - no storage
-      aParams.putIn (CertificateFactory.ATTR_SAVE_CHANGES_TO_FILE, false);
-    }
+    // TYPE is the only parameter that must be present in initDynamicComponents
+    aParams.putIn (CertificateFactory.ATTR_TYPE, aSettings.getKeyStoreType ().getID ());
 
     final CertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);
+
+    if (aSettings.getKeyStoreFile () != null)
+    {
+      aCertFactory.setFilename (aSettings.getKeyStoreFile ().getAbsolutePath ());
+      aCertFactory.setPassword (aSettings.getKeyStorePassword ());
+      aCertFactory.setSaveChangesToFile (aSettings.isSaveKeyStoreChangesToFile ());
+      aCertFactory.load ();
+    }
+    else
+      if (aSettings.getKeyStoreBytes () != null && aSettings.getKeyStorePassword () != null)
+      {
+        aCertFactory.setSaveChangesToFile (false);
+        aCertFactory.load (new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()),
+                           aSettings.getKeyStorePassword ().toCharArray ());
+      }
+      else
+      {
+        // No file provided - no storage
+        aCertFactory.setSaveChangesToFile (false);
+      }
+
     if (aSettings.getReceiverCertificate () != null)
     {
       // Dynamically add recipient certificate if provided

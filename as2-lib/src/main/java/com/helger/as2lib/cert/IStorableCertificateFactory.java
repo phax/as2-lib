@@ -40,7 +40,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.security.keystore.KeyStoreHelper;
@@ -54,15 +53,20 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 {
   boolean DEFAULT_SAVE_CHANGES_TO_FILE = true;
 
-  void setFilename (String sFilename);
+  void setFilename (@Nullable String sFilename);
 
   @Nullable
-  String getFilename () throws InvalidParameterException;
+  String getFilename ();
 
-  void setPassword (@Nonnull char [] aPassword);
+  default void setPassword (@Nonnull final char [] aPassword)
+  {
+    setPassword (new String (aPassword));
+  }
+
+  void setPassword (@Nullable String sPassword);
 
   @Nullable
-  char [] getPassword () throws InvalidParameterException;
+  char [] getPassword ();
 
   /**
    * Change the behavior if all changes should trigger a saving to the original
@@ -86,11 +90,7 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    *
    * @throws OpenAS2Exception
    *         In case of an internal error
-   * @deprecated This method does not honor the nullness of filename and
-   *             password. Use {@link #load(String, char[])} or
-   *             {@link #load(InputStream, char[])} instead
    */
-  @Deprecated
   default void load () throws OpenAS2Exception
   {
     load (getFilename (), getPassword ());
@@ -111,11 +111,7 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    *
    * @throws OpenAS2Exception
    *         In case of an internal error
-   * @deprecated This method does not honor the nullness of filename and
-   *             password. Use {@link #save(String, char[])} or
-   *             {@link #save(OutputStream, char[])} instead
    */
-  @Deprecated
   default void save () throws OpenAS2Exception
   {
     save (getFilename (), getPassword ());

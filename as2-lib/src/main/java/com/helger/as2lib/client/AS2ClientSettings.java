@@ -96,6 +96,7 @@ public class AS2ClientSettings implements Serializable
 
   private IKeyStoreType m_aKeyStoreType = EKeyStoreType.PKCS12;
   private File m_aKeyStoreFile;
+  private byte [] m_aKeyStoreBytes;
   private String m_sKeyStorePassword;
   private boolean m_bSaveKeyStoreChangesToFile = IStorableCertificateFactory.DEFAULT_SAVE_CHANGES_TO_FILE;
 
@@ -152,6 +153,36 @@ public class AS2ClientSettings implements Serializable
     ValueEnforcer.notNull (sPassword, "Password");
     m_aKeyStoreType = aKeyStoreType;
     m_aKeyStoreFile = aFile;
+    m_aKeyStoreBytes = null;
+    m_sKeyStorePassword = sPassword;
+    return this;
+  }
+
+  /**
+   * Set the details of the certificate store of the client. If the keystore is
+   * provided as a byte array using this method, changes will NOT be saved.
+   *
+   * @param aKeyStoreType
+   *        Key store type. May not be <code>null</code>.
+   * @param aBytes
+   *        The key store bytes. May not be <code>null</code>.
+   * @param sPassword
+   *        The password used to open the key store. May not be
+   *        <code>null</code>.
+   * @return this for chaining
+   * @since 4.3.1
+   */
+  @Nonnull
+  public AS2ClientSettings setKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                                        @Nonnull final byte [] aBytes,
+                                        @Nonnull final String sPassword)
+  {
+    ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
+    ValueEnforcer.notNull (aBytes, "Bytes");
+    ValueEnforcer.notNull (sPassword, "Password");
+    m_aKeyStoreType = aKeyStoreType;
+    m_aKeyStoreFile = null;
+    m_aKeyStoreBytes = aBytes;
     m_sKeyStorePassword = sPassword;
     return this;
   }
@@ -159,6 +190,7 @@ public class AS2ClientSettings implements Serializable
   /**
    * @return The key store type. May not be <code>null</code>.
    * @see #setKeyStore(IKeyStoreType, File, String)
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
    */
   @Nonnull
   public IKeyStoreType getKeyStoreType ()
@@ -167,7 +199,8 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The key store file. May be <code>null</code> if not yet set.
+   * @return The key store file. May be <code>null</code> if not yet set. Either
+   *         File or byte[] may be set. Never both.
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
@@ -177,8 +210,21 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
+   * @return The key store bytes. May be <code>null</code> if not yet set.
+   *         Either File or byte[] may be set. Never both.
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   * @since 4.3.1
+   */
+  @Nullable
+  public byte [] getKeyStoreBytes ()
+  {
+    return m_aKeyStoreBytes;
+  }
+
+  /**
    * @return The key store password. May be <code>null</code> if not yet set.
    * @see #setKeyStore(IKeyStoreType, File, String)
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
    */
   @Nullable
   public String getKeyStorePassword ()

@@ -234,9 +234,9 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     return attrs ().getAsString (ATTR_FILENAME);
   }
 
-  public void setPassword (@Nonnull final char [] aPassword)
+  public void setPassword (@Nullable final String sPassword)
   {
-    attrs ().putIn (ATTR_PASSWORD, new String (aPassword));
+    attrs ().putIn (ATTR_PASSWORD, sPassword);
   }
 
   @Nullable
