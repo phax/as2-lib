@@ -83,7 +83,6 @@ import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
-import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMEEnvelopedParser;
 import org.bouncycastle.mail.smime.SMIMEException;
@@ -111,6 +110,7 @@ import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.NullOutputStream;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
@@ -405,20 +405,6 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                             SMIMEException,
                                                             IOException
   {
-    return decrypt (aPart, aX509Cert, aPrivateKey, bForceDecrypt, false);
-  }
-
-  @Nonnull
-  public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
-                               @Nonnull final X509Certificate aX509Cert,
-                               @Nonnull final PrivateKey aPrivateKey,
-                               final boolean bForceDecrypt,
-                               final boolean bLargeFileOn) throws GeneralSecurityException,
-                                                           MessagingException,
-                                                           CMSException,
-                                                           SMIMEException,
-                                                           IOException
-  {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
@@ -440,16 +426,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     RecipientInformation aRecipient = null;
     try
     {
-      if (bLargeFileOn)
-      {
-        final SMIMEEnvelopedParser aEnvelope = new SMIMEEnvelopedParser (aPart);
-        aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
-      }
-      else
-      {
-        final SMIMEEnveloped aEnvelope = new SMIMEEnveloped (aPart);
-        aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
-      }
+      final SMIMEEnvelopedParser aEnvelope = new SMIMEEnvelopedParser (aPart);
+      aRecipient = aEnvelope.getRecipientInfos ().get (aRecipientID);
     }
     catch (final Exception ex)
     {
@@ -460,21 +438,16 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    MimeBodyPart aDecryptedDataBodyPart;
-    if (bLargeFileOn)
-    {
-      aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName)));
-    }
-    else
-    {
-      final byte [] aDecryptedData = aRecipient.getContent (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName));
-      if (s_aDumpDecryptedDirectory != null)
-      {
-        _dumpDecrypted (aDecryptedData);
-      }
+    final MimeBodyPart aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName)));
 
-      aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aDecryptedData);
+    if (s_aDumpDecryptedDirectory != null)
+    {
+      // FIXME dump decrypted
+      final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ());
+      aDecryptedDataBodyPart.writeTo (aBAOS);
+      _dumpDecrypted (aBAOS.toByteArray ());
     }
+
     return aDecryptedDataBodyPart;
   }
 

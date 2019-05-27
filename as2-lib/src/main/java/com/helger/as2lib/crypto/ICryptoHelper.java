@@ -155,13 +155,6 @@ public interface ICryptoHelper
                         @Nonnull PrivateKey aKey,
                         boolean bForceDecrypt) throws Exception;
 
-  @Nonnull
-  MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
-                        @Nonnull X509Certificate aCert,
-                        @Nonnull PrivateKey aKey,
-                        boolean bForceDecrypt,
-                        boolean bLargeFileOn) throws Exception;
-
   /**
    * Sign a MIME body part.
    *

@@ -63,23 +63,9 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
    */
   public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket)
   {
-    this (aSocket, false);
-  }
-
-  /**
-   * Constructor
-   *
-   * @param aSocket
-   *        Socket to read from. May not be <code>null</code>.
-   * @param bNonUpwardClosing
-   *        When true, closing the {@link InputStream} will not close the
-   *        {@link Socket}
-   */
-  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket, final boolean bNonUpwardClosing)
-  {
     ValueEnforcer.notNull (aSocket, "Socket");
     m_aSocket = aSocket;
-    m_bNonUpwardClosing = bNonUpwardClosing;
+    m_bNonUpwardClosing = true;
   }
 
   /**

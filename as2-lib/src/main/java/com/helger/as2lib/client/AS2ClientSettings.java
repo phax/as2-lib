@@ -92,7 +92,6 @@ public class AS2ClientSettings implements Serializable
   public static final int DEFAULT_CONNECT_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_CONNECT_TIMEOUT_MS;
   /** Default read timeout: 60 seconds */
   public static final int DEFAULT_READ_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_READ_TIMEOUT_MS;
-  public static final boolean DEFAULT_LARGE_FILE_SUPPORT_ENABLED = false;
 
   private IKeyStoreType m_aKeyStoreType = EKeyStoreType.PKCS12;
   private File m_aKeyStoreFile;
@@ -124,9 +123,6 @@ public class AS2ClientSettings implements Serializable
   private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
-
-  // avoid holding full file data in memory
-  private boolean m_bLargeFileSupport = DEFAULT_LARGE_FILE_SUPPORT_ENABLED;
 
   public AS2ClientSettings ()
   {}
@@ -770,24 +766,5 @@ public class AS2ClientSettings implements Serializable
   public HttpHeaderMap customHeaders ()
   {
     return m_aCustomHeaders;
-  }
-
-  public boolean isLargeFileSupport ()
-  {
-    return m_bLargeFileSupport;
-  }
-
-  /**
-   * @param bLargeFileSupport
-   *        <code>true</code> to enable support for large files, i.e. avoid
-   *        holding all file in memory
-   * @return this for chaining
-   * @since 4.2.0
-   */
-  @Nonnull
-  public AS2ClientSettings setLargeFileSupport (final boolean bLargeFileSupport)
-  {
-    m_bLargeFileSupport = bLargeFileSupport;
-    return this;
   }
 }

@@ -48,7 +48,6 @@ import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
@@ -411,8 +410,6 @@ public class AS2Client
         // Set connect and read timeout
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
-        // Register large file support from caller
-        aSender.attrs ().putIn (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON, aSettings.isLargeFileSupport ());
 
         // Add all custom headers
         aMsg.headers ().setAllHeaders (aSettings.customHeaders ());

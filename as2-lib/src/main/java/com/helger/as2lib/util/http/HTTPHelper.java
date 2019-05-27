@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
@@ -77,7 +76,6 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -351,7 +349,7 @@ public final class HTTPHelper
     byte [] aBytePayLoad = null;
     DataSource aPayload;
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
-    if (aMsg.attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON) && sContentLength == null)
+    if (sContentLength == null)
     {
       // Large file support on,AND No "Content-Length" header present
       InputStream aRealIS = aIS;
@@ -390,47 +388,14 @@ public final class HTTPHelper
     }
     else
     {
-      // Large message support off or content-length exists
+      // content-length exists
       // Read the message body - no Content-Transfer-Encoding handling
       // Retrieve the message content
-      if (sContentLength != null)
-      {
-        // "Content-Length" is present
-        // Receive the transmission's data
-        // FIXME if a value > 2GB comes in, this will fail!!
-        final DataInputStream aDataIS = new DataInputStream (aIS);
-        final int nContentSize = Integer.parseInt (sContentLength);
-        aBytePayLoad = new byte [nContentSize];
-        aDataIS.readFully (aBytePayLoad);
-      }
-      else
-      {
-        // No "Content-Length" header present
-        final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
-        if (sTransferEncoding != null)
-        {
-          // Remove all whitespaces in the value
-          if (RegExHelper.stringReplacePattern ("\\s+", sTransferEncoding, "").equalsIgnoreCase ("chunked"))
-          {
-            // chunked encoding
-            final ChunkedInputStream aChunkedIS = new ChunkedInputStream (aIS);
-            aBytePayLoad = StreamHelper.getAllBytes (aChunkedIS);
-            aMsg.headers ().setContentLength (aBytePayLoad.length);
-          }
-          else
-          {
-            // No "Content-Length" and unsupported "Transfer-Encoding"
-            sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
-            throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
-          }
-        }
-        else
-        {
-          // No "Content-Length" and no "Transfer-Encoding"
-          sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
-          throw new IOException ("Content-Length missing");
-        }
-      }
+      // FIXME if a value > 2GB comes in, this will fail!!
+      final DataInputStream aDataIS = new DataInputStream (aIS);
+      final int nContentSize = Integer.parseInt (sContentLength);
+      aBytePayLoad = new byte [nContentSize];
+      aDataIS.readFully (aBytePayLoad);
       aPayload = new ByteArrayDataSource (aBytePayLoad, sReceivedContentType, null);
     }
 
