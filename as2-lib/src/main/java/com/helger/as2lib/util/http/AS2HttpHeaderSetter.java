@@ -48,7 +48,7 @@ import com.helger.commons.http.HttpHeaderMap;
 @Immutable
 public final class AS2HttpHeaderSetter
 {
-  private final IAS2HttpConnection m_aConn;
+  private final AS2HttpClient m_aConn;
   private final IHTTPOutgoingDumper m_aOutgoingDumper;
 
   /**
@@ -60,8 +60,7 @@ public final class AS2HttpHeaderSetter
    *        An optional outgoing dumper, that will also receive all the headers.
    *        May be <code>null</code>.
    */
-  public AS2HttpHeaderSetter (@Nonnull final IAS2HttpConnection aConn,
-                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
+  public AS2HttpHeaderSetter (@Nonnull final AS2HttpClient aConn, @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
   {
     m_aConn = ValueEnforcer.notNull (aConn, "Connection");
     m_aOutgoingDumper = aOutgoingDumper;

@@ -56,9 +56,9 @@ import com.helger.as2lib.session.ComponentNotFoundException;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
+import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
@@ -89,15 +89,14 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     final String sUrl = aMsg.getAsyncMDNurl ();
     final EHttpMethod eRequestMethod = EHttpMethod.POST;
     // MDN is a small message. We will always use CHttp
-    final IAS2HttpConnection aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
+    final AS2HttpClient aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
 
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-      final AS2HttpHeaderSetter aHeaderWrapper = new AS2HttpHeaderSetter (aConn,
-                                                                                                              aOutgoingDumper);
+      final AS2HttpHeaderSetter aHeaderWrapper = new AS2HttpHeaderSetter (aConn, aOutgoingDumper);
       aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn

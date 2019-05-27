@@ -65,10 +65,10 @@ import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
+import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
@@ -365,18 +365,18 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     return true;
   }
 
-  public void reparse (@Nonnull final AS2Message aMsg, final IAS2HttpConnection aConn) throws OpenAS2Exception
+  public void reparse (@Nonnull final AS2Message aMsg, @Nonnull final AS2HttpClient aHttpClient) throws OpenAS2Exception
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
     // Bug in ph-commons 9.1.3 in addAllHeaders!
-    aMDN.headers ().addAllHeaders (aConn.getResponseHeaderFields ());
+    aMDN.headers ().addAllHeaders (aHttpClient.getResponseHeaderFields ());
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream aMDNStream = null;
     try
     {
-      final InputStream aIS = aConn.getInputStream ();
+      final InputStream aIS = aHttpClient.getInputStream ();
       aMDNStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content

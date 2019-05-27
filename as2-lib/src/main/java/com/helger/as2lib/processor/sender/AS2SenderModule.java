@@ -83,7 +83,6 @@ import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -579,7 +578,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   /**
    * @param aMsg
    *        AS2Message
-   * @param aConn
+   * @param aHttpClient
    *        URLConnection
    * @param sOriginalMIC
    *        mic value from original msg
@@ -589,7 +588,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *         in case of an IO error
    */
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
-                                 @Nonnull final IAS2HttpConnection aConn,
+                                 @Nonnull final AS2HttpClient aHttpClient,
                                  @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
   {
     if (LOGGER.isDebugEnabled ())
@@ -600,10 +599,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
       // Bug in ph-commons 9.1.3 in addAllHeaders!
-      aMDN.headers ().addAllHeaders (aConn.getResponseHeaderFields ());
+      aMDN.headers ().addAllHeaders (aHttpClient.getResponseHeaderFields ());
 
       // Receive the MDN data
-      final InputStream aConnIS = aConn.getInputStream ();
+      final InputStream aConnIS = aHttpClient.getInputStream ();
       final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ();
       try
       {
