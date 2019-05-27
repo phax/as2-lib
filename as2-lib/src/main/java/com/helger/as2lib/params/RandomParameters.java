@@ -39,8 +39,11 @@ import javax.annotation.Nullable;
 
 public class RandomParameters extends AbstractParameterParser
 {
-  private static final Random s_aRandom = new Random ();
+  private static final Random RANDOM = new Random ();
 
+  /**
+   * @deprecated Don't call this
+   */
   @Override
   @Deprecated
   public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
@@ -65,7 +68,7 @@ public class RandomParameters extends AbstractParameterParser
     final StringBuilder ret = new StringBuilder (nWantedChars);
     for (int i = 0; i < nWantedChars; ++i)
     {
-      final char cRandom = (char) ('0' + s_aRandom.nextInt (10));
+      final char cRandom = (char) ('0' + RANDOM.nextInt (10));
       ret.append (cRandom);
     }
     return ret.toString ();

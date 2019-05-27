@@ -61,7 +61,7 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   private MimeBodyPart m_aData;
   private IMessageMDN m_aMDN;
-  private TempSharedFileInputStream m_TempSharedFileInputStream;
+  private TempSharedFileInputStream m_aTempSharedFileInputStream;
 
   public AbstractMessage ()
   {}
@@ -198,11 +198,11 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   @Nullable
   public TempSharedFileInputStream getTempSharedFileInputStream ()
   {
-    return m_TempSharedFileInputStream;
+    return m_aTempSharedFileInputStream;
   }
 
   public void setTempSharedFileInputStream (@Nullable final TempSharedFileInputStream aTempSharedFileInputStream)
   {
-    m_TempSharedFileInputStream = aTempSharedFileInputStream;
+    m_aTempSharedFileInputStream = aTempSharedFileInputStream;
   }
 }

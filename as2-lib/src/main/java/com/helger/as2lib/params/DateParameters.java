@@ -39,6 +39,9 @@ import com.helger.as2lib.util.AS2DateHelper;
 
 public class DateParameters extends AbstractParameterParser
 {
+  /**
+   * @deprecated Don't call this
+   */
   @Override
   @Deprecated
   public void setParameter (final String sKey, final String sValue) throws InvalidParameterException

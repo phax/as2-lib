@@ -193,6 +193,20 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
+  }
+
+  @Override
   public String toString ()
   {
     return ToStringGenerator.getDerived (super.toString ()).append ("Partnerships", m_aPartnerships).getToString ();

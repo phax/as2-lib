@@ -46,7 +46,7 @@ import com.helger.commons.string.ToStringGenerator;
 /**
  * Abstract base implementation for {@link IProcessorActiveModule} derived from
  * {@link AbstractProcessorModule}.
- * 
+ *
  * @author Philip Helger
  */
 public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
@@ -118,6 +118,20 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   {
     _setRunning (false);
     doStop ();
+  }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
   }
 
   @Override

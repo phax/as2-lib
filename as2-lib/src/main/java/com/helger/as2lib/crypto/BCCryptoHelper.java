@@ -326,7 +326,7 @@ public final class BCCryptoHelper implements ICryptoHelper
       return aOS;
     if (sEncoding.equalsIgnoreCase ("base64"))
     {
-      // Use this Base&$ OS - uses "\n" as default line end
+      // Use this Base64 OS - uses "\n" as default line end
       final Base64OutputStream ret = new Base64OutputStream (aOS, Base64.ENCODE | Base64.DO_BREAK_LINES);
       // Important, use "\r\n" instead of "\n"
       ret.setNewLineBytes (EOF_BYTES);
