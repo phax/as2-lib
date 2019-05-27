@@ -163,8 +163,7 @@ public final class MainSendToMendelsonTestServerPlayground
     // EContentTransferEncoding._8BIT MIC is matched
     // EContentTransferEncoding.BINARY MIC is matched
     // EContentTransferEncoding.QUOTED_PRINTABLE - not supported by Mendelson
-    // EContentTransferEncoding.BASE64 MIC IS NOT MATCHED
-    // - independent if compression is used or not
+    // EContentTransferEncoding.BASE64 MIC is matched
     aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
