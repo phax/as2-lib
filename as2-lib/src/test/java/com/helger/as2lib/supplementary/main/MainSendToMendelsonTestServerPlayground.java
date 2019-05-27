@@ -75,9 +75,12 @@ public final class MainSendToMendelsonTestServerPlayground
   {
     if (false)
       SystemProperties.setPropertyValue ("org.slf4j.simpleLogger.defaultLogLevel", "debug");
-
-    // Required for Content-Transfer-Encoding other than binary!
-    SystemProperties.setPropertyValue ("sun.net.http.allowRestrictedHeaders", "true");
+    if (false)
+      SystemProperties.setPropertyValue ("AS2.dumpDecryptedDirectory", "as2-in-decrypted");
+    if (false)
+      SystemProperties.setPropertyValue ("AS2.httpDumpDirectoryIncoming", "as2-in-http");
+    if (false)
+      SystemProperties.setPropertyValue ("AS2.httpDumpDirectoryOutgoing", "as2-out-http");
   }
 
   private static final Logger LOGGER = LoggerFactory.getLogger (MainSendToMendelsonTestServerPlayground.class);
@@ -92,7 +95,7 @@ public final class MainSendToMendelsonTestServerPlayground
     if (false)
       aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.6", 8080));
 
-    if (true)
+    if (false)
       HTTPHelper.setHTTPOutgoingDumperFactory (x -> new HTTPOutgoingDumperStreamBased (System.out));
     if (false)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperStreamBased (new NonClosingOutputStream (System.out)));
@@ -113,10 +116,18 @@ public final class MainSendToMendelsonTestServerPlayground
 
     // AS2 stuff
     aSettings.setPartnershipName (aSettings.getSenderAS2ID () + "_" + aSettings.getReceiverAS2ID ());
+
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
-    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES128_CBC;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
+    // CRYPT_AES256_GCM is not supported
+    // CRYPT_AES256_CBC is supported
+    // CRYPT_AES192_GCM is not supported
+    // CRYPT_AES192_CBC is supported
+    // CRYPT_AES128_GCM is not supported
+    // CRYPT_AES128_CBC is supported
+    // CRYPT_3DES is supported
+    final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
     final ECompressionType eCompress = ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = true;
 
@@ -131,7 +142,7 @@ public final class MainSendToMendelsonTestServerPlayground
 
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
-    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
+    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
     aSettings.setReadTimeoutMS (10_000);

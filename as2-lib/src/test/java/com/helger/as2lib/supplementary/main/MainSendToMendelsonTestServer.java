@@ -99,6 +99,7 @@ public final class MainSendToMendelsonTestServer
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
+    // CBC works, GCM is not supported
     final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES128_CBC;
     final ECompressionType eCompress = ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
@@ -110,7 +111,7 @@ public final class MainSendToMendelsonTestServer
 
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
-    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
+    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
     aSettings.setReadTimeoutMS (10_000);
@@ -119,7 +120,9 @@ public final class MainSendToMendelsonTestServer
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
     aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
-    aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
+
+    if (false)
+      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
