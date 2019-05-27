@@ -679,42 +679,11 @@ public class Partnership implements Serializable
    *        Default to be returned if none is present. May be <code>null</code>.
    * @return The partnership Content-Transfer-Encoding or the provided default
    *         value.
-   * @deprecated Use {@link #getContentTransferEncodingSend(String)} instead
-   */
-  @Deprecated
-  @Nullable
-  public String getContentTransferEncoding (@Nullable final String sDefault)
-  {
-    return getContentTransferEncodingSend (sDefault);
-  }
-
-  /**
-   * Get the Content-Transfer-Encoding for sending messages.
-   *
-   * @param sDefault
-   *        Default to be returned if none is present. May be <code>null</code>.
-   * @return The partnership Content-Transfer-Encoding or the provided default
-   *         value.
    */
   @Nullable
   public String getContentTransferEncodingSend (@Nullable final String sDefault)
   {
     return getAttribute (CPartnershipIDs.PA_CONTENT_TRANSFER_ENCODING_SEND, sDefault);
-  }
-
-  /**
-   * Set the Content-Transfer-Encoding for sending messages.
-   *
-   * @param sValue
-   *        The value for this partnership. May be <code>null</code>.
-   * @return {@link EChange}
-   * @deprecated Use {@link #setContentTransferEncodingSend(String)} instead
-   */
-  @Deprecated
-  @Nonnull
-  public EChange setContentTransferEncoding (@Nullable final String sValue)
-  {
-    return setContentTransferEncodingSend (sValue);
   }
 
   /**

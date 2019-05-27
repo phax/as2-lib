@@ -338,17 +338,25 @@ public final class BCCryptoHelper implements ICryptoHelper
       while (aHeaderLines.hasMoreElements ())
       {
         final String sHeaderLine = aHeaderLines.nextElement ();
+
         aMessageDigest.update (_getAllAsciiBytes (sHeaderLine));
         aMessageDigest.update (aCRLF);
+
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Using header line '" + sHeaderLine + "' for MIC calculation");
       }
 
       // The CRLF separator between header and content
       aMessageDigest.update (aCRLF);
     }
 
+    final String sMICEncoding = aPart.getEncoding ();
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Using encoding '" + sMICEncoding + "' for MIC calculation");
+
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = MimeUtility.encode (aDigestOS, aPart.getEncoding ()))
+        final OutputStream aEncodedOS = MimeUtility.encode (aDigestOS, sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }

@@ -366,6 +366,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       _log (aDataBP, "compressBeforeSign");
 
       // Invoke callback, so that source of MIC can be calculated later
+      // This is usually "IAS2Message.setData (aDataBP)"
+      // The MIC is always about the content that is signed
       aCompressBeforeSignCallback.accept (aDataBP);
     }
 

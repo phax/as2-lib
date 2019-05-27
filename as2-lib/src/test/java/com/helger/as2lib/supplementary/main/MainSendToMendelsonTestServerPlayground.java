@@ -119,7 +119,9 @@ public final class MainSendToMendelsonTestServerPlayground
 
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_512;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA1;
+
+    // Encryption is required for Mendelson
     // CRYPT_AES256_GCM is not supported
     // CRYPT_AES256_CBC is supported
     // CRYPT_AES192_GCM is not supported
@@ -128,8 +130,9 @@ public final class MainSendToMendelsonTestServerPlayground
     // CRYPT_AES128_CBC is supported
     // CRYPT_3DES is supported
     final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
+
     final ECompressionType eCompress = ECompressionType.ZLIB;
-    final boolean bCompressBeforeSigning = true;
+    final boolean bCompressBeforeSigning = false;
 
     if (eSignAlgo != null)
       aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
@@ -156,6 +159,12 @@ public final class MainSendToMendelsonTestServerPlayground
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     // "CTE" and "compress before sign" have impact on MIC matching
+    // EContentTransferEncoding._7BIT MIC is matched
+    // EContentTransferEncoding._8BIT MIC is matched
+    // EContentTransferEncoding.BINARY MIC is matched
+    // EContentTransferEncoding.QUOTED_PRINTABLE - not supported by Mendelson
+    // EContentTransferEncoding.BASE64 MIC IS NOT MATCHED
+    // - independent if compression is used or not
     aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
