@@ -34,6 +34,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Improved MIC algorithm name matching (see [#75](https://github.com/phax/as2-lib/pull/75))
     * Added support for deprecated signing algorithms `rsa-md5` and `rsa-sha1`
     * Updated to new Mendelson test certificates (key3 and key4 - see http://mendelson-e-c.com/node/3211)
+    * The `Content-Transfer-Encoding` value `base64` now works correctly (see [#71](https://github.com/phax/as2-lib/pull/71))
+    * Updated to ph-commons 9.3.4
 * v4.3.0 - 2019-05-17
     * Moved interface `IRefreshablePartnershipFactory` from project as2-server to this project
     * Improved support for large file transmission - thanks to @zharpaz for the PR (see [#78](https://github.com/phax/as2-lib/pull/78))

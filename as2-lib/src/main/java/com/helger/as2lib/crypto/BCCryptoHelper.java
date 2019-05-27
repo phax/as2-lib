@@ -102,6 +102,8 @@ import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.base64.Base64;
+import com.helger.commons.base64.Base64OutputStream;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -116,6 +118,7 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
+import com.sun.mail.util.QPEncoderStream;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle.
@@ -127,6 +130,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File s_aDumpDecryptedDirectory;
   private static final String DEFAULT_SECURITY_PROVIDER_NAME;
+  private static final byte [] EOF_BYTES = _getAllAsciiBytes (CHttp.EOL);
 
   static
   {
@@ -308,6 +312,37 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
+  private static OutputStream _getEncodingOS (@Nonnull final OutputStream aOS,
+                                              @Nullable final String sEncoding) throws MessagingException
+  {
+    if (false)
+    {
+      // Original code
+      // The problem with this Base64Encoder, is the trailing "\r\n"
+      return MimeUtility.encode (aOS, sEncoding);
+    }
+
+    if (sEncoding == null)
+      return aOS;
+    if (sEncoding.equalsIgnoreCase ("base64"))
+    {
+      // Use this Base&$ OS - uses "\n" as default line end
+      final Base64OutputStream ret = new Base64OutputStream (aOS, Base64.ENCODE | Base64.DO_BREAK_LINES);
+      // Important, use "\r\n" instead of "\n"
+      ret.setNewLineBytes (EOF_BYTES);
+      return ret;
+    }
+    if (sEncoding.equalsIgnoreCase ("quoted-printable"))
+      return new QPEncoderStream (aOS);
+    if (sEncoding.equalsIgnoreCase ("binary") ||
+        sEncoding.equalsIgnoreCase ("7bit") ||
+        sEncoding.equalsIgnoreCase ("8bit"))
+      return aOS;
+
+    throw new MessagingException ("Unknown encoding: " + sEncoding);
+  }
+
+  @Nonnull
   public MIC calculateMIC (@Nonnull final MimeBodyPart aPart,
                            @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
                            final boolean bIncludeHeaders) throws GeneralSecurityException,
@@ -328,26 +363,27 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     final ASN1ObjectIdentifier aMICAlg = eDigestAlgorithm.getOID ();
 
-    final MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), m_sSecurityProviderName);
+    MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), m_sSecurityProviderName);
+    if (false)
+      aMessageDigest = new LoggingMessageDigest (aMessageDigest);
 
     if (bIncludeHeaders)
     {
       // Start hashing the header
-      final byte [] aCRLF = _getAllAsciiBytes (CHttp.EOL);
       final Enumeration <String> aHeaderLines = aPart.getAllHeaderLines ();
       while (aHeaderLines.hasMoreElements ())
       {
         final String sHeaderLine = aHeaderLines.nextElement ();
 
         aMessageDigest.update (_getAllAsciiBytes (sHeaderLine));
-        aMessageDigest.update (aCRLF);
+        aMessageDigest.update (EOF_BYTES);
 
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Using header line '" + sHeaderLine + "' for MIC calculation");
       }
 
       // The CRLF separator between header and content
-      aMessageDigest.update (aCRLF);
+      aMessageDigest.update (EOF_BYTES);
     }
 
     final String sMICEncoding = aPart.getEncoding ();
@@ -356,7 +392,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = MimeUtility.encode (aDigestOS, sMICEncoding))
+        final OutputStream aEncodedOS = _getEncodingOS (aDigestOS, sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }
