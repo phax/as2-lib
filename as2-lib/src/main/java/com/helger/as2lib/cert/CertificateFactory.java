@@ -55,7 +55,6 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
@@ -68,6 +67,7 @@ import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.string.StringHelper;
 import com.helger.security.keystore.EKeyStoreType;
 
 /**
@@ -121,7 +121,9 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       throw WrappedOpenAS2Exception.wrap (ex);
     }
 
-    load (getFilename (), getPassword ());
+    final String sFilename = getFilename ();
+    if (StringHelper.hasText (sFilename))
+      load (sFilename, getPassword ());
   }
 
   /**
@@ -213,17 +215,6 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     }
   }
 
-  public void setFilename (@Nullable final String sFilename)
-  {
-    attrs ().putIn (ATTR_FILENAME, sFilename);
-  }
-
-  @Nonnull
-  public String getFilename () throws InvalidParameterException
-  {
-    return getAttributeAsStringRequired (ATTR_FILENAME);
-  }
-
   @Nonnull
   public KeyStore getKeyStore ()
   {
@@ -232,15 +223,26 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     return m_aKeyStore;
   }
 
+  public void setFilename (@Nullable final String sFilename)
+  {
+    attrs ().putIn (ATTR_FILENAME, sFilename);
+  }
+
+  @Nullable
+  public String getFilename ()
+  {
+    return attrs ().getAsString (ATTR_FILENAME);
+  }
+
   public void setPassword (@Nonnull final char [] aPassword)
   {
     attrs ().putIn (ATTR_PASSWORD, new String (aPassword));
   }
 
-  @Nonnull
-  public char [] getPassword () throws InvalidParameterException
+  @Nullable
+  public char [] getPassword ()
   {
-    return getAttributeAsStringRequired (ATTR_PASSWORD).toCharArray ();
+    return attrs ().getAsCharArray (ATTR_PASSWORD);
   }
 
   public void setSaveChangesToFile (final boolean bSaveChangesToFile)
@@ -266,7 +268,11 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   protected void onChange () throws OpenAS2Exception
   {
     if (isSaveChangesToFile ())
-      save ();
+    {
+      final String sFilename = getFilename ();
+      if (StringHelper.hasText (sFilename))
+        save (sFilename, getPassword ());
+    }
   }
 
   @Nonnull
@@ -358,7 +364,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
       onChange ();
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Added key alias '" + sRealAlias + "'");
+        LOGGER.info ("Added private key alias '" + sRealAlias + "'");
     }
     catch (final GeneralSecurityException ex)
     {
@@ -384,7 +390,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
         onChange ();
 
         if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Remove all aliases in key store");
+          LOGGER.info ("Remove all aliases (" + nDeleted + ") in key store");
       }
     }
     catch (final GeneralSecurityException ex)
@@ -486,12 +492,14 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   @Override
   public boolean equals (final Object o)
   {
+    // New members, but no change in implementation
     return super.equals (o);
   }
 
   @Override
   public int hashCode ()
   {
+    // New members, but no change in implementation
     return super.hashCode ();
   }
 }

@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
@@ -55,10 +56,12 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 
   void setFilename (String sFilename);
 
+  @Nullable
   String getFilename () throws InvalidParameterException;
 
   void setPassword (@Nonnull char [] aPassword);
 
+  @Nullable
   char [] getPassword () throws InvalidParameterException;
 
   /**
@@ -66,8 +69,8 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    * file. The default value is {@link #DEFAULT_SAVE_CHANGES_TO_FILE}.
    *
    * @param bSaveChangesToFile
-   *        <code>true</code> to enable auto-saving, <code>false</code> to disable
-   *        it.
+   *        <code>true</code> to enable auto-saving, <code>false</code> to
+   *        disable it.
    */
   void setSaveChangesToFile (boolean bSaveChangesToFile);
 
@@ -83,7 +86,11 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    *
    * @throws OpenAS2Exception
    *         In case of an internal error
+   * @deprecated This method does not honor the nullness of filename and
+   *             password. Use {@link #load(String, char[])} or
+   *             {@link #load(InputStream, char[])} instead
    */
+  @Deprecated
   default void load () throws OpenAS2Exception
   {
     load (getFilename (), getPassword ());
@@ -93,7 +100,7 @@ public interface IStorableCertificateFactory extends ICertificateFactory
   {
     final InputStream aFIS = KeyStoreHelper.getResourceProvider ().getInputStream (sFilename);
     if (aFIS == null)
-      throw new OpenAS2Exception ("Failed to load certificates from '" + sFilename + "'");
+      throw new OpenAS2Exception ("Failed to to open input stream from '" + sFilename + "'");
     load (aFIS, aPassword);
   }
 
@@ -104,7 +111,11 @@ public interface IStorableCertificateFactory extends ICertificateFactory
    *
    * @throws OpenAS2Exception
    *         In case of an internal error
+   * @deprecated This method does not honor the nullness of filename and
+   *             password. Use {@link #save(String, char[])} or
+   *             {@link #save(OutputStream, char[])} instead
    */
+  @Deprecated
   default void save () throws OpenAS2Exception
   {
     save (getFilename (), getPassword ());
@@ -114,6 +125,8 @@ public interface IStorableCertificateFactory extends ICertificateFactory
   {
     // Must be File by default
     final OutputStream fOut = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
+    if (fOut == null)
+      throw new OpenAS2Exception ("Failed to to open output stream to '" + sFilename + "'");
     save (fOut, aPassword);
   }
 
