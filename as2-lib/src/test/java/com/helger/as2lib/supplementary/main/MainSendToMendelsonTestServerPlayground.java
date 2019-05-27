@@ -132,7 +132,7 @@ public final class MainSendToMendelsonTestServerPlayground
     final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
 
     final ECompressionType eCompress = ECompressionType.ZLIB;
-    final boolean bCompressBeforeSigning = false;
+    final boolean bCompressBeforeSigning = true;
 
     if (eSignAlgo != null)
       aSettings.setMDNOptions (new DispositionOptions ().setMICAlg (eSignAlgo)
