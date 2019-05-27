@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.net.HttpURLConnection;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -43,21 +41,15 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.HttpHeaderMap;
 
 /**
- * Implementation of {@link IAS2HttpHeaderWrapper} for {@link HttpURLConnection}
- * of {@link org.apache.http.client.HttpClient}.
+ * Set HTTP header including logging
  *
  * @author Philip Helger
  */
 @Immutable
-public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHeaderWrapper
+public final class AS2HttpHeaderSetter
 {
-  private final IAS2HttpConnection m_aConn;
+  private final AS2HttpClient m_aConn;
   private final IHTTPOutgoingDumper m_aOutgoingDumper;
-
-  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn)
-  {
-    this (aConn, null);
-  }
 
   /**
    * Constructor with debug support
@@ -68,8 +60,7 @@ public final class AS2HttpHeaderWrapperHttpURLConnection implements IAS2HttpHead
    *        An optional outgoing dumper, that will also receive all the headers.
    *        May be <code>null</code>.
    */
-  public AS2HttpHeaderWrapperHttpURLConnection (@Nonnull final IAS2HttpConnection aConn,
-                                                @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
+  public AS2HttpHeaderSetter (@Nonnull final AS2HttpClient aConn, @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
   {
     m_aConn = ValueEnforcer.notNull (aConn, "Connection");
     m_aOutgoingDumper = aOutgoingDumper;

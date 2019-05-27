@@ -71,14 +71,14 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>9.3.3</version>
+        <version>9.3.4-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>9.1.1</version>
+        <version>9.1.2-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

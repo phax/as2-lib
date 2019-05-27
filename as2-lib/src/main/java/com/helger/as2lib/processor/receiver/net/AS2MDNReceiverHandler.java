@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.security.cert.X509Certificate;
 
@@ -66,13 +65,14 @@ import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
+import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpConnection;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -225,9 +225,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       // check if the mic (message integrity check) is correct
       if (checkAsyncMDN (aMsg))
-        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_OK);
+        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_OK);
       else
-        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_NOT_FOUND);
+        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_NOT_FOUND);
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
       try
@@ -252,12 +252,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     }
     catch (final IOException ex)
     {
-      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
+      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_BAD_REQUEST);
       throw ex;
     }
     catch (final Exception ex)
     {
-      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, HttpURLConnection.HTTP_BAD_REQUEST);
+      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_BAD_REQUEST);
 
       final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
       we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
@@ -365,18 +365,18 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     return true;
   }
 
-  public void reparse (@Nonnull final AS2Message aMsg, final IAS2HttpConnection aConn) throws OpenAS2Exception
+  public void reparse (@Nonnull final AS2Message aMsg, @Nonnull final AS2HttpClient aHttpClient) throws OpenAS2Exception
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
     // Bug in ph-commons 9.1.3 in addAllHeaders!
-    aMDN.headers ().addAllHeaders (aConn.getResponseHeaderFields ());
+    aMDN.headers ().addAllHeaders (aHttpClient.getResponseHeaderFields ());
 
     // Receive the MDN data
     NonBlockingByteArrayOutputStream aMDNStream = null;
     try
     {
-      final InputStream aIS = aConn.getInputStream ();
+      final InputStream aIS = aHttpClient.getInputStream ();
       aMDNStream = new NonBlockingByteArrayOutputStream ();
 
       // Retrieve the message content

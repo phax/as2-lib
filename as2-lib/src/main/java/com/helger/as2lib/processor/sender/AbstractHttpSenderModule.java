@@ -32,24 +32,18 @@
  */
 package com.helger.as2lib.processor.sender;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.util.http.AS2HttpClient;
-import com.helger.as2lib.util.http.AS2HttpURLConnection;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -106,49 +100,6 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public HostnameVerifier createHostnameVerifier ()
   {
     return new HostnameVerifierVerifyAll ();
-  }
-
-  @Nonnull
-  public AS2HttpURLConnection getHttpURLConnection (@Nonnull @Nonempty final String sUrl,
-                                                    final boolean bOutput,
-                                                    final boolean bInput,
-                                                    final boolean bUseCaches,
-                                                    @Nonnull final EHttpMethod eRequestMethod,
-                                                    @Nullable final Proxy aProxy) throws OpenAS2Exception
-  {
-    try
-    {
-      final URL aUrlObj = new URL (sUrl);
-      final HttpURLConnection aConn = (HttpURLConnection) (aProxy == null ? aUrlObj.openConnection ()
-                                                                          : aUrlObj.openConnection (aProxy));
-      aConn.setDoOutput (bOutput);
-      aConn.setDoInput (bInput);
-      aConn.setUseCaches (bUseCaches);
-      aConn.setRequestMethod (eRequestMethod.getName ());
-      aConn.setConnectTimeout (attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS));
-      aConn.setReadTimeout (attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS));
-
-      if (aConn instanceof HttpsURLConnection)
-      {
-        // SSL handling
-        final HttpsURLConnection aConns = (HttpsURLConnection) aConn;
-
-        // Create SSL context
-        final SSLContext aSSLCtx = createSSLContext ();
-        aConns.setSSLSocketFactory (aSSLCtx.getSocketFactory ());
-
-        // Get hostname verifier
-        final HostnameVerifier aHV = createHostnameVerifier ();
-        if (aHV != null)
-          aConns.setHostnameVerifier (aHV);
-      }
-
-      return new AS2HttpURLConnection (aConn);
-    }
-    catch (final IOException | GeneralSecurityException ex)
-    {
-      throw WrappedOpenAS2Exception.wrap (ex);
-    }
   }
 
   /**

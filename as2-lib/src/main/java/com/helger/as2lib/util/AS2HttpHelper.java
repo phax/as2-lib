@@ -65,7 +65,7 @@ public final class AS2HttpHelper
       {
         // Something went wrong
         if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Error parsing Content-Type", ex);
+          LOGGER.debug ("Error parsing Content-Type '" + sContentType + "'", ex);
       }
     return null;
   }

@@ -80,14 +80,15 @@ import com.helger.mail.cte.EContentTransferEncoding;
  *
  * @author Ziv Harpaz
  */
-public class AS2HttpClient implements IAS2HttpConnection
+public class AS2HttpClient
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpClient.class);
+
   private final RequestBuilder m_aRequestBuilder;
   private PipedInputStream m_aPipedInputStream;
   private PipedOutputStream m_aPipedOutputStream;
   private final CloseableHttpClient m_aCloseableHttpClient;
   private CloseableHttpResponse m_aCloseableHttpResponse;
-  private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpClient.class);
 
   public AS2HttpClient (@Nonnull @Nonempty final String sUrl,
                         final int nConnectTimeout,
@@ -129,8 +130,11 @@ public class AS2HttpClient implements IAS2HttpConnection
   }
 
   /**
-   * Get URL
+   * @return URL
+   * @throws OpenAS2Exception
+   *         in case of error
    */
+  @Nonnull
   public URL getURL () throws OpenAS2Exception
   {
     URI uri = null;
@@ -152,6 +156,8 @@ public class AS2HttpClient implements IAS2HttpConnection
    * the sending to caller can start write to the received stream
    *
    * @return OutputStream to write message body to
+   * @throws IOException
+   *         in case of error
    */
   @Nonnull
   public OutputStream getOutputStream () throws IOException
@@ -239,6 +245,10 @@ public class AS2HttpClient implements IAS2HttpConnection
    * Get InputStream
    *
    * @return InputStream to read response body from
+   * @throws OpenAS2Exception
+   *         in case of error
+   * @throws IOException
+   *         in case of IO error
    */
   public InputStream getInputStream () throws OpenAS2Exception, IOException
   {
@@ -250,7 +260,9 @@ public class AS2HttpClient implements IAS2HttpConnection
   }
 
   /**
-   * Get response HTTP Status as integer
+   * @return response HTTP Status as int
+   * @throws OpenAS2Exception
+   *         in case of error
    */
   public int getResponseCode () throws OpenAS2Exception
   {
@@ -263,14 +275,16 @@ public class AS2HttpClient implements IAS2HttpConnection
       final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
       return aStatusLine.getStatusCode ();
     }
-    catch (final Exception e)
+    catch (final Exception ex)
     {
-      throw new OpenAS2Exception (e.getCause ());
+      throw new OpenAS2Exception (ex);
     }
   }
 
   /**
-   * Get the response message
+   * @return the response message
+   * @throws OpenAS2Exception
+   *         in case of error
    */
   public String getResponseMessage () throws OpenAS2Exception
   {

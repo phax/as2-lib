@@ -35,9 +35,7 @@ package com.helger.as2lib.processor.sender;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Writer;
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -48,7 +46,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeUtility;
 
 import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
@@ -69,7 +66,6 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.InvalidParameterException;
-import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.CFileAttribute;
@@ -85,13 +81,12 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
-import com.helger.as2lib.util.http.AS2HttpHeaderWrapperHttpURLConnection;
+import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.as2lib.util.http.IAS2HttpConnection;
-import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
@@ -525,12 +520,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * Update the HTTP headers based on the provided message, before sending takes
    * place.
    *
-   * @param aConn
+   * @param aHeaderSetter
    *        The connection abstraction. Never <code>null</code>.
    * @param aMsg
    *        The message to be send. Never <code>null</code>.
    */
-  protected void updateHttpHeaders (@Nonnull final IAS2HttpHeaderWrapper aConn, @Nonnull final IMessage aMsg)
+  protected void updateHttpHeaders (@Nonnull final AS2HttpHeaderSetter aHeaderSetter, @Nonnull final IMessage aMsg)
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -577,13 +572,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aHeaderMap.setHeader (CHttpHeader.CONTENT_DISPOSITION, sContententDisposition);
 
     // Set once, after all were collected
-    aHeaderMap.forEachSingleHeader (aConn::setHttpHeader);
+    aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader);
   }
 
   /**
    * @param aMsg
    *        AS2Message
-   * @param aConn
+   * @param aHttpClient
    *        URLConnection
    * @param sOriginalMIC
    *        mic value from original msg
@@ -593,7 +588,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *         in case of an IO error
    */
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
-                                 @Nonnull final IAS2HttpConnection aConn,
+                                 @Nonnull final AS2HttpClient aHttpClient,
                                  @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
   {
     if (LOGGER.isDebugEnabled ())
@@ -604,10 +599,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Create a MessageMDN and copy HTTP headers
       final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
       // Bug in ph-commons 9.1.3 in addAllHeaders!
-      aMDN.headers ().addAllHeaders (aConn.getResponseHeaderFields ());
+      aMDN.headers ().addAllHeaders (aHttpClient.getResponseHeaderFields ());
 
       // Receive the MDN data
-      final InputStream aConnIS = aConn.getInputStream ();
+      final InputStream aConnIS = aHttpClient.getInputStream ();
       final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ();
       try
       {
@@ -770,18 +765,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // decide on the connection type to use according to the MimeBodyPart:
     // If it contains the data, (and no DataHandler), then use HttpUrlClient,
     // otherwise, use HttpClient
-    final IAS2HttpConnection aConn;
-    if (attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
-    {
-      aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
-    }
-    else
-    {
-      final boolean bOutput = true;
-      final boolean bInput = true;
-      final boolean bUseCaches = false;
-      aConn = getHttpURLConnection (sUrl, bOutput, bInput, bUseCaches, eRequestMethod, getSession ().getHttpProxy ());
-    }
+    final AS2HttpClient aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
 
     try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
     {
@@ -791,7 +775,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
-      updateHttpHeaders (new AS2HttpHeaderWrapperHttpURLConnection (aConn, aOutgoingDumper), aMsg);
+      updateHttpHeaders (new AS2HttpHeaderSetter (aConn, aOutgoingDumper), aMsg);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();
@@ -801,38 +785,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final InputStream aMsgIS = aSecuredMimePart.getInputStream ();
 
-      if (attrs ().getAsBoolean (MessageParameters.ATTR_LARGE_FILE_SUPPORT_ON))
-      {
-        // HttpClient option
-
-        // Transfer the data
-        final StopWatch aSW = StopWatch.createdStarted ();
-        final long nBytes = ((AS2HttpClient) aConn).send (aMsgIS, eCTE, aOutgoingDumper);
-        aSW.stop ();
-        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-      }
-      else
-      {
-        // Note: closing this stream causes connection abort errors on some AS2
-        // servers
-        OutputStream aMsgOS = aConn.getOutputStream ();
-        // This stream dumps the HTTP
-        if (aOutgoingDumper != null)
-        {
-          // Overwrite the used OutputStream to additionally log to the debug
-          // OutputStream
-          aMsgOS = aOutgoingDumper.getDumpOS (aMsgOS);
-        }
-        aMsgOS = MimeUtility.encode (aMsgOS, eCTE.getID ());
-
-        // Transfer the data
-        final StopWatch aSW = StopWatch.createdStarted ();
-        // Main transmission - closes InputStream
-        final long nBytes = AS2IOHelper.copy (aMsgIS, aMsgOS);
-
-        aSW.stop ();
-        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
-      }
+      // Transfer the data
+      final StopWatch aSW = StopWatch.createdStarted ();
+      final long nBytes = aConn.send (aMsgIS, eCTE, aOutgoingDumper);
+      aSW.stop ();
+      LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
@@ -840,11 +797,11 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
       // Accept most of 2xx HTTP response codes
-      if (nResponseCode != HttpURLConnection.HTTP_OK &&
-          nResponseCode != HttpURLConnection.HTTP_CREATED &&
-          nResponseCode != HttpURLConnection.HTTP_ACCEPTED &&
-          nResponseCode != HttpURLConnection.HTTP_NO_CONTENT &&
-          nResponseCode != HttpURLConnection.HTTP_PARTIAL)
+      if (nResponseCode != CHttp.HTTP_OK &&
+          nResponseCode != CHttp.HTTP_CREATED &&
+          nResponseCode != CHttp.HTTP_ACCEPTED &&
+          nResponseCode != CHttp.HTTP_NO_CONTENT &&
+          nResponseCode != CHttp.HTTP_PARTIAL_CONTENT)
       {
         if (LOGGER.isErrorEnabled ())
           LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
