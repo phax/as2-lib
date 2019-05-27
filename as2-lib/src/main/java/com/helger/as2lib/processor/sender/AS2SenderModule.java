@@ -84,7 +84,6 @@ import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpConnection;
-import com.helger.as2lib.util.http.IAS2HttpHeaderWrapper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -522,12 +521,12 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    * Update the HTTP headers based on the provided message, before sending takes
    * place.
    *
-   * @param aConn
+   * @param aHeaderSetter
    *        The connection abstraction. Never <code>null</code>.
    * @param aMsg
    *        The message to be send. Never <code>null</code>.
    */
-  protected void updateHttpHeaders (@Nonnull final IAS2HttpHeaderWrapper aConn, @Nonnull final IMessage aMsg)
+  protected void updateHttpHeaders (@Nonnull final AS2HttpHeaderSetter aHeaderSetter, @Nonnull final IMessage aMsg)
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -574,7 +573,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aHeaderMap.setHeader (CHttpHeader.CONTENT_DISPOSITION, sContententDisposition);
 
     // Set once, after all were collected
-    aHeaderMap.forEachSingleHeader (aConn::setHttpHeader);
+    aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader);
   }
 
   /**

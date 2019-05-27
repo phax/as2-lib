@@ -41,20 +41,15 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.HttpHeaderMap;
 
 /**
- * Implementation of {@link IAS2HttpHeaderWrapper}.
+ * Set HTTP header including logging
  *
  * @author Philip Helger
  */
 @Immutable
-public final class AS2HttpHeaderSetter implements IAS2HttpHeaderWrapper
+public final class AS2HttpHeaderSetter
 {
   private final IAS2HttpConnection m_aConn;
   private final IHTTPOutgoingDumper m_aOutgoingDumper;
-
-  public AS2HttpHeaderSetter (@Nonnull final IAS2HttpConnection aConn)
-  {
-    this (aConn, null);
-  }
 
   /**
    * Constructor with debug support
