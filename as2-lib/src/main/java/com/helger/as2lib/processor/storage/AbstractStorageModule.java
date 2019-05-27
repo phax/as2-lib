@@ -167,4 +167,18 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
       _writeStreamToFile (aIS, aMsgFile);
     }
   }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
+  }
 }

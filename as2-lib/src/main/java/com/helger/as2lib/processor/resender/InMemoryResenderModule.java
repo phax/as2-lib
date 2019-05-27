@@ -172,7 +172,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     final int nItems = getResendItemCount ();
     if (nItems > 0)
     {
-      m_aRWLock.writeLocked ( () -> m_aItems.clear ());
+      m_aRWLock.writeLocked (m_aItems::clear);
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Removed " + nItems + " items from InMemoryResenderModule");
     }

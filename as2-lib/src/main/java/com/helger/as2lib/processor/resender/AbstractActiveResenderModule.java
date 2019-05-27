@@ -133,4 +133,19 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
       m_aTimer = null;
     }
   }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
+  }
+
 }

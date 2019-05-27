@@ -88,9 +88,9 @@ public class TempSharedFileInputStream extends SharedFileInputStream
     {
       closeAll ();
     }
-    catch (final Throwable t)
+    catch (final Exception ex)
     {
-      LOGGER.error ("Exception in finalize()", t);
+      LOGGER.error ("Exception in finalize()", ex);
     }
 
     // Call at the end

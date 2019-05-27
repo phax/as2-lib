@@ -352,7 +352,7 @@ public final class HTTPHelper
     if (sContentLength == null)
     {
       // Large file support on,AND No "Content-Length" header present
-      InputStream aRealIS = aIS;
+      final InputStream aRealIS;
       final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
       if (sTransferEncoding != null)
       {

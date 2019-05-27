@@ -340,13 +340,16 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   {
     if (false)
     {
-      LOGGER.info ("[[" + sContext + "]]");
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("[[" + sContext + "]]");
       try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
       {
         aMimePart.writeTo (aBAOS);
-        LOGGER.info (aBAOS.getAsString (StandardCharsets.ISO_8859_1));
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info (aBAOS.getAsString (StandardCharsets.ISO_8859_1));
       }
-      LOGGER.info ("[[END]]");
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("[[END]]");
     }
   }
 
@@ -459,7 +462,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         if (bCompressBeforeSign)
         {
           // Replace the message data, because it is the basis for the MIC
-          aCompressBeforeSignCallback = mp -> aMsg.setData (mp);
+          aCompressBeforeSignCallback = aMsg::setData;
         }
       }
     }
@@ -930,5 +933,19 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Propagate error if it can't be handled by a re-send
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+  }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
   }
 }

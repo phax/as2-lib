@@ -74,10 +74,10 @@ public final class ChunkedInputStreamTest
     {
       final byte [] buf = new byte [17];
       int ret = cIS.read (buf, 0, buf.length);
-      assertEquals ("read correct num of bytes", ret, 3);
+      assertEquals ("read correct num of bytes", 3, ret);
       assertEquals ("read the chunk", new String (buf, 0, ret), "123");
       ret = cIS.read (buf, 0, buf.length);
-      assertEquals ("read past EOS", ret, -1);
+      assertEquals ("read past EOS", -1, ret);
     }
   }
 

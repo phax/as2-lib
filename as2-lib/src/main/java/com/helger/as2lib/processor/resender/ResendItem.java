@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.processor.resender;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -51,7 +52,7 @@ import com.helger.commons.datetime.PDTFactory;
  * @since 2.2.0
  */
 @Immutable
-public class ResendItem
+public class ResendItem implements Serializable
 {
   private final String m_sResendAction;
   private final int m_nRetries;

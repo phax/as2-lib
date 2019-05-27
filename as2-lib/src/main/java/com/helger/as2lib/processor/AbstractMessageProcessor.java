@@ -205,4 +205,18 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("  action '" + sAction + "' was handled by modules " + aModulesFound);
   }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
+  }
 }
