@@ -57,6 +57,7 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -84,7 +85,6 @@ import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
@@ -154,17 +154,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *
    * @param aMsg
    *        AS2Message
-   * @param sMIC
+   * @param aMIC
    *        MIC value
    * @throws OpenAS2Exception
    *         In case of an error
    */
-  protected void storePendingInfo (@Nonnull final AS2Message aMsg, @Nonnull final String sMIC) throws OpenAS2Exception
+  protected void storePendingInfo (@Nonnull final AS2Message aMsg, @Nonnull final MIC aMIC) throws OpenAS2Exception
   {
     try
     {
       if (LOGGER.isDebugEnabled ())
-        LOGGER.debug ("Original MIC is '" + sMIC + "'" + aMsg.getLoggingText ());
+        LOGGER.debug ("Original MIC is '" + aMIC.getAsAS2String () + "'" + aMsg.getLoggingText ());
 
       final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
                                                                                                .attrs ()
@@ -187,7 +187,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       try (final Writer aWriter = FileHelper.getWriter (new File (sPendingFolder + "/" + sMsgFilename),
                                                         StandardCharsets.ISO_8859_1))
       {
-        aWriter.write (sMIC + "\n" + sPendingFilename);
+        aWriter.write (aMIC.getAsAS2String () + "\n" + sPendingFilename);
       }
       // remember
       aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
@@ -242,8 +242,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *         On security or AS2 issues
    */
   @Nonnull
-  @Nonempty
-  protected String calculateAndStoreMIC (@Nonnull final AS2Message aMsg) throws Exception
+  protected MIC calculateAndStoreMIC (@Nonnull final AS2Message aMsg) throws Exception
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -271,11 +270,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                      "'");
     }
 
-    final String sMIC = AS2Helper.getCryptoHelper ()
-                                 .calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Calculated MIC: '" + sMIC + "'");
-    aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_MIC, sMIC);
+    final MIC aMIC = AS2Helper.getCryptoHelper ()
+                              .calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
+    aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_MIC, aMIC.getAsAS2String ());
 
     if (aPartnership.getAS2ReceiptDeliveryOption () != null)
     {
@@ -283,10 +280,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // if yes : PA_AS2_RECEIPT_OPTION != null
       // then keep the original mic & message id.
       // then wait for the another HTTP call by receivers
-      storePendingInfo (aMsg, sMIC);
+      storePendingInfo (aMsg, aMIC);
     }
 
-    return sMIC;
+    return aMIC;
   }
 
   @Nonnull
@@ -580,7 +577,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        AS2Message
    * @param aHttpClient
    *        URLConnection
-   * @param sOriginalMIC
+   * @param aOriginalMIC
    *        mic value from original msg
    * @throws OpenAS2Exception
    *         in case of an error
@@ -589,7 +586,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    */
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
                                  @Nonnull final AS2HttpClient aHttpClient,
-                                 @Nonnull final String sOriginalMIC) throws OpenAS2Exception, IOException
+                                 @Nonnull final MIC aOriginalMIC) throws OpenAS2Exception, IOException
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Receiving synchronous MDN for message" + aMsg.getLoggingText ());
@@ -677,17 +674,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN
       final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
+      final MIC aReturnMIC = MIC.parse (sReturnMIC);
 
       // Catch ReturnMIC == null in case the attribute is simply missing
-      if (sReturnMIC == null ||
-          !AS2Helper.getWithoutSpaces (sReturnMIC).equals (AS2Helper.getWithoutSpaces (sOriginalMIC)))
+      if (sReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
       {
         // file was sent completely but the returned mic was not matched,
         // don't know it needs or needs not to be resent ? it's depended on
         // what! anyway, just log the warning message here.
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: '" +
-                       sOriginalMIC +
+                       aOriginalMIC +
                        "' return mic: '" +
                        sReturnMIC +
                        "'" +
@@ -753,7 +750,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final MimeBodyPart aSecuredMimePart,
-                             @Nullable final String sMIC,
+                             @Nullable final MIC aMIC,
                              @Nonnull final EContentTransferEncoding eCTE) throws OpenAS2Exception,
                                                                            IOException,
                                                                            MessagingException
@@ -821,8 +818,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           {
             // go ahead to receive sync MDN
             // Note: If an MDN is requested, a MIC is present
-            assert sMIC != null;
-            receiveSyncMDN (aMsg, aConn, sMIC);
+            assert aMIC != null;
+            receiveSyncMDN (aMsg, aConn, aMIC);
 
             if (LOGGER.isInfoEnabled ())
               LOGGER.info ("message sent" + aMsg.getLoggingText ());
@@ -875,17 +872,17 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Calculate MIC after compress/sign/crypt was handled, because the
       // message data might change if compression before signing is active.
-      final String sMIC;
+      final MIC aMIC;
       if (aMsg.isRequestingMDN ())
-        sMIC = calculateAndStoreMIC (aMsg);
+        aMIC = calculateAndStoreMIC (aMsg);
       else
-        sMIC = null;
+        aMIC = null;
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
       aMsg.setContentType (aSecuredData.getContentType ());
 
-      _sendViaHTTP (aMsg, aSecuredData, sMIC, eCTE);
+      _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE);
     }
     catch (final HttpResponseException ex)
     {

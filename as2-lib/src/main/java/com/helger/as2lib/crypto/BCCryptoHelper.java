@@ -102,7 +102,6 @@ import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.base64.Base64;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -309,11 +308,11 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public String calculateMIC (@Nonnull final MimeBodyPart aPart,
-                              @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
-                              final boolean bIncludeHeaders) throws GeneralSecurityException,
-                                                             MessagingException,
-                                                             IOException
+  public MIC calculateMIC (@Nonnull final MimeBodyPart aPart,
+                           @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
+                           final boolean bIncludeHeaders) throws GeneralSecurityException,
+                                                          MessagingException,
+                                                          IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
@@ -358,10 +357,10 @@ public final class BCCryptoHelper implements ICryptoHelper
     final byte [] aMIC = aMessageDigest.digest ();
 
     // Perform Base64 encoding and append algorithm ID
-    final String ret = Base64.encodeBytes (aMIC) + ", " + eDigestAlgorithm.getID ();
+    final MIC ret = new MIC (aMIC, eDigestAlgorithm);
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("  MIC = " + ret);
+      LOGGER.debug ("  Calculated MIC = " + ret.getAsAS2String ());
 
     return ret;
   }

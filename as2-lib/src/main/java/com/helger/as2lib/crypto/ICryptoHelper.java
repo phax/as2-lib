@@ -131,17 +131,14 @@ public interface ICryptoHelper
    * @param bIncludeHeaders
    *        <code>true</code> if the MIME headers should be included,
    *        <code>false</code> if only the content should be used.
-   * @return The calculated MIC and never <code>null</code>. This is the
-   *         Base64-encoded message digest of the specified algorithm. The exact
-   *         layout must be
-   *         <code>&lt;Base64EncodedMIC&gt;, &lt;MICAlgorithmID&gt;</code>
+   * @return The calculated MIC and never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
    */
   @Nonnull
-  String calculateMIC (@Nonnull MimeBodyPart aPart,
-                       @Nonnull ECryptoAlgorithmSign eDigestAlgorithm,
-                       boolean bIncludeHeaders) throws Exception;
+  MIC calculateMIC (@Nonnull MimeBodyPart aPart,
+                    @Nonnull ECryptoAlgorithmSign eDigestAlgorithm,
+                    boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,

@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
+import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -279,6 +280,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     {
       // get the returned mic from mdn object
       final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
+      final MIC aReturnMIC = MIC.parse (sReturnMIC);
 
       // use original message id. to open the pending information file
       // from pendinginfo folder.
@@ -291,6 +293,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
                                       AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
 
       String sOriginalMIC;
+      MIC aOriginalMIC;
       File aPendingFile;
       try (
           final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
@@ -298,6 +301,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         // Get the original mic from the first line of pending information
         // file
         sOriginalMIC = aPendingInfoReader.readLine ();
+        aOriginalMIC = MIC.parse (sOriginalMIC);
 
         // Get the original pending file from the second line of pending
         // information file
@@ -317,8 +321,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
        * over the place. (not to mention comments!). Simple fix - delete all
        * spaces.
        */
-      if (sOriginalMIC == null ||
-          !AS2Helper.getWithoutSpaces (sReturnMIC).equals (AS2Helper.getWithoutSpaces (sOriginalMIC)))
+      if (aOriginalMIC == null || !aReturnMIC.equals (aOriginalMIC))
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("MIC IS NOT MATCHED, original mic: " +

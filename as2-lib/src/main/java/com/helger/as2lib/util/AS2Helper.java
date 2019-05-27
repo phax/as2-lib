@@ -55,6 +55,7 @@ import com.helger.as2lib.cert.KeyNotFoundException;
 import com.helger.as2lib.crypto.BCCryptoHelper;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.crypto.ICryptoHelper;
+import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.message.AS2Message;
@@ -296,7 +297,7 @@ public final class AS2Helper
 
     final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
-    String sMIC = null;
+    MIC aMIC = null;
     if (aDispositionOptions.getMICAlgCount () > 0)
     {
       // If the source message was signed or encrypted, include the headers -
@@ -305,11 +306,11 @@ public final class AS2Helper
                                            aMsg.partnership ().getEncryptAlgorithm () != null ||
                                            aMsg.partnership ().getCompressionType () != null;
 
-      sMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
+      aMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
                                               aDispositionOptions.getFirstMICAlg (),
                                               bIncludeHeadersInMIC);
     }
-    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, sMIC);
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
 
     boolean bSignMDN = false;
     boolean bIncludeCertificateInSignedContent = false;

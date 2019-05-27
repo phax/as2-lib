@@ -31,6 +31,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * `AS2Client` can now handle read-only keystore that is provided as byte array
     * Remove support for the old HttpUrlConnection, therefore making "large file support" the default (see [#87](https://github.com/phax/as2-lib/pull/87))
     * Removed all the "large file support" flags (incompatible)
+    * Improved MIC algorithm name matching (see [#75](https://github.com/phax/as2-lib/pull/75))
 * v4.3.0 - 2019-05-17
     * Moved interface `IRefreshablePartnershipFactory` from project as2-server to this project
     * Improved support for large file transmission - thanks to @zharpaz for the PR (see [#78](https://github.com/phax/as2-lib/pull/78))
