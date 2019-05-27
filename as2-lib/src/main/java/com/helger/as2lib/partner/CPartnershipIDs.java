@@ -35,7 +35,6 @@ package com.helger.as2lib.partner;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.crypto.ECompressionType;
-import com.helger.commons.annotation.DevelopersNote;
 
 /**
  * Partnership IDs and attribute names. The IDs (starting with PID_) are using
@@ -62,9 +61,6 @@ public final class CPartnershipIDs
   public static final String PA_AS2_MDN_OPTIONS = "as2_mdn_options";
   /** URL destination for an async MDN */
   public static final String PA_AS2_RECEIPT_DELIVERY_OPTION = "as2_receipt_option";
-  @Deprecated
-  @DevelopersNote ("Use PA_AS2_RECEIPT_DELIVERY_OPTION instead")
-  public static final String PA_AS2_RECEIPT_OPTION = PA_AS2_RECEIPT_DELIVERY_OPTION;
   /** format to use for message-id if not default */
   public static final String PA_MESSAGEID_FORMAT = "messageid";
   /** Subject sent in MDN messages */
@@ -100,8 +96,6 @@ public final class CPartnershipIDs
    * name.
    */
   public static final String PA_CONTENT_TRANSFER_ENCODING_SEND = "content_transfer_encoding";
-  @Deprecated
-  public static final String PA_CONTENT_TRANSFER_ENCODING = PA_CONTENT_TRANSFER_ENCODING_SEND;
   /**
    * optional content transfer encoding value for incoming messages if not
    * specified

@@ -72,18 +72,6 @@ public class NoModuleException extends OpenAS2Exception
     return m_aMsg;
   }
 
-  /**
-   * @return All options as a mutable.
-   * @deprecated Use {@link #options()} instead.
-   */
-  @Deprecated
-  @Nullable
-  @ReturnsMutableObject
-  public final ICommonsMap <String, Object> getOptions ()
-  {
-    return options ();
-  }
-
   @Nullable
   @ReturnsMutableObject
   public final ICommonsMap <String, Object> options ()

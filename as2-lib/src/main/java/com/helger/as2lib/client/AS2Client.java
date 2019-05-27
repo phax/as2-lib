@@ -423,10 +423,10 @@ public class AS2Client
         aSession.getMessageProcessor ().stopActiveModules ();
       }
     }
-    catch (final Throwable t)
+    catch (final Exception ex)
     {
-      LOGGER.error ("Error sending AS2 message", t);
-      aResponse.setException (t);
+      LOGGER.error ("Error sending AS2 message", ex);
+      aResponse.setException (ex);
     }
     finally
     {

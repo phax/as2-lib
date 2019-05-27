@@ -193,20 +193,6 @@ public class AS2ClientResponse implements Serializable
    *
    * @param aExecutionDuration
    *        The duration to be set. May not be <code>null</code>.
-   * @deprecated Use {@link #setExecutionDuration(Duration)} instead
-   */
-  @Deprecated
-  public void setExecutionTime (@Nonnull final Duration aExecutionDuration)
-  {
-    setExecutionDuration (aExecutionDuration);
-  }
-
-  /**
-   * Set the execution duration of the client request. Any existing value will
-   * be overwritten.
-   *
-   * @param aExecutionDuration
-   *        The duration to be set. May not be <code>null</code>.
    */
   public void setExecutionDuration (@Nonnull final Duration aExecutionDuration)
   {

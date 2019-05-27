@@ -46,10 +46,10 @@ public class InvalidParameterException extends OpenAS2Exception
   private final String m_sKey;
   private final String m_sValue;
 
-  public InvalidParameterException (final String sMsg,
-                                    final Serializable aTarget,
-                                    final String sKey,
-                                    final String sValue)
+  public InvalidParameterException (@Nullable final String sMsg,
+                                    @Nullable final Serializable aTarget,
+                                    @Nullable final String sKey,
+                                    @Nullable final String sValue)
   {
     super (sMsg + " - " + getAsString (sKey, sValue));
     m_aTarget = aTarget;
@@ -57,7 +57,7 @@ public class InvalidParameterException extends OpenAS2Exception
     m_sValue = sValue;
   }
 
-  public InvalidParameterException (final String sMsg)
+  public InvalidParameterException (@Nullable final String sMsg)
   {
     super (sMsg);
     m_aTarget = null;
@@ -65,16 +65,19 @@ public class InvalidParameterException extends OpenAS2Exception
     m_sValue = null;
   }
 
+  @Nullable
   public String getKey ()
   {
     return m_sKey;
   }
 
+  @Nullable
   public Serializable getTarget ()
   {
     return m_aTarget;
   }
 
+  @Nullable
   public String getValue ()
   {
     return m_sValue;
