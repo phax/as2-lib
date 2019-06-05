@@ -118,46 +118,47 @@ public abstract class AbstractParameterParser implements Serializable
    *         In case the string is incorrect
    */
   @Nonnull
-  public String format (@Nonnull final String sFormat) throws InvalidParameterException
+  public String format (@Nullable final String sFormat) throws InvalidParameterException
   {
     if (LOGGER.isTraceEnabled ())
       LOGGER.trace ("Formatting '" + sFormat + "'");
 
     final StringBuilder aSB = new StringBuilder ();
-    for (int nNext = 0; nNext < sFormat.length (); ++nNext)
-    {
-      int nPrev = nNext;
-
-      // Find start of $xxx$ sequence.
-      nNext = sFormat.indexOf ('$', nPrev);
-      if (nNext == -1)
+    if (sFormat != null)
+      for (int nNext = 0; nNext < sFormat.length (); ++nNext)
       {
-        // Append the rest - we're done
-        aSB.append (sFormat.substring (nPrev, sFormat.length ()));
-        break;
-      }
+        int nPrev = nNext;
 
-      if (nNext > nPrev)
-      {
-        // Save text before $xxx$ sequence, if there is any
-        aSB.append (sFormat.substring (nPrev, nNext));
-      }
+        // Find start of $xxx$ sequence.
+        nNext = sFormat.indexOf ('$', nPrev);
+        if (nNext == -1)
+        {
+          // Append the rest - we're done
+          aSB.append (sFormat.substring (nPrev, sFormat.length ()));
+          break;
+        }
 
-      // Find end of $xxx$ sequence
-      nPrev = nNext + 1;
-      nNext = sFormat.indexOf ('$', nPrev);
-      if (nNext == -1)
-        throw new InvalidParameterException ("Invalid key (missing closing $)");
+        if (nNext > nPrev)
+        {
+          // Save text before $xxx$ sequence, if there is any
+          aSB.append (sFormat.substring (nPrev, nNext));
+        }
 
-      // If we have just $$ then output $, else we have $xxx$, lookup xxx
-      if (nNext == nPrev)
-        aSB.append ('$');
-      else
-      {
-        final String sParameterName = sFormat.substring (nPrev, nNext);
-        aSB.append (getParameter (sParameterName));
+        // Find end of $xxx$ sequence
+        nPrev = nNext + 1;
+        nNext = sFormat.indexOf ('$', nPrev);
+        if (nNext == -1)
+          throw new InvalidParameterException ("Invalid key (missing closing $)");
+
+        // If we have just $$ then output $, else we have $xxx$, lookup xxx
+        if (nNext == nPrev)
+          aSB.append ('$');
+        else
+        {
+          final String sParameterName = sFormat.substring (nPrev, nNext);
+          aSB.append (getParameter (sParameterName));
+        }
       }
-    }
 
     if (LOGGER.isTraceEnabled ())
       LOGGER.trace ("Formatted value is now '" + aSB.toString () + "'");
