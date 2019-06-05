@@ -310,7 +310,8 @@ public final class AS2Helper
                                               aDispositionOptions.getFirstMICAlg (),
                                               bIncludeHeadersInMIC);
     }
-    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
+    if (aMIC != null)
+      aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
 
     boolean bSignMDN = false;
     boolean bIncludeCertificateInSignedContent = false;

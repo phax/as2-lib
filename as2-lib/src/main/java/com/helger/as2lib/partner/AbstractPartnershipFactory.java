@@ -158,7 +158,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     });
   }
 
-  public final void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
+  public void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aMsg, "Message");
 

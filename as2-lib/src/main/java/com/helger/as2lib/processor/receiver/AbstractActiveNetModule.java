@@ -65,6 +65,7 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.ClassHelper;
+import com.helger.commons.string.StringHelper;
 
 public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModule
 {
@@ -164,7 +165,9 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     super.initDynamicComponent (aSession, aOptions);
 
     // Ensure port parameter is present
-    getAttributeAsStringRequired (ATTR_PORT);
+    // Disabled in 4.4.0
+    if (false)
+      getAttributeAsStringRequired (ATTR_PORT);
   }
 
   @Nonnull
@@ -191,31 +194,38 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                                                                          .add ("msg", new MessageParameters (aMsg));
 
       final String sErrorFilename = aParams.format (attrs ().getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
-      final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
-      final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
-                                                            FilenameHelper.getAsSecureValidFilename (sErrorFilename));
-      // Default false for backwards compatibility reason
-      final boolean bStoreBody = attrs ().getAsBoolean (ATTR_ERROR_STORE_BODY, false);
-
-      final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
-      try
+      final String sErrorDirectory = aParams.format (attrs ().getAsString (ATTR_ERROR_DIRECTORY));
+      if (StringHelper.hasText (sErrorDirectory))
       {
-        final String sMsgText = aMsg.getAsString ();
-        aFOS.write (sMsgText.getBytes ());
+        final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
+                                                              FilenameHelper.getAsSecureValidFilename (sErrorFilename));
+        // Default false for backwards compatibility reason
+        final boolean bStoreBody = attrs ().getAsBoolean (ATTR_ERROR_STORE_BODY, false);
 
-        // Enable this line, to also store the body of the source message
-        if (bStoreBody)
-          StreamHelper.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
+        final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
+        try
+        {
+          final String sMsgText = aMsg.getAsString ();
+          aFOS.write (sMsgText.getBytes ());
+
+          // Enable this line, to also store the body of the source message
+          if (bStoreBody)
+            StreamHelper.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
+        }
+        finally
+        {
+          StreamHelper.close (aFOS);
+        }
+
+        // make sure an error of this event is logged
+        final InvalidMessageException im = new InvalidMessageException ("Stored invalid message to " +
+                                                                        aMsgErrorFile.getAbsolutePath ());
+        im.terminate ();
       }
-      finally
+      else
       {
-        StreamHelper.close (aFOS);
+        LOGGER.warn ("No error directory present, so ignoring the error");
       }
-
-      // make sure an error of this event is logged
-      final InvalidMessageException im = new InvalidMessageException ("Stored invalid message to " +
-                                                                      aMsgErrorFile.getAbsolutePath ());
-      im.terminate ();
     }
     catch (final Exception ex)
     {
