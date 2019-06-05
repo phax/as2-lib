@@ -647,6 +647,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         StreamHelper.close (aMDNStream);
       }
 
+      // Dump collected message
       final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
       if (aIncomingDumper != null)
         aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (), aMDNStream.toByteArray (), aMDN);
@@ -776,9 +777,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final MimeBodyPart aSecuredMimePart,
                              @Nullable final MIC aMIC,
-                             @Nonnull final EContentTransferEncoding eCTE) throws OpenAS2Exception,
-                                                                           IOException,
-                                                                           MessagingException
+                             @Nonnull final EContentTransferEncoding eCTE,
+                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws OpenAS2Exception,
+                                                                                  IOException,
+                                                                                  MessagingException
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -790,7 +792,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // otherwise, use HttpClient
     final AS2HttpClient aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
 
-    try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
+    try
     {
       if (aOutgoingDumper != null)
         aOutgoingDumper.start (sUrl);
@@ -907,7 +909,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
       aMsg.setContentType (aSecuredData.getContentType ());
 
-      _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE);
+      try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
+      {
+        _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper);
+      }
     }
     catch (final HttpResponseException ex)
     {

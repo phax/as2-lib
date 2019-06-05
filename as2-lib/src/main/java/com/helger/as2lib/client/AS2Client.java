@@ -414,8 +414,10 @@ public class AS2Client
         // Add all custom headers
         aMsg.headers ().setAllHeaders (aSettings.customHeaders ());
 
+        // Added sender as processor
         aSession.getMessageProcessor ().addModule (aSender);
 
+        // Main sending
         aSender.handle (IProcessorSenderModule.DO_SEND, aMsg, aHandleOptions);
       }
       finally

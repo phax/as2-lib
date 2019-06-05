@@ -79,9 +79,10 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
-                             @Nonnull final DispositionType aDisposition) throws OpenAS2Exception,
-                                                                          IOException,
-                                                                          MessagingException
+                             @Nonnull final DispositionType aDisposition,
+                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws OpenAS2Exception,
+                                                                                  IOException,
+                                                                                  MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -91,7 +92,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     // MDN is a small message. We will always use CHttp
     final AS2HttpClient aConn = getHttpClient (sUrl, eRequestMethod, getSession ().getHttpProxy ());
 
-    try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
+    try
     {
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
@@ -173,9 +174,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       final int nRetries = getRetryCount (aMsg.partnership (), aOptions);
 
-      try
+      try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
       {
-        _sendViaHTTP (aMsg, aDisposition);
+        _sendViaHTTP (aMsg, aDisposition, aOutgoingDumper);
       }
       catch (final HttpResponseException ex)
       {

@@ -35,6 +35,7 @@ package com.helger.as2lib.util.dump;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 import com.helger.commons.io.stream.WrappedOutputStream;
@@ -93,7 +94,7 @@ public interface IHTTPOutgoingDumper extends AutoCloseable
    *        Number of bytes to write
    * @since 4.2.0
    */
-  void dumpPayload (byte [] aBytes, int nOfs, int nLen);
+  void dumpPayload (@Nonnull byte [] aBytes, @Nonnegative int nOfs, @Nonnegative int nLen);
 
   /**
    * Called after the payload was emitted.

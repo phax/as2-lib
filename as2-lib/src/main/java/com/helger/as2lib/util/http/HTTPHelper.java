@@ -240,7 +240,7 @@ public final class HTTPHelper
   /**
    * @return the dumper factory for incoming HTTP requests. Never
    *         <code>null</code>.
-   * @since 4.3.1
+   * @since 4.4.0
    */
   @Nonnull
   public static ISupplier <? extends IHTTPIncomingDumper> getHTTPIncomingDumperFactory ()
@@ -277,7 +277,7 @@ public final class HTTPHelper
   /**
    * @return The factory used to create outgoing dumper objects. Never
    *         <code>null</code>.
-   * @since 4.3.1
+   * @since 4.4.0
    */
   @Nonnull
   public static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> getHTTPOutgoingDumperFactory ()
