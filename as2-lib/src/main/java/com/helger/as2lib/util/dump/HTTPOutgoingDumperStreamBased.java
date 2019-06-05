@@ -58,6 +58,8 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   private static final Logger LOGGER = LoggerFactory.getLogger (HTTPOutgoingDumperStreamBased.class);
 
   private final OutputStream m_aOS;
+  private boolean m_bDumpHeader = true;
+  private boolean m_bDumpPayload = true;
   private int m_nHeaders = 0;
 
   /**
@@ -74,6 +76,26 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   protected final OutputStream getWrappedOS ()
   {
     return m_aOS;
+  }
+
+  public boolean isDumpHeader ()
+  {
+    return m_bDumpHeader;
+  }
+
+  public void setDumpHeader (final boolean bDumpHeader)
+  {
+    m_bDumpHeader = bDumpHeader;
+  }
+
+  public boolean isDumpPayload ()
+  {
+    return m_bDumpPayload;
+  }
+
+  public void setDumpPayload (final boolean bDumpPayload)
+  {
+    m_bDumpPayload = bDumpPayload;
   }
 
   private void _write (final int nByte)
@@ -108,21 +130,27 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   @Override
   public void start (@Nonnull final String sURL)
   {
-    final String sLine = "# Starting AS2 transmission to '" + sURL + "'" + CHttp.EOL;
-    _write (sLine.getBytes (CHttp.HTTP_CHARSET));
+    if (m_bDumpHeader)
+    {
+      final String sLine = "# Starting AS2 transmission to '" + sURL + "'" + CHttp.EOL;
+      _write (sLine.getBytes (CHttp.HTTP_CHARSET));
+    }
   }
 
   public void dumpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    final String sHeaderLine = sName + ": " + sValue + CHttp.EOL;
-    _write (sHeaderLine.getBytes (CHttp.HTTP_CHARSET));
-    m_nHeaders++;
+    if (m_bDumpHeader)
+    {
+      final String sHeaderLine = sName + ": " + sValue + CHttp.EOL;
+      _write (sHeaderLine.getBytes (CHttp.HTTP_CHARSET));
+      m_nHeaders++;
+    }
   }
 
   @Override
   public void finishedHeaders ()
   {
-    if (m_nHeaders > 0)
+    if (m_bDumpHeader && m_nHeaders > 0)
     {
       // empty line
       _write (CHttp.EOL.getBytes (CHttp.HTTP_CHARSET));
@@ -131,12 +159,14 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
 
   public void dumpPayload (final int nByte)
   {
-    _write (nByte);
+    if (m_bDumpPayload)
+      _write (nByte);
   }
 
   public void dumpPayload (@Nonnull final byte [] aBytes, @Nonnegative final int nOfs, @Nonnegative final int nLen)
   {
-    _write (aBytes, nOfs, nLen);
+    if (m_bDumpPayload)
+      _write (aBytes, nOfs, nLen);
   }
 
   @Override
