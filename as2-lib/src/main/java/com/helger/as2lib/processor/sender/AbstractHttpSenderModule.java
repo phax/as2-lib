@@ -100,9 +100,9 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     }
   }
 
-  private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = aMsg -> null;
+  private static final IHTTPOutgoingDumperFactory DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
 
-  public AbstractHttpSenderModule ()
+  static
   {
     // Set global outgoing dump directory (since v4.0.3)
     // This is contained for backwards compatibility only
@@ -111,9 +111,16 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     {
       final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
-      setHttpOutgoingDumperFactory (new OutgoingDumperFactory (aDumpDirectory));
+      DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = new OutgoingDumperFactory (aDumpDirectory);
     }
+    else
+      DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = null;
   }
+
+  private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
+
+  public AbstractHttpSenderModule ()
+  {}
 
   @Nullable
   public final IHTTPOutgoingDumperFactory getHttpOutgoingDumperFactory ()

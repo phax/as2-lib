@@ -39,6 +39,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Removed deprecated class `PKCS12CertificateFactory` and some other deprecated methods 
     * Updated to ph-commons 9.3.4
     * Reworked the outgoing dumping API, so that it can be set per "AbstractHttpSenderModule" and must not be globally set. This is a backwards incompatible change. The existing system property is still accepted.
+    * The AS2 client can now dump specific outgoing requests more easily using the new API
+    * The outgoing HTTP dumper does now have options to configure whether the comment, header and or payload should be dumped or not
 * v4.3.0 - 2019-05-17
     * Moved interface `IRefreshablePartnershipFactory` from project as2-server to this project
     * Improved support for large file transmission - thanks to @zharpaz for the PR (see [#78](https://github.com/phax/as2-lib/pull/78))

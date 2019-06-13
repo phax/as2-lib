@@ -153,6 +153,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
    * @param aOptions
    *        Optional options map to be used. May be <code>null</code>.
    * @throws ProcessorException
+   *         In case of error
    */
   protected final void executeAction (@Nonnull final String sAction,
                                       @Nonnull final IMessage aMsg,
