@@ -26,7 +26,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.4.0 - work in progress
+* v4.4.0 - 2019-06-13
     * `AS2Client` correctly passes the keystore type to `CertificateFactory`
     * `AS2Client` can now handle read-only keystore that is provided as byte array
     * Remove support for the old HttpUrlConnection, therefore making "large file support" the default (see [#87](https://github.com/phax/as2-lib/pull/87))
@@ -163,7 +163,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.3.0</version>
+  <version>4.4.0</version>
 </dependency>
 ```
 
@@ -172,7 +172,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.3.0</version>
+  <version>4.4.0</version>
 </dependency>
 ```
 
@@ -181,7 +181,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.3.0</version>
+  <version>4.4.0</version>
 </dependency>
 ```
 
