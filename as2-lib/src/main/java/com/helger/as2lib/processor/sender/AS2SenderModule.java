@@ -795,7 +795,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     try
     {
       if (aOutgoingDumper != null)
-        aOutgoingDumper.start (sUrl);
+        aOutgoingDumper.start (sUrl, aMsg);
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());

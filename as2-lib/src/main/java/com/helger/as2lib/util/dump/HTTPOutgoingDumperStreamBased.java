@@ -42,6 +42,7 @@ import javax.annotation.WillCloseWhenClosed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.message.AS2Message;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.io.stream.StreamHelper;
@@ -58,6 +59,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   private static final Logger LOGGER = LoggerFactory.getLogger (HTTPOutgoingDumperStreamBased.class);
 
   private final OutputStream m_aOS;
+  private boolean m_bDumpComment = false;
   private boolean m_bDumpHeader = true;
   private boolean m_bDumpPayload = true;
   private int m_nHeaders = 0;
@@ -76,6 +78,16 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   protected final OutputStream getWrappedOS ()
   {
     return m_aOS;
+  }
+
+  public boolean isDumpComment ()
+  {
+    return m_bDumpComment;
+  }
+
+  public void setDumpComment (final boolean bDumpComment)
+  {
+    m_bDumpComment = bDumpComment;
   }
 
   public boolean isDumpHeader ()
@@ -128,11 +140,15 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   }
 
   @Override
-  public void start (@Nonnull final String sURL)
+  public void start (@Nonnull final String sURL, @Nonnull final AS2Message aMsg)
   {
-    if (m_bDumpHeader)
+    if (m_bDumpComment)
     {
-      final String sLine = "# Starting AS2 transmission to '" + sURL + "'" + CHttp.EOL;
+      final String sLine = "# Starting AS2 transmission to '" +
+                           sURL +
+                           "' with message ID " +
+                           aMsg.getMessageID () +
+                           CHttp.EOL;
       _write (sLine.getBytes (CHttp.HTTP_CHARSET));
     }
   }

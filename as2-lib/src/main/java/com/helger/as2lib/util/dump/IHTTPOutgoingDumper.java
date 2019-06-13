@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
+import com.helger.as2lib.message.AS2Message;
 import com.helger.commons.io.stream.WrappedOutputStream;
 
 /**
@@ -53,9 +54,11 @@ public interface IHTTPOutgoingDumper extends AutoCloseable
    *
    * @param sUrl
    *        The URL to which a connection is established.
-   * @since 4.2.0
+   * @param aMsg
+   *        The message to be dumped. Never <code>null</code>.
+   * @since 4.4.0
    */
-  default void start (@Nonnull final String sUrl)
+  default void start (@Nonnull final String sUrl, @Nonnull final AS2Message aMsg)
   {}
 
   /**
