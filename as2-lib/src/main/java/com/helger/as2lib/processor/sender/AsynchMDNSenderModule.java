@@ -58,7 +58,6 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
-import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
@@ -174,7 +173,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       final int nRetries = getRetryCount (aMsg.partnership (), aOptions);
 
-      try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
+      try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
         _sendViaHTTP (aMsg, aDisposition, aOutgoingDumper);
       }

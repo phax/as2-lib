@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnegative;
@@ -56,22 +55,18 @@ import javax.mail.internet.InternetHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
-import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
-import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.functional.IFunction;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
@@ -102,62 +97,24 @@ public final class HTTPHelper
   private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
   @GuardedBy ("s_aRWLock")
   private static ISupplier <? extends IHTTPIncomingDumper> s_aHTTPIncomingDumperFactory = () -> null;
-  @GuardedBy ("s_aRWLock")
-  private static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> s_aHTTPOutgoingDumperFactory = x -> null;
-
-  private static final class OutgoingDumperFactory implements IFunction <IBaseMessage, IHTTPOutgoingDumper>
-  {
-    // Counter to ensure unique filenames
-    private final AtomicInteger m_aCounter = new AtomicInteger (0);
-    private final File m_aDumpDirectory;
-
-    public OutgoingDumperFactory (@Nonnull final File aDumpDirectory)
-    {
-      m_aDumpDirectory = aDumpDirectory;
-    }
-
-    @Nonnull
-    public IHTTPOutgoingDumper apply (@Nonnull final IBaseMessage aMsg)
-    {
-      return new HTTPOutgoingDumperFileBased (new File (m_aDumpDirectory,
-                                                        "as2-outgoing-" +
-                                                                          Long.toString (System.currentTimeMillis ()) +
-                                                                          "-" +
-                                                                          Integer.toString (m_aCounter.getAndIncrement ()) +
-                                                                          ".http"));
-    }
-  }
 
   static
   {
     // Set global incoming dump directory
+    // New property name since v4.0.3
+    String sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryIncoming");
+    if (StringHelper.hasNoText (sHttpDumpIncomingDirectory))
     {
-      // New property name since v4.0.3
-      String sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryIncoming");
-      if (StringHelper.hasNoText (sHttpDumpIncomingDirectory))
-      {
-        // Check old name
-        sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
-        if (StringHelper.hasText (sHttpDumpIncomingDirectory))
-          LOGGER.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
-      }
+      // Check old name
+      sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
       if (StringHelper.hasText (sHttpDumpIncomingDirectory))
-      {
-        final File aDumpDirectory = new File (sHttpDumpIncomingDirectory);
-        AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
-        setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
-      }
+        LOGGER.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
     }
-
-    // Set global outgoing dump directory (since v4.0.3)
+    if (StringHelper.hasText (sHttpDumpIncomingDirectory))
     {
-      final String sHttpDumpOutgoingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryOutgoing");
-      if (StringHelper.hasText (sHttpDumpOutgoingDirectory))
-      {
-        final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
-        AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
-        setHTTPOutgoingDumperFactory (new OutgoingDumperFactory (aDumpDirectory));
-      }
+      final File aDumpDirectory = new File (sHttpDumpIncomingDirectory);
+      AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
+      setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperDirectoryBased (aDumpDirectory));
     }
   }
 
@@ -259,43 +216,6 @@ public final class HTTPHelper
   {
     ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
     s_aRWLock.writeLocked ( () -> s_aHTTPIncomingDumperFactory = aHttpDumperFactory);
-  }
-
-  /**
-   * @param aMsg
-   *        The message for which a dumper should be created.
-   * @return the dumper for outgoing HTTP requests or <code>null</code> if none
-   *         is present. Must be closed afterwards!
-   * @since 3.0.1
-   */
-  @Nullable
-  public static IHTTPOutgoingDumper getHTTPOutgoingDumper (@Nonnull final IBaseMessage aMsg)
-  {
-    return s_aRWLock.readLocked ( () -> s_aHTTPOutgoingDumperFactory.apply (aMsg));
-  }
-
-  /**
-   * @return The factory used to create outgoing dumper objects. Never
-   *         <code>null</code>.
-   * @since 4.4.0
-   */
-  @Nonnull
-  public static IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> getHTTPOutgoingDumperFactory ()
-  {
-    return s_aRWLock.readLocked ( () -> s_aHTTPOutgoingDumperFactory);
-  }
-
-  /**
-   * Set the factory for creating dumper for outgoing HTTP requests
-   *
-   * @param aHttpDumperFactory
-   *        The dumper factory to be used. May not be <code>null</code>.
-   * @since 3.1.0
-   */
-  public static void setHTTPOutgoingDumperFactory (@Nullable final IFunction <? super IBaseMessage, ? extends IHTTPOutgoingDumper> aHttpDumperFactory)
-  {
-    ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
-    s_aRWLock.writeLocked ( () -> s_aHTTPOutgoingDumperFactory = aHttpDumperFactory);
   }
 
   /**

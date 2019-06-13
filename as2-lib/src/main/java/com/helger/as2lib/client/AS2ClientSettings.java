@@ -47,6 +47,7 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
+import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.http.HttpHeaderMap;
@@ -123,6 +124,7 @@ public class AS2ClientSettings implements Serializable
   private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
+  private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = null;
 
   public AS2ClientSettings ()
   {}
@@ -755,6 +757,31 @@ public class AS2ClientSettings implements Serializable
   public int getReadTimeoutMS ()
   {
     return m_nReadTimeoutMS;
+  }
+
+  /**
+   * Set the HTTP outgoing dumper factory.
+   *
+   * @param aHttpOutgoingDumperFactory
+   *        The factory to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.0
+   */
+  @Nonnull
+  public AS2ClientSettings setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
+  {
+    m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
+    return this;
+  }
+
+  /**
+   * @return The outgoing dumper factory. May be <code>null</code>.
+   * @since 4.4.0
+   */
+  @Nullable
+  public IHTTPOutgoingDumperFactory getHttpOutgoingDumperFactory ()
+  {
+    return m_aHttpOutgoingDumperFactory;
   }
 
   /**

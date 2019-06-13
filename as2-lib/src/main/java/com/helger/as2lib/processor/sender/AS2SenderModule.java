@@ -909,7 +909,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
       aMsg.setContentType (aSecuredData.getContentType ());
 
-      try (final IHTTPOutgoingDumper aOutgoingDumper = HTTPHelper.getHTTPOutgoingDumper (aMsg))
+      try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
         _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper);
       }

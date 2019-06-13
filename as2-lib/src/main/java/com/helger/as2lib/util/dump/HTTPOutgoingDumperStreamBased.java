@@ -80,34 +80,40 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
     return m_aOS;
   }
 
-  public boolean isDumpComment ()
+  public final boolean isDumpComment ()
   {
     return m_bDumpComment;
   }
 
-  public void setDumpComment (final boolean bDumpComment)
+  @Nonnull
+  public final HTTPOutgoingDumperStreamBased setDumpComment (final boolean bDumpComment)
   {
     m_bDumpComment = bDumpComment;
+    return this;
   }
 
-  public boolean isDumpHeader ()
+  public final boolean isDumpHeader ()
   {
     return m_bDumpHeader;
   }
 
-  public void setDumpHeader (final boolean bDumpHeader)
+  @Nonnull
+  public final HTTPOutgoingDumperStreamBased setDumpHeader (final boolean bDumpHeader)
   {
     m_bDumpHeader = bDumpHeader;
+    return this;
   }
 
-  public boolean isDumpPayload ()
+  public final boolean isDumpPayload ()
   {
     return m_bDumpPayload;
   }
 
-  public void setDumpPayload (final boolean bDumpPayload)
+  @Nonnull
+  public final HTTPOutgoingDumperStreamBased setDumpPayload (final boolean bDumpPayload)
   {
     m_bDumpPayload = bDumpPayload;
+    return this;
   }
 
   private void _write (final int nByte)

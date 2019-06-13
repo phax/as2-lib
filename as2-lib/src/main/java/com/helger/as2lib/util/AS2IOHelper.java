@@ -60,10 +60,11 @@ import com.helger.commons.timing.StopWatch;
 @Immutable
 public final class AS2IOHelper
 {
-  private static final FileOperationManager s_aFOM = new FileOperationManager ();
+  // Use a new instance to add the logging
+  private static final FileOperationManager FOM = new FileOperationManager ();
   static
   {
-    s_aFOM.callbacks ().add (new LoggingFileOperationCallback ());
+    FOM.callbacks ().add (new LoggingFileOperationCallback ());
   }
 
   private AS2IOHelper ()
@@ -72,7 +73,7 @@ public final class AS2IOHelper
   @Nonnull
   public static FileOperationManager getFileOperationManager ()
   {
-    return s_aFOM;
+    return FOM;
   }
 
   @Nonnegative
@@ -87,7 +88,7 @@ public final class AS2IOHelper
   public static File getDirectoryFile (@Nonnull final String sDirectory)
   {
     final File aDir = new File (sDirectory);
-    s_aFOM.createDirRecursiveIfNotExisting (aDir);
+    FOM.createDirRecursiveIfNotExisting (aDir);
     return aDir;
   }
 
@@ -218,15 +219,15 @@ public final class AS2IOHelper
     }
 
     // Copy
-    FileIOError aIOErr = s_aFOM.copyFile (aSrc, aRealDestFile);
+    FileIOError aIOErr = FOM.copyFile (aSrc, aRealDestFile);
     if (aIOErr.isFailure ())
       throw new IOException ("Copy failed: " + aIOErr.toString ());
 
     // Delete old
-    aIOErr = s_aFOM.deleteFile (aSrc);
+    aIOErr = FOM.deleteFile (aSrc);
     if (aIOErr.isFailure ())
     {
-      s_aFOM.deleteFile (aRealDestFile);
+      FOM.deleteFile (aRealDestFile);
       throw new IOException ("Move failed, unable to delete " + aSrc + ": " + aIOErr.toString ());
     }
     return aRealDestFile;

@@ -56,6 +56,7 @@ import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperStreamBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
 import com.helger.commons.debug.GlobalDebug;
 import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
@@ -95,8 +96,9 @@ public final class MainSendToMendelsonTestServerPlayground
     if (false)
       aHttpProxy = new Proxy (Proxy.Type.HTTP, new InetSocketAddress ("172.30.9.6", 8080));
 
+    IHTTPOutgoingDumperFactory aOutgoingDumperFactory = null;
     if (false)
-      HTTPHelper.setHTTPOutgoingDumperFactory (x -> new HTTPOutgoingDumperStreamBased (System.out));
+      aOutgoingDumperFactory = x -> new HTTPOutgoingDumperStreamBased (System.out);
     if (false)
       HTTPHelper.setHTTPIncomingDumperFactory ( () -> new HTTPIncomingDumperStreamBased (new NonClosingOutputStream (System.out)));
 
@@ -149,6 +151,7 @@ public final class MainSendToMendelsonTestServerPlayground
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeoutMS (10_000);
     aSettings.setReadTimeoutMS (10_000);
+    aSettings.setHttpOutgoingDumperFactory (aOutgoingDumperFactory);
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
