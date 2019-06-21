@@ -113,6 +113,7 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.NullOutputStream;
+import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
@@ -684,6 +685,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (!bForceVerify && !isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
+    if (!(aPart.getContent () instanceof MimeMultipart))
+      throw new IllegalStateException ("Expected Part content to be MimeMultipart but it isn't. It is " +
+                                       ClassHelper.getClassName (aPart.getContent ()));
     final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (m_sSecurityProviderName)

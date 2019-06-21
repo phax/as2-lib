@@ -61,8 +61,8 @@ import com.helger.xservlet.handler.IXServletHandler;
 public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHandler
 {
   /**
-   * The name of the Servlet's init-parameter from which the absolute path to the
-   * configuration file is read.
+   * The name of the Servlet's init-parameter from which the absolute path to
+   * the configuration file is read.
    */
   public static final String SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME = "as2-servlet-config-filename";
 
@@ -216,12 +216,16 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     {
       // Length is known
       aMsgData = new byte [(int) nContentLength];
-      final DataInputStream aDataIS = new DataInputStream (aHttpRequest.getInputStream ());
-      aDataIS.readFully (aMsgData);
+      // Closes the HTTP request InputStream afterwards
+      try (final DataInputStream aDataIS = new DataInputStream (aHttpRequest.getInputStream ()))
+      {
+        aDataIS.readFully (aMsgData);
+      }
     }
     else
     {
       // Length is unknown
+      // Closes the HTTP request InputStream afterwards
       aMsgData = StreamHelper.getAllBytes (aHttpRequest.getInputStream ());
     }
 
