@@ -231,7 +231,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         bUseCertificateInBodyPart = getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart);
+      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, getVerificationCertificateConsumer ());
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,

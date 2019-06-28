@@ -88,6 +88,7 @@ import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
+import com.helger.commons.functional.IConsumer;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
@@ -114,6 +115,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2SenderModule.class);
 
   private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
+  private IConsumer <X509Certificate> m_aVerificationCertificateConsumer;
 
   public AS2SenderModule ()
   {}
@@ -133,12 +135,42 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *
    * @param aMICMatchingHandler
    *        The new handler. May not be <code>null</code>.
+   * @return this for chaining
    * @since 4.4.0
    */
-  public final void setMICMatchingHandler (@Nonnull final IMICMatchingHandler aMICMatchingHandler)
+  @Nonnull
+  public final AS2SenderModule setMICMatchingHandler (@Nonnull final IMICMatchingHandler aMICMatchingHandler)
   {
     ValueEnforcer.notNull (aMICMatchingHandler, "MICMatchingHandler");
     m_aMICMatchingHandler = aMICMatchingHandler;
+    return this;
+  }
+
+  /**
+   * @return The consumer for the effective certificate upon signature
+   *         verification. May be <code>null</code>. The default is
+   *         <code>null</code>.
+   * @since 4.4.1
+   */
+  @Nullable
+  public final IConsumer <X509Certificate> getVerificationCertificateConsumer ()
+  {
+    return m_aVerificationCertificateConsumer;
+  }
+
+  /**
+   * Set the consumer for the effective certificate upon signature verification.
+   *
+   * @param aVerificationCertificateConsumer
+   *        The consumer to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.1
+   */
+  @Nonnull
+  public final AS2SenderModule setVerificationCertificateConsumer (@Nullable final IConsumer <X509Certificate> aVerificationCertificateConsumer)
+  {
+    m_aVerificationCertificateConsumer = aVerificationCertificateConsumer;
+    return this;
   }
 
   public boolean canHandle (@Nonnull final String sAction,
@@ -687,7 +719,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         bUseCertificateInBodyPart = getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart);
+      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, m_aVerificationCertificateConsumer);
 
       try
       {

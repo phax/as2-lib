@@ -35,6 +35,7 @@ package com.helger.as2lib.util;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -358,7 +359,8 @@ public final class AS2Helper
 
   public static void parseMDN (@Nonnull final IMessage aMsg,
                                @Nonnull final X509Certificate aReceiverCert,
-                               final boolean bUseCertificateInBodyPart) throws Exception
+                               final boolean bUseCertificateInBodyPart,
+                               @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer) throws Exception
   {
     LOGGER.info ("Start parsing MDN of" + aMsg.getLoggingText ());
 
@@ -382,7 +384,11 @@ public final class AS2Helper
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
 
-        aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bUseCertificateInBodyPart, bForceVerify);
+        aMainPart = aCryptoHelper.verify (aMainPart,
+                                          aReceiverCert,
+                                          bUseCertificateInBodyPart,
+                                          bForceVerify,
+                                          aEffectiveCertificateConsumer);
         // Remember that message was signed and verified
         aMdn.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
         LOGGER.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());

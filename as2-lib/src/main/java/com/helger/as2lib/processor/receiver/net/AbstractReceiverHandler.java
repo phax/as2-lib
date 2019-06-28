@@ -34,9 +34,11 @@ package com.helger.as2lib.processor.receiver.net;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.security.cert.X509Certificate;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
@@ -49,6 +51,7 @@ import com.helger.as2lib.util.http.IAS2InputStreamProvider;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.codec.IByteArrayCodec;
 import com.helger.commons.codec.IdentityCodec;
+import com.helger.commons.functional.IConsumer;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.string.StringHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
@@ -71,6 +74,35 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractReceiverHandler.class);
+
+  private IConsumer <X509Certificate> m_aVerificationCertificateConsumer;
+
+  /**
+   * @return The consumer for the effective certificate upon signature
+   *         verification. May be <code>null</code>. The default is
+   *         <code>null</code>.
+   * @since 4.4.1
+   */
+  @Nullable
+  public final IConsumer <X509Certificate> getVerificationCertificateConsumer ()
+  {
+    return m_aVerificationCertificateConsumer;
+  }
+
+  /**
+   * Set the consumer for the effective certificate upon signature verification.
+   *
+   * @param aVerificationCertificateConsumer
+   *        The consumer to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.1
+   */
+  @Nonnull
+  public final AbstractReceiverHandler setVerificationCertificateConsumer (@Nullable final IConsumer <X509Certificate> aVerificationCertificateConsumer)
+  {
+    m_aVerificationCertificateConsumer = aVerificationCertificateConsumer;
+    return this;
+  }
 
   @Nonnull
   @Nonempty

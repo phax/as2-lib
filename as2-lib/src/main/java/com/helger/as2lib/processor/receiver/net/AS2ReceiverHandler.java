@@ -227,7 +227,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
                                                                    aSenderCert,
                                                                    bUseCertificateInBodyPart,
-                                                                   bForceVerify);
+                                                                   bForceVerify,
+                                                                   getVerificationCertificateConsumer ());
           aMsg.setData (aVerifiedData);
           // Remember that message was signed and verified
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
