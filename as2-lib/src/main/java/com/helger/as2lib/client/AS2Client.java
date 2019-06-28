@@ -33,6 +33,7 @@
 package com.helger.as2lib.client;
 
 import java.net.Proxy;
+import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -68,6 +69,7 @@ import com.helger.commons.factory.FactoryNewInstance;
 import com.helger.commons.functional.ISupplier;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.timing.StopWatch;
+import com.helger.security.certificate.CertificateHelper;
 
 /**
  * A simple client that allows for sending AS2 Messages and retrieving of
@@ -437,6 +439,14 @@ public class AS2Client
       {
         // May be present, even in case of an exception
         aResponse.setMDN (aMsg.getMDN ());
+
+        // Remember the certificate that was used to verify the MDN
+        final String sReceivedCert = aMsg.attrs ().getAsString (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE);
+        if (sReceivedCert != null)
+        {
+          final X509Certificate aReceivedCert = CertificateHelper.convertStringToCertficateOrNull (sReceivedCert);
+          aResponse.setMDNVerificationCertificate (aReceivedCert);
+        }
       }
     }
 

@@ -33,6 +33,7 @@
 package com.helger.as2lib.client;
 
 import java.io.Serializable;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 
 import javax.annotation.Nonnull;
@@ -56,6 +57,7 @@ public class AS2ClientResponse implements Serializable
   private Throwable m_aThrowable;
   private IMessageMDN m_aMDN;
   private Duration m_aExecutionDuration;
+  private X509Certificate m_aMDNVerificationCertificate;
 
   /**
    * Default constructor.
@@ -188,6 +190,28 @@ public class AS2ClientResponse implements Serializable
   }
 
   /**
+   * @return The MDN X509 certificate that was retrieved. May be
+   *         <code>null</code> if the MDN was not signed.
+   * @since 4.4.1
+   */
+  @Nullable
+  public X509Certificate getMDNVerificationCertificate ()
+  {
+    return m_aMDNVerificationCertificate;
+  }
+
+  /**
+   * Set the X509 certificate that was used to verify the MDN.
+   *
+   * @param aMDNVerificationCertificate
+   *        The certificate to be used. May be <code>null</code>.
+   */
+  public void setMDNVerificationCertificate (@Nullable final X509Certificate aMDNVerificationCertificate)
+  {
+    m_aMDNVerificationCertificate = aMDNVerificationCertificate;
+  }
+
+  /**
    * Set the execution duration of the client request. Any existing value will
    * be overwritten.
    *
@@ -249,6 +273,7 @@ public class AS2ClientResponse implements Serializable
     return new ToStringGenerator (this).append ("OriginalMessageID", m_sOriginalMessageID)
                                        .append ("Throwable", m_aThrowable)
                                        .append ("MDN", m_aMDN)
+                                       .append ("MDNVerificationCertificate", m_aMDNVerificationCertificate)
                                        .append ("ExecutionDuration", m_aExecutionDuration)
                                        .getToString ();
   }

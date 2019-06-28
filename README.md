@@ -29,6 +29,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 * v4.4.1 - work in progress
     * Extended `ICryptoHelper.verify` API to have a chance to retrieve the effective certificate
     * Added a new message attribute that contains the certificate used for verification
+    * `AS2ClientResponse` now has an accessor to retrieve the certificate used to verify the MDN
 * v4.4.0 - 2019-06-13
     * `AS2Client` correctly passes the keystore type to `CertificateFactory`
     * `AS2Client` can now handle read-only keystore that is provided as byte array
