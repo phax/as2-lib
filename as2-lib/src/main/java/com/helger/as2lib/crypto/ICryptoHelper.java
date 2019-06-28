@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -203,13 +204,49 @@ public interface ICryptoHelper
    * @param bForceVerify
    *        <code>true</code> to force verification even if the Content-Type
    *        header does not indicate so.
+   * @param aEffectiveCertificateConsumer
+   *        An optional consumer that takes the effective certificate that was
+   *        used for verification. May be <code>null</code>.
    * @return The signed content. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
    */
   @Nonnull
+  default MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
+                               @Nullable final X509Certificate aCert,
+                               final boolean bUseCertificateInBodyPart,
+                               final boolean bForceVerify) throws Exception
+  {
+    return verify (aPart, aCert, bUseCertificateInBodyPart, bForceVerify, null);
+  }
+
+  /**
+   * Verify the specified Mime Body part against the part certificate
+   *
+   * @param aPart
+   *        Original part
+   * @param aCert
+   *        Certificate to check against or <code>null</code> if the certificate
+   *        provided in the message should be used.
+   * @param bUseCertificateInBodyPart
+   *        If <code>true</code> any certificate that is passed in the body part
+   *        is used for verification. If <code>false</code> only the provided
+   *        certificate is used.
+   * @param bForceVerify
+   *        <code>true</code> to force verification even if the Content-Type
+   *        header does not indicate so.
+   * @param aEffectiveCertificateConsumer
+   *        An optional consumer that takes the effective certificate that was
+   *        used for verification. May be <code>null</code>.
+   * @return The signed content. Never <code>null</code>.
+   * @throws Exception
+   *         In case something goes wrong.
+   * @since 4.4.1
+   */
+  @Nonnull
   MimeBodyPart verify (@Nonnull MimeBodyPart aPart,
                        @Nullable X509Certificate aCert,
                        boolean bUseCertificateInBodyPart,
-                       boolean bForceVerify) throws Exception;
+                       boolean bForceVerify,
+                       @Nullable Consumer <X509Certificate> aEffectiveCertificateConsumer) throws Exception;
 }

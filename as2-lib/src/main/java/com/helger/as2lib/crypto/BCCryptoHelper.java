@@ -51,6 +51,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
@@ -667,11 +668,12 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
                               final boolean bUseCertificateInBodyPart,
-                              final boolean bForceVerify) throws GeneralSecurityException,
-                                                          IOException,
-                                                          MessagingException,
-                                                          CMSException,
-                                                          OperatorCreationException
+                              final boolean bForceVerify,
+                              @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer) throws GeneralSecurityException,
+                                                                                                        IOException,
+                                                                                                        MessagingException,
+                                                                                                        CMSException,
+                                                                                                        OperatorCreationException
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.verify; X509 subject=" +
@@ -700,6 +702,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug (aRealX509Cert == aX509Cert ? "Verifying signature using the provided certificate (partnership)"
                                                : "Verifying signature using the certificate contained in the MIME body part");
+
+    // Call before validity check to retrieve the information about the details
+    // outside
+    if (aEffectiveCertificateConsumer != null)
+      aEffectiveCertificateConsumer.accept (aRealX509Cert);
 
     // Check if the certificate is expired or active.
     aRealX509Cert.checkValidity ();
