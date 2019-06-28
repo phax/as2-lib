@@ -26,7 +26,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.4.1 - work in progress
+* v4.4.1 - 2019-06-28
     * Extended `ICryptoHelper.verify` API to have a chance to retrieve the effective certificate
     * Added a new message attribute that contains the certificate used for verification
     * `AS2ClientResponse` now has an accessor to retrieve the certificate used to verify the MDN
@@ -167,7 +167,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.4.0</version>
+  <version>4.4.1</version>
 </dependency>
 ```
 
@@ -176,7 +176,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.4.0</version>
+  <version>4.4.1</version>
 </dependency>
 ```
 
@@ -185,7 +185,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.4.0</version>
+  <version>4.4.1</version>
 </dependency>
 ```
 
