@@ -81,6 +81,7 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.functional.IConsumer;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
@@ -90,7 +91,9 @@ import com.helger.commons.lang.StackTraceHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.timing.StopWatch;
+import com.helger.commons.wrapper.Wrapper;
 import com.helger.mail.datasource.ByteArrayDataSource;
+import com.helger.security.certificate.CertificateHelper;
 
 public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
@@ -224,14 +227,24 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             bUseCertificateInBodyPart = m_aReceiverModule.getSession ().isCryptoVerifyUseCertificateInBodyPart ();
           }
 
+          final Wrapper <X509Certificate> aCertHolder = new Wrapper <> ();
           final MimeBodyPart aVerifiedData = aCryptoHelper.verify (aMsg.getData (),
                                                                    aSenderCert,
                                                                    bUseCertificateInBodyPart,
                                                                    bForceVerify,
-                                                                   getVerificationCertificateConsumer ());
+                                                                   x -> aCertHolder.set (x));
+          final IConsumer <X509Certificate> aExternalConsumer = getVerificationCertificateConsumer ();
+          if (aExternalConsumer != null)
+            aExternalConsumer.accept (aCertHolder.get ());
+
           aMsg.setData (aVerifiedData);
           // Remember that message was signed and verified
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
+          // Remember the PEM encoded version of the X509 certificate that was
+          // used for verification
+          aMsg.attrs ()
+              .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
+                      CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());

@@ -50,6 +50,8 @@ public class AS2Message extends AbstractMessage
   public static final String ATTRIBUTE_RECEIVED = "as2msg.received";
   public static final String ATTRIBUTE_RECEIVED_ENCRYPTED = "as2msg.received.encrypted";
   public static final String ATTRIBUTE_RECEIVED_SIGNED = "as2msg.received.signed";
+  /** PEM encoded X509 certificate that was used to verify the signature */
+  public static final String ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE = "as2msg.received.signature.certificate";
   public static final String ATTRIBUTE_RECEIVED_COMPRESSED = "as2msg.received.compressed";
   /** Optional attribute storing the created MIC (see #74) */
   public static final String ATTRIBUTE_MIC = "MIC";
