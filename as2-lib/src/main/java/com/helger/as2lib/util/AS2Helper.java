@@ -73,7 +73,9 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.state.ETriState;
+import com.helger.commons.wrapper.Wrapper;
 import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.security.certificate.CertificateHelper;
 
 @Immutable
 public final class AS2Helper
@@ -384,13 +386,23 @@ public final class AS2Helper
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
 
+        final Wrapper <X509Certificate> aCertHolder = new Wrapper <> ();
         aMainPart = aCryptoHelper.verify (aMainPart,
                                           aReceiverCert,
                                           bUseCertificateInBodyPart,
                                           bForceVerify,
-                                          aEffectiveCertificateConsumer);
+                                          x -> aCertHolder.set (x));
+        if (aEffectiveCertificateConsumer != null)
+          aEffectiveCertificateConsumer.accept (aCertHolder.get ());
+
         // Remember that message was signed and verified
         aMdn.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
+        // Remember the PEM encoded version of the X509 certificate that was
+        // used for verification
+        aMsg.attrs ()
+            .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
+                    CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
+
         LOGGER.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());
       }
 
