@@ -129,7 +129,7 @@ public class MessageFileModule extends AbstractStorageModule
     // write headers to the string buffer
     aSB.append ("Message Headers:").append (CHttp.EOL);
 
-    aMsg.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL));
+    aMsg.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL), true);
 
     aSB.append (CHttp.EOL);
 

@@ -416,7 +416,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (),
+      aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
                                            aMDNStream != null ? aMDNStream.toByteArray ()
                                                               : ArrayHelper.EMPTY_BYTE_ARRAY,
                                            aMDN);

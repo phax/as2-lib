@@ -100,7 +100,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn
-      aMdn.headers ().forEachSingleHeader (aHeaderWrapper::setHttpHeader);
+      // Avoid double quoting
+      aMdn.headers ().forEachSingleHeader (aHeaderWrapper::setHttpHeader, false);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();

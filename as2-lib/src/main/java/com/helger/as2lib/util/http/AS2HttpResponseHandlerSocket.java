@@ -100,7 +100,7 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
       aOS.write (sHttpStatusLine.getBytes (CHttp.HTTP_CHARSET));
 
       // Add response headers
-      for (final String sHeaderLine : aHeaders.getAllHeaderLines ())
+      for (final String sHeaderLine : aHeaders.getAllHeaderLines (true))
         aOS.write ((sHeaderLine + CHttp.EOL).getBytes (CHttp.HTTP_CHARSET));
 
       // Empty line as separator

@@ -53,7 +53,7 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
     m_aHttpResponse.setStatus (nHttpResponseCode);
 
     // Add headers
-    aHeaders.forEachSingleHeader ( (k, v) -> m_aHttpResponse.addHeader (k, HttpHeaderMap.getUnifiedValue (v)));
+    aHeaders.forEachSingleHeader ( (k, v) -> m_aHttpResponse.addHeader (k, HttpHeaderMap.getUnifiedValue (v)), true);
 
     // Write response body
     final OutputStream aOS = StreamHelper.getBuffered (m_aHttpResponse.getOutputStream ());

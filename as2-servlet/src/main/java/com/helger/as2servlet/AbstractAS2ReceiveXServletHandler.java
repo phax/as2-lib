@@ -232,7 +232,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     // Dump on demand
     final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (), aMsgData, aMsg);
+      aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (true), aMsgData, aMsg);
 
     // Call main handling method
     handeIncomingMessage (aHttpRequest, aHttpResponse, aRequestScope, aMsgData, aMsg, aResponseHandler);

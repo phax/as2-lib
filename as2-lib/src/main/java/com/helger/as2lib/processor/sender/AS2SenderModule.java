@@ -633,7 +633,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aHeaderMap.setHeader (CHttpHeader.CONTENT_DISPOSITION, sContententDisposition);
 
     // Set once, after all were collected
-    aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader);
+    // Avoid double quoting
+    aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader, false);
   }
 
   /**
@@ -682,7 +683,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Dump collected message
       final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
       if (aIncomingDumper != null)
-        aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (), aMDNStream.toByteArray (), aMDN);
+        aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true), aMDNStream.toByteArray (), aMDN);
 
       if (LOGGER.isTraceEnabled ())
       {

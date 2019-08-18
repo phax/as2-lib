@@ -112,7 +112,7 @@ public class MDNFileModule extends AbstractStorageModule
     aSB.append ("MDN Headers:").append (sNewLine);
 
     // Should use ISO-8859-1 charset for HTTP headers
-    aMdn.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (sNewLine));
+    aMdn.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (sNewLine), true);
 
     // Empty line
     aSB.append (sNewLine);
