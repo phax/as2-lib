@@ -133,8 +133,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     }
     catch (final OpenAS2Exception ex)
     {
-      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      throw ex;
+      throw ex.setSourceMsg (aMsg);
     }
   }
 

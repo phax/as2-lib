@@ -192,9 +192,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       catch (final IOException ex)
       {
         // Resend if a network error occurs during transmission
-        final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
-        wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-        wioe.terminate ();
+        final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
 
         if (!doResend (IProcessorSenderModule.DO_SEND_ASYNC_MDN, aMsg, wioe, nRetries))
           throw wioe;

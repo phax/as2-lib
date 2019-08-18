@@ -202,7 +202,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final InvalidParameterException ex)
     {
-      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
+      ex.setSourceMsg (aMsg);
       throw ex;
     }
   }
@@ -254,9 +254,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final IOException ex)
     {
-      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      throw we;
+      throw WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg);
     }
   }
 
@@ -765,8 +763,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         if (ex.getDisposition ().isWarning ())
         {
           // Warning
-          ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-          ex.terminate ();
+          ex.setSourceMsg (aMsg).terminate ();
         }
         else
         {
@@ -781,9 +778,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final Exception ex)
     {
-      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      throw we;
+      throw WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg);
     }
   }
 
@@ -801,10 +796,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   protected void onReceivedMDNError (@Nonnull final AS2Message aMsg,
                                      @Nonnull final OpenAS2Exception ex) throws OpenAS2Exception
   {
-    final OpenAS2Exception oae2 = new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN",
-                                                        ex);
-    oae2.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-    oae2.terminate ();
+    new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN", ex).setSourceMsg (aMsg)
+                                                                                              .terminate ();
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
@@ -959,9 +952,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final IOException ex)
     {
       // Re-send if a network error occurs during transmission
-      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex);
-      wioe.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      wioe.terminate ();
+      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
 
       if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, wioe, nRetries))
         throw wioe;

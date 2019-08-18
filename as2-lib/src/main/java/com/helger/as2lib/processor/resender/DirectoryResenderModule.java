@@ -219,9 +219,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
     catch (final OpenAS2Exception ex)
     {
-      ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      ex.addSource (OpenAS2Exception.SOURCE_FILE, aFile);
-      ex.terminate ();
+      ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
       AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
     }
   }

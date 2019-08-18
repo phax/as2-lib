@@ -32,15 +32,15 @@
  */
 package com.helger.as2lib.exception;
 
+import java.io.File;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsLinkedHashMap;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.as2lib.message.IMessage;
 import com.helger.commons.lang.ClassHelper;
 
 /**
@@ -50,11 +50,10 @@ import com.helger.commons.lang.ClassHelper;
  */
 public class OpenAS2Exception extends Exception
 {
-  public static final String SOURCE_MESSAGE = "message";
-  public static final String SOURCE_FILE = "file";
   private static final Logger LOGGER = LoggerFactory.getLogger (OpenAS2Exception.class);
 
-  private final ICommonsOrderedMap <String, Object> m_aSources = new CommonsLinkedHashMap <> ();
+  private IMessage m_aSrcMsg;
+  private File m_aSrcFile;
 
   public OpenAS2Exception ()
   {
@@ -77,33 +76,31 @@ public class OpenAS2Exception extends Exception
   }
 
   @Nonnull
-  @ReturnsMutableCopy
-  public final ICommonsOrderedMap <String, Object> getAllSources ()
+  public final OpenAS2Exception setSourceMsg (@Nullable final IMessage aSrcMsg)
   {
-    return m_aSources.getClone ();
+    m_aSrcMsg = aSrcMsg;
+    return this;
   }
 
-  @Nullable
-  public final Object getSource (@Nullable final String sID)
+  @Nonnull
+  public final OpenAS2Exception setSourceFile (@Nullable final File aSrcFile)
   {
-    return m_aSources.get (sID);
+    m_aSrcFile = aSrcFile;
+    return this;
   }
 
-  public final void addSource (@Nonnull final String sID, @Nullable final Object aSource)
-  {
-    m_aSources.put (sID, aSource);
-  }
-
-  public final void terminate ()
+  @Nonnull
+  public final OpenAS2Exception terminate ()
   {
     log (true);
+    return this;
   }
 
   /**
    * @param bTerminated
    *        <code>true</code> if the exception was terminated
    */
-  protected void log (final boolean bTerminated)
+  protected final void log (final boolean bTerminated)
   {
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("OpenAS2 " +
@@ -112,7 +109,8 @@ public class OpenAS2Exception extends Exception
                    (bTerminated ? "terminated" : "caught") +
                    ": " +
                    getMessage () +
-                   (m_aSources.isEmpty () ? "" : "; sources: " + m_aSources),
+                   (m_aSrcFile == null ? "" : "; source file: " + m_aSrcFile.getAbsolutePath ()) +
+                   (m_aSrcMsg == null ? "" : "; source msg: " + m_aSrcMsg.getLoggingText ()),
                    getCause ());
   }
 }

@@ -391,9 +391,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final Exception ex)
       {
-        final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
-        we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-        we.terminate ();
+        WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
       }
     }
   }

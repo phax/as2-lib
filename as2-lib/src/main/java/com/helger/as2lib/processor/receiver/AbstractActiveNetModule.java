@@ -185,8 +185,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                     " with error " +
                     aSrcEx.getMessage ());
 
-    aSrcEx.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-    aSrcEx.terminate ();
+    aSrcEx.setSourceMsg (aMsg).terminate ();
 
     try
     {
@@ -229,9 +228,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     }
     catch (final Exception ex)
     {
-      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      we.terminate ();
+      WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
     }
   }
 

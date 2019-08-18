@@ -267,8 +267,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         if (ex.getDisposition ().isWarning ())
         {
           // Warning
-          ex.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-          ex.terminate ();
+          ex.setSourceMsg (aMsg).terminate ();
         }
         else
         {
@@ -285,10 +284,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     catch (final Exception ex)
     {
       HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_BAD_REQUEST);
-
-      final OpenAS2Exception we = WrappedOpenAS2Exception.wrap (ex);
-      we.addSource (OpenAS2Exception.SOURCE_MESSAGE, aMsg);
-      throw we;
+      throw WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg);
     }
   }
 
