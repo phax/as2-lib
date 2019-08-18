@@ -25,7 +25,7 @@ import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
  *
  * @author Philip Helger
  */
-public final class AS2ServletReceiverModule extends AS2ReceiverModule
+public class AS2ServletReceiverModule extends AS2ReceiverModule
 {
   @Override
   public void doStart () throws OpenAS2Exception
