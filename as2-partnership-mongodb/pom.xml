@@ -29,6 +29,7 @@
   <description>A MongoDB based partnership factory implementation</description>
   <url>https://github.com/phax/as2-lib/as2-partnership-mongodb</url>
   <inceptionYear>2015</inceptionYear>
+  
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -36,29 +37,20 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  
   <developers>
     <developer>
       <id>jochenberger</id>
       <url>https://github.com/jochenberger</url>
     </developer>
+    <developer>
+      <id>philip</id>
+      <name>Philip Helger</name>
+      <email>ph(at)helger.com</email>
+      <url>http://www.helger.com</url>
+    </developer>
   </developers>
-  <properties>
-    <!-- 2.5.x is a BOM -->
-    <groovy.version>2.5.8</groovy.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <!-- use a specific Groovy version rather than the one specified by spock-core -->
-        <!--  Must be in dependencyManagement according to https://github.com/groovy/GMavenPlus/issues/84  -->
-        <groupId>org.codehaus.groovy</groupId>
-        <artifactId>groovy-all</artifactId>
-        <version>${groovy.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>
@@ -69,7 +61,13 @@
       <artifactId>mongodb-driver</artifactId>
       <version>3.11.0</version>
     </dependency>
+  
     <!-- test stuff -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
@@ -81,20 +79,8 @@
       <version>2.2.0</version>
       <scope>test</scope>
     </dependency>
-    <!-- Mandatory dependencies for using Spock -->
-    <dependency>
-      <groupId>org.spockframework</groupId>
-      <artifactId>spock-core</artifactId>
-      <version>1.2-groovy-2.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>${groovy.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
+  
   <build>
     <plugins>
       <plugin>
@@ -107,32 +93,6 @@
             <Export-Package>com.helger.as2lib.partner.mongodb.*</Export-Package>
             <Import-Package>!javax.annotation.*,*</Import-Package>
           </instructions>
-        </configuration>
-      </plugin>
-      <!-- Mandatory plugins for using Spock -->
-      <plugin>
-        <!-- The gmavenplus plugin is used to compile Groovy code. To learn more about this plugin, 
-        visit https://github.com/groovy/GMavenPlus/wiki -->
-        <groupId>org.codehaus.gmavenplus</groupId>
-        <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.7.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compileTests</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- Optional plugins for using Spock -->
-      <!-- Only required if names of spec classes don't match default Surefire patterns (`*Test` etc.) -->
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <useFile>false</useFile>
-          <includes>
-            <include>**/*Spec.java</include>
-          </includes>
         </configuration>
       </plugin>
     </plugins>
