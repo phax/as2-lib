@@ -33,6 +33,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * The HTTP headers are now automatically quoted correctly according to RFC 2616 chapter 2.2 (see [#92](https://github.com/phax/as2-lib/issues/92))
     * Internal API of `OpenAS2Exception` was changed in an incompatible way
     * Trying to ensure correct line endings in MDNs (see [#90](https://github.com/phax/as2-lib/issues/90))
+    * By default exception stack traces are not send back in the MDN anymore
 * v4.4.1 - 2019-06-28
     * Extended `ICryptoHelper.verify` API to have a chance to retrieve the effective certificate
     * Added a new message attribute that contains the certificate used for verification

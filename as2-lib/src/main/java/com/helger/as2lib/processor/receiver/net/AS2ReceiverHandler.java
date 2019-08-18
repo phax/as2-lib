@@ -97,9 +97,11 @@ import com.helger.security.certificate.CertificateHelper;
 
 public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
+  public static final boolean DEFAULT_SEND_EXCEPTIONS_IN_MDN = false;
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ReceiverHandler.class);
 
   private final AS2ReceiverModule m_aReceiverModule;
+  private boolean m_bSendExceptionsInMDN = DEFAULT_SEND_EXCEPTIONS_IN_MDN;
 
   /**
    * @param aModule
@@ -119,6 +121,31 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   protected final AS2ReceiverModule getReceiverModule ()
   {
     return m_aReceiverModule;
+  }
+
+  /**
+   * @return <code>true</code> if exception stack traces should be send in the
+   *         MDN, <code>false</code> if not. Default is
+   *         {@link #DEFAULT_SEND_EXCEPTIONS_IN_MDN}
+   * @since 4.4.2
+   */
+  public final boolean isSendExceptionsInMDN ()
+  {
+    return m_bSendExceptionsInMDN;
+  }
+
+  /**
+   * @param bSendExceptionsInMDN
+   *        <code>true</code> to send back exception stack traces in the MDN,
+   *        <code>false</code> if not.
+   * @return this for chaining
+   * @since 4.4.2
+   */
+  @Nonnull
+  public final AS2ReceiverHandler setSendExceptionsInMDN (final boolean bSendExceptionsInMDN)
+  {
+    m_bSendExceptionsInMDN = bSendExceptionsInMDN;
+    return this;
   }
 
   /**
@@ -406,6 +433,16 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
+  @Nonnull
+  private String _getDispositionText (@Nonnull final Exception ex)
+  {
+    // Issue 90 - use CRLF as separator
+    if (m_bSendExceptionsInMDN)
+      return MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex, true, CHttp.EOL));
+
+    return MessageParameters.getEscapedString (ex.getMessage ());
+  }
+
   /**
    * This method can be used to handle an incoming HTTP message AFTER the
    * headers where extracted.
@@ -540,9 +577,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
                                                                                                      CHttp.EOL +
-                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex,
-                                                                                                                                                                            true,
-                                                                                                                                                                            CHttp.EOL)),
+                                                                                                     _getDispositionText (ex),
                                         ex);
       }
 
@@ -561,7 +596,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_STORAGE_FAILED +
                                                                                                      CHttp.EOL +
-                                                                                                     MessageParameters.getEscapedString (ex.getMessage ()),
+                                                                                                     _getDispositionText (ex),
                                         ex);
       }
 
@@ -580,9 +615,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
                                                                                                      CHttp.EOL +
-                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex,
-                                                                                                                                                                            true,
-                                                                                                                                                                            CHttp.EOL)),
+                                                                                                     _getDispositionText (ex),
                                         ex);
       }
 
