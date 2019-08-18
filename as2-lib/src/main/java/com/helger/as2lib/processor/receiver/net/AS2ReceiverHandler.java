@@ -282,13 +282,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (LOGGER.isDebugEnabled ())
         {
           final StringBuilder aSB = new StringBuilder ();
-          final MimeBodyPart part = aMsg.getData ();
-          final Enumeration <String> lines = part.getAllHeaderLines ();
-          while (lines.hasMoreElements ())
-          {
-            aSB.append (lines.nextElement ()).append ("\n");
-          }
           aSB.append ("Headers before uncompress\n");
+          final MimeBodyPart part = aMsg.getData ();
+          final Enumeration <String> aHeaderLines = part.getAllHeaderLines ();
+          while (aHeaderLines.hasMoreElements ())
+          {
+            aSB.append (aHeaderLines.nextElement ()).append ('\n');
+          }
+          aSB.append ("done");
           LOGGER.debug (aSB.toString ());
         }
 
@@ -528,10 +529,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final OpenAS2Exception ex)
       {
+        // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
-                                                                                                     "\n" +
-                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex)),
+                                                                                                     CHttp.EOL +
+                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex,
+                                                                                                                                                                            true,
+                                                                                                                                                                            CHttp.EOL)),
                                         ex);
       }
 
@@ -546,9 +550,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final OpenAS2Exception ex)
       {
+        // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_STORAGE_FAILED +
-                                                                                                     "\n" +
+                                                                                                     CHttp.EOL +
                                                                                                      MessageParameters.getEscapedString (ex.getMessage ()),
                                         ex);
       }
@@ -564,10 +569,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final OpenAS2Exception ex)
       {
+        // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
-                                                                                                     "\n" +
-                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex)),
+                                                                                                     CHttp.EOL +
+                                                                                                     MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex,
+                                                                                                                                                                            true,
+                                                                                                                                                                            CHttp.EOL)),
                                         ex);
       }
 
@@ -648,8 +656,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final Exception ex)
     {
-      final NetException ne = new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
-      ne.terminate ();
+      new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex).terminate ();
     }
 
     aSW.stop ();

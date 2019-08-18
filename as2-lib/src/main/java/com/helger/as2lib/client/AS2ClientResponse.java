@@ -250,20 +250,22 @@ public class AS2ClientResponse implements Serializable
   @Nonnull
   public String getAsString ()
   {
+    // For logging it's okay to use \n only
+    final char cNewLine = '\n';
     final StringBuilder aSB = new StringBuilder ();
-    aSB.append ('\n');
+    aSB.append (cNewLine);
     if (m_sOriginalMessageID != null)
-      aSB.append ("OriginalMessageID: ").append (m_sOriginalMessageID).append ('\n');
+      aSB.append ("OriginalMessageID: ").append (m_sOriginalMessageID).append (cNewLine);
     if (getMDNMessageID () != null)
-      aSB.append ("MDN MessageID: ").append (getMDNMessageID ()).append ('\n');
+      aSB.append ("MDN MessageID: ").append (getMDNMessageID ()).append (cNewLine);
     if (getMDNDisposition () != null)
-      aSB.append ("MDN Disposition: ").append (getMDNDisposition ()).append ('\n');
+      aSB.append ("MDN Disposition: ").append (getMDNDisposition ()).append (cNewLine);
     if (hasException ())
-      aSB.append ("Error message: ").append (m_aThrowable.getMessage ()).append ('\n');
+      aSB.append ("Error message: ").append (m_aThrowable.getMessage ()).append (cNewLine);
     if (getMDNText () != null)
-      aSB.append ("MDN Text: ").append (getMDNText ()).append ('\n');
+      aSB.append ("MDN Text: ").append (getMDNText ()).append (cNewLine);
     if (hasExecutionDuration ())
-      aSB.append ("Sending duration: ").append (m_aExecutionDuration.toString ()).append ('\n');
+      aSB.append ("Sending duration: ").append (m_aExecutionDuration.toString ()).append (cNewLine);
     return aSB.toString ();
   }
 

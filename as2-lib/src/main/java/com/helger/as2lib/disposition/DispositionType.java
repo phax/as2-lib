@@ -135,12 +135,12 @@ public class DispositionType implements Serializable
   public void validate () throws DispositionException
   {
     if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
-      throw new DispositionException (this, null);
+      throw new DispositionException (this);
 
     if (m_sStatusModifier != null)
       if (m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_ERROR) ||
           m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_WARNING))
-        throw new DispositionException (this, null);
+        throw new DispositionException (this);
   }
 
   @Nonnull
@@ -160,11 +160,11 @@ public class DispositionType implements Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("action", m_sAction)
+    return new ToStringGenerator (this).append ("Action", m_sAction)
                                        .append ("MDNAction", m_sMDNAction)
-                                       .append ("status", m_sStatus)
-                                       .append ("statusDescription", m_sStatusDescription)
-                                       .append ("statusModified", m_sStatusModifier)
+                                       .append ("Status", m_sStatus)
+                                       .append ("StatusDescription", m_sStatusDescription)
+                                       .append ("StatusModified", m_sStatusModifier)
                                        .getToString ();
   }
 

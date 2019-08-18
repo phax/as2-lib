@@ -334,14 +334,16 @@ public final class BCCryptoHelper implements ICryptoHelper
       ret.setNewLineBytes (EOF_BYTES);
       return ret;
     }
+
     if (sEncoding.equalsIgnoreCase ("quoted-printable"))
       return new QPEncoderStream (aOS);
+
     if (sEncoding.equalsIgnoreCase ("binary") ||
         sEncoding.equalsIgnoreCase ("7bit") ||
         sEncoding.equalsIgnoreCase ("8bit"))
       return aOS;
 
-    throw new MessagingException ("Unknown encoding: " + sEncoding);
+    throw new MessagingException ("Unknown encoding '" + sEncoding + "'");
   }
 
   @Nonnull

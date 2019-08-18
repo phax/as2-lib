@@ -48,9 +48,9 @@ public class DispositionException extends OpenAS2Exception
   private final DispositionType m_aDisposition;
   private String m_sText;
 
-  public DispositionException (@Nonnull final DispositionType aDisposition, @Nullable final String sText)
+  public DispositionException (@Nonnull final DispositionType aDisposition)
   {
-    this (aDisposition, sText, null);
+    this (aDisposition, null, null);
   }
 
   public DispositionException (@Nonnull final DispositionType aDisposition,
@@ -63,19 +63,21 @@ public class DispositionException extends OpenAS2Exception
   }
 
   @Nonnull
-  public DispositionType getDisposition ()
+  public final DispositionType getDisposition ()
   {
     return m_aDisposition;
   }
 
   @Nullable
-  public String getText ()
+  public final String getText ()
   {
     return m_sText;
   }
 
-  public void setText (@Nullable final String sText)
+  @Nonnull
+  public final DispositionException setText (@Nullable final String sText)
   {
     m_sText = sText;
+    return this;
   }
 }

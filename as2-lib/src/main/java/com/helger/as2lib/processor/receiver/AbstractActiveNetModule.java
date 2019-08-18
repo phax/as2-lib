@@ -201,8 +201,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
         // Default false for backwards compatibility reason
         final boolean bStoreBody = attrs ().getAsBoolean (ATTR_ERROR_STORE_BODY, false);
 
-        final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile);
-        try
+        try (final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile))
         {
           final String sMsgText = aMsg.getAsString ();
           aFOS.write (sMsgText.getBytes ());
@@ -211,15 +210,9 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
           if (bStoreBody)
             StreamHelper.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
         }
-        finally
-        {
-          StreamHelper.close (aFOS);
-        }
 
         // make sure an error of this event is logged
-        final InvalidMessageException im = new InvalidMessageException ("Stored invalid message to " +
-                                                                        aMsgErrorFile.getAbsolutePath ());
-        im.terminate ();
+        new InvalidMessageException ("Stored invalid message to " + aMsgErrorFile.getAbsolutePath ()).terminate ();
       }
       else
       {

@@ -42,6 +42,7 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.lang.StackTraceHelper;
 
@@ -60,7 +61,13 @@ public class ProcessorException extends OpenAS2Exception
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
-      aSB.append ('\n').append (aCause.getMessage ()).append ('\n').append (StackTraceHelper.getStackAsString (aCause));
+    {
+      // Issue 90: all newlines should be CRLF
+      aSB.append (CHttp.EOL)
+         .append (aCause.getMessage ())
+         .append (CHttp.EOL)
+         .append (StackTraceHelper.getStackAsString (aCause, true, CHttp.EOL));
+    }
     return aSB.toString ();
   }
 

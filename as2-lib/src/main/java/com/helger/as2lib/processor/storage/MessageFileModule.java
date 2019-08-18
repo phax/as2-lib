@@ -55,7 +55,7 @@ import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.commons.http.CHttp;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.stream.StringInputStream;
 
 /**
  * Store message content and optionally message headers and attributes to a file
@@ -81,8 +81,10 @@ public class MessageFileModule extends AbstractStorageModule
     try
     {
       final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), sAction);
-      final InputStream aIS = aMsg.getData ().getInputStream ();
-      store (aMsgFile, aIS);
+      try (final InputStream aIS = aMsg.getData ().getInputStream ())
+      {
+        store (aMsgFile, aIS);
+      }
       aMsg.attrs ().put (MessageParameters.ATTR_STORED_FILE_NAME, aMsgFile.getAbsolutePath ());
       LOGGER.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
     }
@@ -100,8 +102,10 @@ public class MessageFileModule extends AbstractStorageModule
       try
       {
         final File aHeaderFile = getFile (aMsg, sHeaderFilename, sAction);
-        final InputStream aIS = getHeaderStream (aMsg, getCharset ());
-        store (aHeaderFile, aIS);
+        try (final InputStream aIS = getHeaderStream (aMsg, getCharset ()))
+        {
+          store (aHeaderFile, aIS);
+        }
         LOGGER.info ("stored headers to " + aHeaderFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
       catch (final IOException ex)
@@ -135,11 +139,11 @@ public class MessageFileModule extends AbstractStorageModule
 
     // write attributes to the string buffer
     aSB.append ("Attributes:").append (CHttp.EOL);
-    for (final Map.Entry <String, String> attrEntry : aMsg.attrs ().entrySet ())
+    for (final Map.Entry <String, String> aEntry : aMsg.attrs ().entrySet ())
     {
-      aSB.append (attrEntry.getKey ()).append (": ").append (attrEntry.getValue ()).append (CHttp.EOL);
+      aSB.append (aEntry.getKey ()).append (": ").append (aEntry.getValue ()).append (CHttp.EOL);
     }
 
-    return new NonBlockingByteArrayInputStream (aSB.toString ().getBytes (aCharset));
+    return new StringInputStream (aSB.toString (), aCharset);
   }
 }

@@ -126,17 +126,19 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   @Nonempty
   public String getAsString ()
   {
+    // For debug logging it's okay to use '\n' only
+    final char cNewLine = '\n';
+
     final StringBuilder aSB = new StringBuilder ();
     aSB.append ("Message From:").append (partnership ().getAllSenderIDs ());
-    aSB.append ("\nTo:").append (partnership ().getAllReceiverIDs ());
+    aSB.append (cNewLine).append ("To:").append (partnership ().getAllReceiverIDs ());
 
-    aSB.append ("\nHeaders:").append (headers ().toString ());
-    aSB.append ("\nAttributes:").append (attrs ().toString ());
+    aSB.append (cNewLine).append ("Headers:").append (headers ().toString ());
+    aSB.append (cNewLine).append ("Attributes:").append (attrs ().toString ());
 
     final IMessageMDN aMDN = getMDN ();
     if (aMDN != null)
-      aSB.append ("\nMDN:").append (aMDN.getAsString ());
-
+      aSB.append (cNewLine).append ("MDN:").append (aMDN.getAsString ());
     return aSB.toString ();
   }
 

@@ -690,7 +690,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       }
 
       final MimeBodyPart aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()),
-                                                   aMDNStream.toByteArray ());
+                                                   aMDNStream.getBufferOrCopy ());
       aMsg.getMDN ().setData (aPart);
 
       // get the MDN partnership info
