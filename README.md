@@ -27,8 +27,10 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 # News and noteworthy
 
 * v4.4.2 - work in progress
+    * Updated to ph-commons 9.3.6
     * Changed Automatic-Module-Name of "as2-lib" to `com.helger.as2lib`
     * Changed Automatic-Module-Name of "as2-servlet" to `com.helger.as2servlet`
+    * The HTTP headers are now automatically quoted correctly according to RFC 2616 chapter 2.2 (see [#92](https://github.com/phax/as2-lib/issues/92))
 * v4.4.1 - 2019-06-28
     * Extended `ICryptoHelper.verify` API to have a chance to retrieve the effective certificate
     * Added a new message attribute that contains the certificate used for verification

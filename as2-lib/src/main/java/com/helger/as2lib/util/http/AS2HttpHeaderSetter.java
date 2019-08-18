@@ -68,7 +68,9 @@ public final class AS2HttpHeaderSetter
 
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue);
+    // Ensure automatic quoting is used. The underlying HttpClient does not do
+    // this automatically
+    final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue, true);
     m_aConn.setHttpHeader (sName, sUnifiedValue);
 
     if (m_aOutgoingDumper != null)
