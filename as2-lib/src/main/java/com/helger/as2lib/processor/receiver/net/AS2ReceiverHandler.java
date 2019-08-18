@@ -101,11 +101,20 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
   private final AS2ReceiverModule m_aReceiverModule;
 
+  /**
+   * @param aModule
+   *        The receiver module to be used. May not be <code>null</code>.
+   *        Required for the session and the error handling.
+   */
   public AS2ReceiverHandler (@Nonnull final AS2ReceiverModule aModule)
   {
     m_aReceiverModule = ValueEnforcer.notNull (aModule, "Module");
   }
 
+  /**
+   * @return The receiver module provided in the constructor. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   protected final AS2ReceiverModule getReceiverModule ()
   {
@@ -416,8 +425,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                      @Nonnull final AS2Message aMsg,
                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
-    // TODO store HTTP request, headers, and data to file in Received folder
-    // -> use message-id for filename?
     try
     {
       final IAS2Session aSession = m_aReceiverModule.getSession ();

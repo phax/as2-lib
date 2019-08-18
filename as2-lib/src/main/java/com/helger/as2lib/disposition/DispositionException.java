@@ -39,7 +39,8 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 
 /**
  * Exception thrown in case a message disposition contains an error or a
- * warning.
+ * warning. The content of {@link #getText()} is send back as the MDN in case of
+ * a receiving error.
  *
  * @author Philip Helger
  */
