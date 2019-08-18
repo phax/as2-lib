@@ -38,13 +38,13 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 * v4.4.0 - 2019-06-13
     * `AS2Client` correctly passes the keystore type to `CertificateFactory`
     * `AS2Client` can now handle read-only keystore that is provided as byte array
-    * Remove support for the old HttpUrlConnection, therefore making "large file support" the default (see [#87](https://github.com/phax/as2-lib/pull/87))
+    * Remove support for the old HttpUrlConnection, therefore making "large file support" the default (see [#87](https://github.com/phax/as2-lib/issues/87))
     * Removed all the "large file support" flags (incompatible)
-    * Improved MIC algorithm name matching (see [#75](https://github.com/phax/as2-lib/pull/75))
+    * Improved MIC algorithm name matching (see [#75](https://github.com/phax/as2-lib/issues/75))
     * Added support for deprecated signing algorithms `rsa-md5` and `rsa-sha1`
     * Updated to new Mendelson test certificates (key3 and key4 - see http://mendelson-e-c.com/node/3211)
-    * The `Content-Transfer-Encoding` value `base64` now works correctly (see [#71](https://github.com/phax/as2-lib/pull/71))
-    * Added a custom `IMICMatchingHandler` interface to `AS2SenderModule` and `AS2MDNReceiverHandler` (see [#59](https://github.com/phax/as2-lib/pull/59))
+    * The `Content-Transfer-Encoding` value `base64` now works correctly (see [#71](https://github.com/phax/as2-lib/issues/71))
+    * Added a custom `IMICMatchingHandler` interface to `AS2SenderModule` and `AS2MDNReceiverHandler` (see [#59](https://github.com/phax/as2-lib/issues/59))
     * Removed deprecated class `PKCS12CertificateFactory` and some other deprecated methods 
     * Updated to ph-commons 9.3.4
     * Reworked the outgoing dumping API, so that it can be set per "AbstractHttpSenderModule" and must not be globally set. This is a backwards incompatible change. The existing system property is still accepted.
