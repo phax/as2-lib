@@ -81,6 +81,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
 
   private final BlockingQueue <HandleObject> m_aQueue = new LinkedBlockingQueue <> ();
   private final CallbackList <IExceptionCallback <Throwable>> m_aExceptionCallbacks = new CallbackList <> ();
+  private final Thread m_aProcessorThread;
 
   public AsyncMessageProcessor ()
   {
@@ -117,9 +118,15 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
         }
       }
     };
-    final Thread aProcessorThread = new Thread (aRunnable, "AS2-AsyncMessageProcessor");
-    aProcessorThread.setDaemon (true);
-    aProcessorThread.start ();
+    m_aProcessorThread = new Thread (aRunnable, "AS2-AsyncMessageProcessor");
+    m_aProcessorThread.setDaemon (true);
+    m_aProcessorThread.start ();
+  }
+
+  @Nonnull
+  protected final Thread getProcessortThread ()
+  {
+    return m_aProcessorThread;
   }
 
   @Nonnull
