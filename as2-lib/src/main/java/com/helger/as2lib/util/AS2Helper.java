@@ -64,6 +64,7 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
+import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.PartnershipNotFoundException;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
@@ -244,20 +245,22 @@ public final class AS2Helper
     ValueEnforcer.notNull (aDisposition, "Disposition");
     ValueEnforcer.notNull (sText, "Text");
 
+    final Partnership aPartnership = aMsg.partnership ();
+
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
     aMDN.headers ().setHeader (CHttpHeader.AS2_VERSION, CAS2Header.DEFAULT_AS2_VERSION);
     aMDN.headers ().setHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
     aMDN.headers ().setHeader (CHttpHeader.SERVER, CAS2Info.NAME_VERSION);
     aMDN.headers ().setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
-    aMDN.headers ().setHeader (CHttpHeader.AS2_FROM, aMsg.partnership ().getReceiverAS2ID ());
-    aMDN.headers ().setHeader (CHttpHeader.AS2_TO, aMsg.partnership ().getSenderAS2ID ());
+    aMDN.headers ().setHeader (CHttpHeader.AS2_FROM, aPartnership.getReceiverAS2ID ());
+    aMDN.headers ().setHeader (CHttpHeader.AS2_TO, aPartnership.getSenderAS2ID ());
 
     // get the MDN partnership info
     aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
     aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
     // Set the appropriate key store aliases
-    aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
-    aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
+    aMDN.partnership ().setSenderX509Alias (aPartnership.getReceiverX509Alias ());
+    aMDN.partnership ().setReceiverX509Alias (aPartnership.getSenderX509Alias ());
     // Update the partnership
     try
     {
@@ -269,7 +272,7 @@ public final class AS2Helper
       // was the reason for sending the MDN :)
     }
 
-    aMDN.headers ().setHeader (CHttpHeader.FROM, aMsg.partnership ().getReceiverEmail ());
+    aMDN.headers ().setHeader (CHttpHeader.FROM, aPartnership.getReceiverEmail ());
     final String sSubject = aMDN.partnership ().getMDNSubject ();
     if (sSubject != null)
     {
@@ -281,8 +284,7 @@ public final class AS2Helper
     }
 
     // Content-Transfer-Encoding for outgoing MDNs
-    final String sCTE = aMsg.partnership ()
-                            .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    final String sCTE = aPartnership.getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
     aMDN.headers ().addHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
 
     aMDN.setText (new MessageParameters (aMsg).format (sText));
@@ -294,24 +296,36 @@ public final class AS2Helper
                                                  ":" +
                                                  aMsg.attrs ().getAsString (CNetAttribute.MA_DESTINATION_PORT));
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, "rfc822; " + aMsg.getHeader (CHttpHeader.AS2_TO));
-    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, "rfc822; " + aMsg.partnership ().getReceiverAS2ID ());
+    aMDN.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, "rfc822; " + aPartnership.getReceiverAS2ID ());
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CHttpHeader.MESSAGE_ID));
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
     final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
+
+    ECryptoAlgorithmSign eSigningAlgorithm = aDispositionOptions.getFirstMICAlg ();
+    if (eSigningAlgorithm == null)
+    {
+      // Try from partnership (#93)
+      final String sSigningAlgorithm = aPartnership.getSigningAlgorithm ();
+      eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSigningAlgorithm);
+      if (eSigningAlgorithm == null)
+      {
+        if (LOGGER.isWarnEnabled ())
+          LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
+      }
+    }
+
     MIC aMIC = null;
-    if (aDispositionOptions.getMICAlgCount () > 0)
+    if (eSigningAlgorithm != null)
     {
       // If the source message was signed or encrypted, include the headers -
       // see message sending for details
-      final boolean bIncludeHeadersInMIC = aMsg.partnership ().getSigningAlgorithm () != null ||
-                                           aMsg.partnership ().getEncryptAlgorithm () != null ||
-                                           aMsg.partnership ().getCompressionType () != null;
+      final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null ||
+                                           aPartnership.getEncryptAlgorithm () != null ||
+                                           aPartnership.getCompressionType () != null;
 
-      aMIC = getCryptoHelper ().calculateMIC (aMsg.getData (),
-                                              aDispositionOptions.getFirstMICAlg (),
-                                              bIncludeHeadersInMIC);
+      aMIC = getCryptoHelper ().calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
     }
     if (aMIC != null)
       aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
@@ -326,8 +340,7 @@ public final class AS2Helper
         bSignMDN = true;
 
         // Include certificate in signed content?
-        final ETriState eIncludeCertificateInSignedContent = aMsg.partnership ()
-                                                                 .getIncludeCertificateInSignedContent ();
+        final ETriState eIncludeCertificateInSignedContent = aPartnership.getIncludeCertificateInSignedContent ();
         if (eIncludeCertificateInSignedContent.isDefined ())
         {
           // Use per partnership
@@ -341,7 +354,7 @@ public final class AS2Helper
       }
     }
 
-    final boolean bUseOldRFC3851MicAlgs = aMsg.partnership ().isRFC3851MICAlgs ();
+    final boolean bUseOldRFC3851MicAlgs = aPartnership.isRFC3851MICAlgs ();
 
     createMDNData (aSession,
                    aMDN,
