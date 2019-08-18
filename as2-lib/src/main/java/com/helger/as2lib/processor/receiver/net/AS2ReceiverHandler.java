@@ -675,7 +675,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       else
       {
-        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText ());
+        LOGGER.info ("received message from " +
+                     sClientInfo +
+                     aMsg.getLoggingText () +
+                     " in " +
+                     aSW.getMillis () +
+                     " ms");
 
       }
     handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);
