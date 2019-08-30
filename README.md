@@ -26,7 +26,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.4.2 - work in progress
+* v4.4.2 - 2019-08-30
     * Updated to ph-commons 9.3.6
     * Changed Automatic-Module-Name of "as2-lib" to `com.helger.as2lib`
     * Changed Automatic-Module-Name of "as2-servlet" to `com.helger.as2servlet`
@@ -171,33 +171,37 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 # Maven usage
 
 Add the following to your `pom.xml` to use this artifact:
+
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.4.1</version>
+  <version>4.4.2</version>
 </dependency>
 ```
 
 For the MongoDB partnership factory, add the following to your `pom.xml`:
+
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.4.1</version>
+  <version>4.4.2</version>
 </dependency>
 ```
 
 For the receive servlet, add the following to your `pom.xml`:
+
 ```xml
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.4.1</version>
+  <version>4.4.2</version>
 </dependency>
 ```
 
 # Building
+
 This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
 
 All projects require Java 1.8 for building and running.
@@ -205,7 +209,9 @@ All projects require Java 1.8 for building and running.
 The `as2-partnership-mongodb` sub-project downloads an embedded MongoDB from the official web site and extracts it for testing. If this makes problems specify the `-DskipTests=true` commandline parameter when invoking Maven.
 
 ## as2-lib
+
 ### Package structure
+
 This library manages the package `com.helger.as2lib` and all sub-packages:
 
   * com.helger.as2lib - contains the global AS2 settings
