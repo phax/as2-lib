@@ -96,7 +96,8 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
-      final AS2HttpHeaderSetter aHeaderWrapper = new AS2HttpHeaderSetter (aConn, aOutgoingDumper);
+      final boolean bQuoteHeaderValues = attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
+      final AS2HttpHeaderSetter aHeaderWrapper = new AS2HttpHeaderSetter (aConn, aOutgoingDumper, bQuoteHeaderValues);
       aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
       // Copy all the header from mdn to the RequestProperties of conn

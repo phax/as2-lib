@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
+import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.http.EHttpMethod;
@@ -117,15 +118,19 @@ public class AS2HttpClient
   }
 
   /**
-   * Set an HTTP header (replacing existing value)
+   * Set an HTTP header (replacing existing value). No modification or check on
+   * name or value happens.
    *
    * @param sName
-   *        Header name
+   *        Header name. May not be <code>null</code>.
    * @param sValue
-   *        Header value
+   *        Header value. May not be <code>null</code>.
    */
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
+    ValueEnforcer.notNull (sName, "Name");
+    ValueEnforcer.notNull (sValue, "Value");
+
     m_aRequestBuilder.setHeader (sName, sValue);
   }
 

@@ -30,7 +30,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Updated to ph-commons 9.3.6
     * Changed Automatic-Module-Name of "as2-lib" to `com.helger.as2lib`
     * Changed Automatic-Module-Name of "as2-servlet" to `com.helger.as2servlet`
-    * The HTTP headers are now automatically quoted correctly according to RFC 2616 chapter 2.2 (see [#92](https://github.com/phax/as2-lib/issues/92))
+    * The HTTP headers can now be automatically quoted correctly according to RFC 2616 chapter 2.2 (see [#92](https://github.com/phax/as2-lib/issues/92)) - must be explicitly enabled.
     * Internal API of `OpenAS2Exception` was changed in an incompatible way
     * Trying to ensure correct line endings in MDNs (see [#90](https://github.com/phax/as2-lib/issues/90))
     * By default exception stack traces are not send back in the MDN anymore

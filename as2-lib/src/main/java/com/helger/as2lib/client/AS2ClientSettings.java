@@ -93,6 +93,8 @@ public class AS2ClientSettings implements Serializable
   public static final int DEFAULT_CONNECT_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_CONNECT_TIMEOUT_MS;
   /** Default read timeout: 60 seconds */
   public static final int DEFAULT_READ_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_READ_TIMEOUT_MS;
+  /** Default quote header values: false */
+  public static final boolean DEFAULT_QUOTE_HEADER_VALUES = AbstractHttpSenderModule.DEFAULT_QUOTE_HEADER_VALUES;
 
   private IKeyStoreType m_aKeyStoreType = EKeyStoreType.PKCS12;
   private File m_aKeyStoreFile;
@@ -122,12 +124,58 @@ public class AS2ClientSettings implements Serializable
   private int m_nRetryCount = DEFAULT_RETRY_COUNT;
   private int m_nConnectTimeoutMS = DEFAULT_CONNECT_TIMEOUT_MS;
   private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
+  private boolean m_bQuoteHeaderValues = DEFAULT_QUOTE_HEADER_VALUES;
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = null;
 
   public AS2ClientSettings ()
   {}
+
+  /**
+   * @return The key store type. May not be <code>null</code>.
+   * @see #setKeyStore(IKeyStoreType, File, String)
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   */
+  @Nonnull
+  public final IKeyStoreType getKeyStoreType ()
+  {
+    return m_aKeyStoreType;
+  }
+
+  /**
+   * @return The key store file. May be <code>null</code> if not yet set. Either
+   *         File or byte[] may be set. Never both.
+   * @see #setKeyStore(IKeyStoreType, File, String)
+   */
+  @Nullable
+  public final File getKeyStoreFile ()
+  {
+    return m_aKeyStoreFile;
+  }
+
+  /**
+   * @return The key store bytes. May be <code>null</code> if not yet set.
+   *         Either File or byte[] may be set. Never both.
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   * @since 4.3.1
+   */
+  @Nullable
+  public final byte [] getKeyStoreBytes ()
+  {
+    return m_aKeyStoreBytes;
+  }
+
+  /**
+   * @return The key store password. May be <code>null</code> if not yet set.
+   * @see #setKeyStore(IKeyStoreType, File, String)
+   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   */
+  @Nullable
+  public final String getKeyStorePassword ()
+  {
+    return m_sKeyStorePassword;
+  }
 
   /**
    * Set the details of the certificate store of the client.
@@ -142,9 +190,9 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
-                                        @Nonnull final File aFile,
-                                        @Nonnull final String sPassword)
+  public final AS2ClientSettings setKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                                              @Nonnull final File aFile,
+                                              @Nonnull final String sPassword)
   {
     ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
     ValueEnforcer.notNull (aFile, "File");
@@ -171,9 +219,9 @@ public class AS2ClientSettings implements Serializable
    * @since 4.3.1
    */
   @Nonnull
-  public AS2ClientSettings setKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
-                                        @Nonnull final byte [] aBytes,
-                                        @Nonnull final String sPassword)
+  public final AS2ClientSettings setKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+                                              @Nonnull final byte [] aBytes,
+                                              @Nonnull final String sPassword)
   {
     ValueEnforcer.notNull (aKeyStoreType, "KeyStoreType");
     ValueEnforcer.notNull (aBytes, "Bytes");
@@ -186,48 +234,12 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The key store type. May not be <code>null</code>.
-   * @see #setKeyStore(IKeyStoreType, File, String)
-   * @see #setKeyStore(IKeyStoreType, byte[], String)
+   * @return <code>true</code> if key store changes should be written back to
+   *         the file, <code>false</code> if not.
    */
-  @Nonnull
-  public IKeyStoreType getKeyStoreType ()
+  public final boolean isSaveKeyStoreChangesToFile ()
   {
-    return m_aKeyStoreType;
-  }
-
-  /**
-   * @return The key store file. May be <code>null</code> if not yet set. Either
-   *         File or byte[] may be set. Never both.
-   * @see #setKeyStore(IKeyStoreType, File, String)
-   */
-  @Nullable
-  public File getKeyStoreFile ()
-  {
-    return m_aKeyStoreFile;
-  }
-
-  /**
-   * @return The key store bytes. May be <code>null</code> if not yet set.
-   *         Either File or byte[] may be set. Never both.
-   * @see #setKeyStore(IKeyStoreType, byte[], String)
-   * @since 4.3.1
-   */
-  @Nullable
-  public byte [] getKeyStoreBytes ()
-  {
-    return m_aKeyStoreBytes;
-  }
-
-  /**
-   * @return The key store password. May be <code>null</code> if not yet set.
-   * @see #setKeyStore(IKeyStoreType, File, String)
-   * @see #setKeyStore(IKeyStoreType, byte[], String)
-   */
-  @Nullable
-  public String getKeyStorePassword ()
-  {
-    return m_sKeyStorePassword;
+    return m_bSaveKeyStoreChangesToFile;
   }
 
   /**
@@ -240,19 +252,42 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setSaveKeyStoreChangesToFile (final boolean bSaveKeyStoreChangesToFile)
+  public final AS2ClientSettings setSaveKeyStoreChangesToFile (final boolean bSaveKeyStoreChangesToFile)
   {
     m_bSaveKeyStoreChangesToFile = bSaveKeyStoreChangesToFile;
     return this;
   }
 
   /**
-   * @return <code>true</code> if key store changes should be written back to
-   *         the file, <code>false</code> if not.
+   * @return The sender AS2 ID. May be <code>null</code> if not set.
+   * @see #setSenderData(String, String, String)
    */
-  public boolean isSaveKeyStoreChangesToFile ()
+  @Nullable
+  public final String getSenderAS2ID ()
   {
-    return m_bSaveKeyStoreChangesToFile;
+    return m_sSenderAS2ID;
+  }
+
+  /**
+   * @return The sender's email address. May be <code>null</code> if not set.
+   * @see #setSenderData(String, String, String)
+   */
+  @Nullable
+  public final String getSenderEmailAddress ()
+  {
+    return m_sSenderEmailAddress;
+  }
+
+  /**
+   * @return The senders key alias in the keystore. May be <code>null</code> if
+   *         not set.
+   * @see #setSenderData(String, String, String)
+   * @see #setKeyStore(IKeyStoreType, File, String)
+   */
+  @Nullable
+  public final String getSenderKeyAlias ()
+  {
+    return m_sSenderKeyAlias;
   }
 
   /**
@@ -268,9 +303,9 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setSenderData (@Nonnull final String sAS2ID,
-                                          @Nonnull final String sEmailAddress,
-                                          @Nonnull final String sKeyAlias)
+  public final AS2ClientSettings setSenderData (@Nonnull final String sAS2ID,
+                                                @Nonnull final String sEmailAddress,
+                                                @Nonnull final String sKeyAlias)
   {
     m_sSenderAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
     m_sSenderEmailAddress = ValueEnforcer.notNull (sEmailAddress, "EmailAddress");
@@ -279,35 +314,36 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The sender AS2 ID. May be <code>null</code> if not set.
-   * @see #setSenderData(String, String, String)
+   * @return The receiver AS2 ID. May be <code>null</code> if not set.
+   * @see #setReceiverData(String, String, String)
    */
   @Nullable
-  public String getSenderAS2ID ()
+  public final String getReceiverAS2ID ()
   {
-    return m_sSenderAS2ID;
+    return m_sReceiverAS2ID;
   }
 
   /**
-   * @return The sender's email address. May be <code>null</code> if not set.
-   * @see #setSenderData(String, String, String)
-   */
-  @Nullable
-  public String getSenderEmailAddress ()
-  {
-    return m_sSenderEmailAddress;
-  }
-
-  /**
-   * @return The senders key alias in the keystore. May be <code>null</code> if
-   *         not set.
-   * @see #setSenderData(String, String, String)
+   * @return The receivers key alias in the keystore. May be <code>null</code>
+   *         if not set.
+   * @see #setReceiverData(String, String, String)
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
-  public String getSenderKeyAlias ()
+  public final String getReceiverKeyAlias ()
   {
-    return m_sSenderKeyAlias;
+    return m_sReceiverKeyAlias;
+  }
+
+  /**
+   * @return The destination URL to send the request to. May be
+   *         <code>null</code> if not set.
+   * @see #setReceiverData(String, String, String)
+   */
+  @Nullable
+  public final String getDestinationAS2URL ()
+  {
+    return m_sDestinationAS2URL;
   }
 
   /**
@@ -324,9 +360,9 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setReceiverData (@Nonnull final String sAS2ID,
-                                            @Nonnull final String sKeyAlias,
-                                            @Nonnull final String sAS2URL)
+  public final AS2ClientSettings setReceiverData (@Nonnull final String sAS2ID,
+                                                  @Nonnull final String sKeyAlias,
+                                                  @Nonnull final String sAS2URL)
   {
     m_sReceiverAS2ID = ValueEnforcer.notNull (sAS2ID, "AS2ID");
     m_sReceiverKeyAlias = ValueEnforcer.notNull (sKeyAlias, "KeyAlias");
@@ -335,36 +371,15 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The receiver AS2 ID. May be <code>null</code> if not set.
-   * @see #setReceiverData(String, String, String)
+   * @return The explicit certificate of the recipient. This might be used to
+   *         dynamically add it to the certificate factory for dynamic
+   *         partnership handling (like in PEPPOL). May be <code>null</code>.
+   * @see #setReceiverCertificate(X509Certificate)
    */
   @Nullable
-  public String getReceiverAS2ID ()
+  public final X509Certificate getReceiverCertificate ()
   {
-    return m_sReceiverAS2ID;
-  }
-
-  /**
-   * @return The receivers key alias in the keystore. May be <code>null</code>
-   *         if not set.
-   * @see #setReceiverData(String, String, String)
-   * @see #setKeyStore(IKeyStoreType, File, String)
-   */
-  @Nullable
-  public String getReceiverKeyAlias ()
-  {
-    return m_sReceiverKeyAlias;
-  }
-
-  /**
-   * @return The destination URL to send the request to. May be
-   *         <code>null</code> if not set.
-   * @see #setReceiverData(String, String, String)
-   */
-  @Nullable
-  public String getDestinationAS2URL ()
-  {
-    return m_sDestinationAS2URL;
+    return m_aReceiverCert;
   }
 
   /**
@@ -377,22 +392,54 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setReceiverCertificate (@Nullable final X509Certificate aReceiverCertificate)
+  public final AS2ClientSettings setReceiverCertificate (@Nullable final X509Certificate aReceiverCertificate)
   {
     m_aReceiverCert = aReceiverCertificate;
     return this;
   }
 
   /**
-   * @return The explicit certificate of the recipient. This might be used to
-   *         dynamically add it to the certificate factory for dynamic
-   *         partnership handling (like in PEPPOL). May be <code>null</code>.
-   * @see #setReceiverCertificate(X509Certificate)
+   * @return The algorithm used to encrypt the message. May be <code>null</code>
+   *         if not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
    */
   @Nullable
-  public X509Certificate getReceiverCertificate ()
+  public final ECryptoAlgorithmCrypt getCryptAlgo ()
   {
-    return m_aReceiverCert;
+    return m_eCryptAlgo;
+  }
+
+  /**
+   * @return The ID of the algorithm used to encrypt the message. May be
+   *         <code>null</code> if not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
+  @Nullable
+  public final String getCryptAlgoID ()
+  {
+    return m_eCryptAlgo == null ? null : m_eCryptAlgo.getID ();
+  }
+
+  /**
+   * @return The algorithm used to sign the message. May be <code>null</code> if
+   *         not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
+  @Nullable
+  public final ECryptoAlgorithmSign getSignAlgo ()
+  {
+    return m_eSignAlgo;
+  }
+
+  /**
+   * @return The ID of the algorithm used to sign the message. May be
+   *         <code>null</code> if not set.
+   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   */
+  @Nullable
+  public final String getSignAlgoID ()
+  {
+    return m_eSignAlgo == null ? null : m_eSignAlgo.getID ();
   }
 
   /**
@@ -407,8 +454,8 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining.
    */
   @Nonnull
-  public AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithmCrypt eCryptAlgo,
-                                              @Nullable final ECryptoAlgorithmSign eSignAlgo)
+  public final AS2ClientSettings setEncryptAndSign (@Nullable final ECryptoAlgorithmCrypt eCryptAlgo,
+                                                    @Nullable final ECryptoAlgorithmSign eSignAlgo)
   {
     m_eCryptAlgo = eCryptAlgo;
     m_eSignAlgo = eSignAlgo;
@@ -416,47 +463,27 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The algorithm used to encrypt the message. May be <code>null</code>
-   *         if not set.
-   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   * @return The compression type used to compress the message. May be
+   *         <code>null</code> to indicate no compression.
+   * @see #setCompress(ECompressionType, boolean)
    */
   @Nullable
-  public ECryptoAlgorithmCrypt getCryptAlgo ()
+  public final ECompressionType getCompressionType ()
   {
-    return m_eCryptAlgo;
+    return m_eCompressionType;
   }
 
   /**
-   * @return The ID of the algorithm used to encrypt the message. May be
-   *         <code>null</code> if not set.
-   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
+   * Check if compress before sign or sign before compress is used. This flag is
+   * only evaluated if {@link #getCompressionType()} is not <code>null</code>.
+   *
+   * @return <code>true</code> to compress before signing, <code>false</code> to
+   *         sign before compressing
+   * @see #setCompress(ECompressionType, boolean)
    */
-  @Nullable
-  public String getCryptAlgoID ()
+  public final boolean isCompressBeforeSigning ()
   {
-    return m_eCryptAlgo == null ? null : m_eCryptAlgo.getID ();
-  }
-
-  /**
-   * @return The algorithm used to sign the message. May be <code>null</code> if
-   *         not set.
-   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
-   */
-  @Nullable
-  public ECryptoAlgorithmSign getSignAlgo ()
-  {
-    return m_eSignAlgo;
-  }
-
-  /**
-   * @return The ID of the algorithm used to sign the message. May be
-   *         <code>null</code> if not set.
-   * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
-   */
-  @Nullable
-  public String getSignAlgoID ()
-  {
-    return m_eSignAlgo == null ? null : m_eSignAlgo.getID ();
+    return m_bCompressBeforeSigning;
   }
 
   /**
@@ -473,8 +500,8 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
-                                        final boolean bCompressBeforeSigning)
+  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
+                                              final boolean bCompressBeforeSigning)
   {
     m_eCompressionType = eCompressionType;
     m_bCompressBeforeSigning = bCompressBeforeSigning;
@@ -482,27 +509,14 @@ public class AS2ClientSettings implements Serializable
   }
 
   /**
-   * @return The compression type used to compress the message. May be
-   *         <code>null</code> to indicate no compression.
-   * @see #setCompress(ECompressionType, boolean)
+   * @return The partnership name to be used. May be <code>null</code> if not
+   *         set.
+   * @see #setPartnershipName(String)
    */
   @Nullable
-  public ECompressionType getCompressionType ()
+  public final String getPartnershipName ()
   {
-    return m_eCompressionType;
-  }
-
-  /**
-   * Check if compress before sign or sign before compress is used. This flag is
-   * only evaluated if {@link #getCompressionType()} is not <code>null</code>.
-   *
-   * @return <code>true</code> to compress before signing, <code>false</code> to
-   *         sign before compressing
-   * @see #setCompress(ECompressionType, boolean)
-   */
-  public boolean isCompressBeforeSigning ()
-  {
-    return m_bCompressBeforeSigning;
+    return m_sPartnershipName;
   }
 
   /**
@@ -513,21 +527,20 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setPartnershipName (@Nonnull final String sPartnershipName)
+  public final AS2ClientSettings setPartnershipName (@Nonnull final String sPartnershipName)
   {
     m_sPartnershipName = ValueEnforcer.notNull (sPartnershipName, "PartnershipName");
     return this;
   }
 
   /**
-   * @return The partnership name to be used. May be <code>null</code> if not
-   *         set.
-   * @see #setPartnershipName(String)
+   * @return <code>true</code> if an MDN is requested at all (sync or async),
+   *         <code>false</code> if not.
+   * @since 4.2.0
    */
-  @Nullable
-  public String getPartnershipName ()
+  public final boolean isMDNRequested ()
   {
-    return m_sPartnershipName;
+    return m_bMDNRequested;
   }
 
   /**
@@ -540,20 +553,36 @@ public class AS2ClientSettings implements Serializable
    * @since 4.2.0
    */
   @Nonnull
-  public AS2ClientSettings setMDNRequested (final boolean bMDNRequested)
+  public final AS2ClientSettings setMDNRequested (final boolean bMDNRequested)
   {
     m_bMDNRequested = bMDNRequested;
     return this;
   }
 
   /**
-   * @return <code>true</code> if an MDN is requested at all (sync or async),
-   *         <code>false</code> if not.
-   * @since 4.2.0
+   * Get the current MDN options. Since 3.0.4 the MDN options (corresponding to
+   * the 'Disposition-Notification-Options' header) may be <code>null</code>.
+   *
+   * @return The MDN options (<code>Disposition-Notification-Options</code>
+   *         header) to be used. May be <code>null</code>. The default is
+   *         defined in {@link #DEFAULT_MDN_OPTIONS}.
+   * @see #setMDNOptions(DispositionOptions)
+   * @see #setMDNOptions(String)
    */
-  public boolean isMDNRequested ()
+  @Nullable
+  public final String getMDNOptions ()
   {
-    return m_bMDNRequested;
+    return m_sMDNOptions;
+  }
+
+  /**
+   * @return <code>true</code> if MDN options are specified (the default),
+   *         <code>false</code> if not.
+   * @since 3.0.4
+   */
+  public final boolean hasMDNOptions ()
+  {
+    return m_sMDNOptions != null;
   }
 
   /**
@@ -567,7 +596,7 @@ public class AS2ClientSettings implements Serializable
    * @see #setMDNOptions(DispositionOptions)
    */
   @Nonnull
-  public AS2ClientSettings setMDNOptions (@Nullable final String sMDNOptions)
+  public final AS2ClientSettings setMDNOptions (@Nullable final String sMDNOptions)
   {
     m_sMDNOptions = sMDNOptions;
     return this;
@@ -583,36 +612,33 @@ public class AS2ClientSettings implements Serializable
    * @see #setMDNOptions(String)
    */
   @Nonnull
-  public AS2ClientSettings setMDNOptions (@Nonnull final DispositionOptions aDispositionOptions)
+  public final AS2ClientSettings setMDNOptions (@Nonnull final DispositionOptions aDispositionOptions)
   {
     ValueEnforcer.notNull (aDispositionOptions, "DispositionOptions");
     return setMDNOptions (aDispositionOptions.getAsString ());
   }
 
   /**
-   * Get the current MDN options. Since 3.0.4 the MDN options (corresponding to
-   * the 'Disposition-Notification-Options' header) may be <code>null</code>.
-   *
-   * @return The MDN options (<code>Disposition-Notification-Options</code>
-   *         header) to be used. May be <code>null</code>. The default is
-   *         defined in {@link #DEFAULT_MDN_OPTIONS}.
-   * @see #setMDNOptions(DispositionOptions)
-   * @see #setMDNOptions(String)
+   * @return The URL for the asynchronous MDN. If this is <code>null</code> than
+   *         a synchronous MDN is requested. By default a synchronous MDN is
+   *         requested.
+   * @since 3.0.4
    */
   @Nullable
-  public String getMDNOptions ()
+  public final String getAsyncMDNUrl ()
   {
-    return m_sMDNOptions;
+    return m_sAsyncMDNUrl;
   }
 
   /**
-   * @return <code>true</code> if MDN options are specified (the default),
-   *         <code>false</code> if not.
+   * @return <code>true</code> if an asynchronous MDN is requested,
+   *         <code>false</code> if not (default).
    * @since 3.0.4
+   * @see #getAsyncMDNUrl()
    */
-  public boolean hasMDNOptions ()
+  public final boolean isAsyncMDNRequested ()
   {
-    return m_sMDNOptions != null;
+    return StringHelper.hasText (m_sAsyncMDNUrl);
   }
 
   /**
@@ -625,33 +651,22 @@ public class AS2ClientSettings implements Serializable
    * @since 3.0.4
    */
   @Nonnull
-  public AS2ClientSettings setAsyncMDNUrl (@Nullable final String sAsyncMDNUrl)
+  public final AS2ClientSettings setAsyncMDNUrl (@Nullable final String sAsyncMDNUrl)
   {
     m_sAsyncMDNUrl = sAsyncMDNUrl;
     return this;
   }
 
   /**
-   * @return The URL for the asynchronous MDN. If this is <code>null</code> than
-   *         a synchronous MDN is requested. By default a synchronous MDN is
-   *         requested.
-   * @since 3.0.4
+   * @return The message ID format to use. Never <code>null</code>. It defaults
+   *         to {@value #DEFAULT_MESSAGE_ID_FORMAT}.
+   * @see #DEFAULT_MESSAGE_ID_FORMAT
+   * @see #setMessageIDFormat(String)
    */
-  @Nullable
-  public String getAsyncMDNUrl ()
+  @Nonnull
+  public final String getMessageIDFormat ()
   {
-    return m_sAsyncMDNUrl;
-  }
-
-  /**
-   * @return <code>true</code> if an asynchronous MDN is requested,
-   *         <code>false</code> if not (default).
-   * @since 3.0.4
-   * @see #getAsyncMDNUrl()
-   */
-  public boolean isAsyncMDNRequested ()
-  {
-    return StringHelper.hasText (m_sAsyncMDNUrl);
+    return m_sMessageIDFormat;
   }
 
   /**
@@ -663,22 +678,21 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public AS2ClientSettings setMessageIDFormat (@Nonnull final String sMessageIDFormat)
+  public final AS2ClientSettings setMessageIDFormat (@Nonnull final String sMessageIDFormat)
   {
     m_sMessageIDFormat = ValueEnforcer.notNull (sMessageIDFormat, "MessageIDFormat");
     return this;
   }
 
   /**
-   * @return The message ID format to use. Never <code>null</code>. It defaults
-   *         to {@value #DEFAULT_MESSAGE_ID_FORMAT}.
-   * @see #DEFAULT_MESSAGE_ID_FORMAT
-   * @see #setMessageIDFormat(String)
+   * @return The number of retries to be performed. May be &le; 0 meaning that
+   *         no retry will happen. The default value is
+   *         {@link #DEFAULT_RETRY_COUNT}.
+   * @see #setRetryCount(int)
    */
-  @Nonnull
-  public String getMessageIDFormat ()
+  public final int getRetryCount ()
   {
-    return m_sMessageIDFormat;
+    return m_nRetryCount;
   }
 
   /**
@@ -690,21 +704,20 @@ public class AS2ClientSettings implements Serializable
    * @see #getRetryCount()
    */
   @Nonnull
-  public AS2ClientSettings setRetryCount (final int nRetryCount)
+  public final AS2ClientSettings setRetryCount (final int nRetryCount)
   {
     m_nRetryCount = nRetryCount;
     return this;
   }
 
   /**
-   * @return The number of retries to be performed. May be &le; 0 meaning that
-   *         no retry will happen. The default value is
-   *         {@link #DEFAULT_RETRY_COUNT}.
-   * @see #setRetryCount(int)
+   * @return The connection timeout in milliseconds. The default value is
+   *         {@link #DEFAULT_CONNECT_TIMEOUT_MS}.
+   * @since 3.0.2
    */
-  public int getRetryCount ()
+  public final int getConnectTimeoutMS ()
   {
-    return m_nRetryCount;
+    return m_nConnectTimeoutMS;
   }
 
   /**
@@ -717,20 +730,20 @@ public class AS2ClientSettings implements Serializable
    * @since 3.0.2
    */
   @Nonnull
-  public AS2ClientSettings setConnectTimeoutMS (final int nConnectTimeoutMS)
+  public final AS2ClientSettings setConnectTimeoutMS (final int nConnectTimeoutMS)
   {
     m_nConnectTimeoutMS = nConnectTimeoutMS;
     return this;
   }
 
   /**
-   * @return The connection timeout in milliseconds. The default value is
-   *         {@link #DEFAULT_CONNECT_TIMEOUT_MS}.
+   * @return The read timeout in milliseconds. The default value is
+   *         {@link #DEFAULT_READ_TIMEOUT_MS}.
    * @since 3.0.2
    */
-  public int getConnectTimeoutMS ()
+  public final int getReadTimeoutMS ()
   {
-    return m_nConnectTimeoutMS;
+    return m_nReadTimeoutMS;
   }
 
   /**
@@ -743,20 +756,48 @@ public class AS2ClientSettings implements Serializable
    * @since 3.0.2
    */
   @Nonnull
-  public AS2ClientSettings setReadTimeoutMS (final int nReadTimeoutMS)
+  public final AS2ClientSettings setReadTimeoutMS (final int nReadTimeoutMS)
   {
     m_nReadTimeoutMS = nReadTimeoutMS;
     return this;
   }
 
   /**
-   * @return The read timeout in milliseconds. The default value is
-   *         {@link #DEFAULT_READ_TIMEOUT_MS}.
-   * @since 3.0.2
+   * @return <code>true</code> if HTTP header values should be quoted according
+   *         to RFC 2616, <code>false</code> if not.
+   * @since 4.4.2
    */
-  public int getReadTimeoutMS ()
+  public final boolean isQuoteHeaderValues ()
   {
-    return m_nReadTimeoutMS;
+    return m_bQuoteHeaderValues;
+  }
+
+  /**
+   * Set whether HTTP header values for outgoing messages should be quoted or
+   * not according to RFC 2616. By default the headers are not quoted, as this
+   * might be an interoperability issue.
+   * 
+   * @param bQuoteHeaderValues
+   *        <code>true</code> if quoting should be enabled, <code>false</code>
+   *        if not.
+   * @return this for chaining
+   * @since 4.4.2
+   */
+  @Nonnull
+  public final AS2ClientSettings setQuoteHeaderValues (final boolean bQuoteHeaderValues)
+  {
+    m_bQuoteHeaderValues = bQuoteHeaderValues;
+    return this;
+  }
+
+  /**
+   * @return The outgoing dumper factory. May be <code>null</code>.
+   * @since 4.4.0
+   */
+  @Nullable
+  public final IHTTPOutgoingDumperFactory getHttpOutgoingDumperFactory ()
+  {
+    return m_aHttpOutgoingDumperFactory;
   }
 
   /**
@@ -768,20 +809,10 @@ public class AS2ClientSettings implements Serializable
    * @since 4.4.0
    */
   @Nonnull
-  public AS2ClientSettings setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
+  public final AS2ClientSettings setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
   {
     m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
     return this;
-  }
-
-  /**
-   * @return The outgoing dumper factory. May be <code>null</code>.
-   * @since 4.4.0
-   */
-  @Nullable
-  public IHTTPOutgoingDumperFactory getHttpOutgoingDumperFactory ()
-  {
-    return m_aHttpOutgoingDumperFactory;
   }
 
   /**
@@ -790,7 +821,7 @@ public class AS2ClientSettings implements Serializable
    */
   @Nonnull
   @ReturnsMutableObject
-  public HttpHeaderMap customHeaders ()
+  public final HttpHeaderMap customHeaders ()
   {
     return m_aCustomHeaders;
   }

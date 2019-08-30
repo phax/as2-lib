@@ -72,10 +72,15 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
   /** Attribute name for read timeout in milliseconds */
   public static final String ATTR_READ_TIMEOUT = "readtimeout";
+  /** Attribute name for quoting header values (boolean) */
+  public static final String ATTR_QUOTE_HEADER_VALUES = "quoteheadervalues";
+
   /** Default connection timeout: 60 seconds */
   public static final int DEFAULT_CONNECT_TIMEOUT_MS = 60_000;
   /** Default read timeout: 60 seconds */
   public static final int DEFAULT_READ_TIMEOUT_MS = 60_000;
+  /** Default quote header values: false */
+  public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
 
   private static final class OutgoingDumperFactory implements IHTTPOutgoingDumperFactory
   {
@@ -209,12 +214,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       }
       aHV = createHostnameVerifier ();
     }
-    return new AS2HttpClient (sUrl,
-                              attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS),
-                              attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS),
-                              eRequestMethod,
-                              aProxy,
-                              aSSLCtx,
-                              aHV);
+    final int nConnectTimeoutMS = attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS);
+    final int nReadTimeoutMS = attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS);
+    return new AS2HttpClient (sUrl, nConnectTimeoutMS, nReadTimeoutMS, eRequestMethod, aProxy, aSSLCtx, aHV);
   }
 }

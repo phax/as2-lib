@@ -412,6 +412,7 @@ public class AS2Client
         // Set connect and read timeout
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
+        aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_QUOTE_HEADER_VALUES, aSettings.isQuoteHeaderValues ());
         aSender.setHttpOutgoingDumperFactory (aSettings.getHttpOutgoingDumperFactory ());
 
         // Add all custom headers

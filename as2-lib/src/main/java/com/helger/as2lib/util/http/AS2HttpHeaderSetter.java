@@ -50,6 +50,7 @@ public final class AS2HttpHeaderSetter
 {
   private final AS2HttpClient m_aConn;
   private final IHTTPOutgoingDumper m_aOutgoingDumper;
+  private final boolean m_bQuoteHeaderValues;
 
   /**
    * Constructor with debug support
@@ -59,18 +60,26 @@ public final class AS2HttpHeaderSetter
    * @param aOutgoingDumper
    *        An optional outgoing dumper, that will also receive all the headers.
    *        May be <code>null</code>.
+   * @param bQuoteHeaderValues
+   *        <code>true</code> if HTTP header values should be automatically
+   *        quoted, <code>false</code> if not. This might be an interoperability
+   *        issue. The receiving side must be able to unquote according to RFC
+   *        2616.
    */
-  public AS2HttpHeaderSetter (@Nonnull final AS2HttpClient aConn, @Nullable final IHTTPOutgoingDumper aOutgoingDumper)
+  public AS2HttpHeaderSetter (@Nonnull final AS2HttpClient aConn,
+                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
+                              final boolean bQuoteHeaderValues)
   {
     m_aConn = ValueEnforcer.notNull (aConn, "Connection");
     m_aOutgoingDumper = aOutgoingDumper;
+    m_bQuoteHeaderValues = bQuoteHeaderValues;
   }
 
   public void setHttpHeader (@Nonnull final String sName, @Nonnull final String sValue)
   {
-    // Ensure automatic quoting is used. The underlying HttpClient does not do
-    // this automatically
-    final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue, true);
+    // Ensure automatic quoting is used.
+    // The underlying HttpClient does not do this automatically
+    final String sUnifiedValue = HttpHeaderMap.getUnifiedValue (sValue, m_bQuoteHeaderValues);
     m_aConn.setHttpHeader (sName, sUnifiedValue);
 
     if (m_aOutgoingDumper != null)
