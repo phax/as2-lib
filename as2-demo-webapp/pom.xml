@@ -83,6 +83,7 @@
         <targetPath>${project.build.directory}/webapp-classes</targetPath>
       </resource>
     </resources>
+    
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -109,32 +110,32 @@
             <Bundle-ClassPath>
               WEB-INF/classes,
               WEB-INF/lib/activation-1.1.1.jar,
-              WEB-INF/lib/as2-lib-4.2.2-SNAPSHOT.jar,
-              WEB-INF/lib/as2-servlet-4.2.2-SNAPSHOT.jar,
-              WEB-INF/lib/bcmail-jdk15on-1.61.jar,
-              WEB-INF/lib/bcpkix-jdk15on-1.61.jar,
-              WEB-INF/lib/bcprov-jdk15on-1.61.jar,
+              WEB-INF/lib/as2-lib-4.4.3-SNAPSHOT.jar,
+              WEB-INF/lib/as2-servlet-4.4.3-SNAPSHOT.jar,
+              WEB-INF/lib/bcmail-jdk15on-1.62.jar,
+              WEB-INF/lib/bcpkix-jdk15on-1.62.jar,
+              WEB-INF/lib/bcprov-jdk15on-1.62.jar,
               WEB-INF/lib/commons-codec-1.10.jar,
               WEB-INF/lib/commons-logging-1.2.jar,
-              WEB-INF/lib/httpclient-4.5.7.jar,
+              WEB-INF/lib/httpclient-4.5.8.jar,
               WEB-INF/lib/httpcore-4.4.11.jar,
               WEB-INF/lib/javax.mail-1.6.2.jar,
               WEB-INF/lib/jsr305-3.0.2.jar,
-              WEB-INF/lib/ph-bc-9.3.0.jar,
-              WEB-INF/lib/ph-collection-9.3.0.jar,
-              WEB-INF/lib/ph-commons-9.3.0.jar,
-              WEB-INF/lib/ph-datetime-9.3.0.jar,
-              WEB-INF/lib/ph-http-9.1.1.jar,
-              WEB-INF/lib/ph-mail-9.1.1.jar,
-              WEB-INF/lib/ph-network-9.1.1.jar,
-              WEB-INF/lib/ph-scopes-9.3.0.jar,
-              WEB-INF/lib/ph-security-9.3.0.jar,
-              WEB-INF/lib/ph-servlet-9.1.1.jar,
-              WEB-INF/lib/ph-useragent-9.1.1.jar,
-              WEB-INF/lib/ph-web-9.1.1.jar,
-              WEB-INF/lib/ph-xml-9.3.0.jar,
-              WEB-INF/lib/ph-xservlet-9.1.1.jar,
-              WEB-INF/lib/slf4j-api-1.7.25.jar
+              WEB-INF/lib/ph-bc-9.3.6.jar,
+              WEB-INF/lib/ph-collection-9.3.6.jar,
+              WEB-INF/lib/ph-commons-9.3.6.jar,
+              WEB-INF/lib/ph-datetime-9.3.6.jar,
+              WEB-INF/lib/ph-http-9.1.2.jar,
+              WEB-INF/lib/ph-mail-9.1.2.jar,
+              WEB-INF/lib/ph-network-9.1.2.jar,
+              WEB-INF/lib/ph-scopes-9.3.6.jar,
+              WEB-INF/lib/ph-security-9.3.6.jar,
+              WEB-INF/lib/ph-servlet-9.1.2.jar,
+              WEB-INF/lib/ph-useragent-9.1.2.jar,
+              WEB-INF/lib/ph-web-9.1.2.jar,
+              WEB-INF/lib/ph-xml-9.3.6.jar,
+              WEB-INF/lib/ph-xservlet-9.1.2.jar,
+              WEB-INF/lib/slf4j-api-1.7.26.jar
             </Bundle-ClassPath>
             <Web-ContextPath>/demo</Web-ContextPath>
           </instructions>
