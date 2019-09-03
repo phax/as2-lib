@@ -107,9 +107,10 @@
         <filtering>false</filtering>
         <excludes>
           <exclude>**/*.properties</exclude>
-        </excludes>
+        </excludes>  
       </resource>
     </resources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -123,6 +124,18 @@
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
             <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
           </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/test/resources/mdn/**</exclude>
+            <exclude>**/LICENSE</exclude>
+            <exclude>**/NOTICE</exclude>
+            <exclude>**/*.txt</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>
