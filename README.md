@@ -26,6 +26,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.4.3 - work in progress
+    * Fixed an unintended quoting of HTTP header values when reading an MDN
 * v4.4.2 - 2019-08-30
     * Updated to ph-commons 9.3.6
     * Changed Automatic-Module-Name of "as2-lib" to `com.helger.as2lib`
