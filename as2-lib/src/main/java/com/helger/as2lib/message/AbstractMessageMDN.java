@@ -78,7 +78,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     return m_aMessage;
   }
 
-  public void setMessage (@Nonnull final IMessage aMessage)
+  public final void setMessage (@Nonnull final IMessage aMessage)
   {
     ValueEnforcer.notNull (aMessage, "Message");
     m_aMessage = aMessage;
