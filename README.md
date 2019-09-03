@@ -7,7 +7,7 @@
 AS2 is a transport protocol specified in [RFC 4130](http://www.ietf.org/rfc/rfc4130.txt).
 AS2 version 1.1 adding compression is specified in [RFC 5402](http://www.ietf.org/rfc/rfc5402.txt).
 The MDN is specified in [RFC 3798](http://www.ietf.org/rfc/rfc3798.txt).
-Algorithm names are defined in [RFC 5751](https://www.ietf.org/rfc/rfc5751.txt) which superseedes [RFC 3851](https://www.ietf.org/rfc/rfc3851.txt);
+Algorithm names are defined in [RFC 5751](https://www.ietf.org/rfc/rfc5751.txt)(S/MIME 3.2) which superseedes [RFC 3851](https://www.ietf.org/rfc/rfc3851.txt)(S/MIME 3.1);
 
 This library is a fork of [OpenAS2](http://sourceforge.net/projects/openas2/) which did not 
 release updates since 2010 (as per August 2015 they are on GitHub at https://github.com/OpenAS2/OpenAs2App). I than split the project into a common library part (this project)
