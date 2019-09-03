@@ -377,7 +377,8 @@ public final class AS2Helper
                                final boolean bUseCertificateInBodyPart,
                                @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer) throws Exception
   {
-    LOGGER.info ("Start parsing MDN of" + aMsg.getLoggingText ());
+    final String sLoggingText = aMsg.getLoggingText ();
+    LOGGER.info ("Start parsing MDN of" + sLoggingText);
 
     final IMessageMDN aMdn = aMsg.getMDN ();
     MimeBodyPart aMainPart = aMdn.getData ();
@@ -388,16 +389,16 @@ public final class AS2Helper
     final boolean bForceVerify = aMsg.partnership ().isForceVerify ();
     if (bMsgIsSigned && bDisableVerify)
     {
-      LOGGER.info ("Message claims to be signed but signature validation is disabled" + aMsg.getLoggingText ());
+      LOGGER.info ("Message claims to be signed but signature validation is disabled" + sLoggingText);
     }
     else
       if (bMsgIsSigned || bForceVerify)
       {
         if (bForceVerify && !bMsgIsSigned)
-          LOGGER.info ("Forced verify MDN signature" + aMsg.getLoggingText ());
+          LOGGER.info ("Forced verify MDN signature" + sLoggingText);
         else
           if (LOGGER.isDebugEnabled ())
-            LOGGER.debug ("Verifying MDN signature" + aMsg.getLoggingText ());
+            LOGGER.debug ("Verifying MDN signature" + sLoggingText);
 
         final Wrapper <X509Certificate> aCertHolder = new Wrapper <> ();
         aMainPart = aCryptoHelper.verify (aMainPart,
@@ -416,7 +417,7 @@ public final class AS2Helper
             .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
                     CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
-        LOGGER.info ("Successfully verified signature of MDN of message" + aMsg.getLoggingText ());
+        LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
