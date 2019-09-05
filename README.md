@@ -26,7 +26,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
-* v4.4.3 - work in progress
+* v4.4.3 - 2019-09-05
     * Fixed an unintended quoting of HTTP header values when reading an MDN
 * v4.4.2 - 2019-08-30
     * Updated to ph-commons 9.3.6
@@ -178,7 +178,7 @@ Add the following to your `pom.xml` to use this artifact:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-lib</artifactId>
-  <version>4.4.2</version>
+  <version>4.4.3</version>
 </dependency>
 ```
 
@@ -188,7 +188,7 @@ For the MongoDB partnership factory, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-partnership-mongodb</artifactId>
-  <version>4.4.2</version>
+  <version>4.4.3</version>
 </dependency>
 ```
 
@@ -198,7 +198,7 @@ For the receive servlet, add the following to your `pom.xml`:
 <dependency>
   <groupId>com.helger</groupId>
   <artifactId>as2-servlet</artifactId>
-  <version>4.4.2</version>
+  <version>4.4.3</version>
 </dependency>
 ```
 
