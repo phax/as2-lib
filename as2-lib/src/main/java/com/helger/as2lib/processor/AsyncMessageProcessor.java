@@ -153,4 +153,18 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
       throw new OpenAS2Exception ("Failed to queue action " + sAction, ex);
     }
   }
+
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
+  }
 }

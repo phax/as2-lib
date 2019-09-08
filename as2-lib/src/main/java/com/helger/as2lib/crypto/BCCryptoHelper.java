@@ -109,6 +109,7 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
@@ -702,8 +703,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug (aRealX509Cert == aX509Cert ? "Verifying signature using the provided certificate (partnership)"
-                                               : "Verifying signature using the certificate contained in the MIME body part");
+      LOGGER.debug (EqualsHelper.identityEqual (aRealX509Cert,
+                                                aX509Cert) ? "Verifying signature using the provided certificate (partnership)"
+                                                           : "Verifying signature using the certificate contained in the MIME body part");
 
     // Call before validity check to retrieve the information about the details
     // outside

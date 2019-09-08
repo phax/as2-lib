@@ -268,7 +268,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                    aSenderCert,
                                                                    bUseCertificateInBodyPart,
                                                                    bForceVerify,
-                                                                   x -> aCertHolder.set (x));
+                                                                   aCertHolder::set);
           final IConsumer <X509Certificate> aExternalConsumer = getVerificationCertificateConsumer ();
           if (aExternalConsumer != null)
             aExternalConsumer.accept (aCertHolder.get ());

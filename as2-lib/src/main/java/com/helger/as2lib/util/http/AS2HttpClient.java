@@ -351,7 +351,7 @@ public class AS2HttpClient
       if (null != aProxy)
       {
         final SocketAddress aSocketAddress = aProxy.address ();
-        if (null != aSocketAddress && aSocketAddress instanceof InetSocketAddress)
+        if (aSocketAddress instanceof InetSocketAddress)
         {
           final InetSocketAddress aISocketAdress = (InetSocketAddress) aSocketAddress;
           final InetAddress aInetAddr = aISocketAdress.getAddress ();

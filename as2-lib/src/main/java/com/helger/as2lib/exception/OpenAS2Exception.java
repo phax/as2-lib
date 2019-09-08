@@ -75,11 +75,23 @@ public class OpenAS2Exception extends Exception
     super (aCause);
   }
 
+  @Nullable
+  public final IMessage getSourceMsg ()
+  {
+    return m_aSrcMsg;
+  }
+
   @Nonnull
   public final OpenAS2Exception setSourceMsg (@Nullable final IMessage aSrcMsg)
   {
     m_aSrcMsg = aSrcMsg;
     return this;
+  }
+
+  @Nullable
+  public final File getSourceFile ()
+  {
+    return m_aSrcFile;
   }
 
   @Nonnull

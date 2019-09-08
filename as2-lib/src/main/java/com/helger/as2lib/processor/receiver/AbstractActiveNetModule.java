@@ -225,6 +225,20 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     }
   }
 
+  @Override
+  public boolean equals (final Object o)
+  {
+    // New member, no change
+    return super.equals (o);
+  }
+
+  @Override
+  public int hashCode ()
+  {
+    // New member, no change
+    return super.hashCode ();
+  }
+
   protected static final class ConnectionThread extends Thread
   {
     private final AbstractActiveNetModule m_aOwner;
