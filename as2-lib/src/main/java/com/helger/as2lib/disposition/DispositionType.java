@@ -137,10 +137,8 @@ public class DispositionType implements Serializable
     if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
       throw new DispositionException (this);
 
-    if (m_sStatusModifier != null)
-      if (m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_ERROR) ||
-          m_sStatusModifier.equalsIgnoreCase (STATUS_MODIFIER_WARNING))
-        throw new DispositionException (this);
+    if (isError () || isWarning ())
+      throw new DispositionException (this);
   }
 
   @Nonnull
@@ -172,7 +170,7 @@ public class DispositionType implements Serializable
   public static DispositionType createFromString (@Nullable final String sDisposition) throws OpenAS2Exception
   {
     if (StringHelper.hasNoText (sDisposition))
-      throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition);
+      throw new OpenAS2Exception ("Disposition type is empty");
 
     try
     {
@@ -193,7 +191,7 @@ public class DispositionType implements Serializable
     }
     catch (final NoSuchElementException ex)
     {
-      throw new OpenAS2Exception ("Invalid disposition type format: " + sDisposition, ex);
+      throw new OpenAS2Exception ("Invalid disposition type format '" + sDisposition + "'", ex);
     }
   }
 
