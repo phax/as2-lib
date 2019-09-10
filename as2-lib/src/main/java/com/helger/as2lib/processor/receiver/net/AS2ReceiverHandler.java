@@ -90,6 +90,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.lang.StackTraceHelper;
 import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
 import com.helger.commons.wrapper.Wrapper;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -575,9 +576,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED +
-                                                                                                     CHttp.EOL +
-                                                                                                     _getDispositionText (ex),
+                                        StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                              CHttp.EOL,
+                                                                              _getDispositionText (ex)),
                                         ex);
       }
 
@@ -594,9 +595,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_STORAGE_FAILED +
-                                                                                                     CHttp.EOL +
-                                                                                                     _getDispositionText (ex),
+                                        StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
+                                                                              CHttp.EOL,
+                                                                              _getDispositionText (ex)),
                                         ex);
       }
 
@@ -613,9 +614,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_VALIDATION_FAILED +
-                                                                                                     CHttp.EOL +
-                                                                                                     _getDispositionText (ex),
+                                        StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                              CHttp.EOL,
+                                                                              _getDispositionText (ex)),
                                         ex);
       }
 
