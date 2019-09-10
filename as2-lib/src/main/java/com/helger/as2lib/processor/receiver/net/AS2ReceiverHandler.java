@@ -439,9 +439,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   {
     // Issue 90 - use CRLF as separator
     if (m_bSendExceptionsInMDN)
-      return MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex, true, CHttp.EOL));
+      return CHttp.EOL + MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex, true, CHttp.EOL));
 
-    return MessageParameters.getEscapedString (ex.getMessage ());
+    // No information at all
+    return "";
   }
 
   /**
