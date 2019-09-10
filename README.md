@@ -26,6 +26,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.4.4 - work in progress
+    * Removed all information about the exception from the MDN (see [#94](https://github.com/phax/as2-lib/pull/94))
 * v4.4.3 - 2019-09-05
     * Fixed an unintended quoting of HTTP header values when reading an MDN
 * v4.4.2 - 2019-08-30
