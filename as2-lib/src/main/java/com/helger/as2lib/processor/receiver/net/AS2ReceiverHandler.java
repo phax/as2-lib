@@ -438,9 +438,9 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   {
     // Issue 90 - use CRLF as separator
     if (m_bSendExceptionsInMDN)
-      return MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex, true, CHttp.EOL));
+      return CHttp.EOL + MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex, true, CHttp.EOL));
 
-    return MessageParameters.getEscapedString (ex.getMessage ());
+    return "";
   }
 
   /**
@@ -576,8 +576,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
-                                                                                                     CHttp.EOL +
-                                                                                                     _getDispositionText (ex),
+                                        _getDispositionText (ex),
                                         ex);
       }
 
@@ -595,8 +594,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_STORAGE_FAILED +
-                                                                                                     CHttp.EOL +
-                                                                                                     _getDispositionText (ex),
+                                        _getDispositionText (ex),
                                         ex);
       }
 
@@ -614,8 +612,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_VALIDATION_FAILED +
-                                                                                                     CHttp.EOL +
-                                                                                                     _getDispositionText (ex),
+                                        _getDispositionText (ex),
                                         ex);
       }
 
