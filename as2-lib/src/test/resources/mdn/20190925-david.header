@@ -1,0 +1,16 @@
+AS2-To: POP000143
+MIME-Version: 1.0
+Subject: Your Requested MDN Response
+Message-Id: <ph-OpenAS2-24092019223921+0200-0150@PDK000270_POP000143>
+Content-Length: 10973
+Content-Transfer-Encoding: binary
+Set-Cookie: ERBSESSIONID=0BDA053CE11BA6CA2D52683724EF8371.vm_0; Path=/; Secure; HttpOnly;SameSite=Lax
+Connection: close
+Server: Apache
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=16070400; includeSubDomains
+Date: Tue, 24 Sep 2019 20:39:21 GMT
+AS2-From: PDK000270
+AS2-Version: 1.1
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-1; boundary="----=_Part_11973_151510888.1569357561362"

@@ -1,0 +1,110 @@
+------=_Part_11973_151510888.1569357561362
+Content-Type: multipart/report; report-type=disposition-notification; 
+  boundary="----=_Part_11971_496946825.1569357561361"
+
+------=_Part_11971_496946825.1569357561361
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+The message sent to Recipient PDK000270 on Tue, 24 Sep 2019 20:39:18 GMT with Subject null has been received, the EDI Interchange was successfully decrypted and it's integrity was verified. In addition, the sender of the message, Sender POP000143 at Location 209.95.224.18 was authenticated as the originator of the message.  An error occured while storing the data to the file system.
+Processor 'DefaultMessageProcessor' threw exception:
+Invalid document provided:
+[error] [error] [AF-0025] in invoice.detailsItem[1].totalNetAmount The provided value is invalid. The total net amount (182,5) does not match 'amount' (9) * 'unit net amount' (1,460) (=13.140).
+[error] [error] [AF-0026] in invoice.detailsItem[1].totalGrossAmount The provided value is invalid. The total gross amount (219) does not match 'total net amount' (13.140) * 'tax percentage' (20%) (=15.768).
+[error] [error] [AF-0025] in invoice.detailsItem[2].totalNetAmount The provided value is invalid. The total net amount (1.003,75) does not match 'amount' (5,5) * 'unit net amount' (1,460) (=8.030).
+[error] [error] [AF-0026] in invoice.detailsItem[2].totalGrossAmount The provided value is invalid. The total gross amount (1.204,5) does not match 'total net amount' (8.030) * 'tax percentage' (20%) (=9.636).
+[error] [error] [AF-0025] in invoice.detailsItem[3].totalNetAmount The provided value is invalid. The total net amount (456,25) does not match 'amount' (2,5) * 'unit net amount' (1,460) (=3.650).
+[error] [error] [AF-0026] in invoice.detailsItem[3].totalGrossAmount The provided value is invalid. The total gross amount (547,5) does not match 'total net amount' (3.650) * 'tax percentage' (20%) (=4.380).
+[error] [error] [AF-0025] in invoice.detailsItem[5].totalNetAmount The provided value is invalid. The total net amount (730) does not match 'amount' (6) * 'unit net amount' (1,460) (=8.760).
+[error] [error] [AF-0026] in invoice.detailsItem[5].totalGrossAmount The provided value is invalid. The total gross amount (876) does not match 'total net amount' (8.760) * 'tax percentage' (20%) (=10.512).
+[error] [error] [AF-0025] in invoice.detailsItem[6].totalNetAmount The provided value is invalid. The total net amount (365) does not match 'amount' (2) * 'unit net amount' (1,460) (=2.920).
+[error] [error] [AF-0026] in invoice.detailsItem[6].totalGrossAmount The provided value is invalid. The total gross amount (438) does not match 'total net amount' (2.920) * 'tax percentage' (20%) (=3.504).
+[error] [error] [AF-0032] in invoice.tax.VAT.item[0] The provided value is invalid. The taxed amount (2.737,5) does not match the sum of all total net amounts of all relevant detail items (36.500).
+[error] [error] [AF-0033] in invoice.tax.VAT.item[0] The provided value is invalid. The tax amount (547,5) does not match 20% of the net amount (7.300).
+[error] [error] [AF-0028] in invoice.totalGrossAmount The provided value is invalid. The invoice total gross amount (3.285) does not match the sum of the details gross amounts +/- global reductions/surcharges (43.800).
+com.helger.as2lib.exception.OpenAS2Exception: Invalid document provided:
+[error] [error] [AF-0025] in invoice.detailsItem[1].totalNetAmount The provided value is invalid. The total net amount (182,5) does not match 'amount' (9) * 'unit net amount' (1,460) (=13.140).
+[error] [error] [AF-0026] in invoice.detailsItem[1].totalGrossAmount The provided value is invalid. The total gross amount (219) does not match 'total net amount' (13.140) * 'tax percentage' (20%) (=15.768).
+[error] [error] [AF-0025] in invoice.detailsItem[2].totalNetAmount The provided value is invalid. The total net amount (1.003,75) does not match 'amount' (5,5) * 'unit net amount' (1,460) (=8.030).
+[error] [error] [AF-0026] in invoice.detailsItem[2].totalGrossAmount The provided value is invalid. The total gross amount (1.204,5) does not match 'total net amount' (8.030) * 'tax percentage' (20%) (=9.636).
+[error] [error] [AF-0025] in invoice.detailsItem[3].totalNetAmount The provided value is invalid. The total net amount (456,25) does not match 'amount' (2,5) * 'unit net amount' (1,460) (=3.650).
+[error] [error] [AF-0026] in invoice.detailsItem[3].totalGrossAmount The provided value is invalid. The total gross amount (547,5) does not match 'total net amount' (3.650) * 'tax percentage' (20%) (=4.380).
+[error] [error] [AF-0025] in invoice.detailsItem[5].totalNetAmount The provided value is invalid. The total net amount (730) does not match 'amount' (6) * 'unit net amount' (1,460) (=8.760).
+[error] [error] [AF-0026] in invoice.detailsItem[5].totalGrossAmount The provided value is invalid. The total gross amount (876) does not match 'total net amount' (8.760) * 'tax percentage' (20%) (=10.512).
+[error] [error] [AF-0025] in invoice.detailsItem[6].totalNetAmount The provided value is invalid. The total net amount (365) does not match 'amount' (2) * 'unit net amount' (1,460) (=2.920).
+[error] [error] [AF-0026] in invoice.detailsItem[6].totalGrossAmount The provided value is invalid. The total gross amount (438) does not match 'total net amount' (2.920) * 'tax percentage' (20%) (=3.504).
+[error] [error] [AF-0032] in invoice.tax.VAT.item[0] The provided value is invalid. The taxed amount (2.737,5) does not match the sum of all total net amounts of all relevant detail items (36.500).
+[error] [error] [AF-0033] in invoice.tax.VAT.item[0] The provided value is invalid. The tax amount (547,5) does not match 20% of the net amount (7.300).
+[error] [error] [AF-0028] in invoice.totalGrossAmount The provided value is invalid. The invoice total gross amount (3.285) does not match the sum of the details gross amounts +/- global reductions/surcharges (43.800).
+1.: at.gv.brz.erb.webapp.peppol.as2.ERBAS2IncomingSBDHandler.handleIncomingSBD(ERBAS2IncomingSBDHandler.java:133)
+2.: com.helger.peppol.as2servlet.AS2ServletSBDModule.handle(AS2ServletSBDModule.java:260)
+3.: com.helger.as2lib.processor.AbstractMessageProcessor.executeAction(AbstractMessageProcessor.java:160)
+4.: com.helger.as2lib.processor.DefaultMessageProcessor.handle(DefaultMessageProcessor.java:65)
+5.: com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler.handleIncomingMessage(AS2ReceiverHandler.java:546)
+6.: com.helger.as2servlet.AbstractAS2ReceiveXServletHandler.handeIncomingMessage(AbstractAS2ReceiveXServletHandler.java:181)
+7.: at.gv.brz.erb.webapp.servlet.ERBAS2ReceiveXServletHandler.handeIncomingMessage(ERBAS2ReceiveXServletHandler.java:81)
+8.: com.helger.as2servlet.AbstractAS2ReceiveXServletHandler.onRequest(AbstractAS2ReceiveXServletHandler.java:234)
+9.: com.helger.xservlet.AbstractXServlet._invokeHandler(AbstractXServlet.java:348)
+10.: com.helger.xservlet.AbstractXServlet.service(AbstractXServlet.java:532)
+11.: javax.servlet.http.HttpServlet.service(HttpServlet.java:729)
+12.: com.helger.xservlet.AbstractXServlet.service(AbstractXServlet.java:587)
+  [28 elements omitted -- org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:292)]
+
+------=_Part_11971_496946825.1569357561361
+Content-Type: message/disposition-notification
+Content-Transfer-Encoding: 7bit
+
+Reporting-UA: ph-OpenAS2 4.2.1@172.18.112.4:443
+Original-Recipient: rfc822; PDK000270
+Final-Recipient: rfc822; PDK000270
+Original-Message-ID: <54a4867b-77ff-4edd-9fdb-a1e8e5b63860@1569357558959>
+Disposition: automatic-action/MDN-sent-automatically; processed/Error:unexpected-processing-error
+Received-Content-MIC: rjNsE2kpJPol7lf4jVDSkxbqT40=, sha1
+
+
+------=_Part_11971_496946825.1569357561361--
+
+------=_Part_11973_151510888.1569357561362
+Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIAwggWkMIID
+jKADAgECAhAZZgUkvE3gslAWaF33JjUZMA0GCSqGSIb3DQEBCwUAME4xCzAJBgNVBAYTAkJFMRkw
+FwYDVQQKExBPcGVuUEVQUE9MIEFJU0JMMSQwIgYDVQQDExtQRVBQT0wgQUNDRVNTIFBPSU5UIENB
+IC0gRzIwHhcNMTkwMjIyMDAwMDAwWhcNMjEwMjExMjM1OTU5WjBOMRIwEAYDVQQDDAlQREswMDAy
+NzAxHTAbBgNVBAsMFFBFUFBPTCBQUk9EVUNUSU9OIEFQMQwwCgYDVQQKDANCUloxCzAJBgNVBAYT
+AkFUMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtYbbQn0DwV0aUJBSF8aCGQ8OrT7Z
+708hMghkeXfGve53TKBB5q7iQN4aS+NBdEZXuqk1Xwo2n4pe7wMSFguJpa2rWUkOJ25fswTPEbJ2
+Fdn0shWZSG4Tn6Kz4dZAMkpBglgTNwn96wv5mP4/uP2s/DxkjAiRvMCzd03Tz/0J01XSekMR8G3e
+oBoxAjhrOzqc5vKsOa7UY9ramjvKHD3HYTv1t7LgHiwV8pFvrT6DHpqRZfVXx4wJ35Fq3uIr6P5s
+KNSKu+AieSuJPi6Li2mshUnQXPD9YX16XvM79ihdAiL7JloGy1KjZWxUoVCVp7ggRd5tntkhYZm2
+EzqhtPRw3wIDAQABo4IBfDCCAXgwDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCA6gwFgYDVR0l
+AQH/BAwwCgYIKwYBBQUHAwIwHQYDVR0OBBYEFJEr5QXyd8cA+Fo4Xv/thfaO3GzYMF0GA1UdHwRW
+MFQwUqBQoE6GTGh0dHA6Ly9wa2ktY3JsLnN5bWF1dGguY29tL2NhXzdiZWRjYmNjNGY3MjRlZmUz
+MGQ1MDA2ZGRhNjgxYmEwL0xhdGVzdENSTC5jcmwwNwYIKwYBBQUHAQEEKzApMCcGCCsGAQUFBzAB
+hhtodHRwOi8vcGtpLW9jc3Auc3ltYXV0aC5jb20wHwYDVR0jBBgwFoAUhyXfWyOmxDv5n98bpSCR
+3eT0PIEwLQYKYIZIAYb4RQEQAwQfMB0GE2CGSAGG+EUBEAECAwEBgbLX9DYWBjk1NzYwODA5Bgpg
+hkgBhvhFARAFBCswKQIBABYkYUhSMGNITTZMeTl3YTJrdGNtRXVjM2x0WVhWMGFDNWpiMjA9MA0G
+CSqGSIb3DQEBCwUAA4ICAQCJiiTKrhnUwLPWQZLdbfvHn22+34saIqdPreGNKvVqz4p1T49oMeHl
+yduhJc5TYzZ4Y9M/ud+vIUslu8SCaA8oMXLRaiW5u2QEBAESkq4UFgIgD3U8Yl/aU/7K0u2vRp35
+58H/XDHkPoJUJO+ynxemsLkXpjY0kcdRPx+oJQrQVsMIoR+7cFTH1QEKPORJkPGQhh0JDME4amXj
+s3rn9kuOTRZEbxcntcdXNWOikqPqgJlnYbMrFesX2tyjxOrPliPHku4P7OG/D4jSo8GhaAnBuVwt
+sui2bkz2UJjVMQjPoCkACqYykTj8CROgU4/ybI8F/mvYTPpcTrDX2HE+3aMzRaxpDqPQCzXNMQ2b
+KhTLcc0wd1wfODiXdTEraXA0Hsgdgna8Pr5EOZ7rK7ORJG8s+Pfoab9YreoZO9+3LEdkHQ6zt9Vv
+2NqMDKLH7WDCVetbfC5QnmVF7cfYezCS8xX4nA7rWReBEbK62rOSFr45msgRLPelRSLoYRPHrvyQ
+GyhAvCP1DqQIhorhHE4MeeVKUnvQQ0MXnuliE5pI0SpyKDn1Ceu/e2datiO07KoyOkK8djEzbnpZ
+I6RtwKVUdV0z01BfQ9HmV0FGDsboLV45jt1FZf7hH261hNtEFFJr48w/h1lfMhyrhsW6ioFVIFzD
+HWsAPyEYYZ9kC1F+wTd1OAAAMYICLjCCAioCAQEwYjBOMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
+T3BlblBFUFBPTCBBSVNCTDEkMCIGA1UEAxMbUEVQUE9MIEFDQ0VTUyBQT0lOVCBDQSAtIEcyAhAZ
+ZgUkvE3gslAWaF33JjUZMAkGBSsOAwIaBQCggaIwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAY
+BgkqhkiG9w0BCQ8xCzAJMAcGBSsOAwIaMBwGCSqGSIb3DQEJBTEPFw0xOTA5MjQyMDM5MjFaMCMG
+CSqGSIb3DQEJBDEWBBQAzRuxqk6cZE7VrnLAGO95QNAHfDApBgkqhkiG9w0BCTQxHDAaMAkGBSsO
+AwIaBQChDQYJKoZIhvcNAQEBBQAwDQYJKoZIhvcNAQEBBQAEggEAZV7VqHEQGJw0C+LfCTRJVdaj
+ibq4RgSiJSyCm1HwN0t3nG+ySwMJ3L6BjoXihp8z+YFlZ+xPB63D+mo6wEQR0DrvmuwDWlmF40N3
+rmmMpSOhGfqXEohcvaEOAZYMOTn0IQ6VG9AYyGPzUa7ZM5R7eXfCXjj7lfhBI3HwjZCJmfA3LufK
+gMRzwXketz1mCr8sm1kKmI9+1teTF5pty/xildO1yNRcDKHLXG4a9lKu5kSsoAYneLkPxmABOoSA
+Wk5AA9vYWlbBKT8e4HFGnjTYNMTXNpC+m4tTZko3ZIdGWnHxAG9Je52GKozHrPpnCKSSMu11PIOo
+s3+T5HFxy0ckfQAAAAAAAA==
+------=_Part_11973_151510888.1569357561362--
