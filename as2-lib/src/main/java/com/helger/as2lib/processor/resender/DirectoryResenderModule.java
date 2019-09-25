@@ -109,7 +109,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     {
       final File aResendDir = AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
       final File aResendFile = AS2IOHelper.getUniqueFile (aResendDir, getFilename ());
-      try (final ObjectOutputStream aOOS = new ObjectOutputStream (new FileOutputStream (aResendFile)))
+      try (final FileOutputStream aFOS = new FileOutputStream (aResendFile);
+          final ObjectOutputStream aOOS = new ObjectOutputStream (aFOS))
       {
         String sResendAction = aOptions == null ? null
                                                 : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
@@ -182,9 +183,10 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     {
       try
       {
-        String sResendAction;
+        final String sResendAction;
         String sRetries;
-        try (final ObjectInputStream aOIS = new ObjectInputStream (new FileInputStream (aFile)))
+        try (final FileInputStream aFIS = new FileInputStream (aFile);
+            final ObjectInputStream aOIS = new ObjectInputStream (aFIS))
         {
           sResendAction = (String) aOIS.readObject ();
           sRetries = (String) aOIS.readObject ();

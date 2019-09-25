@@ -490,10 +490,13 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     if (s_aDumpDecryptedDirectory != null)
     {
-      // FIXME dump decrypted
-      final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ());
-      aDecryptedDataBodyPart.writeTo (aBAOS);
-      _dumpDecrypted (aBAOS.toByteArray ());
+      // dump decrypted
+      try (
+          final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
+      {
+        aDecryptedDataBodyPart.writeTo (aBAOS);
+        _dumpDecrypted (aBAOS.toByteArray ());
+      }
     }
 
     return aDecryptedDataBodyPart;

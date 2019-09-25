@@ -73,6 +73,7 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.StringParser;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.mail.datasource.InputStreamDataSource;
@@ -281,6 +282,7 @@ public final class HTTPHelper
         {
           // chunked encoding. Use also file backed stream as the message
           // might be large
+          @WillNotClose
           final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
                                                                                                               aMsg.getMessageID ());
           aRealIS = aSharedIS;
@@ -312,10 +314,19 @@ public final class HTTPHelper
       // Read the message body - no Content-Transfer-Encoding handling
       // Retrieve the message content
       // FIXME if a value > 2GB comes in, this will fail!!
-      final DataInputStream aDataIS = new DataInputStream (aIS);
-      final int nContentSize = Integer.parseInt (sContentLength);
-      aBytePayLoad = new byte [nContentSize];
-      aDataIS.readFully (aBytePayLoad);
+      final long nContentLength = StringParser.parseLong (sContentLength, -1);
+      if (nContentLength < 0 || nContentLength > Integer.MAX_VALUE)
+      {
+        // Invalid content length (no int or too big)
+        sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
+        throw new IOException ("Content-Length '" + sContentLength + "' is invalid");
+      }
+      aBytePayLoad = new byte [(int) nContentLength];
+
+      try (final DataInputStream aDataIS = new DataInputStream (aIS))
+      {
+        aDataIS.readFully (aBytePayLoad);
+      }
       aPayload = new ByteArrayDataSource (aBytePayLoad, sReceivedContentType, null);
     }
 

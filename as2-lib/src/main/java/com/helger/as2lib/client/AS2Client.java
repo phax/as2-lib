@@ -260,8 +260,11 @@ public class AS2Client
       if (aSettings.getKeyStoreBytes () != null && aSettings.getKeyStorePassword () != null)
       {
         aCertFactory.setSaveChangesToFile (false);
-        aCertFactory.load (new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()),
-                           aSettings.getKeyStorePassword ().toCharArray ());
+        try (
+            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        {
+          aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
+        }
       }
       else
       {
