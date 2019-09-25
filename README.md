@@ -52,7 +52,8 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Updated to new Mendelson test certificates (key3 and key4 - see http://mendelson-e-c.com/node/3211)
     * The `Content-Transfer-Encoding` value `base64` now works correctly (see [#71](https://github.com/phax/as2-lib/issues/71))
     * Added a custom `IMICMatchingHandler` interface to `AS2SenderModule` and `AS2MDNReceiverHandler` (see [#59](https://github.com/phax/as2-lib/issues/59))
-    * Removed deprecated class `PKCS12CertificateFactory` and some other deprecated methods 
+    * Removed deprecated class `com.helger.as2lib.cert.PKCS12CertificateFactory`. Use `com.helger.as2lib.cert.CertificateFactory` instead - no functionality changes.
+    * Removed some other deprecated methods as well.
     * Updated to ph-commons 9.3.4
     * Reworked the outgoing dumping API, so that it can be set per "AbstractHttpSenderModule" and must not be globally set. This is a backwards incompatible change. The existing system property is still accepted.
     * The AS2 client can now dump specific outgoing requests more easily using the new API
