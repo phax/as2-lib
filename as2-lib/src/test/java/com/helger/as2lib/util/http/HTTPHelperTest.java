@@ -206,6 +206,8 @@ public final class HTTPHelperTest
                                     "0\r\n";
   }
 
+  private static final IAS2HttpResponseHandler MOCK_RH = (nHttpResponseCode, aHeaders, aData) -> {};
+
   @Test (expected = EOFException.class)
   public void testReadChunkLenEOS () throws Exception
   {
@@ -241,7 +243,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadHttpRequestRegularMessage () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final IAS2HttpResponseHandler mockedResponseHandler = MOCK_RH;
 
     // non stream
     NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
@@ -261,7 +263,7 @@ public final class HTTPHelperTest
   @Test
   public void testReadHttpRequestStreamMessage () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final IAS2HttpResponseHandler mockedResponseHandler = MOCK_RH;
 
     // non stream
     NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
@@ -282,7 +284,7 @@ public final class HTTPHelperTest
   @Test (expected = IOException.class)
   public void testNoLengthMessageRegular () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final IAS2HttpResponseHandler mockedResponseHandler = MOCK_RH;
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // non stream
     final AS2Message aMsg = new AS2Message ();
@@ -293,7 +295,7 @@ public final class HTTPHelperTest
   @Test (expected = IOException.class)
   public void testNoLengthMessageStream () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final IAS2HttpResponseHandler mockedResponseHandler = MOCK_RH;
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
@@ -304,7 +306,7 @@ public final class HTTPHelperTest
   @Test (expected = IOException.class)
   public void testBadTRansferEncodingMessageRegular () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final IAS2HttpResponseHandler mockedResponseHandler = MOCK_RH;
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
@@ -315,7 +317,7 @@ public final class HTTPHelperTest
   @Test (expected = IOException.class)
   public void testBadTRansferEncodingMessageStream () throws Exception
   {
-    final IAS2HttpResponseHandler mockedResponseHandler = (nHttpResponseCode, aHeaders, aData) -> {};
+    final IAS2HttpResponseHandler mockedResponseHandler = MOCK_RH;
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
