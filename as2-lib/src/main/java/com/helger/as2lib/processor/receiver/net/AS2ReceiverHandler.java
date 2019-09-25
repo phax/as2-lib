@@ -686,7 +686,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       LOGGER.info ("Incoming connection " + sClientInfo);
 
     final AS2Message aMsg = createMessage (aSocket);
-    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
+    final boolean bQuoteHeaderValues = m_aReceiverModule.attrs ()
+                                                        .getAsBoolean (AbstractActiveNetModule.ATTR_QUOTE_HEADER_VALUES,
+                                                                       AbstractActiveNetModule.DEFAULT_QUOTE_HEADER_VALUES);
+    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket, bQuoteHeaderValues);
 
     // Time the transmission
     final StopWatch aSW = StopWatch.createdStarted ();

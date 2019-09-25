@@ -126,6 +126,11 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractActiveNetModule.class);
 
+  /** Attribute name for quoting header values (boolean) */
+  public static final String ATTR_QUOTE_HEADER_VALUES = "quoteheadervalues";
+  /** Default quote header values: false */
+  public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
+
   private MainThread m_aMainThread;
 
   public AbstractActiveNetModule ()

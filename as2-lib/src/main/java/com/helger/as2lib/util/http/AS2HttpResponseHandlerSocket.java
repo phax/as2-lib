@@ -57,10 +57,31 @@ import com.helger.http.EHttpVersion;
 public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
 {
   private final Socket m_aSocket;
+  private final boolean m_bQuoteHeaderValues;
 
-  public AS2HttpResponseHandlerSocket (@Nonnull final Socket aSocket)
+  public AS2HttpResponseHandlerSocket (@Nonnull final Socket aSocket, final boolean bQuoteHeaderValues)
   {
     m_aSocket = ValueEnforcer.notNull (aSocket, "Socket");
+    m_bQuoteHeaderValues = bQuoteHeaderValues;
+  }
+
+  /**
+   * @return The socket provided in the constructor. Never <code>null</code>.
+   */
+  @Nonnull
+  public final Socket getSocket ()
+  {
+    return m_aSocket;
+  }
+
+  /**
+   * @return <code>true</code> if HTTP header values should be quoted,
+   *         <code>false</code> if not.
+   * @since 4.4.4
+   */
+  public final boolean isQuoteHeaderHeaderValues ()
+  {
+    return m_bQuoteHeaderValues;
   }
 
   /**
@@ -99,8 +120,8 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
                                      CHttp.EOL;
       aOS.write (sHttpStatusLine.getBytes (CHttp.HTTP_CHARSET));
 
-      // Add response headers
-      for (final String sHeaderLine : aHeaders.getAllHeaderLines (true))
+      // Add response headers (unify header lines anyway)
+      for (final String sHeaderLine : aHeaders.getAllHeaderLines (true, m_bQuoteHeaderValues))
         aOS.write ((sHeaderLine + CHttp.EOL).getBytes (CHttp.HTTP_CHARSET));
 
       // Empty line as separator
@@ -112,10 +133,5 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
       // Done
       aOS.flush ();
     }
-  }
-
-  public Socket getSocket ()
-  {
-    return m_aSocket;
   }
 }

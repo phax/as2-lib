@@ -39,10 +39,23 @@ import com.helger.commons.io.stream.StreamHelper;
 public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpResponseHandler
 {
   private final HttpServletResponse m_aHttpResponse;
+  private final boolean m_bQuoteHeaderValues;
 
-  public AS2OutputStreamCreatorHttpServletResponse (@Nonnull final HttpServletResponse aHttpResponse)
+  public AS2OutputStreamCreatorHttpServletResponse (@Nonnull final HttpServletResponse aHttpResponse,
+                                                    final boolean bQuoteHeaderValues)
   {
     m_aHttpResponse = ValueEnforcer.notNull (aHttpResponse, "HttpResponse");
+    m_bQuoteHeaderValues = bQuoteHeaderValues;
+  }
+
+  /**
+   * @return <code>true</code> if HTTP header values should be quoted,
+   *         <code>false</code> if not.
+   * @since 4.4.4
+   */
+  public final boolean isQuoteHeaderHeaderValues ()
+  {
+    return m_bQuoteHeaderValues;
   }
 
   public void sendHttpResponse (@Nonnegative final int nHttpResponseCode,
@@ -52,8 +65,8 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
     // Set status code
     m_aHttpResponse.setStatus (nHttpResponseCode);
 
-    // Add headers
-    aHeaders.forEachSingleHeader ( (k, v) -> m_aHttpResponse.addHeader (k, HttpHeaderMap.getUnifiedValue (v)), true);
+    // Add headers (unify always)
+    aHeaders.forEachSingleHeader ( (k, v) -> m_aHttpResponse.addHeader (k, v), true, m_bQuoteHeaderValues);
 
     // Write response body
     final OutputStream aOS = StreamHelper.getBuffered (m_aHttpResponse.getOutputStream ());

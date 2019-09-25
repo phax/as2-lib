@@ -137,7 +137,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     final AS2Message aMsg = new AS2Message ();
 
-    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket);
+    final boolean bQuoteHeaderValues = m_aModule.attrs ()
+                                                .getAsBoolean (AbstractActiveNetModule.ATTR_QUOTE_HEADER_VALUES,
+                                                               AbstractActiveNetModule.DEFAULT_QUOTE_HEADER_VALUES);
+    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket, bQuoteHeaderValues);
 
     byte [] aData = null;
 
