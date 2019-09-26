@@ -38,6 +38,9 @@ import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
 
 public class AS2MDNReceiverModule extends AbstractActiveNetModule
 {
+  public AS2MDNReceiverModule ()
+  {}
+
   @Override
   @Nonnull
   public AS2MDNReceiverHandler createHandler ()
