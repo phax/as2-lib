@@ -32,7 +32,8 @@
  */
 package com.helger.as2lib;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -46,6 +47,9 @@ public final class CAS2InfoTest
   @Test
   public void testBasic () throws Exception
   {
-    assertTrue (!CAS2Info.VERSION.equals ("undefined"));
+    assertNotEquals ("undefined", CAS2Info.VERSION);
+
+    // Check variable resolution
+    assertFalse (CAS2Info.VERSION.contains ("${"));
   }
 }
