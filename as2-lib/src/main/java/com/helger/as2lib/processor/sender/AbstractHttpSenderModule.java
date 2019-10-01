@@ -47,9 +47,11 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.DefaultHTTPOutgoingDumperFactory;
+import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.as2lib.util.http.AS2HttpClient;
+import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -99,6 +101,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
+  private IHTTPIncomingDumper m_aIncomingDumper;
 
   public AbstractHttpSenderModule ()
   {}
@@ -118,6 +121,50 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public final void setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
   {
     m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
+  }
+
+  /**
+   * @return The specific incoming dumper of this receiver. May be
+   *         <code>null</code>.
+   * @since v4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getIncomingDumper ()
+  {
+    return m_aIncomingDumper;
+  }
+
+  /**
+   * Get the customized incoming dumper, falling back to the global incoming
+   * dumper if no specific dumper is set.
+   *
+   * @return The effective incoming dumper. May be <code>null</code>.
+   * @since v4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getEffectiveIncomingDumper ()
+  {
+    // Dump on demand
+    IHTTPIncomingDumper aIncomingDumper = m_aIncomingDumper;
+    if (aIncomingDumper == null)
+    {
+      // Fallback to global dumper
+      aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+    }
+    return aIncomingDumper;
+  }
+
+  /**
+   * Set the specific incoming dumper of this receiver. If this is set, it
+   * overrides the global dumper.
+   *
+   * @param aIncomingDumper
+   *        The specific incoming dumper to be used. May be <code>null</code>.
+   * @since v4.4.5
+   */
+  public final void setIncomingDumper (@Nullable final IHTTPIncomingDumper aIncomingDumper)
+  {
+    m_aIncomingDumper = aIncomingDumper;
   }
 
   /**

@@ -95,11 +95,20 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   private final AS2MDNReceiverModule m_aModule;
   private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
 
+  /**
+   * @param aModule
+   *        The receiver module for attributes, session etc. May not be
+   *        <code>null</code>.
+   */
   public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
     m_aModule = ValueEnforcer.notNull (aModule, "Module");
   }
 
+  /**
+   * @return The receiver module passed in the constructor. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public final AS2MDNReceiverModule getModule ()
   {
@@ -148,7 +157,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
-      final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+      final IHTTPIncomingDumper aIncomingDumper = getEffectiveIncomingDumper ();
       final DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
                                                                    aResponseHandler,
                                                                    aMsg,

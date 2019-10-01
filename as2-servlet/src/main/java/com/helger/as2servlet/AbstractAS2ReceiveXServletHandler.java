@@ -152,9 +152,29 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
   }
 
   /**
+   * Get the customized incoming dumper, falling back to the global incoming
+   * dumper if no specific dumper is set.
+   *
+   * @return The effective incoming dumper. May be <code>null</code>.
+   * @since v4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getEffectiveIncomingDumper ()
+  {
+    // Dump on demand
+    IHTTPIncomingDumper aIncomingDumper = m_aIncomingDumper;
+    if (aIncomingDumper == null)
+    {
+      // Fallback to global dumper
+      aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+    }
+    return aIncomingDumper;
+  }
+
+  /**
    * Set the specific incoming dumper of this servlet. If this is set, it
    * overrides the global dumper.
-   * 
+   *
    * @param aIncomingDumper
    *        The specific incoming dumper to be used. May be <code>null</code>.
    * @since v4.4.5
@@ -261,12 +281,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     }
 
     // Dump on demand
-    IHTTPIncomingDumper aIncomingDumper = m_aIncomingDumper;
-    if (aIncomingDumper == null)
-    {
-      // Fallback to global dumper
-      aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
-    }
+    final IHTTPIncomingDumper aIncomingDumper = getEffectiveIncomingDumper ();
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (true), aMsgData, aMsg);
 

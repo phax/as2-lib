@@ -85,7 +85,6 @@ import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
-import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.functional.IConsumer;
@@ -942,7 +941,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
-        final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+        final IHTTPIncomingDumper aIncomingDumper = getEffectiveIncomingDumper ();
         _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper, aIncomingDumper);
       }
     }

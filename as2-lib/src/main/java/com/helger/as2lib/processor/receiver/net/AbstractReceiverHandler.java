@@ -77,6 +77,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractReceiverHandler.class);
 
   private IConsumer <X509Certificate> m_aVerificationCertificateConsumer;
+  private IHTTPIncomingDumper m_aIncomingDumper;
 
   /**
    * @return The consumer for the effective certificate upon signature
@@ -103,6 +104,50 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   {
     m_aVerificationCertificateConsumer = aVerificationCertificateConsumer;
     return this;
+  }
+
+  /**
+   * @return The specific incoming dumper of this receiver. May be
+   *         <code>null</code>.
+   * @since v4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getIncomingDumper ()
+  {
+    return m_aIncomingDumper;
+  }
+
+  /**
+   * Get the customized incoming dumper, falling back to the global incoming
+   * dumper if no specific dumper is set.
+   *
+   * @return The effective incoming dumper. May be <code>null</code>.
+   * @since v4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getEffectiveIncomingDumper ()
+  {
+    // Dump on demand
+    IHTTPIncomingDumper aIncomingDumper = m_aIncomingDumper;
+    if (aIncomingDumper == null)
+    {
+      // Fallback to global dumper
+      aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+    }
+    return aIncomingDumper;
+  }
+
+  /**
+   * Set the specific incoming dumper of this receiver. If this is set, it
+   * overrides the global dumper.
+   *
+   * @param aIncomingDumper
+   *        The specific incoming dumper to be used. May be <code>null</code>.
+   * @since v4.4.5
+   */
+  public final void setIncomingDumper (@Nullable final IHTTPIncomingDumper aIncomingDumper)
+  {
+    m_aIncomingDumper = aIncomingDumper;
   }
 
   @Nonnull
