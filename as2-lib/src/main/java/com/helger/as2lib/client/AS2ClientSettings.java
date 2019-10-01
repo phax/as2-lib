@@ -48,6 +48,7 @@ import com.helger.as2lib.crypto.IMICMatchingHandler;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
+import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
@@ -130,6 +131,7 @@ public class AS2ClientSettings implements Serializable
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
+  private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private IMICMatchingHandler m_aMICMatchingHandler;
   private IConsumer <X509Certificate> m_aVerificationCertificateConsumer;
 
@@ -816,6 +818,31 @@ public class AS2ClientSettings implements Serializable
   public final AS2ClientSettings setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
   {
     m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
+    return this;
+  }
+
+  /**
+   * @return The incoming dumper. May be <code>null</code>.
+   * @since 4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getHttpIncomingDumper ()
+  {
+    return m_aHttpIncomingDumper;
+  }
+
+  /**
+   * Set the HTTP incoming dumper.
+   *
+   * @param aHttpIncomingDumper
+   *        The dumper to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.5
+   */
+  @Nonnull
+  public final AS2ClientSettings setHttpIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpIncomingDumper)
+  {
+    m_aHttpIncomingDumper = aHttpIncomingDumper;
     return this;
   }
 

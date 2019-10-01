@@ -101,7 +101,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
-  private IHTTPIncomingDumper m_aIncomingDumper;
+  private IHTTPIncomingDumper m_aHttpIncomingDumper;
 
   public AbstractHttpSenderModule ()
   {}
@@ -129,9 +129,9 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    * @since v4.4.5
    */
   @Nullable
-  public final IHTTPIncomingDumper getIncomingDumper ()
+  public final IHTTPIncomingDumper getHttpIncomingDumper ()
   {
-    return m_aIncomingDumper;
+    return m_aHttpIncomingDumper;
   }
 
   /**
@@ -142,29 +142,29 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    * @since v4.4.5
    */
   @Nullable
-  public final IHTTPIncomingDumper getEffectiveIncomingDumper ()
+  public final IHTTPIncomingDumper getEffectiveHttpIncomingDumper ()
   {
     // Dump on demand
-    IHTTPIncomingDumper aIncomingDumper = m_aIncomingDumper;
-    if (aIncomingDumper == null)
+    IHTTPIncomingDumper ret = m_aHttpIncomingDumper;
+    if (ret == null)
     {
       // Fallback to global dumper
-      aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+      ret = HTTPHelper.getHTTPIncomingDumper ();
     }
-    return aIncomingDumper;
+    return ret;
   }
 
   /**
    * Set the specific incoming dumper of this receiver. If this is set, it
    * overrides the global dumper.
    *
-   * @param aIncomingDumper
+   * @param aHttpIncomingDumper
    *        The specific incoming dumper to be used. May be <code>null</code>.
    * @since v4.4.5
    */
-  public final void setIncomingDumper (@Nullable final IHTTPIncomingDumper aIncomingDumper)
+  public final void setHttpIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpIncomingDumper)
   {
-    m_aIncomingDumper = aIncomingDumper;
+    m_aHttpIncomingDumper = aHttpIncomingDumper;
   }
 
   /**
@@ -202,8 +202,22 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
+   * Determine, if the SSL/TLS context should be used or not. By default this
+   * returns <code>true</code> if the URL starts with "https".
+   *
+   * @param sUrl
+   *        The URL to which the request is made.
+   * @return <code>true</code> to use SSL/TLS, <code>false</code> if not needed.
+   */
+  @OverrideOnDemand
+  public boolean isUseSSL (@Nonnull @Nonempty final String sUrl)
+  {
+    return EURLProtocol.HTTPS.isUsedInURL (sUrl.toLowerCase (Locale.ROOT));
+  }
+
+  /**
    * Generate a HttpClient connection. It works with streams and avoids holding
-   * whole messge in memory. note that bOutput, bInput, and bUseCaches are not
+   * whole message in memory. note that bOutput, bInput, and bUseCaches are not
    * supported
    *
    * @param sUrl
@@ -224,7 +238,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     ValueEnforcer.notEmpty (sUrl, "URL");
     SSLContext aSSLCtx = null;
     HostnameVerifier aHV = null;
-    if (EURLProtocol.HTTPS.isUsedInURL (sUrl.toLowerCase (Locale.ROOT)))
+    if (isUseSSL (sUrl))
     {
       // Create SSL context and HostnameVerifier
       try

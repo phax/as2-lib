@@ -941,7 +941,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
-        final IHTTPIncomingDumper aIncomingDumper = getEffectiveIncomingDumper ();
+        final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
         _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper, aIncomingDumper);
       }
     }

@@ -157,7 +157,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
-      final IHTTPIncomingDumper aIncomingDumper = getEffectiveIncomingDumper ();
+      final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
       final DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
                                                                    aResponseHandler,
                                                                    aMsg,

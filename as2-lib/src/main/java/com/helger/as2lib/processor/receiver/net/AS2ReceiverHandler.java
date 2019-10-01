@@ -698,7 +698,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     try
     {
       // Read in the message request, headers, and data
-      final IHTTPIncomingDumper aIncomingDumper = getEffectiveIncomingDumper ();
+      final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
       aMsgDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
                                                  aResponseHandler,
                                                  aMsg,
