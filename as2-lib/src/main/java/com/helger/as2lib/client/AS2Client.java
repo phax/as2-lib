@@ -417,6 +417,8 @@ public class AS2Client
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_QUOTE_HEADER_VALUES, aSettings.isQuoteHeaderValues ());
         aSender.setHttpOutgoingDumperFactory (aSettings.getHttpOutgoingDumperFactory ());
+        aSender.setMICMatchingHandler (aSettings.getMICMatchingHandler ());
+        aSender.setVerificationCertificateConsumer (aSettings.getVerificationCertificateConsumer ());
 
         // Add all custom headers
         aMsg.headers ().setAllHeaders (aSettings.customHeaders ());

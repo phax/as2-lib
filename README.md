@@ -26,6 +26,9 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
 
 # News and noteworthy
 
+* v4.4.5 - work in progress
+    * Added custom MIC matching handler to class `AS2ClientSettings` 
+    * Added the possibility to provide a custom callback to receive the certificate used in class `AS2ClientSettings` 
 * v4.4.4 - 2019-09-26
     * Removed all information about the exception from the MDN (see [#94](https://github.com/phax/as2-lib/pull/94))
     * Updated to ph-commons 9.3.7

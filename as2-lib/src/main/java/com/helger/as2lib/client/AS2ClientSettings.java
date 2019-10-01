@@ -44,12 +44,14 @@ import com.helger.as2lib.cert.IStorableCertificateFactory;
 import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
+import com.helger.as2lib.crypto.IMICMatchingHandler;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.functional.IConsumer;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.StringHelper;
 import com.helger.security.keystore.EKeyStoreType;
@@ -127,7 +129,9 @@ public class AS2ClientSettings implements Serializable
   private boolean m_bQuoteHeaderValues = DEFAULT_QUOTE_HEADER_VALUES;
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
-  private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = null;
+  private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
+  private IMICMatchingHandler m_aMICMatchingHandler;
+  private IConsumer <X509Certificate> m_aVerificationCertificateConsumer;
 
   public AS2ClientSettings ()
   {}
@@ -776,7 +780,7 @@ public class AS2ClientSettings implements Serializable
    * Set whether HTTP header values for outgoing messages should be quoted or
    * not according to RFC 2616. By default the headers are not quoted, as this
    * might be an interoperability issue.
-   * 
+   *
    * @param bQuoteHeaderValues
    *        <code>true</code> if quoting should be enabled, <code>false</code>
    *        if not.
@@ -824,5 +828,56 @@ public class AS2ClientSettings implements Serializable
   public final HttpHeaderMap customHeaders ()
   {
     return m_aCustomHeaders;
+  }
+
+  /**
+   * @return An optional MIC Matching handler. May be <code>null</code>.
+   * @since 4.4.5
+   */
+  @Nullable
+  public final IMICMatchingHandler getMICMatchingHandler ()
+  {
+    return m_aMICMatchingHandler;
+  }
+
+  /**
+   * Set a custom MIC matching handler
+   *
+   * @param aMICMatchingHandler
+   *        The handler to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.5
+   */
+  @Nonnull
+  public final AS2ClientSettings setMICMatchingHandler (@Nullable final IMICMatchingHandler aMICMatchingHandler)
+  {
+    m_aMICMatchingHandler = aMICMatchingHandler;
+    return this;
+  }
+
+  /**
+   * @return The custom verification certificate consumer to be used. May be
+   *         <code>null</code>.
+   * @since 4.4.5
+   */
+  @Nullable
+  public final IConsumer <X509Certificate> getVerificationCertificateConsumer ()
+  {
+    return m_aVerificationCertificateConsumer;
+  }
+
+  /**
+   * Set a custom MIC matching handler
+   *
+   * @param aVerificationCertificateConsumer
+   *        The factory to be used. May be <code>null</code>.
+   * @return this for chaining
+   * @since 4.4.5
+   */
+  @Nonnull
+  public final AS2ClientSettings setVerificationCertificateConsumer (@Nullable final IConsumer <X509Certificate> aVerificationCertificateConsumer)
+  {
+    m_aVerificationCertificateConsumer = aVerificationCertificateConsumer;
+    return this;
   }
 }
