@@ -48,7 +48,7 @@ import com.helger.as2lib.crypto.IMICMatchingHandler;
 import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
-import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.functional.IConsumer;

@@ -642,6 +642,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        URLConnection
    * @param aOriginalMIC
    *        mic value from original msg
+   * @param aIncomingDumper
+   *        Incoming dumper. May be <code>null</code>.
    * @throws OpenAS2Exception
    *         in case of an error
    * @throws IOException
@@ -649,7 +651,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    */
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
                                  @Nonnull final AS2HttpClient aHttpClient,
-                                 @Nonnull final MIC aOriginalMIC) throws OpenAS2Exception, IOException
+                                 @Nonnull final MIC aOriginalMIC,
+                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception,
+                                                                                      IOException
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Receiving synchronous MDN for message" + aMsg.getLoggingText ());
@@ -679,7 +683,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       }
 
       // Dump collected message
-      final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
       if (aIncomingDumper != null)
         aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true), aMDNStream.toByteArray (), aMDN);
 
@@ -804,7 +807,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                              @Nonnull final MimeBodyPart aSecuredMimePart,
                              @Nullable final MIC aMIC,
                              @Nonnull final EContentTransferEncoding eCTE,
-                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws OpenAS2Exception,
+                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
+                             @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception,
                                                                                   IOException,
                                                                                   MessagingException
   {
@@ -873,7 +877,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
             // go ahead to receive sync MDN
             // Note: If an MDN is requested, a MIC is present
             assert aMIC != null;
-            receiveSyncMDN (aMsg, aConn, aMIC);
+            receiveSyncMDN (aMsg, aConn, aMIC, aIncomingDumper);
 
             if (LOGGER.isInfoEnabled ())
               LOGGER.info ("message sent" + aMsg.getLoggingText ());
@@ -938,7 +942,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
-        _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper);
+        final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+        _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper, aIncomingDumper);
       }
     }
     catch (final HttpResponseException ex)

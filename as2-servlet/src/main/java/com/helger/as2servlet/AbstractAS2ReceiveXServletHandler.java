@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -71,6 +72,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
 
   private AS2Session m_aSession;
   private AS2ReceiverModule m_aReceiver;
+  private IHTTPIncomingDumper m_aIncomingDumper;
 
   /**
    * Create the AS2 session to be used based on the provided configuration file.
@@ -117,7 +119,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
    *         In case initialization failed
    */
   @Nonnull
-  protected AS2Session getSession ()
+  protected final AS2Session getSession ()
   {
     if (m_aSession == null)
       throw new IllegalStateException ("This servlet was not initialized properly! No AS2 session is present.");
@@ -131,11 +133,35 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
    *         In case initialization failed
    */
   @Nonnull
-  protected AS2ReceiverModule getReceiverModule ()
+  protected final AS2ReceiverModule getReceiverModule ()
   {
     if (m_aReceiver == null)
       throw new IllegalStateException ("This servlet was not initialized properly! No receiver is present.");
     return m_aReceiver;
+  }
+
+  /**
+   * @return The specific incoming dumper of this servlet. May be
+   *         <code>null</code>.
+   * @since v4.4.5
+   */
+  @Nullable
+  public final IHTTPIncomingDumper getIncomingDumper ()
+  {
+    return m_aIncomingDumper;
+  }
+
+  /**
+   * Set the specific incoming dumper of this servlet. If this is set, it
+   * overrides the global dumper.
+   * 
+   * @param aIncomingDumper
+   *        The specific incoming dumper to be used. May be <code>null</code>.
+   * @since v4.4.5
+   */
+  public final void setIncomingDumper (@Nullable final IHTTPIncomingDumper aIncomingDumper)
+  {
+    m_aIncomingDumper = aIncomingDumper;
   }
 
   /**
@@ -235,7 +261,12 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     }
 
     // Dump on demand
-    final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+    IHTTPIncomingDumper aIncomingDumper = m_aIncomingDumper;
+    if (aIncomingDumper == null)
+    {
+      // Fallback to global dumper
+      aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+    }
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (true), aMsgData, aMsg);
 

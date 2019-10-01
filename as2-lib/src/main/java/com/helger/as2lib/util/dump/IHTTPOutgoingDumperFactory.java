@@ -30,10 +30,9 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.http;
+package com.helger.as2lib.util.dump;
 
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.functional.IFunction;
 
 /**

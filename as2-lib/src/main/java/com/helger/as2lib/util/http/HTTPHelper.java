@@ -185,8 +185,8 @@ public final class HTTPHelper
   }
 
   /**
-   * @return the dumper for incoming HTTP requests or <code>null</code> if none
-   *         is present
+   * @return the global dumper for incoming HTTP requests or <code>null</code>
+   *         if none is present
    * @since 3.0.1
    */
   @Nullable
@@ -196,7 +196,7 @@ public final class HTTPHelper
   }
 
   /**
-   * @return the dumper factory for incoming HTTP requests. Never
+   * @return the global dumper factory for incoming HTTP requests. Never
    *         <code>null</code>.
    * @since 4.4.0
    */
@@ -207,7 +207,7 @@ public final class HTTPHelper
   }
 
   /**
-   * Set the factory for creating dumper for incoming HTTP requests.
+   * Set the global factory for creating dumper for incoming HTTP requests.
    *
    * @param aHttpDumperFactory
    *        The dumper factory to be used. May not be <code>null</code>.
@@ -230,6 +230,8 @@ public final class HTTPHelper
    *        The HTTP response handler to be used. May not be <code>null</code>.
    * @param aMsg
    *        The Message to be filled. May not be <code>null</code>.
+   * @param aIncomingDumper
+   *        Optional incoming HTTP dumper. May be <code>null</code>.
    * @return A {@link DataSource} that holds/refers to the body.
    * @throws IOException
    *         In case of error reading from the InputStream
@@ -239,7 +241,9 @@ public final class HTTPHelper
   @Nonnull
   public static DataSource readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                             @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                            @Nonnull final IMessage aMsg) throws IOException, MessagingException
+                                            @Nonnull final IMessage aMsg,
+                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
+                                                                                                 MessagingException
   {
     // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
@@ -331,7 +335,6 @@ public final class HTTPHelper
     }
 
     // Dump on demand
-    final IHTTPIncomingDumper aIncomingDumper = getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
                                            aBytePayLoad != null ? aBytePayLoad

@@ -75,6 +75,7 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
@@ -697,7 +698,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     try
     {
       // Read in the message request, headers, and data
-      aMsgDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg);
+      final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
+      aMsgDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
+                                                 aResponseHandler,
+                                                 aMsg,
+                                                 aIncomingDumper);
     }
     catch (final Exception ex)
     {

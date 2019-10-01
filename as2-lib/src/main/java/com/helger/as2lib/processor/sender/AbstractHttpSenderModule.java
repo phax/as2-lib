@@ -36,7 +36,6 @@ import java.io.File;
 import java.net.Proxy;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,10 +46,10 @@ import javax.net.ssl.TrustManager;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.as2lib.util.dump.HTTPOutgoingDumperFileBased;
+import com.helger.as2lib.util.dump.DefaultHTTPOutgoingDumperFactory;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
+import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.as2lib.util.http.AS2HttpClient;
-import com.helger.as2lib.util.http.IHTTPOutgoingDumperFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -82,29 +81,6 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   /** Default quote header values: false */
   public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
 
-  private static final class OutgoingDumperFactory implements IHTTPOutgoingDumperFactory
-  {
-    // Counter to ensure unique filenames
-    private final AtomicInteger m_aCounter = new AtomicInteger (0);
-    private final File m_aDumpDirectory;
-
-    public OutgoingDumperFactory (@Nonnull final File aDumpDirectory)
-    {
-      m_aDumpDirectory = aDumpDirectory;
-    }
-
-    @Nonnull
-    public IHTTPOutgoingDumper apply (@Nonnull final IBaseMessage aMsg)
-    {
-      return new HTTPOutgoingDumperFileBased (new File (m_aDumpDirectory,
-                                                        "as2-outgoing-" +
-                                                                          Long.toString (System.currentTimeMillis ()) +
-                                                                          "-" +
-                                                                          Integer.toString (m_aCounter.getAndIncrement ()) +
-                                                                          ".http"));
-    }
-  }
-
   private static final IHTTPOutgoingDumperFactory DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
 
   static
@@ -116,7 +92,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     {
       final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
-      DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = new OutgoingDumperFactory (aDumpDirectory);
+      DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = new DefaultHTTPOutgoingDumperFactory (aDumpDirectory);
     }
     else
       DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = null;

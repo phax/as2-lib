@@ -41,6 +41,7 @@ import java.security.cert.X509Certificate;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 
@@ -147,9 +148,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // Read in the message request, headers, and data
     try
     {
+      final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
       final DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
                                                                    aResponseHandler,
-                                                                   aMsg);
+                                                                   aMsg,
+                                                                   aIncomingDumper);
       aData = StreamHelper.getAllBytes (aDataSourceBody.getInputStream ());
 
       // Asynch MDN 2007-03-12
@@ -383,7 +386,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     return true;
   }
 
-  public void reparse (@Nonnull final AS2Message aMsg, @Nonnull final AS2HttpClient aHttpClient) throws OpenAS2Exception
+  public void reparse (@Nonnull final AS2Message aMsg,
+                       @Nonnull final AS2HttpClient aHttpClient,
+                       @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
@@ -413,7 +418,6 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       StreamHelper.close (aMDNStream);
     }
 
-    final IHTTPIncomingDumper aIncomingDumper = HTTPHelper.getHTTPIncomingDumper ();
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
                                            aMDNStream != null ? aMDNStream.toByteArray ()

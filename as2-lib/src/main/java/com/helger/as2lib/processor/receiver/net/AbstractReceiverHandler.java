@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2InputStreamProvider;
@@ -115,10 +116,12 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   @Nonnull
   protected DataSource readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                                  @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                                 @Nonnull final IMessage aMsg) throws IOException, MessagingException
+                                                 @Nonnull final IMessage aMsg,
+                                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
+                                                                                                      MessagingException
   {
     // Main read
-    DataSource aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg);
+    DataSource aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg, aIncomingDumper);
 
     // Check the transfer encoding of the request. If none is provided, check
     // the partnership for a default one. If none is in the partnership used the
