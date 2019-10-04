@@ -37,6 +37,7 @@ public class AS2WebAppListener implements ServletContextListener
    *
    * @param aSC
    *        The servlet context. May not be <code>null</code>.
+   * @since 4.4.5
    */
   public static void staticInit (@Nonnull final ServletContext aSC)
   {
@@ -51,6 +52,8 @@ public class AS2WebAppListener implements ServletContextListener
 
   /**
    * Do the global shutdown when not using the {@link ServletContextListener}.
+   * 
+   * @since 4.4.5
    */
   public static void staticDestroy ()
   {

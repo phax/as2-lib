@@ -16,6 +16,7 @@
  */
 package com.helger.as2servlet;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
 
 import com.helger.commons.http.EHttpMethod;
@@ -28,12 +29,13 @@ import com.helger.xservlet.AbstractXServlet;
  *
  * @author Philip Helger
  */
-public final class AS2ReceiveServlet extends AbstractXServlet
+public class AS2ReceiveServlet extends AbstractXServlet
 {
   public AS2ReceiveServlet ()
   {}
 
   @Override
+  @OverridingMethodsMustInvokeSuper
   public void init () throws ServletException
   {
     // Multipart is handled specifically inside
