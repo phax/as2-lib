@@ -32,6 +32,7 @@ The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
     * Moved `IHTTPOutgoingDumperFactory` from package ".http" to ".dump" (incompatible change)
     * Made the `IHTTPIncomingDumper` customizable per handler
     * Made `AS2ReceiveServlet` non final and moved initialization code to `init()` (see [#96](https://github.com/phax/as2-lib/issues/96))
+    * The `as2-server` project was reintegrated into this repository for ease of maintenance
 * v4.4.4 - 2019-09-26
     * Removed all information about the exception from the MDN (see [#94](https://github.com/phax/as2-lib/pull/94))
     * Updated to ph-commons 9.3.7
