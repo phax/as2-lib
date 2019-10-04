@@ -7,22 +7,24 @@
 AS2 is a transport protocol specified in [RFC 4130](http://www.ietf.org/rfc/rfc4130.txt).
 AS2 version 1.1 adding compression is specified in [RFC 5402](http://www.ietf.org/rfc/rfc5402.txt).
 The MDN is specified in [RFC 3798](http://www.ietf.org/rfc/rfc3798.txt).
-Algorithm names are defined in [RFC 5751](https://www.ietf.org/rfc/rfc5751.txt) (S/MIME 3.2) which superseedes [RFC 3851](https://www.ietf.org/rfc/rfc3851.txt) (S/MIME 3.1);
+Algorithm names are defined in [RFC 5751](https://www.ietf.org/rfc/rfc5751.txt) (S/MIME 3.2) which supersedes [RFC 3851](https://www.ietf.org/rfc/rfc3851.txt) (S/MIME 3.1);
 
 This library is a fork of [OpenAS2](http://sourceforge.net/projects/openas2/) which did not 
-release updates since 2010 (as per August 2015 they are on GitHub at https://github.com/OpenAS2/OpenAs2App). I than split the project into a common library part (this project)
-and a [server part](https://github.com/phax/as2-server) which contains a stand alone server. This project also contains a simple AS2 client which can be used to send messages to other AS2 servers.
+release updates since 2010 (as per August 2015 they are on GitHub at https://github.com/OpenAS2/OpenAs2App). I than split the project into a common library part (the "as2-lib" submodule)
+and a server part (the "as2-server" submodule) which contains a stand alone (socket) server. The library project also contains a simple AS2 client which can be used to send messages to other AS2 servers (as part of "as2-lib").
 
 This project is used in my following other projects:
-  * **[as2-server](https://github.com/phax/as2-server)** - a stand alone AS2 server operating on a socket layer.
   * **[as2-peppol-client](https://github.com/phax/as2-peppol-client)** - a stand alone AS2 client that is capable of sending [PEPPOL](http://www.peppol.eu) compliant e-Procurement documents.
   * **[as2-peppol-servlet](https://github.com/phax/as2-peppol-servlet)** - integration into the Servlet specifications and for use with the [PEPPOL](http://www.peppol.eu) transport infrastructure including SBDH (Standard Business Document Header) handling.
   * **[as2-peppol-server](https://github.com/phax/as2-peppol-server)** - a stand alone Servlet based server to receive [PEPPOL](http://www.peppol.eu) AS2 messages.
+
+## Licensing
 
 The subproject `as2-lib` is licensed under the FreeBSD License.
 The subproject `as2-partnership-mongodb` is licensed under the Apache 2 license. 
 The subproject `as2-servlet` is licensed under the Apache 2 license. 
 The subproject `as2-demo-webapp` is licensed under the Apache 2 license.
+The subproject `as2-server` is licensed under the FreeBSD license.
 
 # News and noteworthy
 
@@ -214,13 +216,25 @@ For the receive servlet, add the following to your `pom.xml`:
 </dependency>
 ```
 
+For the standalone socket server, add the following to your `pom.xml`:
+
+```xml
+<dependency>
+  <groupId>com.helger</groupId>
+  <artifactId>as2-server</artifactId>
+  <version>4.4.4</version>
+</dependency>
+```
+
 # Building
 
-This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR file in the `as2-lib/target` directory. This library is used as the basis for the standalone [as2-server](https://github.com/phax/as2-server) which is an pure Java Open Source AS2 server.
+This project is build with Apache Maven 3.x. Simply call `mvn clean install` and you will end up with a JAR/WAR files in the respective `target` directories of the submodules.
 
-All projects require Java 1.8 for building and running.
+All projects require Java 1.8 or higher for building and running.
 
 The `as2-partnership-mongodb` sub-project downloads an embedded MongoDB from the official web site and extracts it for testing. If this makes problems specify the `-DskipTests=true` commandline parameter when invoking Maven.
+
+# Submodules
 
 ## as2-lib
 
@@ -251,6 +265,7 @@ This library manages the package `com.helger.as2lib` and all sub-packages:
   * com.helger.as2lib.util.javamail - utility classes for javax.mail handling
 
 ### System Properties
+
 The following system properties are available for global customization
 
   * boolean `AS2.useSecureRandom` - since v2.2.0 - determine whether the Java `SecureRandom` should be used or not. On some Unix/Linux systems the initialization of `SecureRandom` takes forever and this is how you easily disable it (`-DAS2.useSecureRandom=false`).
@@ -259,6 +274,7 @@ The following system properties are available for global customization
   * String `AS2.httpDumpDirectoryOutgoing` - since v4.1.0 - if this system property is defined, all outgoing HTTP traffic is dumped "as is" into the specified directory (e.g. `-DAS2.httpDumpDirectoryOutgoing=/var/dump/as2-http-outgoing`). The filename starts with "as2-outgoing-", contains the current timestamp as milliseconds, followed by a dash and a unique index and finally has the extension ".http".
   
 ### AS2 client
+
 `as2-lib` ships with a powerful client to send AS2 messages. It can easily be embedded in standalone Java applications and does not require any server part. All the necessary classes are in the package `com.helger.as2lib.client`.
 
 For a quick start look at https://github.com/phax/as2-lib/blob/master/as2-lib/src/test/java/com/helger/as2lib/supplementary/main/MainSendToMendelsonTestServer.java as a working example on how to send an arbitrary file to the Mendelson test server.
@@ -268,17 +284,21 @@ The client basically separates between per-partnership settings (class `AS2Clien
 The response of a client request is defined by class `AS2ClientResponse`. It stores the original message ID, the received MDN/the occurred exception and the execution duration. The interpretation of the received MDN is up to the user.
 
 ## as2-partnership-mongodb
+
 This is an implementation of interface `com.helger.as2lib.partner.IPartnershipFactory` from as2-lib using MongoDB as the backend.
-Tests are done with Groovy and Spock.
+
+Usage: reference the class `com.helger.as2lib.partner.mongodb.MongoDBPartnershipFactory` in your configuration as the partnership factory.
 
 This sub-project is licensed under the Apache 2 License.
 
 ## as2-servlet
+
 A stand alone servlet that takes AS2 requests and handles them via a `AS2ServletReceiverModule`.
 
 This sub-project is licensed under the Apache 2 License.
 
 ### Usage
+
 To use this project you have to do the following - all described in more detail below:
   1. Add the `as2-servlet` project as a dependency to your project - e.g. via Maven
   2. Modify your `WEB-INF/web.xml` file so that it references the `com.helger.as2servlet.AS2ReceiveServlet`.
@@ -286,7 +306,9 @@ To use this project you have to do the following - all described in more detail 
   4. Create a key store file (e.g.) called `server-certs.p12` located in the same folder as the configuration file. The keystore type must be `PKCS12`. It must at least contain your private key. The path and the password of the keystore must be set in the AS2 configuration file.
 
 ### WEB-INF/web.xml configuration  
+
 Example `WEB-INF/web.xml` configuration:
+
 ```xml
   <servlet>
     <servlet-name>AS2ReceiveServlet</servlet-name>
@@ -301,12 +323,47 @@ Example `WEB-INF/web.xml` configuration:
     <url-pattern>/as2/*</url-pattern>
   </servlet-mapping>
 ```
+
 As you can see, a configuration file called `as2-server-data/as2-server-config.xml` is referenced as an `init-param` of the servlet. The name of the `init-param` must be `as2-servlet-config-filename`. Please make sure to insert the correct **absolute path** to the configuration file inside the `param-value` element.
 
 In this example the servlet is mapped to the path `/as2` meaning that messages must be targeted to this URL (e.g. `https://myserver/as2`). 
 
 
-### AS2 Configuration file
+## as2-server
+
+### Configuration
+
+To start the server: run class `com.helger.as2.app.MainOpenAS2Server`
+
+Startup arguments (required): `src/main/resources/config/config.xml`
+This configuration file should be the starting point for your own customizations. You may simple copy the file to a different location and provide the absolute path to it instead of the example given above. 
+
+Waits for incoming AS2 messages on `http://localhost:10080/HttpReceiver`
+Note: the port for the incoming messages can be configured in the configuration file.
+
+Than run `com.helger.as2.test.TestClient` as a Java main application to perform a simple AS2 transmission.
+
+No database or additional software is needed to exchange AS2 messages!
+
+### Building and running from source
+
+To run this server stand-alone from the source build, perform the following steps.
+In the below commands `x.y.z` denotes the effective version number
+
+1. build the binary artefacts using Apache Maven 3.x: `mvn clean install -Pwithdep` (selects the profile "withdep" which means "with dependencies"). On Windows you may run `build.cmd` as an alternative.
+  1. If this fails than potentially because a SNAPSHOT version of `as2-lib` is referenced. In that case check out the [as2-lib](https://github.com/phax/as2-lib/) project as well, run `mvn clean install` on as2-lib and go back to the first step on this project. 
+2. The resulting JAR file is than located at `standalone/as2-server.jar`
+3. Launch the server (note: `src/main/resources/config/config.xml` is the path to the configuration file to be used and may be changed): 
+  1. On Unix/Linux systems run the AS2 server using the following command (on one line):
+  
+     `java -cp "standalone/*" com.helger.as2.app.MainOpenAS2Server standalone/config/config.xml`
+
+  2. On Windows systems run the AS2 server using the following command (on one line) or execute the `run.cmd` file:
+  
+     `"%JAVA_HOME%\bin\java" -cp "standalone/*" com.helger.as2.app.MainOpenAS2Server standalone/config/config.xml`
+
+# AS2 Configuration file
+
 A special XML configuration file must be used to configure the AS2 handling. It contains:
   * a reference to the keystore to be used (in element `certificates`)
   * a reference to a partnership factory (storing the exchange combinations) (in element `partnerships`)
@@ -380,51 +437,6 @@ Complete example configuration file:
   </processor>
 </openas2>
 ```
-
-## as2-server
-
-### Maven usage
-
-Add the following to your pom.xml to use this artifact:
-
-```xml
-<dependency>
-  <groupId>com.helger</groupId>
-  <artifactId>as2-server</artifactId>
-  <version>4.4.4</version>
-</dependency>
-```
-
-### Configuration
-
-Start server: run class `com.helger.as2.app.MainOpenAS2Server`
-
-Startup arguments (required): `src/main/resources/config/config.xml`
-This configuration file should be the starting point for your own customizations. You may simple copy the file to a different location and provide the absolute path to it instead of the example given above. 
-
-Waits for incoming AS2 messages on `http://localhost:10080/HttpReceiver`
-Note: the port for the incoming messages can be configured in the configuration file.
-
-Than run `com.helger.as2.test.TestClient` as a Java main application to perform a simple AS2 transmission.
-
-No database or additional software is needed to exchange AS2 messages!
-
-### Building and running from source
-
-To run this server stand-alone from the source build, perform the following steps.
-In the below commands `x.y.z` denotes the effective version number
-
-1. build the binary artefacts using Apache Maven 3.x: `mvn clean install -Pwithdep` (selects the profile "withdep" which means "with dependencies"). On Windows you may run `build.cmd` as an alternative.
-  1. If this fails than potentially because a SNAPSHOT version of `as2-lib` is referenced. In that case check out the [as2-lib](https://github.com/phax/as2-lib/) project as well, run `mvn clean install` on as2-lib and go back to the first step on this project. 
-2. The resulting JAR file is than located at `standalone/as2-server.jar`
-3. Launch the server (note: `src/main/resources/config/config.xml` is the path to the configuration file to be used and may be changed): 
-  1. On Unix/Linux systems run the AS2 server using the following command (on one line):
-  
-     `java -cp "standalone/*" com.helger.as2.app.MainOpenAS2Server standalone/config/config.xml`
-
-  2. On Windows systems run the AS2 server using the following command (on one line) or execute the `run.cmd` file:
-  
-     `"%JAVA_HOME%\bin\java" -cp "standalone/*" com.helger.as2.app.MainOpenAS2Server standalone/config/config.xml`
 
 ---
 
