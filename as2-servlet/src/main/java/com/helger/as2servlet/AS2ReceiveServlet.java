@@ -16,6 +16,8 @@
  */
 package com.helger.as2servlet;
 
+import javax.servlet.ServletException;
+
 import com.helger.commons.http.EHttpMethod;
 import com.helger.xservlet.AbstractXServlet;
 
@@ -29,6 +31,10 @@ import com.helger.xservlet.AbstractXServlet;
 public final class AS2ReceiveServlet extends AbstractXServlet
 {
   public AS2ReceiveServlet ()
+  {}
+
+  @Override
+  public void init () throws ServletException
   {
     // Multipart is handled specifically inside
     settings ().setMultipartEnabled (false);
