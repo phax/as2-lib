@@ -277,13 +277,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                        " to " +
                        aSentFile.getAbsolutePath () +
                        aMsg.getLoggingText ());
-
         }
         catch (final IOException ex)
         {
-          final OpenAS2Exception se = new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " +
-                                                            aSentFile);
-          se.initCause (ex);
+          new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile,
+                                ex).terminate ();
         }
       }
       else
@@ -291,7 +289,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Trying to delete file " + aFile.getAbsolutePath ());
 
-        if (!aFile.delete ())
+        if (AS2IOHelper.getFileOperationManager ().deleteFileIfExisting (aFile).isFailure ())
         {
           // Delete the file if a sent directory isn't set
           throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile);

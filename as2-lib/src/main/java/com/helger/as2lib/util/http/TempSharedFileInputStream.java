@@ -44,7 +44,7 @@ import javax.mail.util.SharedFileInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.file.FileOperationManager;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableLong;
@@ -111,7 +111,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
     }
     finally
     {
-      FileOperationManager.INSTANCE.deleteFileIfExisting (m_aTempFile);
+      AS2IOHelper.getFileOperationManager ().deleteFileIfExisting (m_aTempFile);
     }
   }
 

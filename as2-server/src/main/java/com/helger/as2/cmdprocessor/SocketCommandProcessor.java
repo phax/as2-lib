@@ -239,9 +239,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
     try
     {
       while (true)
-      {
         processCommand ();
-      }
     }
     catch (final OpenAS2Exception e)
     {

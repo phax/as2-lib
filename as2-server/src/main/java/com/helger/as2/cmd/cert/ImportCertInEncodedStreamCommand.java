@@ -90,21 +90,22 @@ public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
                                      final String alias,
                                      final String encodedCert) throws CertificateException, OpenAS2Exception
   {
-
-    final NonBlockingByteArrayInputStream bais = new NonBlockingByteArrayInputStream (ByteCoder.decode (encodedCert)
-                                                                                               .getBytes ());
-    final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
-    while (bais.available () > 0)
+    final byte [] aBytes = ByteCoder.decode (encodedCert).getBytes ();
+    try (final NonBlockingByteArrayInputStream bais = new NonBlockingByteArrayInputStream (aBytes))
     {
-      final Certificate cert = cf.generateCertificate (bais);
-      if (cert instanceof X509Certificate)
+      final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
+      while (bais.available () > 0)
       {
-        certFx.addCertificate (alias, (X509Certificate) cert, true);
+        final Certificate cert = cf.generateCertificate (bais);
+        if (cert instanceof X509Certificate)
+        {
+          certFx.addCertificate (alias, (X509Certificate) cert, true);
 
-        final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK,
-                                                        "Certificate(s) imported successfully");
-        cmdRes.addResult ("Imported certificate: " + cert.toString ());
-        return cmdRes;
+          final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK,
+                                                          "Certificate(s) imported successfully");
+          cmdRes.addResult ("Imported certificate: " + cert.toString ());
+          return cmdRes;
+        }
       }
     }
 
