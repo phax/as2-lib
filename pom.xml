@@ -112,6 +112,11 @@
         <artifactId>as2-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>as2-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -133,5 +138,6 @@
     <module>as2-partnership-mongodb</module>
     <module>as2-servlet</module>
     <module>as2-demo-webapp</module>
+    <module>as2-server</module>
   </modules>
 </project>
