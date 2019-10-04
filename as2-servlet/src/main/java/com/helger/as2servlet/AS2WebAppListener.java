@@ -16,6 +16,7 @@
  */
 package com.helger.as2servlet;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -30,14 +31,34 @@ import com.helger.web.scope.mgr.WebScopeManager;
  */
 public class AS2WebAppListener implements ServletContextListener
 {
-  public void contextInitialized (final ServletContextEvent aSCE)
+  /**
+   * Do the global initialization when not using the
+   * {@link ServletContextListener}.
+   *
+   * @param aSC
+   *        The servlet context. May not be <code>null</code>.
+   */
+  public static void staticInit (@Nonnull final ServletContext aSC)
   {
-    final ServletContext aSC = aSCE.getServletContext ();
     WebScopeManager.onGlobalBegin (aSC);
   }
 
-  public void contextDestroyed (final ServletContextEvent aSce)
+  public void contextInitialized (@Nonnull final ServletContextEvent aSCE)
+  {
+    final ServletContext aSC = aSCE.getServletContext ();
+    staticInit (aSC);
+  }
+
+  /**
+   * Do the global shutdown when not using the {@link ServletContextListener}.
+   */
+  public static void staticDestroy ()
   {
     WebScopeManager.onGlobalEnd ();
+  }
+
+  public void contextDestroyed (@Nonnull final ServletContextEvent aSce)
+  {
+    staticDestroy ();
   }
 }
