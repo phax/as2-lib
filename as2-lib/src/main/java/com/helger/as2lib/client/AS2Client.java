@@ -418,7 +418,8 @@ public class AS2Client
         aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_QUOTE_HEADER_VALUES, aSettings.isQuoteHeaderValues ());
         aSender.setHttpOutgoingDumperFactory (aSettings.getHttpOutgoingDumperFactory ());
         aSender.setHttpIncomingDumper (aSettings.getHttpIncomingDumper ());
-        aSender.setMICMatchingHandler (aSettings.getMICMatchingHandler ());
+        if (aSettings.getMICMatchingHandler () != null)
+          aSender.setMICMatchingHandler (aSettings.getMICMatchingHandler ());
         aSender.setVerificationCertificateConsumer (aSettings.getVerificationCertificateConsumer ());
 
         // Add all custom headers
