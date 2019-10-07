@@ -693,10 +693,13 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (!bForceVerify && !isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
-    if (!(aPart.getContent () instanceof MimeMultipart))
+    // Get only once and check
+    // Throws "ParseException" if it is not a MIME message
+    final Object aContent = aPart.getContent ();
+    if (!(aContent instanceof MimeMultipart))
       throw new IllegalStateException ("Expected Part content to be MimeMultipart but it isn't. It is " +
-                                       ClassHelper.getClassName (aPart.getContent ()));
-    final MimeMultipart aMainPart = (MimeMultipart) aPart.getContent ();
+                                       ClassHelper.getClassName (aContent));
+    final MimeMultipart aMainPart = (MimeMultipart) aContent;
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (m_sSecurityProviderName)
                                                                                                             .build (),
