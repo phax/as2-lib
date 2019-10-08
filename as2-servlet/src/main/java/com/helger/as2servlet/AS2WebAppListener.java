@@ -52,7 +52,7 @@ public class AS2WebAppListener implements ServletContextListener
 
   /**
    * Do the global shutdown when not using the {@link ServletContextListener}.
-   * 
+   *
    * @since 4.4.5
    */
   public static void staticDestroy ()

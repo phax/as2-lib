@@ -20,11 +20,16 @@ package com.helger.as2demo.springboot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.helger.as2servlet.AS2WebAppListener;
+
 @SpringBootApplication
 public class As2SandboxApplication
 {
   public static void main (final String [] args)
   {
     SpringApplication.run (As2SandboxApplication.class, args);
+
+    // Shutdown here
+    AS2WebAppListener.staticDestroy ();
   }
 }
