@@ -364,9 +364,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return aCompressedBodyPart;
   }
 
-  private static void _log (@Nonnull final MimeBodyPart aMimePart, @Nonnull final String sContext) throws IOException,
-                                                                                                   MessagingException
+  private static void _logMimeBodyPart (@Nonnull final MimeBodyPart aMimePart,
+                                        @Nonnull final String sContext) throws IOException, MessagingException
   {
+    // Should always false in production
     if (false)
     {
       if (LOGGER.isInfoEnabled ())
@@ -414,7 +415,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
 
     MimeBodyPart aDataBP = aSrcPart;
-    _log (aDataBP, "source");
+    _logMimeBodyPart (aDataBP, "source");
 
     if (eCompressionType != null && bCompressBeforeSign)
     {
@@ -422,7 +423,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message before signing...");
       aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, eCTE);
-      _log (aDataBP, "compressBeforeSign");
+      _logMimeBodyPart (aDataBP, "compressBeforeSign");
 
       // Invoke callback, so that source of MIC can be calculated later
       // This is usually "IAS2Message.setData (aDataBP)"
@@ -443,7 +444,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                 bIncludeCertificateInSignedContent,
                                 bUseRFC3851MICAlg,
                                 eCTE);
-      _log (aDataBP, "signed");
+      _logMimeBodyPart (aDataBP, "signed");
     }
 
     if (eCompressionType != null && !bCompressBeforeSign)
@@ -452,7 +453,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Compressing outbound message after signing...");
       aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, eCTE);
-      _log (aDataBP, "compressAfterSign");
+      _logMimeBodyPart (aDataBP, "compressAfterSign");
     }
 
     if (eCryptAlgorithm != null)
@@ -460,7 +461,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Encrypting outbound message...");
       aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, eCTE);
-      _log (aDataBP, "encrypted");
+      _logMimeBodyPart (aDataBP, "encrypted");
     }
 
     return aDataBP;
