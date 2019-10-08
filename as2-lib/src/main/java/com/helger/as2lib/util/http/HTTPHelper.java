@@ -338,7 +338,7 @@ public final class HTTPHelper
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
                                            aBytePayLoad != null ? aBytePayLoad
-                                                                : "Large File Support: body was not read yet".getBytes (StandardCharsets.ISO_8859_1),
+                                                                : "Large File Support: body was not read yet, and therefore it cannot be dumped - sorry".getBytes (StandardCharsets.ISO_8859_1),
                                            aMsg);
 
     return aPayload;
