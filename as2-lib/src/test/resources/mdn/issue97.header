@@ -1,0 +1,11 @@
+AS2-To: ctm_mft
+AS2-From: ctm_mft
+AS2-Version: 1.1
+Date: "Mon, 07 Oct 2019 21:38:32 +0300"
+Server: "ph-OpenAS2 4.4.4"
+Mime-Version: 1.0
+Subject: "Your Requested MDN Response"
+Content-Transfer-Encoding: binary
+Content-Type: "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-1;    boundary=\"----=_Part_32_690701454.1570473512390\""
+Message-ID: "<ph-OpenAS2-07102019213832+0300-9309@ctm_mft_ctm_mft>"
+Content-Length: 3723

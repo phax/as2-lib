@@ -1,0 +1,59 @@
+------=_Part_32_690701454.1570473512390
+Content-Type: multipart/report; report-type=disposition-notification; 
+  boundary="----=_Part_30_418994727.1570473512375"
+
+------=_Part_30_418994727.1570473512375
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+The message sent to Recipient ctm_mft on Mon, 07 Oct 2019 21:38:32 +0300 with Subject MFT AS2 client send test message from ctm_mft to ctm_mft has been received, the EDI Interchange was successfully decrypted and it's integrity was verified. In addition, the sender of the message, Sender ctm_mft at Location 127.0.0.1 was authenticated as the originator of the message. There is no guarantee however that the EDI Interchange was syntactically correct, or was received by the EDI application/translator.
+
+------=_Part_30_418994727.1570473512375
+Content-Type: message/disposition-notification
+Content-Transfer-Encoding: 7bit
+
+Reporting-UA: ph-OpenAS2 4.4.4@127.0.0.1:10086
+Original-Recipient: rfc822; ctm_mft
+Final-Recipient: rfc822; ctm_mft
+Original-Message-ID: <mftas2_07102019213832125_ctm_mft_ctm_mft_dedc08b2181a4553a0996dc5eb258615_mfttest_0>
+Disposition: automatic-action/MDN-sent-automatically; processed
+Received-Content-MIC: WX3WE/vT631XugOIxrcgSd1YPVo=, sha-1
+
+
+------=_Part_30_418994727.1570473512375--
+
+------=_Part_32_690701454.1570473512390
+Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+AAA=
+------=_Part_32_690701454.1570473512390--

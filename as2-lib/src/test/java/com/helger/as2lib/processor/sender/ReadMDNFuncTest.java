@@ -63,7 +63,7 @@ import com.helger.security.certificate.CertificateHelper;
 public class ReadMDNFuncTest
 {
   @Test
-  public void testReadMDN () throws Exception
+  public void testReadMDN02 () throws Exception
   {
     String sPrefix = "mdn/4af6f84c-d882-4466-8e0c-305a7fbe37b3";
     sPrefix = "mdn/20190925-david";
@@ -123,5 +123,63 @@ public class ReadMDNFuncTest
       // expected to fail
       ex.printStackTrace ();
     }
+  }
+
+  @Test
+  public void testReadMDNIssue97 () throws Exception
+  {
+    final String sPrefix = "mdn/issue97";
+    final IReadableResource aHeaderRes = new ClassPathResource (sPrefix + ".header");
+    assertTrue (aHeaderRes.exists ());
+    final IReadableResource aPayloadRes = new ClassPathResource (sPrefix + ".payload");
+    assertTrue (aPayloadRes.exists ());
+    if (false)
+    {
+      final IReadableResource aCertRes = new ClassPathResource (sPrefix + ".pem");
+      assertTrue (aCertRes.exists ());
+    }
+
+    final HttpHeaderMap aHeaders = new HttpHeaderMap ();
+    try (
+        NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
+    {
+      String s;
+      while ((s = aBR.readLine ()) != null)
+      {
+        final int i = s.indexOf (':');
+        final String sName = s.substring (0, i).trim ();
+        final String sValue = s.substring (i + 1).trim ();
+        aHeaders.addHeader (sName, sValue);
+      }
+    }
+
+    if (false)
+      assertEquals ("<MOKOsi42435716cf621589dnode1POP000046@sfgt1.unix.fina.hr>",
+                    aHeaders.getFirstHeaderValue ("Message-ID"));
+
+    // final X509Certificate aCert =
+    // CertificateHelper.convertStringToCertficateOrNull
+    // (StreamHelper.getAllBytesAsString (aCertRes,
+    // StandardCharsets.ISO_8859_1));
+    // assertNotNull (aCert);
+
+    final AS2Message aMsg = new AS2Message ();
+
+    // Create a MessageMDN and copy HTTP headers
+    final IMessageMDN aMDN = new AS2MessageMDN (aMsg);
+    aMDN.headers ().addAllHeaders (aHeaders);
+
+    final MimeBodyPart aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()),
+                                                 StreamHelper.getAllBytes (aPayloadRes));
+    assertNotNull (aPart);
+    aMsg.getMDN ().setData (aPart);
+
+    final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
+    assertFalse (aCryptoHelper.isSigned (aPart));
+    assertFalse (aCryptoHelper.isEncrypted (aPart));
+    assertFalse (aCryptoHelper.isCompressed (aPart.getContentType ()));
+
+    final Consumer <X509Certificate> aCertHolder = null;
+    AS2Helper.parseMDN (aMsg, null, true, aCertHolder);
   }
 }
