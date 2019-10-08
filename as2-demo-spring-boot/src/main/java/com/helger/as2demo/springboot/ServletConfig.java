@@ -17,7 +17,8 @@
  */
 package com.helger.as2demo.springboot;
 
-import static com.google.common.collect.ImmutableMap.of;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 
@@ -45,8 +46,10 @@ public class ServletConfig
 
     final ServletRegistrationBean <AS2ReceiveServlet> bean = new ServletRegistrationBean <> (new AS2ReceiveServlet (),
                                                                                              "/as2");
-    bean.setInitParameters (of (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME,
-                                "config/config.xml"));
+    final Map <String, String> aInitParams = new HashMap <> ();
+    aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME,
+                     "config/config.xml");
+    bean.setInitParameters (aInitParams);
     return bean;
   }
 }

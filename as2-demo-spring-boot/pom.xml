@@ -26,17 +26,20 @@
     <artifactId>as2-lib-parent-pom</artifactId>
     <version>4.4.5-SNAPSHOT</version>
   </parent>
-<!--
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.9.RELEASE</version>
-        <relativePath/>
-    </parent>
--->
   <artifactId>as2-demo-spring-boot</artifactId>
+  <packaging>jar</packaging>
   <name>as2-demo-spring-boot</name>
   <description>Demo project for Spring Boot</description>
+  <url>https://github.com/phax/as2-lib/as2-demo-spring-boot</url>
+  <inceptionYear>2019</inceptionYear>
+  
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <properties>
     <spring-boot.version>2.1.9.RELEASE</spring-boot.version>
@@ -47,11 +50,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
       <version>${spring-boot.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>28.1-jre</version>
     </dependency>
 
     <dependency>
