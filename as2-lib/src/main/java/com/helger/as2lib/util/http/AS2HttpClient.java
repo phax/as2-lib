@@ -212,7 +212,7 @@ public class AS2HttpClient
    */
   @Nonnegative
   public long send (@Nonnull final InputStream aISToSend,
-                    @Nonnull final EContentTransferEncoding eCTE,
+                    @Nullable final EContentTransferEncoding eCTE,
                     @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws IOException
   {
     final CountingInputStream aCIS = new CountingInputStream (aISToSend);
@@ -230,13 +230,13 @@ public class AS2HttpClient
       {
         // Use MIME encoding here
         try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-            final OutputStream aEncodedOS = MimeUtility.encode (aDebugOS, eCTE.getID ()))
+            final OutputStream aEncodedOS = eCTE != null ? MimeUtility.encode (aDebugOS, eCTE.getID ()) : aDebugOS)
         {
           super.writeTo (aEncodedOS);
         }
         catch (final MessagingException ex)
         {
-          throw new IllegalStateException ("Failed to encode OutputStream with " + eCTE, ex);
+          throw new IllegalStateException ("Failed to encode OutputStream with CTE '" + eCTE + "'", ex);
         }
       }
     };

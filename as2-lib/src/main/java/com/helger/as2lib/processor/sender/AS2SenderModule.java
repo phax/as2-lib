@@ -806,7 +806,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final MimeBodyPart aSecuredMimePart,
                              @Nullable final MIC aMIC,
-                             @Nonnull final EContentTransferEncoding eCTE,
+                             @Nullable final EContentTransferEncoding eCTE,
                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
                              @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception,
                                                                                   IOException,
@@ -943,7 +943,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
         final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-        _sendViaHTTP (aMsg, aSecuredData, aMIC, eCTE, aOutgoingDumper, aIncomingDumper);
+        // Use no CTE, because it was set on all MIME parts
+        _sendViaHTTP (aMsg, aSecuredData, aMIC, true ? null : eCTE, aOutgoingDumper, aIncomingDumper);
       }
     }
     catch (final HttpResponseException ex)
