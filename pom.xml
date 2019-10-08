@@ -78,7 +78,7 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>9.1.3</version>
+        <version>9.1.4-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -133,5 +133,6 @@
     <module>as2-servlet</module>
     <module>as2-demo-webapp</module>
     <module>as2-server</module>
+    <module>as2-demo-spring-boot</module>
   </modules>
 </project>

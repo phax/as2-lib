@@ -1,0 +1,38 @@
+<!--
+
+    Copyright (C) 2018-2019 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+    Idea by: Sergey Yaskov
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<openas2>
+    <certificates classname="com.helger.as2lib.cert.CertificateFactory"
+                  type="pkcs12"
+                  filename="%home%/certs.p12"
+                  password="test"
+                  interval="300"/>
+    <partnerships classname="com.helger.as2lib.partner.SelfFillingPartnershipFactory"
+                  filename="%home%/partnerships.xml"/>
+
+    <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
+               pendingMDN="data/pendingMDN"
+               pendingMDNinfo="data/pendinginfoMDN">
+        <!-- port is required internally - simply ignore it for servlets -->
+        <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"
+                port="10080"
+                errordir="data/inbox/error"
+                errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>
+    </processor>
+</openas2>
