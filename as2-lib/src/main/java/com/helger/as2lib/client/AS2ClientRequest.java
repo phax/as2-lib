@@ -98,8 +98,8 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the content type to be used. Use this AFTER setData was called, as this
-   * may select a default MIME type.
+   * Set the content type to be used. Use this AFTER <code>setData</code> was
+   * called, as this may select a default MIME type.
    *
    * @param sContentType
    *        The content type. May neither be <code>null</code> nor empty.
@@ -114,7 +114,8 @@ public class AS2ClientRequest
 
   /**
    * @return The content type to be used. Defaults to
-   *         {@link #DEFAULT_CONTENT_TYPE}.
+   *         {@link #DEFAULT_CONTENT_TYPE}. Is overridden in the
+   *         <code>setData</code> methods.
    */
   @Nonnull
   @Nonempty
@@ -188,10 +189,20 @@ public class AS2ClientRequest
     return setData (new String (aBytes, aCharset), aCharset);
   }
 
+  /**
+   * Set the provided byte array as data. The "Content-Type" is set to
+   * "application/octet-stream".
+   *
+   * @param aData
+   *        The data to be used. May not be <code>null</code>.
+   * @return this for chaining.
+   */
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final byte [] aData)
   {
-    m_aDataByteArray = ValueEnforcer.notNull (aData, "Data");
+    ValueEnforcer.notNull (aData, "Data");
+
+    m_aDataByteArray = aData;
     m_sDataText = null;
     m_aDataCharset = null;
     m_aDataHandler = null;
@@ -199,24 +210,45 @@ public class AS2ClientRequest
     return this;
   }
 
+  /**
+   * Set the provided String as data. The "Content-Type" is set to "text/plain".
+   *
+   * @param sText
+   *        The data to be used. May not be <code>null</code>.
+   * @param aCharset
+   *        The charset to be used. May be <code>null</code>.
+   * @return this for chaining.
+   */
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final String sText, @Nullable final Charset aCharset)
   {
+    ValueEnforcer.notNull (sText, "Text");
+
     m_aDataByteArray = null;
-    m_sDataText = ValueEnforcer.notNull (sText, "Text");
+    m_sDataText = sText;
     m_aDataCharset = aCharset;
     m_aDataHandler = null;
     m_sContentType = CMimeType.TEXT_PLAIN.getAsStringWithoutParameters ();
     return this;
   }
 
+  /**
+   * Set the provided {@link DataHandler} as data. The "Content-Type" is
+   * directly taken from the provided handler.
+   *
+   * @param aDataHandler
+   *        The data handler to be used. May not be <code>null</code>.
+   * @return this for chaining.
+   */
   @Nonnull
   public AS2ClientRequest setData (@Nonnull final DataHandler aDataHandler)
   {
+    ValueEnforcer.notNull (aDataHandler, "DataHandler");
+
     m_aDataByteArray = null;
     m_sDataText = null;
     m_aDataCharset = null;
-    m_aDataHandler = ValueEnforcer.notNull (aDataHandler, "DataHandler");
+    m_aDataHandler = aDataHandler;
     m_sContentType = aDataHandler.getContentType ();
     return this;
   }
@@ -293,15 +325,18 @@ public class AS2ClientRequest
       {
         // Set text with an optional charset
         // Sets the "text/plain" content-type internally!
+        // This basically calls "setDataHandler (new DataHandler (text,
+        // "text/plain; charset="+charset))
         aPart.setText (m_sDataText, m_aDataCharset == null ? null : m_aDataCharset.name ());
       }
       else
         if (m_aDataHandler != null)
         {
+          // Use the provided data handler
           aPart.setDataHandler (m_aDataHandler);
         }
         else
-          throw new IllegalStateException ("No data specified in AS2 client request!");
+          throw new IllegalStateException ("No data specified in AS2 client request! A call to setData is missing.");
 
     // Set as filename as well
     if (m_sFilename != null)
