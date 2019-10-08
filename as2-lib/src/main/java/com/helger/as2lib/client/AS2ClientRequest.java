@@ -318,6 +318,8 @@ public class AS2ClientRequest
     if (m_aDataByteArray != null)
     {
       // Set content with a specific MIME type
+      // Removes the "Content-Type" and the "Content-Transfer-Encoding"
+      // headers
       aPart.setDataHandler (new DataHandler (m_aDataByteArray, m_sContentType));
     }
     else
@@ -327,12 +329,16 @@ public class AS2ClientRequest
         // Sets the "text/plain" content-type internally!
         // This basically calls "setDataHandler (new DataHandler (text,
         // "text/plain; charset="+charset))
+        // And that removes the "Content-Type" and the
+        // "Content-Transfer-Encoding" headers
         aPart.setText (m_sDataText, m_aDataCharset == null ? null : m_aDataCharset.name ());
       }
       else
         if (m_aDataHandler != null)
         {
           // Use the provided data handler
+          // Removes the "Content-Type" and the "Content-Transfer-Encoding"
+          // headers
           aPart.setDataHandler (m_aDataHandler);
         }
         else
@@ -351,11 +357,12 @@ public class AS2ClientRequest
                                               : CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
     }
 
-    // Set Content-Transfer-Encoding
-    // Don't do this. It is added on a per MIME part level
-    if (false)
-      if (m_eCTE != null)
-        aPart.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
+    // Set Content-Transfer-Encoding of the uncompressed, unsigned, unencrypted
+    // source message
+    // Because all sources uses DataHandler, setting the header here should be
+    // fine
+    if (m_eCTE != null)
+      aPart.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
 
     if (StringHelper.hasText (m_sContentDescription))
       aPart.setHeader (CHttpHeader.CONTENT_DESCRIPTION, m_sContentDescription);
