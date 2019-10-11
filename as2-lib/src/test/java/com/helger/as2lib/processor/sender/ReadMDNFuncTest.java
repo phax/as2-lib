@@ -45,6 +45,7 @@ import java.util.function.Consumer;
 import javax.mail.internet.MimeBodyPart;
 
 import org.bouncycastle.cms.CMSException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.helger.as2lib.crypto.ICryptoHelper;
@@ -126,6 +127,7 @@ public class ReadMDNFuncTest
   }
 
   @Test
+  @Ignore
   public void testReadMDNIssue97 () throws Exception
   {
     final String sPrefix = "mdn/issue97";
