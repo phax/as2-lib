@@ -42,6 +42,7 @@ import javax.mail.internet.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.codec.RFC2616Codec;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.StringHelper;
 
@@ -57,9 +58,13 @@ public final class AS2HttpHelper
   public static ContentType parseContentType (@Nullable final String sContentType)
   {
     if (StringHelper.hasText (sContentType))
+    {
+      // Auto decode is possible
+      final String sRealContentType = RFC2616Codec.isMaybeEncoded (sContentType) ? new RFC2616Codec ().getDecodedAsString (sContentType)
+                                                                                 : sContentType;
       try
       {
-        return new ContentType (sContentType);
+        return new ContentType (sRealContentType);
       }
       catch (final ParseException ex)
       {
@@ -67,6 +72,7 @@ public final class AS2HttpHelper
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Error parsing Content-Type '" + sContentType + "'", ex);
       }
+    }
     return null;
   }
 
@@ -81,7 +87,8 @@ public final class AS2HttpHelper
   public static InternetHeaders getAsInternetHeaders (@Nonnull final HttpHeaderMap aHeaders)
   {
     final InternetHeaders ret = new InternetHeaders ();
-    aHeaders.forEachSingleHeader (ret::addHeader, false);
+    // No unification/no masking
+    aHeaders.forEachSingleHeader (ret::addHeader, false, false);
     return ret;
   }
 }

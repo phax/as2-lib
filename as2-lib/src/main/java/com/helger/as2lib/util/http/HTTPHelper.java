@@ -323,7 +323,11 @@ public final class HTTPHelper
       {
         // Invalid content length (no int or too big)
         sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
-        throw new IOException ("Content-Length '" + sContentLength + "' is invalid");
+        throw new IOException ("Content-Length '" +
+                               sContentLength +
+                               "' is invalid. Only values between 0 and " +
+                               Integer.MAX_VALUE +
+                               " are allowed.");
       }
       aBytePayLoad = new byte [(int) nContentLength];
 
@@ -338,7 +342,7 @@ public final class HTTPHelper
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
                                            aBytePayLoad != null ? aBytePayLoad
-                                                                : "Large File Support: body was not read yet, and therefore it cannot be dumped - sorry".getBytes (StandardCharsets.ISO_8859_1),
+                                                                : "Payload body was not read yet, and therefore it cannot be dumped (yet) - sorry".getBytes (StandardCharsets.ISO_8859_1),
                                            aMsg);
 
     return aPayload;
