@@ -40,7 +40,7 @@ import com.helger.as2lib.CAS2Info;
 public final class CAS2Header
 {
   public static final String DEFAULT_CONNECTION = "close, TE";
-  public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender";
+  public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender-" + CAS2Info.VERSION;
   public static final String DEFAULT_MIME_VERSION = "1.0";
   /**
    * 1.0: default AS2 version<br>
