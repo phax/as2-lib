@@ -97,13 +97,20 @@ import com.helger.commons.wrapper.Wrapper;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.security.certificate.CertificateHelper;
 
+/**
+ * The main handler for receiving messages.
+ * 
+ * @author Philip Helger
+ */
 public class AS2ReceiverHandler extends AbstractReceiverHandler
 {
   public static final boolean DEFAULT_SEND_EXCEPTIONS_IN_MDN = false;
+  public static final boolean DEFAULT_SEND_EXCEPTION_STACKTRACE_IN_MDN = false;
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ReceiverHandler.class);
 
   private final AS2ReceiverModule m_aReceiverModule;
   private boolean m_bSendExceptionsInMDN = DEFAULT_SEND_EXCEPTIONS_IN_MDN;
+  private boolean m_bSendExceptionStackTraceInMDN = DEFAULT_SEND_EXCEPTION_STACKTRACE_IN_MDN;
 
   /**
    * @param aModule
@@ -126,8 +133,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * @return <code>true</code> if exception stack traces should be send in the
-   *         MDN, <code>false</code> if not. Default is
+   * @return <code>true</code> if exceptions should be send in the MDN,
+   *         <code>false</code> if not. Default is
    *         {@link #DEFAULT_SEND_EXCEPTIONS_IN_MDN}
    * @since 4.4.2
    */
@@ -138,7 +145,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
   /**
    * @param bSendExceptionsInMDN
-   *        <code>true</code> to send back exception stack traces in the MDN,
+   *        <code>true</code> to send back exception in the MDN,
    *        <code>false</code> if not.
    * @return this for chaining
    * @since 4.4.2
@@ -147,6 +154,37 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   public final AS2ReceiverHandler setSendExceptionsInMDN (final boolean bSendExceptionsInMDN)
   {
     m_bSendExceptionsInMDN = bSendExceptionsInMDN;
+    return this;
+  }
+
+  /**
+   * This method is only evaluated, if {@link #isSendExceptionsInMDN()} returns
+   * <code>true</code>.
+   *
+   * @return <code>true</code> if exception stack traces should be send in the
+   *         MDN, <code>false</code> if not. Default is
+   *         {@link #DEFAULT_SEND_EXCEPTION_STACKTRACE_IN_MDN}.
+   * @since 4.4.6
+   */
+  public final boolean isSendExceptionStackTraceInMDN ()
+  {
+    return m_bSendExceptionStackTraceInMDN;
+  }
+
+  /**
+   * This setting is only evaluated, if {@link #isSendExceptionsInMDN()} returns
+   * <code>true</code>.
+   *
+   * @param bSendExceptionStackTraceInMDN
+   *        <code>true</code> to send back exception stack traces in the MDN,
+   *        <code>false</code> if not.
+   * @return this for chaining
+   * @since 4.4.6
+   */
+  @Nonnull
+  public final AS2ReceiverHandler setSendExceptionStackTraceInMDN (final boolean bSendExceptionStackTraceInMDN)
+  {
+    m_bSendExceptionStackTraceInMDN = bSendExceptionStackTraceInMDN;
     return this;
   }
 
@@ -440,7 +478,20 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   {
     // Issue 90 - use CRLF as separator
     if (m_bSendExceptionsInMDN)
-      return CHttp.EOL + MessageParameters.getEscapedString (StackTraceHelper.getStackAsString (ex, true, CHttp.EOL));
+    {
+      final String sExceptionText;
+      if (m_bSendExceptionStackTraceInMDN)
+      {
+        // Message and stack trace
+        sExceptionText = StackTraceHelper.getStackAsString (ex, true, CHttp.EOL);
+      }
+      else
+      {
+        // Exception message only
+        sExceptionText = ex.toString ();
+      }
+      return CHttp.EOL + MessageParameters.getEscapedString (sExceptionText);
+    }
 
     // No information at all
     return "";
