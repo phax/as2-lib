@@ -61,6 +61,7 @@ import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.timing.StopWatch;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
@@ -96,13 +97,19 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
 
+      // Set all custom headers first (so that they are overridden with the
+      // mandatory ones in here)
+      // Use HttpHeaderMap and not String to ensure name casing is identical!
+      final HttpHeaderMap aHeaderMap = aMdn.headers ().getClone ();
+
+      aHeaderMap.setHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
+      aHeaderMap.setHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+
       final boolean bQuoteHeaderValues = attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
-      final AS2HttpHeaderSetter aHeaderWrapper = new AS2HttpHeaderSetter (aConn, aOutgoingDumper, bQuoteHeaderValues);
-      aHeaderWrapper.setHttpHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
-      aHeaderWrapper.setHttpHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
+      final AS2HttpHeaderSetter aHeaderSetter = new AS2HttpHeaderSetter (aConn, aOutgoingDumper, bQuoteHeaderValues);
       // Copy all the header from mdn to the RequestProperties of conn
       // Avoid double quoting
-      aMdn.headers ().forEachSingleHeader (aHeaderWrapper::setHttpHeader, false);
+      aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader, false);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();
