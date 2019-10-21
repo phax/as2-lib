@@ -30,7 +30,7 @@
              pendingMDN="data/pendingMDN"
              pendingMDNinfo="data/pendinginfoMDN">
     <!-- port is required internally - simply ignore it for servlets -->
-    <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"      
+    <module classname="com.helger.as2.webapp.module.ConfigurableAS2ServletReceiverModule"      
             port="10080"
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
