@@ -39,8 +39,7 @@ import javax.annotation.Nullable;
 
 import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.partner.Partnership;
 
 /**
@@ -59,48 +58,10 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
                                                              @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
 
   @Nonnull
-  public X509Certificate getCertificate (@Nonnull final IMessage aMsg,
+  public X509Certificate getCertificate (@Nonnull final IBaseMessage aMsg,
                                          @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     final String sAlias = getAlias (aMsg.partnership (), ePartnershipType);
     return internalGetCertificate (sAlias, ePartnershipType);
-  }
-
-  @Nullable
-  public X509Certificate getCertificateOrNull (@Nonnull final IMessage aMsg,
-                                               @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
-  {
-    try
-    {
-      return getCertificate (aMsg, ePartnershipType);
-    }
-    catch (final CertificateNotFoundException ex)
-    {
-      // No such certificate
-      return null;
-    }
-  }
-
-  @Nonnull
-  public X509Certificate getCertificate (@Nonnull final IMessageMDN aMDN,
-                                         @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
-  {
-    final String sAlias = getAlias (aMDN.partnership (), ePartnershipType);
-    return internalGetCertificate (sAlias, ePartnershipType);
-  }
-
-  @Nullable
-  public X509Certificate getCertificateOrNull (@Nonnull final IMessageMDN aMDN,
-                                               @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
-  {
-    try
-    {
-      return getCertificate (aMDN, ePartnershipType);
-    }
-    catch (final CertificateNotFoundException ex)
-    {
-      // No such certificate
-      return null;
-    }
   }
 }

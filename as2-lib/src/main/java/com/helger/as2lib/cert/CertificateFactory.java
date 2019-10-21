@@ -53,8 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
-import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
@@ -304,14 +303,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   }
 
   @Nonnull
-  public PrivateKey getPrivateKey (@Nullable final IMessage aMsg,
-                                   @Nullable final X509Certificate aCert) throws OpenAS2Exception
-  {
-    return getPrivateKey (aCert);
-  }
-
-  @Nonnull
-  public PrivateKey getPrivateKey (@Nullable final IMessageMDN aMDN,
+  public PrivateKey getPrivateKey (@Nullable final IBaseMessage aMsg,
                                    @Nullable final X509Certificate aCert) throws OpenAS2Exception
   {
     return getPrivateKey (aCert);
