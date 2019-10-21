@@ -35,6 +35,7 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
+import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
@@ -225,7 +226,8 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     final DataSource aPayload = new ByteArrayDataSource (aMsgData, sReceivedContentType, null);
 
     // This call internally invokes the AS2ServletSBDModule
-    getReceiverModule ().createHandler ().handleIncomingMessage (sClientInfo, aPayload, aMsg, aResponseHandler);
+    final AS2ReceiverHandler aReceiverHandler = getReceiverModule ().createHandler ();
+    aReceiverHandler.handleIncomingMessage (sClientInfo, aPayload, aMsg, aResponseHandler);
   }
 
   public final void onRequest (@Nonnull final HttpServletRequest aHttpRequest,
