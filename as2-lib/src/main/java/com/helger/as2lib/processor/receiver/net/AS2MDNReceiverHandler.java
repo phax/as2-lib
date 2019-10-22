@@ -33,10 +33,10 @@
 package com.helger.as2lib.processor.receiver.net;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
 import javax.activation.DataSource;
@@ -78,6 +78,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
+import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -324,18 +325,20 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // use original message id. to open the pending information file
       // from pendinginfo folder.
       final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-      final String sPendingInfoFile = getModule ().getSession ()
-                                                  .getMessageProcessor ()
-                                                  .attrs ()
-                                                  .getAsString (ATTR_PENDINGMDNINFO) +
+
+      final String sPendingInfoFile = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
+                                                                                        .getMessageProcessor ()
+                                                                                        .attrs ()
+                                                                                        .getAsString (ATTR_PENDINGMDNINFO)) +
                                       "/" +
                                       AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
 
-      String sOriginalMIC;
-      MIC aOriginalMIC;
-      File aPendingFile;
+      final String sOriginalMIC;
+      final MIC aOriginalMIC;
+      final File aPendingFile;
       try (
-          final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (new FileReader (sPendingInfoFile)))
+          final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
+                                                                                             StandardCharsets.ISO_8859_1))
       {
         // Get the original mic from the first line of pending information
         // file

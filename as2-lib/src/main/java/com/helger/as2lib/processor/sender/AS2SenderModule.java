@@ -223,29 +223,33 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Original MIC is '" + aMIC.getAsAS2String () + "'" + aMsg.getLoggingText ());
 
-      final String sPendingFolder = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
-                                                                                               .attrs ()
-                                                                                               .getAsString (ATTR_PENDINGMDNINFO));
       final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
-      final String sPendingFilename = FilenameHelper.getAsSecureValidASCIIFilename (getSession ().getMessageProcessor ()
-                                                                                                 .attrs ()
-                                                                                                 .getAsString (ATTR_PENDINGMDN)) +
+      final String sPendingFilename = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
+                                                                                         .attrs ()
+                                                                                         .getAsString (ATTR_PENDINGMDN)) +
                                       "/" +
+                                      sMsgFilename;
+
+      final String sPendingInfoFile = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
+                                                                                         .attrs ()
+                                                                                         .getAsString (ATTR_PENDINGMDNINFO)) +
+                                      FilenameHelper.UNIX_SEPARATOR_STR +
                                       sMsgFilename;
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Save Original MIC & message id information into folder '" +
-                     sPendingFolder +
+                     sPendingInfoFile +
                      "'" +
                      aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
-      try (final Writer aWriter = FileHelper.getWriter (new File (sPendingFolder + "/" + sMsgFilename),
-                                                        StandardCharsets.ISO_8859_1))
+      try (final Writer aWriter = FileHelper.getWriter (new File (sPendingInfoFile), StandardCharsets.ISO_8859_1))
       {
+        // Write in 2 lines
         aWriter.write (aMIC.getAsAS2String () + "\n" + sPendingFilename);
       }
+
       // remember
       aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
       aMsg.attrs ().putIn (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);

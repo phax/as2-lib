@@ -54,4 +54,25 @@ public final class AS2IOHelperTest
     assertEquals ("a", AS2IOHelper.getFilenameFromMessageID ("<<<<<a>>>>>"));
     assertEquals ("a@b.c", AS2IOHelper.getFilenameFromMessageID ("<<<<<a@b.c>>>>>"));
   }
+
+  @Test
+  public void testgetSafeFileAndFolderName ()
+  {
+    assertNull (AS2IOHelper.getSafeFileAndFolderName (null));
+    assertEquals ("", AS2IOHelper.getSafeFileAndFolderName (""));
+    assertEquals ("abc", AS2IOHelper.getSafeFileAndFolderName ("abc"));
+    assertEquals ("abc/def", AS2IOHelper.getSafeFileAndFolderName ("abc/def"));
+    assertEquals ("abc/def", AS2IOHelper.getSafeFileAndFolderName ("abc\\def"));
+    assertEquals ("abc/def/blub", AS2IOHelper.getSafeFileAndFolderName ("abc/def\\blub"));
+    assertEquals ("abc_/d_ef/g_hi", AS2IOHelper.getSafeFileAndFolderName ("abc</d|ef\\g*hi"));
+
+    assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("/abc"));
+    assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("\\abc"));
+    assertEquals ("abc/", AS2IOHelper.getSafeFileAndFolderName ("abc/"));
+    assertEquals ("abc/", AS2IOHelper.getSafeFileAndFolderName ("abc\\"));
+    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("/abc/"));
+    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("/abc\\"));
+    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("\\abc/"));
+    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("\\abc\\"));
+  }
 }

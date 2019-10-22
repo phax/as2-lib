@@ -226,4 +226,21 @@ public final class AS2IOHelper
     s = StringHelper.removeAll (s, '>');
     return FilenameHelper.getAsSecureValidASCIIFilename (s);
   }
+
+  @Nullable
+  public static String getSafeFileAndFolderName (@Nullable final String s)
+  {
+    if (StringHelper.hasNoText (s))
+      return s;
+
+    final String x = FilenameHelper.getPathUsingUnixSeparator (s);
+    final StringBuilder aSB = new StringBuilder ();
+    for (final String sPart : StringHelper.getExploded (FilenameHelper.UNIX_SEPARATOR, x))
+    {
+      final String sSecuredPart = FilenameHelper.getAsSecureValidASCIIFilename (sPart);
+      aSB.append (StringHelper.getNotNull (sSecuredPart, "")).append (FilenameHelper.UNIX_SEPARATOR);
+    }
+    // Cut the last separator
+    return aSB.deleteCharAt (aSB.length () - 1).toString ();
+  }
 }
