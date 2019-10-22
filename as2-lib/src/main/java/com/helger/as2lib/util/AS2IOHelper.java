@@ -233,12 +233,25 @@ public final class AS2IOHelper
     if (StringHelper.hasNoText (s))
       return s;
 
-    final String x = FilenameHelper.getPathUsingUnixSeparator (s);
+    final File aBase = new File (s);
+
     final StringBuilder aSB = new StringBuilder ();
-    for (final String sPart : StringHelper.getExploded (FilenameHelper.UNIX_SEPARATOR, x))
+    File f = aBase;
+    while (f != null)
     {
-      final String sSecuredPart = FilenameHelper.getAsSecureValidASCIIFilename (sPart);
-      aSB.append (StringHelper.getNotNull (sSecuredPart, "")).append (FilenameHelper.UNIX_SEPARATOR);
+      final String sName = f.getName ();
+      if (sName.length () == 0)
+      {
+        // drive letter on Windows
+        aSB.insert (0, FilenameHelper.getPathUsingUnixSeparator (f.getPath ()));
+      }
+      else
+      {
+        // Any path component
+        final String sSecuredName = FilenameHelper.getAsSecureValidASCIIFilename (sName);
+        aSB.insert (0, StringHelper.getNotNull (sSecuredName, "") + FilenameHelper.UNIX_SEPARATOR);
+      }
+      f = f.getParentFile ();
     }
     // Cut the last separator
     return aSB.deleteCharAt (aSB.length () - 1).toString ();

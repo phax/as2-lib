@@ -68,11 +68,16 @@ public final class AS2IOHelperTest
 
     assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("/abc"));
     assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("\\abc"));
-    assertEquals ("abc/", AS2IOHelper.getSafeFileAndFolderName ("abc/"));
-    assertEquals ("abc/", AS2IOHelper.getSafeFileAndFolderName ("abc\\"));
-    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("/abc/"));
-    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("/abc\\"));
-    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("\\abc/"));
-    assertEquals ("/abc/", AS2IOHelper.getSafeFileAndFolderName ("\\abc\\"));
+    assertEquals ("abc", AS2IOHelper.getSafeFileAndFolderName ("abc/"));
+    assertEquals ("abc", AS2IOHelper.getSafeFileAndFolderName ("abc\\"));
+    assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("/abc/"));
+    assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("/abc\\"));
+    assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("\\abc/"));
+    assertEquals ("/abc", AS2IOHelper.getSafeFileAndFolderName ("\\abc\\"));
+    assertEquals ("z:/abc", AS2IOHelper.getSafeFileAndFolderName ("z:\\abc\\"));
+    assertEquals ("z:/abc/test.txt", AS2IOHelper.getSafeFileAndFolderName ("z:\\abc/test.txt"));
+    assertEquals ("z:/a_bc/tes_t.txt", AS2IOHelper.getSafeFileAndFolderName ("z:\\a*bc/tesät.txt"));
+    assertEquals ("z:/com1", AS2IOHelper.getSafeFileAndFolderName ("z:\\com1"));
+    assertEquals ("z:/_com2", AS2IOHelper.getSafeFileAndFolderName ("z:\\com2"));
   }
 }
