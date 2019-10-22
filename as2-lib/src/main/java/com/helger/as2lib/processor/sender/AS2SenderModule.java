@@ -98,6 +98,7 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
+import com.helger.commons.system.ENewLineMode;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.cte.EContentTransferEncoding;
 
@@ -247,7 +248,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       try (final Writer aWriter = FileHelper.getWriter (new File (sPendingInfoFile), StandardCharsets.ISO_8859_1))
       {
         // Write in 2 lines
-        aWriter.write (aMIC.getAsAS2String () + "\n" + sPendingFilename);
+        aWriter.write (aMIC.getAsAS2String () + ENewLineMode.DEFAULT.getText () + sPendingFilename);
       }
 
       // remember
