@@ -34,14 +34,9 @@ package com.helger.as2lib.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.WillClose;
-import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
@@ -52,8 +47,6 @@ import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.LoggingFileOperationCallback;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.mutable.MutableLong;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
 
@@ -74,14 +67,6 @@ public final class AS2IOHelper
   public static FileOperationManager getFileOperationManager ()
   {
     return FOM;
-  }
-
-  @Nonnegative
-  public static long copy (@Nonnull @WillClose final InputStream aIS, @Nonnull @WillNotClose final OutputStream aOS)
-  {
-    final MutableLong aML = new MutableLong (0);
-    StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aML);
-    return aML.longValue ();
   }
 
   @Nonnull

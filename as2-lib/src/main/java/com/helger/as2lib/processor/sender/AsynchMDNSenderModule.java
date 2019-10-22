@@ -62,6 +62,8 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
+import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.mutable.MutableLong;
 import com.helger.commons.timing.StopWatch;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
@@ -125,7 +127,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       // Transfer the data
       final InputStream aMessageIS = aMdn.getData ().getInputStream ();
       final StopWatch aSW = StopWatch.createdStarted ();
-      final long nBytes = AS2IOHelper.copy (aMessageIS, aMsgOS);
+
+      final MutableLong aBytes = new MutableLong (0);
+      StreamHelper.copyInputStreamToOutputStream (aMessageIS, aMsgOS, aBytes);
 
       // Important for last MIME boundary
       aMsgOS.flush ();
@@ -135,7 +139,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       aSW.stop ();
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (aBytes.longValue (), aSW) + aMsg.getLoggingText ());
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
