@@ -34,7 +34,6 @@ package com.helger.as2lib.processor.sender;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -50,6 +49,7 @@ import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.ComponentNotFoundException;
@@ -58,13 +58,11 @@ import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
-import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.mutable.MutableLong;
 import com.helger.commons.timing.StopWatch;
+import com.helger.mail.cte.EContentTransferEncoding;
 
 public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 {
@@ -96,8 +94,11 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
     try
     {
+      if (aOutgoingDumper != null)
+        aOutgoingDumper.start (sUrl, aMsg);
+
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("connected to " + sUrl + aMsg.getLoggingText ());
+        LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
       // Set all custom headers first (so that they are overridden with the
       // mandatory ones in here)
@@ -110,44 +111,31 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       final boolean bQuoteHeaderValues = attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
       final AS2HttpHeaderSetter aHeaderSetter = new AS2HttpHeaderSetter (aConn, aOutgoingDumper, bQuoteHeaderValues);
       // Copy all the header from mdn to the RequestProperties of conn
-      // Avoid double quoting
-      aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader, false);
+      // Unification needed, because original MDN headers may contain newlines
+      aHeaderMap.forEachSingleHeader (aHeaderSetter::setHttpHeader, true, false);
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedHeaders ();
 
-      // Note: closing this stream causes connection abort errors on some AS2
-      // servers
-      OutputStream aMsgOS = aConn.getOutputStream ();
+      aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_IP, aConn.getURL ().getHost ());
+      aMsg.attrs ().putIn (CNetAttribute.MA_DESTINATION_PORT, aConn.getURL ().getPort ());
 
-      // This stream dumps the HTTP
-      if (aOutgoingDumper != null)
-        aMsgOS = aOutgoingDumper.getDumpOS (aMsgOS);
+      final InputStream aMsgIS = aMdn.getData ().getInputStream ();
 
       // Transfer the data
-      final InputStream aMessageIS = aMdn.getData ().getInputStream ();
       final StopWatch aSW = StopWatch.createdStarted ();
+      final long nBytes = aConn.send (aMsgIS, (EContentTransferEncoding) null, aOutgoingDumper);
+      aSW.stop ();
 
-      final MutableLong aBytes = new MutableLong (0);
-      StreamHelper.copyInputStreamToOutputStream (aMessageIS, aMsgOS, aBytes);
-
-      // Important for last MIME boundary
-      aMsgOS.flush ();
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("AS2 MDN transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
-      aSW.stop ();
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (aBytes.longValue (), aSW) + aMsg.getLoggingText ());
-
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
-      if (nResponseCode != CHttp.HTTP_OK &&
-          nResponseCode != CHttp.HTTP_CREATED &&
-          nResponseCode != CHttp.HTTP_ACCEPTED &&
-          nResponseCode != CHttp.HTTP_NO_CONTENT &&
-          nResponseCode != CHttp.HTTP_PARTIAL_CONTENT)
+      if (AS2HttpClient.isErrorResponseCode (nResponseCode))
       {
         if (LOGGER.isErrorEnabled ())
           LOGGER.error ("sent AsyncMDN [" +

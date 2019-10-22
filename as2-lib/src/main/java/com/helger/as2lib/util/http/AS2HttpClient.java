@@ -35,8 +35,6 @@ package com.helger.as2lib.util.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -71,6 +69,7 @@ import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.CountingInputStream;
@@ -86,8 +85,6 @@ public class AS2HttpClient
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpClient.class);
 
   private final RequestBuilder m_aRequestBuilder;
-  private PipedInputStream m_aPipedInputStream;
-  private PipedOutputStream m_aPipedOutputStream;
   private final CloseableHttpClient m_aCloseableHttpClient;
   private CloseableHttpResponse m_aCloseableHttpResponse;
 
@@ -154,49 +151,6 @@ public class AS2HttpClient
         LOGGER.error ("Failed to get URL from connection, URI: " + uri.toASCIIString (), ex);
       throw new OpenAS2Exception (ex.getCause ());
     }
-  }
-
-  /**
-   * Provides an output stream so user can write message content to it. Starts
-   * the sending to caller can start write to the received stream
-   *
-   * @return OutputStream to write message body to
-   * @throws IOException
-   *         in case of error
-   */
-  @Nonnull
-  public OutputStream getOutputStream () throws IOException
-  {
-    if (m_aPipedOutputStream == null)
-    {
-      m_aPipedInputStream = new PipedInputStream ();
-      m_aPipedOutputStream = new PipedOutputStream (m_aPipedInputStream);
-    }
-    m_aRequestBuilder.setEntity (new InputStreamEntity (m_aPipedInputStream));
-    _sendInBackground ();
-    return m_aPipedOutputStream;
-  }
-
-  /**
-   * send the request in background, allowing the foreground to write to the
-   * OutputStream
-   */
-  private void _sendInBackground ()
-  {
-    final Thread aSenderThread = new Thread ( () -> {
-      try
-      {
-        final HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build ();
-        LOGGER.info ("Runnable: calling execute");
-        m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
-      }
-      catch (final Exception ex)
-      {
-        LOGGER.error ("Runnable: Error in background sending", ex);
-      }
-      LOGGER.info ("Runnable: Thread exiting");
-    });
-    aSenderThread.start ();
   }
 
   /**
@@ -380,5 +334,15 @@ public class AS2HttpClient
                       (null != aProxy.type () ? aProxy.type ().name () : "null"),
                       ex);
     }
+  }
+
+  public static boolean isErrorResponseCode (final int nResponseCode)
+  {
+    // Accept most of 2xx HTTP response codes
+    return nResponseCode != CHttp.HTTP_OK &&
+           nResponseCode != CHttp.HTTP_CREATED &&
+           nResponseCode != CHttp.HTTP_ACCEPTED &&
+           nResponseCode != CHttp.HTTP_NO_CONTENT &&
+           nResponseCode != CHttp.HTTP_PARTIAL_CONTENT;
   }
 }

@@ -88,7 +88,6 @@ import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.functional.IConsumer;
-import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
@@ -845,19 +844,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final StopWatch aSW = StopWatch.createdStarted ();
       final long nBytes = aConn.send (aMsgIS, eCTE, aOutgoingDumper);
       aSW.stop ();
-      LOGGER.info ("transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("AS2 Message transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
       // Check the HTTP Response code
       final int nResponseCode = aConn.getResponseCode ();
-      // Accept most of 2xx HTTP response codes
-      if (nResponseCode != CHttp.HTTP_OK &&
-          nResponseCode != CHttp.HTTP_CREATED &&
-          nResponseCode != CHttp.HTTP_ACCEPTED &&
-          nResponseCode != CHttp.HTTP_NO_CONTENT &&
-          nResponseCode != CHttp.HTTP_PARTIAL_CONTENT)
+      if (AS2HttpClient.isErrorResponseCode (nResponseCode))
       {
         if (LOGGER.isErrorEnabled ())
           LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
