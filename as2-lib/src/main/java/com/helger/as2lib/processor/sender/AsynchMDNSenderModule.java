@@ -127,6 +127,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       final StopWatch aSW = StopWatch.createdStarted ();
       final long nBytes = AS2IOHelper.copy (aMessageIS, aMsgOS);
 
+      // Important for last MIME boundary
+      aMsgOS.flush ();
+
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
@@ -143,12 +146,22 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
           nResponseCode != CHttp.HTTP_PARTIAL_CONTENT)
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail " + aMsg.getLoggingText ());
+          LOGGER.error ("sent AsyncMDN [" +
+                        aDisposition.getAsString () +
+                        "] Fail(" +
+                        nResponseCode +
+                        ") " +
+                        aMsg.getLoggingText ());
         throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK " + aMsg.getLoggingText ());
+        LOGGER.info ("sent AsyncMDN [" +
+                     aDisposition.getAsString () +
+                     "] OK(" +
+                     nResponseCode +
+                     ") " +
+                     aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try
