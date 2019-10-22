@@ -233,7 +233,7 @@ public final class AS2IOHelper
     if (StringHelper.hasNoText (s))
       return s;
 
-    final File aBase = new File (s);
+    final File aBase = new File (FilenameHelper.getPathUsingUnixSeparator (s));
 
     final StringBuilder aSB = new StringBuilder ();
     File f = aBase;
