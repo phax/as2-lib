@@ -48,6 +48,7 @@ import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableLong;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Stores the content of the input {@link InputStream} in a temporary file, and
@@ -134,7 +135,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   {
     // create temp file and write steam content to it
     // name may contain ":" on Windows and that would fail the tests!
-    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (sName != null ? sName : "tmp");
+    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (StringHelper.hasText (sName) ? sName : "tmp");
     final File aDestFile = File.createTempFile ("AS2TempSharedFileIS", sSuffix);
 
     try (final FileOutputStream aOS = new FileOutputStream (aDestFile))
@@ -142,9 +143,11 @@ public class TempSharedFileInputStream extends SharedFileInputStream
       final MutableLong aCount = new MutableLong (0);
       StreamHelper.copyInputStreamToOutputStream (aIS, aOS, aCount);
       if (LOGGER.isInfoEnabled ())
+      {
         // Avoid logging in tests
         if (aCount.longValue () > 1024)
           LOGGER.info (aCount.longValue () + " bytes copied to " + aDestFile.getAbsolutePath ());
+      }
     }
     return aDestFile;
   }
