@@ -63,17 +63,14 @@ public class ListCertCommand extends AbstractAliasedCertCommand
   @Override
   public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws OpenAS2Exception
   {
-    synchronized (certFx)
-    {
-      final Map <String, Certificate> certs = certFx.getCertificates ();
-      final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK);
-      for (final String sCertName : certs.keySet ())
-        cmdRes.addResult (sCertName);
+    final Map <String, Certificate> certs = certFx.getCertificates ();
+    final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK);
+    for (final String sCertName : certs.keySet ())
+      cmdRes.addResult (sCertName);
 
-      if (cmdRes.hasNoResult ())
-        cmdRes.addResult ("No certificates available");
+    if (cmdRes.hasNoResult ())
+      cmdRes.addResult ("No certificates available");
 
-      return cmdRes;
-    }
+    return cmdRes;
   }
 }

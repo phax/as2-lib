@@ -107,7 +107,7 @@ public final class AS2KeyStoreHelper
   {
     final InputStream aIS = FileHelper.getInputStream (new File (sFilename));
     if (aIS == null)
-      throw new IllegalArgumentException ("Failed to open KeyStore '" + sFilename + "' for reading");
+      throw new IllegalArgumentException ("Failed to open Certificate file '" + sFilename + "' for reading");
 
     try
     {

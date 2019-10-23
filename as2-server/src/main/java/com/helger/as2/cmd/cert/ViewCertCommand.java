@@ -71,11 +71,8 @@ public class ViewCertCommand extends AbstractAliasedCertCommand
     if (params.length < 1)
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());
 
-    synchronized (certFx)
-    {
-      final String sAlias = params[0].toString ();
-      final X509Certificate cert = certFx.getCertificate (sAlias);
-      return new CommandResult (ECommandResultType.TYPE_OK, cert.toString ());
-    }
+    final String sAlias = params[0].toString ();
+    final X509Certificate cert = certFx.getCertificate (sAlias);
+    return new CommandResult (ECommandResultType.TYPE_OK, cert.toString ());
   }
 }

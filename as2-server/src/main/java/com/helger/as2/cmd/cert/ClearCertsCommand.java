@@ -60,12 +60,8 @@ public class ClearCertsCommand extends AbstractAliasedCertCommand
   @Override
   public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws OpenAS2Exception
   {
-    synchronized (certFx)
-    {
-      certFx.clearCertificates ();
+    certFx.clearCertificates ();
 
-      return new CommandResult (ECommandResultType.TYPE_OK, "cleared");
-
-    }
+    return new CommandResult (ECommandResultType.TYPE_OK, "cleared");
   }
 }

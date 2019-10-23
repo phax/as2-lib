@@ -73,16 +73,13 @@ public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());
     }
 
-    synchronized (certFx)
+    try
     {
-      try
-      {
-        return _importCert (certFx, params[0].toString (), params[1].toString ());
-      }
-      catch (final Exception ex)
-      {
-        throw WrappedOpenAS2Exception.wrap (ex);
-      }
+      return _importCert (certFx, params[0].toString (), params[1].toString ());
+    }
+    catch (final Exception ex)
+    {
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 

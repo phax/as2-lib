@@ -83,35 +83,32 @@ public class ImportCertCommand extends AbstractAliasedCertCommand
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());
     }
 
-    synchronized (certFx)
+    final String alias = params[0].toString ();
+    final String filename = params[1].toString ();
+    String password = null;
+
+    if (params.length > 2)
     {
-      final String alias = params[0].toString ();
-      final String filename = params[1].toString ();
-      String password = null;
+      password = params[2].toString ();
+    }
 
-      if (params.length > 2)
+    try
+    {
+      if (filename.endsWith (".p12"))
       {
-        password = params[2].toString ();
-      }
-
-      try
-      {
-        if (filename.endsWith (".p12"))
+        if (password == null)
         {
-          if (password == null)
-          {
-            return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT,
-                                      getUsage () + " (Password is required for p12 files)");
-          }
-
-          return importPrivateKey (EKeyStoreType.PKCS12, certFx, alias, filename, password);
+          return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT,
+                                    getUsage () + " (Password is required for p12 files)");
         }
-        return importCert (certFx, alias, filename);
+
+        return importPrivateKey (EKeyStoreType.PKCS12, certFx, alias, filename, password);
       }
-      catch (final Exception ex)
-      {
-        throw WrappedOpenAS2Exception.wrap (ex);
-      }
+      return importCert (certFx, alias, filename);
+    }
+    catch (final Exception ex)
+    {
+      throw WrappedOpenAS2Exception.wrap (ex);
     }
   }
 

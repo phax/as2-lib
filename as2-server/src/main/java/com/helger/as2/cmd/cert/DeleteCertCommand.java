@@ -66,10 +66,7 @@ public class DeleteCertCommand extends AbstractAliasedCertCommand
     }
 
     final String alias = params[0].toString ();
-    synchronized (certFx)
-    {
-      certFx.removeCertificate (alias);
-    }
+    certFx.removeCertificate (alias);
     return new CommandResult (ECommandResultType.TYPE_OK, "deleted " + alias);
   }
 }

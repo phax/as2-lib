@@ -47,6 +47,8 @@ import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +68,7 @@ import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.security.keystore.EKeyStoreType;
@@ -76,6 +79,7 @@ import com.helger.security.keystore.EKeyStoreType;
  *
  * @author Philip Helger
  */
+@ThreadSafe
 public class CertificateFactory extends AbstractDynamicComponent implements
                                 IAliasedCertificateFactory,
                                 IKeyStoreCertificateFactory,
@@ -91,6 +95,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   private static final Logger LOGGER = LoggerFactory.getLogger (CertificateFactory.class);
 
+  @GuardedBy ("m_aRWLock")
   private KeyStore m_aKeyStore;
 
   public CertificateFactory ()
@@ -100,6 +105,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   @OverrideOnDemand
   protected KeyStore createNewKeyStore (@Nonnull final EKeyStoreType eKeyStoreType) throws Exception
   {
+    ValueEnforcer.notNull (eKeyStoreType, "KeystoreType");
     return AS2Helper.getCryptoHelper ().createNewKeyStore (eKeyStoreType);
   }
 
@@ -114,7 +120,17 @@ public class CertificateFactory extends AbstractDynamicComponent implements
       final String sKeyStoreType = attrs ().getAsString (ATTR_TYPE);
       final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType,
                                                                                            DEFAULT_KEY_STORE_TYPE);
-      m_aKeyStore = createNewKeyStore (eKeyStoreType);
+      m_aRWLock.writeLock ().lock ();
+      try
+      {
+        m_aKeyStore = createNewKeyStore (eKeyStoreType);
+        if (m_aKeyStore == null)
+          throw new InitializationException ("Failed to create new keystore with type " + eKeyStoreType);
+      }
+      finally
+      {
+        m_aRWLock.writeLock ().unlock ();
+      }
     }
     catch (final Exception ex)
     {
@@ -124,6 +140,16 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     final String sFilename = getFilename ();
     if (StringHelper.hasText (sFilename))
       load (sFilename, getPassword ());
+  }
+
+  @Nonnull
+  public KeyStore getKeyStore ()
+  {
+    return m_aRWLock.readLocked ( () -> {
+      if (m_aKeyStore == null)
+        throw new IllegalStateException ("No key store present");
+      return m_aKeyStore;
+    });
   }
 
   /**
@@ -170,10 +196,11 @@ public class CertificateFactory extends AbstractDynamicComponent implements
                                                     @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
   {
     final String sRealAlias = getUnifiedAlias (sAlias);
+
+    m_aRWLock.readLock ().lock ();
     try
     {
-      final KeyStore aKeyStore = getKeyStore ();
-      final X509Certificate aCert = (X509Certificate) aKeyStore.getCertificate (sRealAlias);
+      final X509Certificate aCert = (X509Certificate) m_aKeyStore.getCertificate (sRealAlias);
       if (aCert == null)
         throw new CertificateNotFoundException (ePartnershipType, sRealAlias);
       return aCert;
@@ -181,6 +208,10 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     catch (final KeyStoreException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
+    }
+    finally
+    {
+      m_aRWLock.readLock ().unlock ();
     }
   }
 
@@ -202,16 +233,15 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   @ReturnsMutableCopy
   public ICommonsOrderedMap <String, Certificate> getCertificates () throws OpenAS2Exception
   {
-    final KeyStore aKeyStore = getKeyStore ();
-
+    m_aRWLock.readLock ().lock ();
     try
     {
       final ICommonsOrderedMap <String, Certificate> aCerts = new CommonsLinkedHashMap <> ();
-      final Enumeration <String> aAliases = aKeyStore.aliases ();
+      final Enumeration <String> aAliases = m_aKeyStore.aliases ();
       while (aAliases.hasMoreElements ())
       {
         final String sAlias = aAliases.nextElement ();
-        aCerts.put (sAlias, aKeyStore.getCertificate (sAlias));
+        aCerts.put (sAlias, m_aKeyStore.getCertificate (sAlias));
       }
       return aCerts;
     }
@@ -219,46 +249,43 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
-  }
-
-  @Nonnull
-  public KeyStore getKeyStore ()
-  {
-    if (m_aKeyStore == null)
-      throw new IllegalStateException ("No key store present");
-    return m_aKeyStore;
+    finally
+    {
+      m_aRWLock.readLock ().unlock ();
+    }
   }
 
   public void setFilename (@Nullable final String sFilename)
   {
-    attrs ().putIn (ATTR_FILENAME, sFilename);
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
   }
 
   @Nullable
   public String getFilename ()
   {
-    return attrs ().getAsString (ATTR_FILENAME);
+    return m_aRWLock.readLocked ( () -> attrs ().getAsString (ATTR_FILENAME));
   }
 
   public void setPassword (@Nullable final String sPassword)
   {
-    attrs ().putIn (ATTR_PASSWORD, sPassword);
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_PASSWORD, sPassword));
   }
 
   @Nullable
   public char [] getPassword ()
   {
-    return attrs ().getAsCharArray (ATTR_PASSWORD);
+    return m_aRWLock.readLocked ( () -> attrs ().getAsCharArray (ATTR_PASSWORD));
   }
 
   public void setSaveChangesToFile (final boolean bSaveChangesToFile)
   {
-    attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile);
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
   }
 
   public boolean isSaveChangesToFile ()
   {
-    return attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE, DEFAULT_SAVE_CHANGES_TO_FILE);
+    return m_aRWLock.readLocked ( () -> attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE,
+                                                               DEFAULT_SAVE_CHANGES_TO_FILE));
   }
 
   /**
@@ -284,20 +311,20 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   @Nonnull
   public PrivateKey getPrivateKey (@Nullable final X509Certificate aCert) throws OpenAS2Exception
   {
-    final KeyStore aKeyStore = getKeyStore ();
-
     String sRealAlias = null;
+
+    m_aRWLock.readLock ().lock ();
     try
     {
       // This method heuristically scans the keys tore and delivery the first
       // result.
-      final String sAlias = aKeyStore.getCertificateAlias (aCert);
+      final String sAlias = m_aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
         throw new KeyNotFoundException (aCert);
 
       sRealAlias = getUnifiedAlias (sAlias);
 
-      final PrivateKey aKey = (PrivateKey) aKeyStore.getKey (sRealAlias, getPassword ());
+      final PrivateKey aKey = (PrivateKey) m_aKeyStore.getKey (sRealAlias, getPassword ());
       if (aKey == null)
         throw new KeyNotFoundException (aCert, sRealAlias);
 
@@ -306,6 +333,10 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     catch (final GeneralSecurityException ex)
     {
       throw new KeyNotFoundException (aCert, sRealAlias, ex);
+    }
+    finally
+    {
+      m_aRWLock.readLock ().unlock ();
     }
   }
 
@@ -324,23 +355,28 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     ValueEnforcer.notNull (aCert, "Cert");
 
     final String sRealAlias = getUnifiedAlias (sAlias);
-    final KeyStore aKeyStore = getKeyStore ();
 
+    m_aRWLock.writeLock ().lock ();
     try
     {
-      if (aKeyStore.containsAlias (sRealAlias) && !bOverwrite)
+      if (m_aKeyStore.containsAlias (sRealAlias) && !bOverwrite)
         throw new CertificateExistsException (sRealAlias);
 
-      aKeyStore.setCertificateEntry (sRealAlias, aCert);
-      onChange ();
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
+      m_aKeyStore.setCertificateEntry (sRealAlias, aCert);
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+    finally
+    {
+      m_aRWLock.writeLock ().unlock ();
+    }
+
+    onChange ();
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + aCert.getSubjectDN () + "'");
   }
 
   public void addPrivateKey (@Nonnull @Nonempty final String sAlias,
@@ -352,61 +388,70 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     ValueEnforcer.notNull (sPassword, "Password");
 
     final String sRealAlias = getUnifiedAlias (sAlias);
-    final KeyStore aKeyStore = getKeyStore ();
+
+    m_aRWLock.writeLock ().lock ();
     try
     {
-      if (!aKeyStore.containsAlias (sRealAlias))
+      if (!m_aKeyStore.containsAlias (sRealAlias))
         throw new CertificateNotFoundException (null, sRealAlias);
 
-      final Certificate [] aCertChain = aKeyStore.getCertificateChain (sRealAlias);
-      aKeyStore.setKeyEntry (sRealAlias, aKey, sPassword.toCharArray (), aCertChain);
-      onChange ();
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Added private key alias '" + sRealAlias + "'");
+      final Certificate [] aCertChain = m_aKeyStore.getCertificateChain (sRealAlias);
+      m_aKeyStore.setKeyEntry (sRealAlias, aKey, sPassword.toCharArray (), aCertChain);
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+    finally
+    {
+      m_aRWLock.writeLock ().unlock ();
+    }
+
+    onChange ();
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Added private key alias '" + sRealAlias + "'");
   }
 
   public void clearCertificates () throws OpenAS2Exception
   {
-    final KeyStore aKeyStore = getKeyStore ();
+    int nDeleted = 0;
+
+    m_aRWLock.writeLock ().lock ();
     try
     {
       // Make a copy to be sure
-      int nDeleted = 0;
-      for (final String sAlias : CollectionHelper.newList (aKeyStore.aliases ()))
+      for (final String sAlias : CollectionHelper.newList (m_aKeyStore.aliases ()))
       {
-        aKeyStore.deleteEntry (sAlias);
+        m_aKeyStore.deleteEntry (sAlias);
         nDeleted++;
-      }
-      if (nDeleted > 0)
-      {
-        // Only if something changed
-        onChange ();
-
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Remove all aliases (" + nDeleted + ") in key store");
       }
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
+    }
+    finally
+    {
+      m_aRWLock.writeLock ().unlock ();
+    }
+
+    if (nDeleted > 0)
+    {
+      // Only if something changed
+      onChange ();
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Remove all aliases (" + nDeleted + ") in key store");
     }
   }
 
   public void load (@Nonnull @WillClose final InputStream aIS, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
+    m_aRWLock.writeLock ().lock ();
     try
     {
-      final KeyStore aKeyStore = getKeyStore ();
-      synchronized (aKeyStore)
-      {
-        aKeyStore.load (aIS, aPassword);
-      }
+      m_aKeyStore.load (aIS, aPassword);
     }
     catch (final IOException | GeneralSecurityException ex)
     {
@@ -415,6 +460,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     finally
     {
       StreamHelper.close (aIS);
+      m_aRWLock.writeLock ().unlock ();
     }
   }
 
@@ -422,61 +468,69 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   {
     ValueEnforcer.notNull (aCert, "Cert");
 
-    final KeyStore aKeyStore = getKeyStore ();
+    final String sAlias;
 
+    m_aRWLock.readLock ().lock ();
     try
     {
-      final String sAlias = aKeyStore.getCertificateAlias (aCert);
+      sAlias = m_aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
         throw new CertificateNotFoundException (aCert);
-
-      removeCertificate (sAlias);
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+    finally
+    {
+      m_aRWLock.readLock ().unlock ();
+    }
+
+    removeCertificate (sAlias);
   }
 
   public void removeCertificate (@Nullable final String sAlias) throws OpenAS2Exception
   {
     final String sRealAlias = getUnifiedAlias (sAlias);
-    final KeyStore aKeyStore = getKeyStore ();
 
+    final Certificate aCert;
+    m_aRWLock.writeLock ().lock ();
     try
     {
-      final Certificate aCert = aKeyStore.getCertificate (sRealAlias);
+      aCert = m_aKeyStore.getCertificate (sRealAlias);
       if (aCert == null)
         throw new CertificateNotFoundException (null, sRealAlias);
 
-      aKeyStore.deleteEntry (sRealAlias);
-      onChange ();
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Removed certificate alias '" +
-                     sRealAlias +
-                     "'" +
-                     (aCert instanceof X509Certificate ? " of certificate '" +
-                                                         ((X509Certificate) aCert).getSubjectDN () +
-                                                         "'"
-                                                       : ""));
+      m_aKeyStore.deleteEntry (sRealAlias);
     }
     catch (final GeneralSecurityException ex)
     {
       throw WrappedOpenAS2Exception.wrap (ex);
     }
+    finally
+    {
+      m_aRWLock.writeLock ().unlock ();
+    }
+
+    onChange ();
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Removed certificate alias '" +
+                   sRealAlias +
+                   "'" +
+                   (aCert instanceof X509Certificate ? " of certificate '" +
+                                                       ((X509Certificate) aCert).getSubjectDN () +
+                                                       "'"
+                                                     : ""));
   }
 
   public void save (@Nonnull @WillClose final OutputStream aOS,
                     @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
+    m_aRWLock.writeLock ().lock ();
     try
     {
-      final KeyStore aKeyStore = getKeyStore ();
-      synchronized (aKeyStore)
-      {
-        aKeyStore.store (aOS, aPassword);
-      }
+      m_aKeyStore.store (aOS, aPassword);
     }
     catch (final IOException | GeneralSecurityException ex)
     {
@@ -485,6 +539,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     finally
     {
       StreamHelper.close (aOS);
+      m_aRWLock.writeLock ().unlock ();
     }
   }
 
