@@ -43,17 +43,17 @@ import com.helger.xml.microdom.serialize.MicroReader;
  *
  * @author Philip Helger
  */
-public class AS2ServletSession extends AS2Session
+public class AS2ServletXMLSession extends AS2Session
 {
   public static final String EL_CERTIFICATES = "certificates";
   public static final String EL_PROCESSOR = "processor";
   public static final String EL_PARTNERSHIPS = "partnerships";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (AS2ServletSession.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2ServletXMLSession.class);
 
   private final String m_sBaseDirectory;
 
-  public AS2ServletSession (@Nonnull final File aFile) throws OpenAS2Exception
+  public AS2ServletXMLSession (@Nonnull final File aFile) throws OpenAS2Exception
   {
     ValueEnforcer.notNull (aFile, "File");
     if (!aFile.exists ())

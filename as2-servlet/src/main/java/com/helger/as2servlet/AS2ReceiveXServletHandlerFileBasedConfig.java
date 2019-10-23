@@ -23,7 +23,8 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2servlet.util.AS2ServletSession;
+import com.helger.as2lib.session.AS2Session;
+import com.helger.as2servlet.util.AS2ServletXMLSession;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.StringHelper;
@@ -73,14 +74,14 @@ public class AS2ReceiveXServletHandlerFileBasedConfig extends AbstractAS2Receive
 
   @Override
   @Nonnull
-  protected AS2ServletSession createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws OpenAS2Exception,
-                                                                                                         ServletException
+  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws OpenAS2Exception,
+                                                                                                  ServletException
   {
     // Get configuration file
     final File aConfigurationFile = getConfigurationFile (aInitParams);
     if (aConfigurationFile == null)
       throw new ServletException ("No configuration file provided!");
 
-    return new AS2ServletSession (aConfigurationFile);
+    return new AS2ServletXMLSession (aConfigurationFile);
   }
 }
