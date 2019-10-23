@@ -58,6 +58,7 @@ import com.helger.commons.string.StringHelper;
 public class MainOpenAS2Server
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MainOpenAS2Server.class);
+  private static final String SERVER_NAME = CAS2Info.NAME_VERSION + " Server";
 
   public static void main (final String [] args)
   {
@@ -69,7 +70,7 @@ public class MainOpenAS2Server
     AS2ServerXMLSession aXMLSession = null;
     try
     {
-      LOGGER.info (CAS2Info.NAME_VERSION + " - starting Server...");
+      LOGGER.info (SERVER_NAME + " - starting ...");
 
       // create the OpenAS2 Session object
       // this is used by all other objects to access global configs and
@@ -103,24 +104,24 @@ public class MainOpenAS2Server
       }
 
       // enter the command processing loop
-      LOGGER.info ("OpenAS2 Started");
+      LOGGER.info (SERVER_NAME + " Started");
 
       // Start waiting for termination
-      breakOut: while (true)
+      outer: while (true)
       {
         for (final AbstractCommandProcessor cmd : aCommandProcessors)
         {
           if (cmd.isTerminated ())
-            break breakOut;
+            break outer;
         }
         // Wait outside loop in case no command processor is present
         Thread.sleep (100);
       }
-      LOGGER.info ("- OpenAS2 Stopped -");
+      LOGGER.info ("- " + SERVER_NAME + " Stopped -");
     }
     catch (final Throwable t)
     {
-      t.printStackTrace ();
+      LOGGER.error ("Error running " + SERVER_NAME, t);
     }
     finally
     {
@@ -136,7 +137,7 @@ public class MainOpenAS2Server
         }
       }
 
-      LOGGER.info ("OpenAS2 has shut down");
+      LOGGER.info (SERVER_NAME + " has shut down");
     }
   }
 }
