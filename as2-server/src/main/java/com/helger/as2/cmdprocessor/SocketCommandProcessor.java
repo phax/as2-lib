@@ -42,9 +42,13 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.util.CommandTokenizer;
+import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
@@ -73,6 +77,8 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
   public static final String ATTR_PORTID = "portid";
   public static final String ATTR_USERID = "userid";
   public static final String ATTR_PASSWORD = "password";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (SocketCommandProcessor.class);
 
   private NonBlockingBufferedReader m_aReader;
   private NonBlockingBufferedWriter m_aWriter;
@@ -241,9 +247,9 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
       while (true)
         processCommand ();
     }
-    catch (final OpenAS2Exception e)
+    catch (final OpenAS2Exception ex)
     {
-      e.printStackTrace ();
+      LOGGER.error ("Error running command processor " + CAS2Info.NAME_VERSION, ex);
     }
   }
 }

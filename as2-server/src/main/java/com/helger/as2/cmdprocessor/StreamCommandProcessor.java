@@ -42,9 +42,13 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.util.CommandTokenizer;
+import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
@@ -68,6 +72,9 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
   public static final String COMMAND_ERROR = "Error executing command";
   public static final String EXIT_COMMAND = "exit";
   public static final String PROMPT = "AS2>";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (StreamCommandProcessor.class);
+
   private final BufferedReader m_aReader;
   private final BufferedWriter m_aWriter;
 
@@ -101,9 +108,9 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
       while (true)
         processCommand ();
     }
-    catch (final OpenAS2Exception e)
+    catch (final OpenAS2Exception ex)
     {
-      e.printStackTrace ();
+      LOGGER.error ("Error running command processor " + CAS2Info.NAME_VERSION, ex);
     }
   }
 
