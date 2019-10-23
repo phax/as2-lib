@@ -51,6 +51,7 @@ import javax.annotation.WillClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.exception.WrappedOpenAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
@@ -75,7 +76,7 @@ import com.helger.security.keystore.EKeyStoreType;
  *
  * @author Philip Helger
  */
-public class CertificateFactory extends AbstractCertificateFactory implements
+public class CertificateFactory extends AbstractDynamicComponent implements
                                 IAliasedCertificateFactory,
                                 IKeyStoreCertificateFactory,
                                 IStorableCertificateFactory
@@ -141,7 +142,6 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     return sAlias;
   }
 
-  @Override
   @Nonnull
   public String getAlias (@Nonnull final Partnership aPartnership,
                           @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
@@ -165,7 +165,6 @@ public class CertificateFactory extends AbstractCertificateFactory implements
     return getUnifiedAlias (sAlias);
   }
 
-  @Override
   @Nonnull
   protected X509Certificate internalGetCertificate (@Nullable final String sAlias,
                                                     @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
@@ -189,6 +188,14 @@ public class CertificateFactory extends AbstractCertificateFactory implements
   public X509Certificate getCertificate (@Nullable final String sAlias) throws OpenAS2Exception
   {
     return internalGetCertificate (sAlias, null);
+  }
+
+  @Nonnull
+  public X509Certificate getCertificate (@Nonnull final IBaseMessage aMsg,
+                                         @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+  {
+    final String sAlias = getAlias (aMsg.partnership (), ePartnershipType);
+    return internalGetCertificate (sAlias, ePartnershipType);
   }
 
   @Nonnull
