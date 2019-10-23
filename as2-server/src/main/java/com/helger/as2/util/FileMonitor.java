@@ -40,6 +40,7 @@ import java.util.TimerTask;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.helger.commons.CGlobal;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
@@ -139,15 +140,13 @@ public class FileMonitor
   public final void start ()
   {
     m_aTimer = getTimer ();
-    m_aTimer.scheduleAtFixedRate (new TimerTick (), 0, getInterval () * 1000);
+    m_aTimer.scheduleAtFixedRate (new TimerTick (), 0, getInterval () * CGlobal.MILLISECONDS_PER_SECOND);
   }
 
   public void stop ()
   {
     if (m_aTimer != null)
-    {
       m_aTimer.cancel ();
-    }
   }
 
   protected boolean isModified ()
