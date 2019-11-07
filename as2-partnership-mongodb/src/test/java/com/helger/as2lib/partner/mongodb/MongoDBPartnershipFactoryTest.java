@@ -30,7 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.OpenAS2Exception;
 import com.helger.as2lib.partner.Partnership;
-import com.mongodb.MongoClient;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -60,9 +63,11 @@ public class MongoDBPartnershipFactoryTest {
                                                                  .build ();
     mongodExecutable = starter.prepare (mongodConfig);
     mongodExecutable.start ();
-    mongo = new MongoClient ("localhost", port);
-    database = mongo.getDatabase ("test");
-    collection = database.getCollection ("test");
+    mongo = MongoClients.create (MongoClientSettings.builder ()
+                                                    .applyConnectionString (new ConnectionString ("localhost:" + port))
+                                                    .build ());
+    database = mongo.getDatabase ("as2-lib-test");
+    collection = database.getCollection ("partnerships");
     mongoDBPartnershipFactory = new MongoDBPartnershipFactory (collection, LOGGER);
     database.drop ();
   }
