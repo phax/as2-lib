@@ -64,7 +64,8 @@ public class MongoDBPartnershipFactoryTest {
     mongodExecutable = starter.prepare (mongodConfig);
     mongodExecutable.start ();
     mongo = MongoClients.create (MongoClientSettings.builder ()
-                                                    .applyConnectionString (new ConnectionString ("localhost:" + port))
+                                                    .applyConnectionString (new ConnectionString ("mongodb://localhost:" +
+                                                                                                  port))
                                                     .build ());
     database = mongo.getDatabase ("as2-lib-test");
     collection = database.getCollection ("partnerships");
