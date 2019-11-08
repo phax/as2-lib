@@ -465,7 +465,9 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // Make sure the data is encrypted
     if (!bForceDecrypt && !isEncrypted (aPart))
-      throw new GeneralSecurityException ("Content-Type indicates data isn't encrypted: " + aPart.getContentType ());
+      throw new GeneralSecurityException ("Content-Type '" +
+                                          aPart.getContentType () +
+                                          "' indicates data isn't encrypted");
 
     // Get the recipient object for decryption
     final RecipientId aRecipientID = new JceKeyTransRecipientId (aX509Cert);

@@ -98,9 +98,17 @@ public interface IStorableCertificateFactory extends ICertificateFactory
 
   default void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
   {
-    final InputStream aFIS = KeyStoreHelper.getResourceProvider ().getInputStream (sFilename);
-    if (aFIS == null)
-      throw new OpenAS2Exception ("Failed to to open input stream from '" + sFilename + "'");
+    InputStream aFIS = null;
+    try
+    {
+      aFIS = KeyStoreHelper.getResourceProvider ().getInputStream (sFilename);
+      if (aFIS == null)
+        throw new OpenAS2Exception ("Failed to to open input stream from '" + sFilename + "'");
+    }
+    catch (final RuntimeException ex)
+    {
+      throw new OpenAS2Exception ("Failed to to open input stream from '" + sFilename + "'", ex);
+    }
     load (aFIS, aPassword);
   }
 
