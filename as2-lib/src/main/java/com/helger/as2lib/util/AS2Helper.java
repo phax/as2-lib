@@ -64,8 +64,8 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
+import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
@@ -198,6 +198,7 @@ public final class AS2Helper
       catch (final AS2CertificateNotFoundException | AS2KeyNotFoundException ex)
       {
         ex.terminate ();
+        LOGGER.warn ("Failed to sign MDN - using an unsigned MDN instead");
         aMdn.setData (aReport);
       }
     }

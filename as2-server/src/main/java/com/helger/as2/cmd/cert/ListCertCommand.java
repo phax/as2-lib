@@ -32,7 +32,7 @@
  */
 package com.helger.as2.cmd.cert;
 
-import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 
 import com.helger.as2.cmd.CommandResult;
@@ -63,7 +63,7 @@ public class ListCertCommand extends AbstractAliasedCertCommand
   @Override
   public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws AS2Exception
   {
-    final Map <String, Certificate> certs = certFx.getCertificates ();
+    final Map <String, X509Certificate> certs = certFx.getCertificates ();
     final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK);
     for (final String sCertName : certs.keySet ())
       cmdRes.addResult (sCertName);

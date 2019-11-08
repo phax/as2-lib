@@ -33,14 +33,13 @@
 package com.helger.as2lib.cert;
 
 import java.security.Key;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.commons.collection.impl.ICommonsOrderedMap;
 
 /**
  * Certificate factory with support for alias handling
@@ -51,7 +50,7 @@ public interface IAliasedCertificateFactory extends ICertificateFactory
 {
   X509Certificate getCertificate (String sAlias) throws AS2Exception;
 
-  ICommonsMap <String, Certificate> getCertificates () throws AS2Exception;
+  ICommonsOrderedMap <String, X509Certificate> getCertificates () throws AS2Exception;
 
   void addCertificate (@Nonnull @Nonempty String sAlias,
                        @Nonnull X509Certificate aCert,
