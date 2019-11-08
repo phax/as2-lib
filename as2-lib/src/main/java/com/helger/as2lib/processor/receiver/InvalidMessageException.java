@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.receiver;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
-public class InvalidMessageException extends OpenAS2Exception
+public class InvalidMessageException extends AS2Exception
 {
   public InvalidMessageException ()
   {}

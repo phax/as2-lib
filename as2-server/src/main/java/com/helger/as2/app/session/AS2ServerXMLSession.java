@@ -49,7 +49,7 @@ import com.helger.as2.cmd.ICommandRegistry;
 import com.helger.as2.cmd.ICommandRegistryFactory;
 import com.helger.as2.cmdprocessor.AbstractCommandProcessor;
 import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.module.IProcessorModule;
@@ -83,12 +83,12 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
   private final CommandManager m_aCmdManager = CommandManager.getCmdManager ();
   private ICommandRegistry m_aCommandRegistry;
 
-  public AS2ServerXMLSession (@Nonnull final String sFilename) throws OpenAS2Exception, IOException
+  public AS2ServerXMLSession (@Nonnull final String sFilename) throws AS2Exception, IOException
   {
     this (new File (sFilename).getCanonicalFile ().getAbsoluteFile ());
   }
 
-  public AS2ServerXMLSession (@Nonnull final File aFile) throws OpenAS2Exception
+  public AS2ServerXMLSession (@Nonnull final File aFile) throws AS2Exception
   {
     m_sBaseDirectory = aFile.getParentFile ().getAbsolutePath ();
     load (FileHelper.getInputStream (aFile));
@@ -112,7 +112,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
     return m_aCommandRegistry;
   }
 
-  protected void loadCertificates (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
+  protected void loadCertificates (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("  loading certificates");
     final ICertificateFactory certFx = AS2XMLHelper.createComponent (aElement,
@@ -122,7 +122,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
     setCertificateFactory (certFx);
   }
 
-  protected void loadCommands (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
+  protected void loadCommands (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("  loading commands");
     final ICommandRegistry cmdReg = AS2XMLHelper.createComponent (aElement,
@@ -132,7 +132,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
     m_aCommandRegistry = cmdReg;
   }
 
-  protected void loadCommandProcessors (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
+  protected void loadCommandProcessors (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     final List <IMicroElement> aElements = aElement.getAllChildElements ("commandProcessor");
     LOGGER.info ("  loading " + aElements.size () + " command processors");
@@ -141,7 +141,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
   }
 
   protected void loadCommandProcessor (@Nonnull final CommandManager aCommandMgr,
-                                       @Nonnull final IMicroElement aElement) throws OpenAS2Exception
+                                       @Nonnull final IMicroElement aElement) throws AS2Exception
   {
     final AbstractCommandProcessor aCmdProcesor = AS2XMLHelper.createComponent (aElement,
                                                                                 AbstractCommandProcessor.class,
@@ -151,7 +151,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
     LOGGER.info ("    loaded command processor " + aCmdProcesor.getName ());
   }
 
-  protected void loadPartnerships (final IMicroElement eRootNode) throws OpenAS2Exception
+  protected void loadPartnerships (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("  loading partnerships");
     final IPartnershipFactory partnerFx = AS2XMLHelper.createComponent (eRootNode,
@@ -161,7 +161,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
     setPartnershipFactory (partnerFx);
   }
 
-  protected void loadMessageProcessor (final IMicroElement eRootNode) throws OpenAS2Exception
+  protected void loadMessageProcessor (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("  loading message processor");
     final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
@@ -175,7 +175,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
   }
 
   protected void loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
-                                      @Nonnull final IMicroElement eModule) throws OpenAS2Exception
+                                      @Nonnull final IMicroElement eModule) throws AS2Exception
   {
     final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule,
                                                                             IProcessorModule.class,
@@ -185,7 +185,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
     LOGGER.info ("    loaded processor module " + aProcessorModule.getName ());
   }
 
-  protected void load (@Nonnull @WillClose final InputStream aIS) throws OpenAS2Exception
+  protected void load (@Nonnull @WillClose final InputStream aIS) throws AS2Exception
   {
     final IMicroDocument aDoc = MicroReader.readMicroXML (aIS);
     final IMicroElement eRoot = aDoc.getDocumentElement ();
@@ -220,7 +220,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
               if (sNodeName.equals (EL_COMMANDS))
                 loadCommands (eRootChild);
               else
-                throw new OpenAS2Exception ("Undefined tag: " + sNodeName);
+                throw new AS2Exception ("Undefined tag: " + sNodeName);
     }
   }
 }

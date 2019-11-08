@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
@@ -80,14 +80,14 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
    *
    * @param aInitParams
    * @return The created session. May not be <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case something goes wrong when initializing the session
    * @throws ServletException
    *         In case an overriding methods wants to throw a different exception
    */
   @Nonnull
   @OverrideOnDemand
-  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws OpenAS2Exception,
+  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws AS2Exception,
                                                                                                      ServletException;
 
   @Override
@@ -105,7 +105,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
                                     AS2ServletReceiverModule.class.getName () +
                                     "'");
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       throw new ServletException ("Failed to init AS2 configuration", ex);
     }

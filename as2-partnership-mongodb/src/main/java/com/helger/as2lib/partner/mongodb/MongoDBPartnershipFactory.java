@@ -21,7 +21,7 @@ import org.bson.Document;
 import org.slf4j.Logger;
 
 import com.helger.as2lib.AbstractDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
@@ -67,14 +67,14 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   }
 
   @Override
-  public EChange addPartnership (final Partnership aPartnership) throws OpenAS2Exception
+  public EChange addPartnership (final Partnership aPartnership) throws AS2Exception
   {
     m_aPartnerships.insertOne (_toDocument (aPartnership));
     return EChange.CHANGED;
   }
 
   @Override
-  public EChange removePartnership (final Partnership aPartnership) throws OpenAS2Exception
+  public EChange removePartnership (final Partnership aPartnership) throws AS2Exception
   {
     final DeleteResult result = m_aPartnerships.deleteOne (new Document (NAME_KEY, aPartnership.getName ()));
     if (result.getDeletedCount () >= 1l)
@@ -85,7 +85,7 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   }
 
   @Override
-  public void updatePartnership (final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
+  public void updatePartnership (final IMessage aMsg, final boolean bOverwrite) throws AS2Exception
   {
     // Fill in any available partnership information
     final Partnership aPartnership = getPartnership (aMsg.partnership ());
@@ -107,14 +107,14 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   }
 
   @Override
-  public void updatePartnership (final IMessageMDN aMdn, final boolean bOverwrite) throws OpenAS2Exception
+  public void updatePartnership (final IMessageMDN aMdn, final boolean bOverwrite) throws AS2Exception
   {
     final Partnership aPartnership = getPartnership (aMdn.partnership ());
     aMdn.partnership ().copyFrom (aPartnership);
   }
 
   @Override
-  public Partnership getPartnership (final Partnership aPartnership) throws OpenAS2Exception
+  public Partnership getPartnership (final Partnership aPartnership) throws AS2Exception
   {
     Partnership aRealPartnership = getPartnershipByName (aPartnership.getName ());
     if (aRealPartnership == null)

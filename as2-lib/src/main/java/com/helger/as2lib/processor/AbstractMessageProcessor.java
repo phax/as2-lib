@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.AbstractDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
@@ -124,7 +124,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
       {
         aModule.start ();
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         ex.terminate ();
       }
@@ -137,7 +137,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
       {
         aModule.stop ();
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         ex.terminate ();
       }
@@ -157,7 +157,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
    */
   protected final void executeAction (@Nonnull final String sAction,
                                       @Nonnull final IMessage aMsg,
-                                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     final ICommonsList <Throwable> aCauses = new CommonsArrayList <> ();
     final ICommonsList <IProcessorModule> aModulesFound = new CommonsArrayList <> ();
@@ -182,7 +182,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
           aModulesFound.add (aModule);
           aModule.handle (sAction, aMsg, aOptions);
         }
-        catch (final OpenAS2Exception ex)
+        catch (final AS2Exception ex)
         {
           aCauses.add (ex);
         }

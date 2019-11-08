@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import javax.mail.internet.MimeBodyPart;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
 
@@ -117,10 +117,10 @@ public interface ICryptoHelper
    *        The content type to be checked. May not be <code>null</code>.
    * @return <code>true</code> if it is compressed, <code>false</code>
    *         otherwise.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case something goes wrong.
    */
-  boolean isCompressed (@Nonnull String sContentType) throws OpenAS2Exception;
+  boolean isCompressed (@Nonnull String sContentType) throws AS2Exception;
 
   /**
    * Calculate the MIC

@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.partner;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * A partnership factory that can be refreshed. Was moved from as2-server to
@@ -45,8 +45,8 @@ public interface IRefreshablePartnershipFactory extends IPartnershipFactory
   /**
    * Refresh the partnership factory.
    * 
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         On error
    */
-  void refreshPartnershipFactory () throws OpenAS2Exception;
+  void refreshPartnershipFactory () throws AS2Exception;
 }

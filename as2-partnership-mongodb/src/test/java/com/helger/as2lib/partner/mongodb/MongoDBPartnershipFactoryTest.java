@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.Partnership;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -82,7 +82,7 @@ public class MongoDBPartnershipFactoryTest {
   }
 
   @Test
-  public void testAddPartnership () throws OpenAS2Exception {
+  public void testAddPartnership () throws AS2Exception {
     final Partnership partnership = new Partnership ("Test partnership");
     assertTrue (mongoDBPartnershipFactory.addPartnership (partnership).isChanged ());
     assertEquals (1, collection.countDocuments ());

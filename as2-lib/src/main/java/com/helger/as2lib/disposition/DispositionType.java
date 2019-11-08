@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.string.StringHelper;
@@ -167,10 +167,10 @@ public class DispositionType implements Serializable
   }
 
   @Nonnull
-  public static DispositionType createFromString (@Nullable final String sDisposition) throws OpenAS2Exception
+  public static DispositionType createFromString (@Nullable final String sDisposition) throws AS2Exception
   {
     if (StringHelper.hasNoText (sDisposition))
-      throw new OpenAS2Exception ("Disposition type is empty");
+      throw new AS2Exception ("Disposition type is empty");
 
     try
     {
@@ -191,7 +191,7 @@ public class DispositionType implements Serializable
     }
     catch (final NoSuchElementException ex)
     {
-      throw new OpenAS2Exception ("Invalid disposition type format '" + sDisposition + "'", ex);
+      throw new AS2Exception ("Invalid disposition type format '" + sDisposition + "'", ex);
     }
   }
 

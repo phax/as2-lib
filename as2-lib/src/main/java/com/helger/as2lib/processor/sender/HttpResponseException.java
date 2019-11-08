@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.sender;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
-public class HttpResponseException extends OpenAS2Exception
+public class HttpResponseException extends AS2Exception
 {
   private final String m_sURL;
   private final int m_nCode;

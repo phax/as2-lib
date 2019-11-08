@@ -48,8 +48,8 @@ import javax.annotation.Nonnull;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.commons.io.stream.NonBlockingBufferedInputStream;
 import com.helger.security.keystore.EKeyStoreType;
@@ -76,7 +76,7 @@ public class ImportCertCommand extends AbstractAliasedCertCommand
   }
 
   @Override
-  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws OpenAS2Exception
+  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws AS2Exception
   {
     if (params.length < 2)
     {
@@ -108,14 +108,14 @@ public class ImportCertCommand extends AbstractAliasedCertCommand
     }
     catch (final Exception ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 
   @Nonnull
   protected CommandResult importCert (final IAliasedCertificateFactory certFx,
                                       final String sAlias,
-                                      final String sFilename) throws IOException, CertificateException, OpenAS2Exception
+                                      final String sFilename) throws IOException, CertificateException, AS2Exception
   {
     try (final FileInputStream fis = new FileInputStream (sFilename);
         final NonBlockingBufferedInputStream bis = new NonBlockingBufferedInputStream (fis))

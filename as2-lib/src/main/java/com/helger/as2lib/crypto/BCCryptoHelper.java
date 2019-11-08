@@ -96,7 +96,7 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.bc.PBCProvider;
@@ -288,7 +288,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     return sBaseType.equalsIgnoreCase ("multipart/signed");
   }
 
-  public boolean isCompressed (@Nonnull final String sContentType) throws OpenAS2Exception
+  public boolean isCompressed (@Nonnull final String sContentType) throws AS2Exception
   {
     ValueEnforcer.notNull (sContentType, "ContentType");
 

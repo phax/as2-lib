@@ -43,7 +43,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.DefaultHTTPOutgoingDumperFactory;
@@ -227,13 +227,13 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
    * @param aProxy
    *        Optional proxy to use. May be <code>null</code>.
    * @return a {@link AS2HttpClient} object to work with
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         If something goes wrong
    */
   @Nonnull
   public AS2HttpClient getHttpClient (@Nonnull @Nonempty final String sUrl,
                                       @Nonnull final EHttpMethod eRequestMethod,
-                                      @Nullable final Proxy aProxy) throws OpenAS2Exception
+                                      @Nullable final Proxy aProxy) throws AS2Exception
   {
     ValueEnforcer.notEmpty (sUrl, "URL");
     SSLContext aSSLCtx = null;
@@ -247,7 +247,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       }
       catch (final GeneralSecurityException ex)
       {
-        throw new OpenAS2Exception ("Error creating SSL Context", ex);
+        throw new AS2Exception ("Error creating SSL Context", ex);
       }
       aHV = createHostnameVerifier ();
     }

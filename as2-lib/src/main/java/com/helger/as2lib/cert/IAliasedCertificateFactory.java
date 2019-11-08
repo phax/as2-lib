@@ -38,7 +38,7 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.impl.ICommonsMap;
 
@@ -49,21 +49,21 @@ import com.helger.commons.collection.impl.ICommonsMap;
  */
 public interface IAliasedCertificateFactory extends ICertificateFactory
 {
-  X509Certificate getCertificate (String sAlias) throws OpenAS2Exception;
+  X509Certificate getCertificate (String sAlias) throws AS2Exception;
 
-  ICommonsMap <String, Certificate> getCertificates () throws OpenAS2Exception;
+  ICommonsMap <String, Certificate> getCertificates () throws AS2Exception;
 
   void addCertificate (@Nonnull @Nonempty String sAlias,
                        @Nonnull X509Certificate aCert,
-                       boolean bOverwrite) throws OpenAS2Exception;
+                       boolean bOverwrite) throws AS2Exception;
 
   void addPrivateKey (@Nonnull @Nonempty String sAlias,
                       @Nonnull Key aKey,
-                      @Nonnull String sPassword) throws OpenAS2Exception;
+                      @Nonnull String sPassword) throws AS2Exception;
 
-  void clearCertificates () throws OpenAS2Exception;
+  void clearCertificates () throws AS2Exception;
 
-  void removeCertificate (@Nonnull X509Certificate aCert) throws OpenAS2Exception;
+  void removeCertificate (@Nonnull X509Certificate aCert) throws AS2Exception;
 
-  void removeCertificate (String sAlias) throws OpenAS2Exception;
+  void removeCertificate (String sAlias) throws AS2Exception;
 }

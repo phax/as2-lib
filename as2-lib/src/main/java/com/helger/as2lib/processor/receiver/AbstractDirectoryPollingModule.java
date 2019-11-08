@@ -45,8 +45,8 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
@@ -83,7 +83,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -103,7 +103,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     }
     catch (final Exception ex)
     {
-      WrappedOpenAS2Exception.wrap (ex).terminate ();
+      WrappedAS2Exception.wrap (ex).terminate ();
       forceStop (ex);
     }
   }
@@ -163,7 +163,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
   }
 
-  protected void updateTracking () throws OpenAS2Exception
+  protected void updateTracking () throws AS2Exception
   {
     // clone the trackedFiles map, iterator through the clone and modify the
     // original to avoid iterator exceptions
@@ -207,7 +207,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     }
   }
 
-  protected void processFile (@Nonnull final File aFile) throws OpenAS2Exception
+  protected void processFile (@Nonnull final File aFile) throws AS2Exception
   {
     LOGGER.info ("processing " + aFile.getAbsolutePath ());
 
@@ -249,7 +249,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                                             aMsg.attrs ().getAsString (CFileAttribute.MA_PENDING_FILENAME));
         final FileIOError aIOErr = AS2IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
-          throw new OpenAS2Exception ("File was successfully sent but not copied to pending folder: " +
+          throw new AS2Exception ("File was successfully sent but not copied to pending folder: " +
                                       aPendingFile +
                                       " - " +
                                       aIOErr.toString ());
@@ -280,7 +280,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         }
         catch (final IOException ex)
         {
-          new OpenAS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile,
+          new AS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile,
                                 ex).terminate ();
         }
       }
@@ -292,12 +292,12 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         if (AS2IOHelper.getFileOperationManager ().deleteFileIfExisting (aFile).isFailure ())
         {
           // Delete the file if a sent directory isn't set
-          throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile);
+          throw new AS2Exception ("File was successfully sent but not deleted: " + aFile);
         }
         LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
       }
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
       AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
@@ -307,7 +307,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   @Nonnull
   protected abstract IMessage createMessage ();
 
-  public void updateMessage (@Nonnull final IMessage aMsg, @Nonnull final File aFile) throws OpenAS2Exception
+  public void updateMessage (@Nonnull final IMessage aMsg, @Nonnull final File aFile) throws AS2Exception
   {
     final MessageParameters aParams = new MessageParameters (aMsg);
 
@@ -375,7 +375,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     }
     catch (final MessagingException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
 
     if (LOGGER.isDebugEnabled ())

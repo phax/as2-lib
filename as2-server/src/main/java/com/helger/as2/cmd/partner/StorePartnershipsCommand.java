@@ -35,7 +35,7 @@ package com.helger.as2.cmd.partner;
 import com.helger.as2.cmd.AbstractCommand;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.partner.xml.XMLPartnershipFactory;
 
@@ -80,7 +80,7 @@ public class StorePartnershipsCommand extends AbstractCommand
       return new CommandResult (ECommandResultType.TYPE_COMMAND_NOT_SUPPORTED,
                                 "Not supported by current partnership store, must be XML");
     }
-    catch (final OpenAS2Exception oae)
+    catch (final AS2Exception oae)
     {
       oae.terminate ();
 

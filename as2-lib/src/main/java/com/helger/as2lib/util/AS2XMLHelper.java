@@ -43,8 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -86,12 +86,12 @@ public final class AS2XMLHelper
   @Nonnull
   @ReturnsMutableCopy
   public static StringMap getAllAttrsWithLowercaseNameWithRequired (@Nonnull final IMicroElement aElement,
-                                                                    @Nonnull final String... aRequiredAttributes) throws OpenAS2Exception
+                                                                    @Nonnull final String... aRequiredAttributes) throws AS2Exception
   {
     final StringMap aAttributes = getAllAttrsWithLowercaseName (aElement);
     for (final String sRequiredAttribute : aRequiredAttributes)
       if (!aAttributes.containsKey (sRequiredAttribute))
-        throw new OpenAS2Exception (aElement.getTagName () +
+        throw new AS2Exception (aElement.getTagName () +
                                     " is missing required attribute '" +
                                     sRequiredAttribute +
                                     "'");
@@ -108,7 +108,7 @@ public final class AS2XMLHelper
    * @param sNodeValueName
    *        The attribute name of the value.
    * @return The non-<code>null</code> {@link Map}.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case a node is missing a key or value attribute.
    */
   @Nonnull
@@ -116,7 +116,7 @@ public final class AS2XMLHelper
   public static ICommonsOrderedMap <String, String> mapAttributeNodes (@Nonnull final IMicroElement aNode,
                                                                        @Nonnull final String sNodeName,
                                                                        @Nonnull final String sNodeKeyName,
-                                                                       @Nonnull final String sNodeValueName) throws OpenAS2Exception
+                                                                       @Nonnull final String sNodeValueName) throws AS2Exception
   {
     ValueEnforcer.notNull (aNode, "Node");
     ValueEnforcer.notNull (sNodeName, "NodeName");
@@ -129,11 +129,11 @@ public final class AS2XMLHelper
     {
       final String sName = eChild.getAttributeValue (sNodeKeyName);
       if (sName == null)
-        throw new OpenAS2Exception (sNodeName + "[" + nIndex + "] does not have key attribute '" + sNodeKeyName + "'");
+        throw new AS2Exception (sNodeName + "[" + nIndex + "] does not have key attribute '" + sNodeKeyName + "'");
 
       final String sValue = eChild.getAttributeValue (sNodeValueName);
       if (sValue == null)
-        throw new OpenAS2Exception (sNodeName +
+        throw new AS2Exception (sNodeName +
                                     "[" +
                                     nIndex +
                                     "] does not have value attribute '" +
@@ -147,7 +147,7 @@ public final class AS2XMLHelper
   }
 
   private static void _updateDirectories (@Nonnull final StringMap aAttributes,
-                                          @Nullable final String sBaseDirectory) throws OpenAS2Exception
+                                          @Nullable final String sBaseDirectory) throws AS2Exception
   {
     for (final Map.Entry <String, String> attrEntry : aAttributes.entrySet ())
     {
@@ -155,7 +155,7 @@ public final class AS2XMLHelper
       if (sValue.startsWith (DOLLAR_HOME_DOLLAR))
       {
         if (sBaseDirectory == null)
-          throw new OpenAS2Exception ("Base directory isn't set");
+          throw new AS2Exception ("Base directory isn't set");
         aAttributes.putIn (attrEntry.getKey (), sBaseDirectory + sValue.substring (DOLLAR_HOME_DOLLAR.length ()));
       }
     }
@@ -165,7 +165,7 @@ public final class AS2XMLHelper
   public static <T extends IDynamicComponent> T createComponent (@Nonnull final IMicroElement aElement,
                                                                  @Nonnull final Class <T> aClass,
                                                                  @Nonnull final IAS2Session aSession,
-                                                                 @Nullable final String sBaseDirectory) throws OpenAS2Exception
+                                                                 @Nullable final String sBaseDirectory) throws AS2Exception
   {
     ValueEnforcer.notNull (aElement, "Element");
     ValueEnforcer.notNull (aClass, "Class");
@@ -174,7 +174,7 @@ public final class AS2XMLHelper
     // Read 'classname' attribute
     final String sClassName = aElement.getAttributeValue ("classname");
     if (sClassName == null)
-      throw new OpenAS2Exception ("Missing 'classname' attribute");
+      throw new AS2Exception ("Missing 'classname' attribute");
 
     try
     {
@@ -184,7 +184,7 @@ public final class AS2XMLHelper
       // Instantiate class
       final T aObj = GenericReflection.newInstance (sClassName, aClass);
       if (aObj == null)
-        throw new OpenAS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
+        throw new AS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
 
       // Read all parameters
       final StringMap aParameters = AS2XMLHelper.getAllAttrsWithLowercaseName (aElement);
@@ -202,13 +202,13 @@ public final class AS2XMLHelper
 
       return aObj;
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       throw ex;
     }
     catch (final Exception ex)
     {
-      throw new WrappedOpenAS2Exception ("Error creating component: " + sClassName, ex);
+      throw new WrappedAS2Exception ("Error creating component: " + sClassName, ex);
     }
   }
 }

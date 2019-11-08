@@ -44,8 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.disposition.DispositionType;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
@@ -80,7 +80,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition,
-                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws OpenAS2Exception,
+                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws AS2Exception,
                                                                                   IOException,
                                                                                   MessagingException
   {
@@ -174,7 +174,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aBaseMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     try
     {
@@ -205,7 +205,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       catch (final IOException ex)
       {
         // Resend if a network error occurs during transmission
-        final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
+        final AS2Exception wioe = WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
 
         if (!doResend (IProcessorSenderModule.DO_SEND_ASYNC_MDN, aMsg, wioe, nRetries))
           throw wioe;
@@ -213,7 +213,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       catch (final Exception ex)
       {
         // Propagate error if it can't be handled by a resend
-        throw WrappedOpenAS2Exception.wrap (ex);
+        throw WrappedAS2Exception.wrap (ex);
       }
     }
     finally

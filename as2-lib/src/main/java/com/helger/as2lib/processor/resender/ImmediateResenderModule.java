@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 
@@ -65,7 +65,7 @@ public class ImmediateResenderModule extends AbstractResenderModule
   @Override
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());

@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -360,12 +360,12 @@ public class DispositionOptions
    *        The string to parse. May be <code>null</code> in which case an empty
    *        object will be returned.
    * @return Never <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In the very unlikely case of a programming error in
    *         {@link StringTokenizer}.
    */
   @Nonnull
-  public static DispositionOptions createFromString (@Nullable final String sOptions) throws OpenAS2Exception
+  public static DispositionOptions createFromString (@Nullable final String sOptions) throws AS2Exception
   {
     final DispositionOptions ret = new DispositionOptions ();
     if (StringHelper.hasTextAfterTrim (sOptions))
@@ -427,7 +427,7 @@ public class DispositionOptions
       }
       catch (final NoSuchElementException ex)
       {
-        throw new OpenAS2Exception ("Invalid disposition options format: " + sOptions);
+        throw new AS2Exception ("Invalid disposition options format: " + sOptions);
       }
     }
     return ret;

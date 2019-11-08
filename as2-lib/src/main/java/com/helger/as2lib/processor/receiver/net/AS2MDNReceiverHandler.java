@@ -55,8 +55,8 @@ import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
@@ -202,14 +202,14 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    *        The MDN content
    * @param aResponseHandler
    *        The HTTP response handler for setting the correct HTTP response code
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error
    * @throws IOException
    *         In case of IO error
    */
   protected final void receiveMDN (@Nonnull final AS2Message aMsg,
                                    final byte [] aData,
-                                   @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws OpenAS2Exception,
+                                   @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws AS2Exception,
                                                                                             IOException
   {
     try
@@ -300,7 +300,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     catch (final Exception ex)
     {
       HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_BAD_REQUEST);
-      throw WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg);
+      throw WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg);
     }
   }
 
@@ -311,10 +311,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    * @param aMsg
    *        Message
    * @return true if mdn processed
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error; e.g. MIC mismatch
    */
-  public boolean checkAsyncMDN (@Nonnull final AS2Message aMsg) throws OpenAS2Exception
+  public boolean checkAsyncMDN (@Nonnull final AS2Message aMsg) throws AS2Exception
   {
     try
     {
@@ -400,7 +400,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
   public void reparse (@Nonnull final AS2Message aMsg,
                        @Nonnull final AS2HttpClient aHttpClient,
-                       @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception
+                       @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception
   {
     // Create a MessageMDN and copy HTTP headers
     final IMessageMDN aMDN = new AS2MessageMDN (aMsg);

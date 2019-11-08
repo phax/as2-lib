@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.AbstractDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
@@ -73,17 +73,17 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
    * must be overridden to do something useful. A use case scenario could e.g.
    * be automatic storage of changes.
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case anything goes wrong
    */
   @OverrideOnDemand
   @IsLocked (ELockType.WRITE)
-  protected void markAsChanged () throws OpenAS2Exception
+  protected void markAsChanged () throws AS2Exception
   {}
 
   @Nonnull
   @OverridingMethodsMustInvokeSuper
-  public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  public Partnership getPartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
 
@@ -128,7 +128,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     return m_aRWLock.readLocked ( () -> m_aPartnerships);
   }
 
-  protected final void setPartnerships (@Nonnull final PartnershipMap aPartnerships) throws OpenAS2Exception
+  protected final void setPartnerships (@Nonnull final PartnershipMap aPartnerships) throws AS2Exception
   {
     m_aRWLock.writeLockedThrowing ( () -> {
       m_aPartnerships.setPartnerships (aPartnerships);
@@ -137,7 +137,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Nonnull
-  public final EChange addPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  public final EChange addPartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
     return m_aRWLock.writeLockedThrowing ( () -> {
       if (m_aPartnerships.addPartnership (aPartnership).isUnchanged ())
@@ -148,7 +148,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   @Nonnull
-  public final EChange removePartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  public final EChange removePartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
     return m_aRWLock.writeLockedThrowing ( () -> {
       if (m_aPartnerships.removePartnership (aPartnership).isUnchanged ())
@@ -158,7 +158,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     });
   }
 
-  public void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws OpenAS2Exception
+  public void updatePartnership (@Nonnull final IMessage aMsg, final boolean bOverwrite) throws AS2Exception
   {
     ValueEnforcer.notNull (aMsg, "Message");
 
@@ -183,7 +183,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   }
 
   public final void updatePartnership (@Nonnull final IMessageMDN aMdn,
-                                       final boolean bOverwrite) throws OpenAS2Exception
+                                       final boolean bOverwrite) throws AS2Exception
   {
     ValueEnforcer.notNull (aMdn, "MessageMDN");
 

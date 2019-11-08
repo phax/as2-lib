@@ -34,8 +34,8 @@ package com.helger.as2.util;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 
 /**
  * emulates StringTokenizer
@@ -64,10 +64,10 @@ public class CommandTokenizer
    * any more tokens in String
    *
    * @return true if there are any more tokens
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         in case another exception occurs
    */
-  public boolean hasMoreTokens () throws OpenAS2Exception
+  public boolean hasMoreTokens () throws AS2Exception
   {
     try
     {
@@ -81,7 +81,7 @@ public class CommandTokenizer
     }
     catch (final RuntimeException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 
@@ -89,10 +89,10 @@ public class CommandTokenizer
    * returns the next token, this handles spaces and quotes
    *
    * @return a string
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case a {@link RuntimeException} occurs
    */
-  public String nextToken () throws OpenAS2Exception
+  public String nextToken () throws AS2Exception
   {
     try
     {
@@ -123,7 +123,7 @@ public class CommandTokenizer
     }
     catch (final RuntimeException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 }

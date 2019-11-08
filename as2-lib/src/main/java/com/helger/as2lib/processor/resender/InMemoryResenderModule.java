@@ -42,7 +42,7 @@ import javax.annotation.concurrent.GuardedBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -78,7 +78,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   @Override
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     // Get the action to be used
     String sResendAction = aOptions == null ? null
@@ -108,7 +108,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     LOGGER.info ("Message put in resend queue" + aMsg.getLoggingText ());
   }
 
-  protected void resendItem (@Nonnull final ResendItem aItem) throws OpenAS2Exception
+  protected void resendItem (@Nonnull final ResendItem aItem) throws AS2Exception
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Resending item");
@@ -131,7 +131,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       // Finally remove from list
       m_aRWLock.writeLocked ( () -> m_aItems.remove (aItem));
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       throw ex.setSourceMsg (aMsg);
     }
@@ -150,7 +150,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       for (final ResendItem aResendItem : aResendItems)
         resendItem (aResendItem);
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       ex.terminate ();
       forceStop (ex);
@@ -185,7 +185,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   }
 
   @Override
-  public void doStop () throws OpenAS2Exception
+  public void doStop () throws AS2Exception
   {
     final int nRemainingItems = getResendItemCount ();
     if (nRemainingItems > 0)

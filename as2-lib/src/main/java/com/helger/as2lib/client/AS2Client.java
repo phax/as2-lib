@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.CertificateExistsException;
 import com.helger.as2lib.cert.CertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.partner.CPartnershipIDs;
@@ -240,7 +240,7 @@ public class AS2Client
 
   @OverrideOnDemand
   protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
-                                         @Nonnull final AS2Session aSession) throws OpenAS2Exception
+                                         @Nonnull final AS2Session aSession) throws AS2Exception
   {
     final StringMap aParams = new StringMap ();
     // TYPE is the only parameter that must be present in initDynamicComponents
@@ -296,7 +296,7 @@ public class AS2Client
   }
 
   @OverrideOnDemand
-  protected void initPartnershipFactory (@Nonnull final AS2Session aSession) throws OpenAS2Exception
+  protected void initPartnershipFactory (@Nonnull final AS2Session aSession) throws AS2Exception
   {
     // Use a self-filling in-memory partnership factory
     final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
@@ -304,7 +304,7 @@ public class AS2Client
   }
 
   @OverrideOnDemand
-  protected void initMessageProcessor (@Nonnull final AS2Session aSession) throws OpenAS2Exception
+  protected void initMessageProcessor (@Nonnull final AS2Session aSession) throws AS2Exception
   {
     final IMessageProcessor aMessageProcessor = new DefaultMessageProcessor ();
     aSession.setMessageProcessor (aMessageProcessor);

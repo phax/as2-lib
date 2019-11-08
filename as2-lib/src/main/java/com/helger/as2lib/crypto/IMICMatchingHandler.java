@@ -37,7 +37,7 @@ import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 
 /**
@@ -55,10 +55,10 @@ public interface IMICMatchingHandler extends Serializable
    *        The message it is all about. Never null
    * @param sMIC
    *        The MIC calculated and received. May not be <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error
    */
-  void onMICMatch (@Nonnull IMessage aMsg, @Nonnull String sMIC) throws OpenAS2Exception;
+  void onMICMatch (@Nonnull IMessage aMsg, @Nonnull String sMIC) throws AS2Exception;
 
   /**
    * Invoked upon MIC mismatch
@@ -69,10 +69,10 @@ public interface IMICMatchingHandler extends Serializable
    *        The MIC calculated here. May be <code>null</code>.
    * @param sReceivedMIC
    *        The MIC received from the other side. May be <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error
    */
   void onMICMismatch (@Nonnull IMessage aMsg,
                       @Nullable String sOriginalMIC,
-                      @Nullable String sReceivedMIC) throws OpenAS2Exception;
+                      @Nullable String sReceivedMIC) throws AS2Exception;
 }

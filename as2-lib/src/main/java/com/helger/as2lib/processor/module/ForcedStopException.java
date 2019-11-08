@@ -34,9 +34,9 @@ package com.helger.as2lib.processor.module;
 
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
-public class ForcedStopException extends OpenAS2Exception
+public class ForcedStopException extends AS2Exception
 {
   public ForcedStopException (@Nullable final Throwable aSource)
   {

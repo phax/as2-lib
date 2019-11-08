@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.processor.module;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * A special processor module that supports a special start/stop cycle (e.g.
@@ -44,7 +44,7 @@ public interface IProcessorActiveModule extends IProcessorModule
 {
   boolean isRunning ();
 
-  void start () throws OpenAS2Exception;
+  void start () throws AS2Exception;
 
-  void stop () throws OpenAS2Exception;
+  void stop () throws AS2Exception;
 }

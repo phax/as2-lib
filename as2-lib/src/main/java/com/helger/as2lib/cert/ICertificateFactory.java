@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 
 /**
@@ -58,14 +58,14 @@ public interface ICertificateFactory extends IDynamicComponent
    * @param ePartnershipType
    *        Sender or receiver?
    * @return Never <code>null</code>-
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error
    * @throws CertificateNotFoundException
    *         If no certificate is present
    */
   @Nonnull
   X509Certificate getCertificate (@Nonnull IBaseMessage aMsg,
-                                  @Nonnull ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception;
+                                  @Nonnull ECertificatePartnershipType ePartnershipType) throws AS2Exception;
 
   /**
    * Get the certificate of the specified type for the partnership defined in
@@ -76,12 +76,12 @@ public interface ICertificateFactory extends IDynamicComponent
    * @param ePartnershipType
    *        Sender or receiver?
    * @return <code>null</code> if no such alias or certificate exists.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error
    */
   @Nullable
   default X509Certificate getCertificateOrNull (@Nonnull final IBaseMessage aMsg,
-                                                @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                                @Nonnull final ECertificatePartnershipType ePartnershipType) throws AS2Exception
   {
     try
     {
@@ -95,5 +95,5 @@ public interface ICertificateFactory extends IDynamicComponent
   }
 
   @Nonnull
-  PrivateKey getPrivateKey (@Nullable IBaseMessage aMsg, @Nullable X509Certificate aCert) throws OpenAS2Exception;
+  PrivateKey getPrivateKey (@Nullable IBaseMessage aMsg, @Nullable X509Certificate aCert) throws AS2Exception;
 }

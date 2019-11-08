@@ -34,14 +34,14 @@ package com.helger.as2lib.partner;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * Exception thrown if a desired partnership is not present.
  *
  * @author Philip Helger
  */
-public class PartnershipNotFoundException extends OpenAS2Exception
+public class PartnershipNotFoundException extends AS2Exception
 {
   private final Partnership m_aPartnership;
 

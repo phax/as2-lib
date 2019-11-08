@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
@@ -98,7 +98,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
 
   @OverridingMethodsMustInvokeSuper
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap aParameters) throws AS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
     attrs ().putAllIn (aParameters);

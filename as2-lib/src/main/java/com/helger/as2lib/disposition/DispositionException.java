@@ -35,7 +35,7 @@ package com.helger.as2lib.disposition;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * Exception thrown in case a message disposition contains an error or a
@@ -44,7 +44,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
  *
  * @author Philip Helger
  */
-public class DispositionException extends OpenAS2Exception
+public class DispositionException extends AS2Exception
 {
   private final DispositionType m_aDisposition;
   private String m_sText;

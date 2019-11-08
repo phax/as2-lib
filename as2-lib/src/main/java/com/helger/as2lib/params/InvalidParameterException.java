@@ -37,10 +37,10 @@ import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.Nonempty;
 
-public class InvalidParameterException extends OpenAS2Exception
+public class InvalidParameterException extends AS2Exception
 {
   private final Serializable m_aTarget;
   private final String m_sKey;

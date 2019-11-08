@@ -37,14 +37,14 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 
-public class NoModuleException extends OpenAS2Exception
+public class NoModuleException extends AS2Exception
 {
   private final ICommonsMap <String, Object> m_aOptions;
   private final IMessage m_aMsg;

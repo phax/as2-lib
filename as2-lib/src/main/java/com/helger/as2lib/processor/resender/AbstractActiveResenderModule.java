@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 import com.helger.as2lib.session.IAS2Session;
@@ -84,7 +84,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
   @Override
   @OverridingMethodsMustInvokeSuper
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap aParameters) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aParameters);
 
@@ -92,7 +92,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
     {
       m_nPollingMS = attrs ().getAsLong (ATTR_POLLING_INTERVAL_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
       if (m_nPollingMS < 1)
-        throw new OpenAS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " +
+        throw new AS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " +
                                     m_nPollingMS);
     }
   }
@@ -114,7 +114,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void doStart () throws OpenAS2Exception
+  public void doStart () throws AS2Exception
   {
     if (m_aTimer != null)
       throw new IllegalStateException ("Resending timer is already running!");
@@ -125,7 +125,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void doStop () throws OpenAS2Exception
+  public void doStop () throws AS2Exception
   {
     if (m_aTimer != null)
     {

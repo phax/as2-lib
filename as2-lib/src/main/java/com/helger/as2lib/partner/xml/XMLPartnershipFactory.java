@@ -44,8 +44,8 @@ import javax.annotation.WillClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.partner.IRefreshablePartnershipFactory;
 import com.helger.as2lib.partner.Partnership;
@@ -92,7 +92,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session session,
-                                    @Nullable final IStringMap parameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap parameters) throws AS2Exception
   {
     super.initDynamicComponent (session, parameters);
 
@@ -100,7 +100,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   @OverridingMethodsMustInvokeSuper
-  public void refreshPartnershipFactory () throws OpenAS2Exception
+  public void refreshPartnershipFactory () throws AS2Exception
   {
     try
     {
@@ -109,11 +109,11 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     }
     catch (final Exception ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 
-  protected void load (@Nullable @WillClose final InputStream aIS) throws OpenAS2Exception
+  protected void load (@Nullable @WillClose final InputStream aIS) throws AS2Exception
   {
     final PartnerMap aNewPartners = new PartnerMap ();
     final PartnershipMap aNewPartnerships = new PartnershipMap ();
@@ -122,7 +122,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     {
       final IMicroDocument aDocument = MicroReader.readMicroXML (aIS);
       if (aDocument == null)
-        throw new OpenAS2Exception ("Failed to read the XML partnership information");
+        throw new AS2Exception ("Failed to read the XML partnership information");
 
       final IMicroElement aRoot = aDocument.getDocumentElement ();
       for (final IMicroElement eRootNode : aRoot.getAllChildElements ())
@@ -139,7 +139,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
           {
             final Partnership aNewPartnership = loadPartnership (eRootNode, aNewPartners);
             if (aNewPartnerships.getPartnershipByName (aNewPartnership.getName ()) != null)
-              throw new OpenAS2Exception ("Partnership with name '" +
+              throw new AS2Exception ("Partnership with name '" +
                                           aNewPartnership.getName () +
                                           "' is defined more than once");
             aNewPartnerships.addPartnership (aNewPartnership);
@@ -157,7 +157,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode,
-                                            @Nonnull final Partnership aPartnership) throws OpenAS2Exception
+                                            @Nonnull final Partnership aPartnership) throws AS2Exception
   {
     final String sNodeName = "attribute";
     final String sNodeKeyName = "name";
@@ -170,7 +170,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   @Nonnull
-  public Partner loadPartner (@Nonnull final IMicroElement ePartner) throws OpenAS2Exception
+  public Partner loadPartner (@Nonnull final IMicroElement ePartner) throws AS2Exception
   {
     // Name is required
     final StringMap aAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartner, ATTR_PARTNER_NAME);
@@ -180,12 +180,12 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   protected void loadPartnerIDs (@Nonnull final IMicroElement ePartnership,
                                  @Nonnull final IPartnerMap aAllPartners,
                                  @Nonnull final Partnership aPartnership,
-                                 final boolean bIsSender) throws OpenAS2Exception
+                                 final boolean bIsSender) throws AS2Exception
   {
     final String sPartnerType = bIsSender ? "sender" : "receiver";
     final IMicroElement ePartner = ePartnership.getFirstChildElement (sPartnerType);
     if (ePartner == null)
-      throw new OpenAS2Exception ("Partnership '" +
+      throw new AS2Exception ("Partnership '" +
                                   aPartnership.getName () +
                                   "' is missing '" +
                                   sPartnerType +
@@ -201,7 +201,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
       final IPartner aPartner = aAllPartners.getPartnerOfName (sPartnerName);
       if (aPartner == null)
       {
-        throw new OpenAS2Exception ("Partnership '" +
+        throw new AS2Exception ("Partnership '" +
                                     aPartnership.getName () +
                                     "' has a non-existing " +
                                     sPartnerType +
@@ -227,7 +227,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
 
   @Nonnull
   public Partnership loadPartnership (@Nonnull final IMicroElement ePartnership,
-                                      @Nonnull final IPartnerMap aAllPartners) throws OpenAS2Exception
+                                      @Nonnull final IPartnerMap aAllPartners) throws AS2Exception
   {
     // Name attribute is required
     final IStringMap aPartnershipAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
@@ -261,10 +261,10 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   /**
    * Store the current status of the partnerships to a file.
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error
    */
-  public void storePartnership () throws OpenAS2Exception
+  public void storePartnership () throws AS2Exception
   {
     final String sFilename = getFilename ();
 
@@ -307,6 +307,6 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
                     .setAttribute ("value", aAttr.getValue ());
     }
     if (MicroWriter.writeToFile (aDoc, new File (sFilename)).isFailure ())
-      throw new OpenAS2Exception ("Failed to write to file " + sFilename);
+      throw new AS2Exception ("Failed to write to file " + sFilename);
   }
 }

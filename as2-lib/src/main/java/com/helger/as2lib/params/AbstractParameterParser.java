@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
@@ -88,12 +88,12 @@ public abstract class AbstractParameterParser implements Serializable
    *        delimiters in string to parse, like "-."
    * @param sValue
    *        string to parse, like <code>"NORINCO-WALMART.application/X12"</code>
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case the string is incorrect
    */
   public void setParameters (@Nullable final String sFormat,
                              @Nullable final String sDelimiters,
-                             @Nonnull final String sValue) throws OpenAS2Exception
+                             @Nonnull final String sValue) throws AS2Exception
   {
     final ICommonsList <String> aKeys = StringHelper.getExploded (',', sFormat);
 
@@ -101,7 +101,7 @@ public abstract class AbstractParameterParser implements Serializable
     for (final String sKey : aKeys)
     {
       if (!aValueTokens.hasMoreTokens ())
-        throw new OpenAS2Exception ("Invalid value: Format=" + sFormat + ", value=" + sValue);
+        throw new AS2Exception ("Invalid value: Format=" + sFormat + ", value=" + sValue);
 
       if (sKey.length () > 0)
         setParameter (sKey, aValueTokens.nextToken ());

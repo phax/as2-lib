@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -63,11 +63,11 @@ public interface IPartnershipFactory extends IDynamicComponent
    *        of the partnership must be unique so that it gets added.
    * @return {@link EChange#CHANGED} if adding was successfully,
    *         {@link EChange#UNCHANGED} if the name is already contained.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         Generic error
    */
   @Nonnull
-  EChange addPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
+  EChange addPartnership (@Nonnull Partnership aPartnership) throws AS2Exception;
 
   /**
    * Remove the specified partnership.
@@ -77,11 +77,11 @@ public interface IPartnershipFactory extends IDynamicComponent
    * @return {@link EChange#CHANGED} if removal was successful,
    *         {@link EChange#UNCHANGED} if no such partnership to be removed is
    *         present.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         Generic error
    */
   @Nonnull
-  EChange removePartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
+  EChange removePartnership (@Nonnull Partnership aPartnership) throws AS2Exception;
 
   /**
    * Get the partnership identified by the provided stub partnership.
@@ -90,12 +90,12 @@ public interface IPartnershipFactory extends IDynamicComponent
    *        Stub partnership which must contain either a name or a set of sender
    *        and receiver IDs.
    * @return The Partnership as stored in this factory. Never <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         If no partnership matching the provided stub partnership can be
    *         found.
    */
   @Nonnull
-  Partnership getPartnership (@Nonnull Partnership aPartnership) throws OpenAS2Exception;
+  Partnership getPartnership (@Nonnull Partnership aPartnership) throws AS2Exception;
 
   /**
    * Find an existing partnership by its name.
@@ -133,11 +133,11 @@ public interface IPartnershipFactory extends IDynamicComponent
    * @param bOverwrite
    *        <code>true</code> to also set the subject of the message with the
    *        subject stored in the partnership.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error
    * @see #getPartnership(Partnership)
    */
-  void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws OpenAS2Exception;
+  void updatePartnership (@Nonnull IMessage aMsg, boolean bOverwrite) throws AS2Exception;
 
   /**
    * Looks up and fills in any header info for a specific MDN's partnership
@@ -148,9 +148,9 @@ public interface IPartnershipFactory extends IDynamicComponent
    *        at least name or sender and receiver IDs.
    * @param bOverwrite
    *        has no effect currently
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error
    * @see #getPartnership(Partnership)
    */
-  void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws OpenAS2Exception;
+  void updatePartnership (@Nonnull IMessageMDN aMdn, boolean bOverwrite) throws AS2Exception;
 }

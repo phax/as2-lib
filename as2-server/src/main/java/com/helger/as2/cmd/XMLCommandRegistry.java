@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2.app.session.AS2ServerXMLSession;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2XMLHelper;
 import com.helger.commons.collection.attr.IStringMap;
@@ -54,7 +54,7 @@ public class XMLCommandRegistry extends BaseCommandRegistry
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap aParameters) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aParameters);
 
@@ -62,7 +62,7 @@ public class XMLCommandRegistry extends BaseCommandRegistry
   }
 
   protected void loadCommand (final IMicroElement eCommand,
-                              @Nullable final MultiCommand aParent) throws OpenAS2Exception
+                              @Nullable final MultiCommand aParent) throws AS2Exception
   {
     final IAS2Session aSession = getSession ();
     final String sBaseDirectory = aSession instanceof AS2ServerXMLSession ? ((AS2ServerXMLSession) aSession).getBaseDirectory ()
@@ -75,7 +75,7 @@ public class XMLCommandRegistry extends BaseCommandRegistry
   }
 
   protected void loadMultiCommand (@Nonnull final IMicroElement aCommand,
-                                   @Nullable final MultiCommand parent) throws OpenAS2Exception
+                                   @Nullable final MultiCommand parent) throws AS2Exception
   {
     final MultiCommand cmd = new MultiCommand ();
     cmd.initDynamicComponent (getSession (), AS2XMLHelper.getAllAttrsWithLowercaseName (aCommand));
@@ -95,11 +95,11 @@ public class XMLCommandRegistry extends BaseCommandRegistry
         if (sChildName.equals ("multicommand"))
           loadMultiCommand (aChildElement, cmd);
         else
-          throw new OpenAS2Exception ("Undefined child tag: " + sChildName);
+          throw new AS2Exception ("Undefined child tag: " + sChildName);
     }
   }
 
-  public void load (@Nonnull final InputStream in) throws OpenAS2Exception
+  public void load (@Nonnull final InputStream in) throws AS2Exception
   {
     final IMicroDocument aDoc = MicroReader.readMicroXML (in);
     final IMicroElement eRoot = aDoc.getDocumentElement ();
@@ -115,11 +115,11 @@ public class XMLCommandRegistry extends BaseCommandRegistry
         if (sNodeName.equals ("multicommand"))
           loadMultiCommand (eElement, null);
         else
-          throw new OpenAS2Exception ("Undefined tag: " + sNodeName);
+          throw new AS2Exception ("Undefined tag: " + sNodeName);
     }
   }
 
-  public void refresh () throws OpenAS2Exception
+  public void refresh () throws AS2Exception
   {
     final String sFilename = getAttributeAsStringRequired (ATTR_FILENAME);
     load (FileHelper.getInputStream (new File (sFilename)));

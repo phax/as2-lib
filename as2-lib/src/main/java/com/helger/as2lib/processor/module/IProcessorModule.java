@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.IMessageProcessor;
 
@@ -54,5 +54,5 @@ public interface IProcessorModule extends IDynamicComponent
 
   void handle (@Nonnull String sAction,
                @Nonnull IMessage aMsg,
-               @Nullable Map <String, Object> aOptions) throws OpenAS2Exception;
+               @Nullable Map <String, Object> aOptions) throws AS2Exception;
 }

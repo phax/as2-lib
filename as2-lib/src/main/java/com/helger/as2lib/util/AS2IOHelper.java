@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.receiver.InvalidMessageException;
 import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.Nonempty;
@@ -155,11 +155,11 @@ public final class AS2IOHelper
    *        Source file to move
    * @param sErrorDirectory
    *        Error directory path.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case moving failed
    */
   public static void handleError (@Nonnull final File aFile,
-                                  @Nonnull final String sErrorDirectory) throws OpenAS2Exception
+                                  @Nonnull final String sErrorDirectory) throws AS2Exception
   {
     File aDestFile = null;
 

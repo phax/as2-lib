@@ -40,6 +40,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.lang.ClassHelper;
 
@@ -48,29 +49,29 @@ import com.helger.commons.lang.ClassHelper;
  *
  * @author Philip Helger
  */
-public class OpenAS2Exception extends Exception
+public class AS2Exception extends Exception
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (OpenAS2Exception.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AS2Exception.class);
 
   private IMessage m_aSrcMsg;
   private File m_aSrcFile;
 
-  public OpenAS2Exception ()
+  public AS2Exception ()
   {
     log (false);
   }
 
-  public OpenAS2Exception (@Nullable final String sMsg)
+  public AS2Exception (@Nullable final String sMsg)
   {
     super (sMsg);
   }
 
-  public OpenAS2Exception (@Nullable final String sMsg, @Nullable final Throwable aCause)
+  public AS2Exception (@Nullable final String sMsg, @Nullable final Throwable aCause)
   {
     super (sMsg, aCause);
   }
 
-  public OpenAS2Exception (@Nullable final Throwable aCause)
+  public AS2Exception (@Nullable final Throwable aCause)
   {
     super (aCause);
   }
@@ -82,7 +83,7 @@ public class OpenAS2Exception extends Exception
   }
 
   @Nonnull
-  public final OpenAS2Exception setSourceMsg (@Nullable final IMessage aSrcMsg)
+  public final AS2Exception setSourceMsg (@Nullable final IMessage aSrcMsg)
   {
     m_aSrcMsg = aSrcMsg;
     return this;
@@ -95,14 +96,14 @@ public class OpenAS2Exception extends Exception
   }
 
   @Nonnull
-  public final OpenAS2Exception setSourceFile (@Nullable final File aSrcFile)
+  public final AS2Exception setSourceFile (@Nullable final File aSrcFile)
   {
     m_aSrcFile = aSrcFile;
     return this;
   }
 
   @Nonnull
-  public final OpenAS2Exception terminate ()
+  public final AS2Exception terminate ()
   {
     log (true);
     return this;
@@ -115,7 +116,8 @@ public class OpenAS2Exception extends Exception
   protected final void log (final boolean bTerminated)
   {
     if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("OpenAS2 " +
+      LOGGER.info (CAS2Info.NAME_VERSION +
+                   " " +
                    ClassHelper.getClassLocalName (getClass ()) +
                    " " +
                    (bTerminated ? "terminated" : "caught") +

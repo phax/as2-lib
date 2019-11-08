@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.AbstractPartnershipFactory;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -56,7 +56,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
 {
   private final PartnerMap m_aPartners = new PartnerMap ();
 
-  protected final void setPartners (@Nonnull final PartnerMap aPartners) throws OpenAS2Exception
+  protected final void setPartners (@Nonnull final PartnerMap aPartners) throws AS2Exception
   {
     m_aRWLock.writeLockedThrowing ( () -> {
       m_aPartners.setPartners (aPartners);
@@ -64,7 +64,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
     });
   }
 
-  public void addPartner (@Nonnull final Partner aNewPartner) throws OpenAS2Exception
+  public void addPartner (@Nonnull final Partner aNewPartner) throws AS2Exception
   {
     m_aRWLock.writeLockedThrowing ( () -> {
       m_aPartners.addPartner (aNewPartner);
@@ -73,7 +73,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
   }
 
   @Nonnull
-  public EChange removePartner (@Nullable final String sPartnerName) throws OpenAS2Exception
+  public EChange removePartner (@Nullable final String sPartnerName) throws AS2Exception
   {
     return m_aRWLock.writeLockedThrowing ( () -> {
       if (m_aPartners.removePartner (sPartnerName).isUnchanged ())

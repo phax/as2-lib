@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * Test class for class {@link DispositionOptions}.
@@ -48,7 +48,7 @@ import com.helger.as2lib.exception.OpenAS2Exception;
 public final class DispositionOptionsTest
 {
   @Test
-  public void testParsing () throws OpenAS2Exception
+  public void testParsing () throws AS2Exception
   {
     DispositionOptions aDO = DispositionOptions.createFromString ("signed-receipt-protocol=optional,pkcs7-signature; signed-receipt-micalg=optional,sha1,md5");
     assertNotNull (aDO);

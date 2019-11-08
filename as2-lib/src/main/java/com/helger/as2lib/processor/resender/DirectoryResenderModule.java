@@ -49,8 +49,8 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -85,7 +85,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);
@@ -103,7 +103,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   @Override
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     try
     {
@@ -139,7 +139,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
     catch (final IOException ioe)
     {
-      throw WrappedOpenAS2Exception.wrap (ioe);
+      throw WrappedAS2Exception.wrap (ioe);
     }
   }
 
@@ -173,7 +173,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
   }
 
-  protected void resendFile (@Nonnull final File aFile) throws OpenAS2Exception
+  protected void resendFile (@Nonnull final File aFile) throws AS2Exception
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Processing " + aFile.getAbsolutePath ());
@@ -208,7 +208,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         {
           // Delete the file, sender will re-queue if the transmission fails
           // again
-          throw new OpenAS2Exception ("File was successfully sent but not deleted: " + aFile.getAbsolutePath ());
+          throw new AS2Exception ("File was successfully sent but not deleted: " + aFile.getAbsolutePath ());
         }
 
         if (LOGGER.isInfoEnabled ())
@@ -216,10 +216,10 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       }
       catch (final IOException | ClassNotFoundException ex)
       {
-        throw WrappedOpenAS2Exception.wrap (ex);
+        throw WrappedAS2Exception.wrap (ex);
       }
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
       AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
@@ -266,7 +266,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       for (final File aCurrentFile : aSendFiles)
         resendFile (aCurrentFile);
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       ex.terminate ();
       forceStop (ex);

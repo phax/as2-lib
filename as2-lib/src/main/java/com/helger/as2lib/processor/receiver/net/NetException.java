@@ -36,13 +36,13 @@ import java.net.InetAddress;
 
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * @author OpenAS2
  * @author Philip Helger
  */
-public class NetException extends OpenAS2Exception
+public class NetException extends AS2Exception
 {
   private final InetAddress m_aAddress;
   private final int m_nPort;

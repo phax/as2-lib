@@ -19,7 +19,7 @@ package com.helger.as2servlet.util;
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
 
@@ -32,7 +32,7 @@ import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
 public class AS2ServletPartnershipFactory extends SelfFillingXMLPartnershipFactory
 {
   @Override
-  protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws OpenAS2Exception
+  protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
     super.onBeforeAddPartnership (aPartnership);
 
@@ -49,7 +49,7 @@ public class AS2ServletPartnershipFactory extends SelfFillingXMLPartnershipFacto
   }
 
   @Override
-  protected void markAsChanged () throws OpenAS2Exception
+  protected void markAsChanged () throws AS2Exception
   {
     // Store every time something changed
     storePartnership ();

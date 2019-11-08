@@ -58,8 +58,8 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.ICryptoHelper;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
@@ -207,7 +207,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     return aMsg;
   }
 
-  protected void decrypt (@Nonnull final IMessage aMsg) throws OpenAS2Exception
+  protected void decrypt (@Nonnull final IMessage aMsg) throws AS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
@@ -261,7 +261,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  protected void verify (@Nonnull final IMessage aMsg) throws OpenAS2Exception
+  protected void verify (@Nonnull final IMessage aMsg) throws AS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
@@ -468,7 +468,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final Exception ex)
       {
-        WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
+        WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
       }
     }
   }
@@ -552,7 +552,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Fill all partnership attributes etc.
         aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         throw new DispositionException (DispositionType.createError ("authentication-failed"),
                                         AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND,
@@ -625,7 +625,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
@@ -644,7 +644,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
@@ -663,7 +663,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
         throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
@@ -701,7 +701,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final Exception ex)
       {
-        throw new WrappedOpenAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
+        throw new WrappedAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
       }
     }
     catch (final DispositionException ex)
@@ -709,7 +709,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
       m_aReceiverModule.handleError (aMsg, ex);
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       m_aReceiverModule.handleError (aMsg, ex);
     }

@@ -32,12 +32,12 @@
  */
 package com.helger.as2lib.exception;
 
-public class OpenAS2UnsupportedException extends OpenAS2Exception
+public class AS2UnsupportedException extends AS2Exception
 {
-  public OpenAS2UnsupportedException ()
+  public AS2UnsupportedException ()
   {}
 
-  public OpenAS2UnsupportedException (final String sMsg)
+  public AS2UnsupportedException (final String sMsg)
   {
     super (sMsg);
   }

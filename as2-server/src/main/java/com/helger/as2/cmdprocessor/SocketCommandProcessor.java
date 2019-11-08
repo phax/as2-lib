@@ -49,8 +49,8 @@ import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.util.CommandTokenizer;
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.attr.IStringMap;
@@ -117,7 +117,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParams) throws OpenAS2Exception
+                                    @Nullable final IStringMap aParams) throws AS2Exception
   {
     final StringMap aParameters = aParams == null ? new StringMap () : new StringMap (aParams);
     final String sPort = aParameters.getAsString (ATTR_PORTID);
@@ -133,20 +133,20 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
     }
     catch (final IOException e)
     {
-      throw new OpenAS2Exception (e);
+      throw new AS2Exception (e);
     }
     catch (final NumberFormatException e)
     {
-      throw new OpenAS2Exception ("Error converting portid parameter '" + sPort + "': " + e);
+      throw new AS2Exception ("Error converting portid parameter '" + sPort + "': " + e);
     }
 
     m_sUserID = aParameters.getAsString (ATTR_USERID);
     if (StringHelper.hasNoText (m_sUserID))
-      throw new OpenAS2Exception ("missing 'userid' parameter");
+      throw new AS2Exception ("missing 'userid' parameter");
 
     m_sPassword = aParameters.getAsString (ATTR_PASSWORD);
     if (StringHelper.hasNoText (m_sPassword))
-      throw new OpenAS2Exception ("missing 'password' parameter");
+      throw new AS2Exception ("missing 'password' parameter");
 
     try
     {
@@ -154,12 +154,12 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
     }
     catch (final Exception e)
     {
-      throw new OpenAS2Exception (e);
+      throw new AS2Exception (e);
     }
   }
 
   @Override
-  public void processCommand () throws OpenAS2Exception
+  public void processCommand () throws AS2Exception
   {
     try (final SSLSocket socket = (SSLSocket) m_aSSLServerSocket.accept ())
     {
@@ -174,13 +174,13 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
       if (!m_aParser.getUserid ().equals (m_sUserID))
       {
         m_aWriter.write ("Bad userid/password");
-        throw new OpenAS2Exception ("Bad userid");
+        throw new AS2Exception ("Bad userid");
       }
 
       if (!m_aParser.getPassword ().equals (m_sPassword))
       {
         m_aWriter.write ("Bad userid/password");
-        throw new OpenAS2Exception ("Bad password");
+        throw new AS2Exception ("Bad password");
       }
 
       final String str = m_aParser.getCommandText ();
@@ -235,7 +235,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
     }
     catch (final IOException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 
@@ -247,7 +247,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
       while (true)
         processCommand ();
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       LOGGER.error ("Error running command processor " + CAS2Info.NAME_VERSION, ex);
     }

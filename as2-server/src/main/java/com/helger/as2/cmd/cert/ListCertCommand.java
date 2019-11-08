@@ -38,7 +38,7 @@ import java.util.Map;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 public class ListCertCommand extends AbstractAliasedCertCommand
 {
@@ -61,7 +61,7 @@ public class ListCertCommand extends AbstractAliasedCertCommand
   }
 
   @Override
-  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws OpenAS2Exception
+  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws AS2Exception
   {
     final Map <String, Certificate> certs = certFx.getCertificates ();
     final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK);

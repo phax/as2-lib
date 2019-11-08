@@ -35,7 +35,7 @@ package com.helger.as2.cmd.cert;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 public class ClearCertsCommand extends AbstractAliasedCertCommand
 {
@@ -58,7 +58,7 @@ public class ClearCertsCommand extends AbstractAliasedCertCommand
   }
 
   @Override
-  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws OpenAS2Exception
+  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws AS2Exception
   {
     certFx.clearCertificates ();
 

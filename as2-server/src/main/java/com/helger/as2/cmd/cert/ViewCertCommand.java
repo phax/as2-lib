@@ -37,7 +37,7 @@ import java.security.cert.X509Certificate;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * view certs by alias
@@ -66,7 +66,7 @@ public class ViewCertCommand extends AbstractAliasedCertCommand
 
   @Override
   protected CommandResult execute (final IAliasedCertificateFactory certFx,
-                                   final Object [] params) throws OpenAS2Exception
+                                   final Object [] params) throws AS2Exception
   {
     if (params.length < 1)
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());

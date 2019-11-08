@@ -37,8 +37,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.OpenAS2UnsupportedException;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.AS2UnsupportedException;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.string.ToStringGenerator;
@@ -73,9 +73,9 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
-    throw new OpenAS2UnsupportedException ("Active modules don't handle anything by default");
+    throw new AS2UnsupportedException ("Active modules don't handle anything by default");
   }
 
   public void forceStop (@Nullable final Exception aCause)
@@ -86,7 +86,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
     {
       stop ();
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       ex.terminate ();
     }
@@ -95,12 +95,12 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   /**
    * Implement the internal start logic.
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error.
    */
-  public abstract void doStart () throws OpenAS2Exception;
+  public abstract void doStart () throws AS2Exception;
 
-  public void start () throws OpenAS2Exception
+  public void start () throws AS2Exception
   {
     _setRunning (true);
     doStart ();
@@ -109,12 +109,12 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   /**
    * Implement the internal stop logic.
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error.
    */
-  public abstract void doStop () throws OpenAS2Exception;
+  public abstract void doStop () throws AS2Exception;
 
-  public void stop () throws OpenAS2Exception
+  public void stop () throws AS2Exception
   {
     _setRunning (false);
     doStop ();

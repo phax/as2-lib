@@ -22,7 +22,7 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2servlet.util.AS2ServletXMLSession;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -74,7 +74,7 @@ public class AS2ReceiveXServletHandlerFileBasedConfig extends AbstractAS2Receive
 
   @Override
   @Nonnull
-  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws OpenAS2Exception,
+  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws AS2Exception,
                                                                                                   ServletException
   {
     // Get configuration file

@@ -32,9 +32,9 @@
  */
 package com.helger.as2.cmd;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
-public class CommandException extends OpenAS2Exception
+public class CommandException extends AS2Exception
 {
   public CommandException (final String sMsg)
   {

@@ -37,7 +37,7 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.collection.attr.IStringMap;
@@ -50,7 +50,7 @@ public class MultiCommand extends AbstractCommand
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session session,
-                                    @Nullable final IStringMap parameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap parameters) throws AS2Exception
   {
     super.initDynamicComponent (session, parameters);
     getAttributeAsStringRequired (ATTR_NAME);
@@ -110,7 +110,7 @@ public class MultiCommand extends AbstractCommand
     return listCmds;
   }
 
-  public CommandResult execute (final String name, final Object [] params) throws OpenAS2Exception
+  public CommandResult execute (final String name, final Object [] params) throws AS2Exception
   {
     final ICommand cmd = getCommand (name);
 

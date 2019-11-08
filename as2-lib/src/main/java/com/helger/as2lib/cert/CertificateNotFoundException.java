@@ -37,10 +37,10 @@ import java.security.cert.X509Certificate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.Partnership;
 
-public class CertificateNotFoundException extends OpenAS2Exception
+public class CertificateNotFoundException extends AS2Exception
 {
   private final ECertificatePartnershipType m_ePartnershipType;
   private final String m_sAlias;

@@ -43,8 +43,8 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.CompositeParameters;
@@ -70,11 +70,11 @@ public class MDNFileModule extends AbstractStorageModule
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     // store mdn data
     if (aMsg.getMDN () == null)
-      throw new OpenAS2Exception ("Message has no MDN");
+      throw new AS2Exception ("Message has no MDN");
 
     try
     {
@@ -85,7 +85,7 @@ public class MDNFileModule extends AbstractStorageModule
     }
     catch (final IOException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 

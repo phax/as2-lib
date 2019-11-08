@@ -64,7 +64,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -133,11 +133,11 @@ public class AS2HttpClient
 
   /**
    * @return URL
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         in case of error
    */
   @Nonnull
-  public URL getURL () throws OpenAS2Exception
+  public URL getURL () throws AS2Exception
   {
     URI uri = null;
     try
@@ -149,7 +149,7 @@ public class AS2HttpClient
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Failed to get URL from connection, URI: " + uri.toASCIIString (), ex);
-      throw new OpenAS2Exception (ex.getCause ());
+      throw new AS2Exception (ex.getCause ());
     }
   }
 
@@ -204,30 +204,30 @@ public class AS2HttpClient
    * Get InputStream
    *
    * @return InputStream to read response body from
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         in case of error
    * @throws IOException
    *         in case of IO error
    */
-  public InputStream getInputStream () throws OpenAS2Exception, IOException
+  public InputStream getInputStream () throws AS2Exception, IOException
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-      throw new OpenAS2Exception ("No response as message was yet sent");
+      throw new AS2Exception ("No response as message was yet sent");
 
     return m_aCloseableHttpResponse.getEntity ().getContent ();
   }
 
   /**
    * @return response HTTP Status as int
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         in case of error
    */
-  public int getResponseCode () throws OpenAS2Exception
+  public int getResponseCode () throws AS2Exception
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-      throw new OpenAS2Exception ("No response as message was yet sent");
+      throw new AS2Exception ("No response as message was yet sent");
 
     try
     {
@@ -236,20 +236,20 @@ public class AS2HttpClient
     }
     catch (final Exception ex)
     {
-      throw new OpenAS2Exception (ex);
+      throw new AS2Exception (ex);
     }
   }
 
   /**
    * @return the response message
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         in case of error
    */
-  public String getResponseMessage () throws OpenAS2Exception
+  public String getResponseMessage () throws AS2Exception
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-      throw new OpenAS2Exception ("No response as message was yet sent");
+      throw new AS2Exception ("No response as message was yet sent");
 
     final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
     return aStatusLine.getReasonPhrase ();
@@ -257,11 +257,11 @@ public class AS2HttpClient
 
   @Nonnull
   @ReturnsMutableCopy
-  public HttpHeaderMap getResponseHeaderFields () throws OpenAS2Exception
+  public HttpHeaderMap getResponseHeaderFields () throws AS2Exception
   {
     // message was not sent yet, not response
     if (m_aCloseableHttpResponse == null)
-      throw new OpenAS2Exception ("No response as message was yet sent");
+      throw new AS2Exception ("No response as message was yet sent");
 
     final Header [] aHeaders = m_aCloseableHttpResponse.getAllHeaders ();
     final HttpHeaderMap ret = new HttpHeaderMap ();

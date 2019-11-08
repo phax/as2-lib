@@ -62,8 +62,8 @@ import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
@@ -214,10 +214,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        AS2Message
    * @param aMIC
    *        MIC value
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error
    */
-  protected void storePendingInfo (@Nonnull final AS2Message aMsg, @Nonnull final MIC aMIC) throws OpenAS2Exception
+  protected void storePendingInfo (@Nonnull final AS2Message aMsg, @Nonnull final MIC aMIC) throws AS2Exception
   {
     try
     {
@@ -257,7 +257,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final IOException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg);
+      throw WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg);
     }
   }
 
@@ -489,7 +489,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         eCompressionType = ECompressionType.getFromIDCaseInsensitiveOrNull (sCompressionType);
         if (eCompressionType == null)
-          throw new OpenAS2Exception ("The compression type '" + sCompressionType + "' is not supported!");
+          throw new AS2Exception ("The compression type '" + sCompressionType + "' is not supported!");
 
         bCompressBeforeSign = aPartnership.isCompressBeforeSign ();
 
@@ -515,7 +515,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
         eSignAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSignAlgorithm);
         if (eSignAlgorithm == null)
-          throw new OpenAS2Exception ("The signing algorithm '" + sSignAlgorithm + "' is not supported!");
+          throw new AS2Exception ("The signing algorithm '" + sSignAlgorithm + "' is not supported!");
 
         // Include certificate in signed content?
         final ETriState eIncludeCertificateInSignedContent = aMsg.partnership ()
@@ -546,7 +546,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
         eCryptAlgorithm = ECryptoAlgorithmCrypt.getFromIDOrNull (sCryptAlgorithm);
         if (eCryptAlgorithm == null)
-          throw new OpenAS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
+          throw new AS2Exception ("The crypting algorithm '" + sCryptAlgorithm + "' is not supported!");
       }
     }
 
@@ -648,7 +648,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        mic value from original msg
    * @param aIncomingDumper
    *        Incoming dumper. May be <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         in case of an error
    * @throws IOException
    *         in case of an IO error
@@ -656,7 +656,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
                                  @Nonnull final AS2HttpClient aHttpClient,
                                  @Nonnull final MIC aOriginalMIC,
-                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception,
+                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception,
                                                                                       IOException
   {
     if (LOGGER.isDebugEnabled ())
@@ -785,7 +785,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     catch (final Exception ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg);
+      throw WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg);
     }
   }
 
@@ -796,14 +796,14 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        The source message that was send
    * @param ex
    *        The exception that was caught
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case an overload wants to throw the exception
    */
   @OverrideOnDemand
   protected void onReceivedMDNError (@Nonnull final AS2Message aMsg,
-                                     @Nonnull final OpenAS2Exception ex) throws OpenAS2Exception
+                                     @Nonnull final AS2Exception ex) throws AS2Exception
   {
-    new OpenAS2Exception ("Message was sent but an error occured while receiving the MDN", ex).setSourceMsg (aMsg)
+    new AS2Exception ("Message was sent but an error occured while receiving the MDN", ex).setSourceMsg (aMsg)
                                                                                               .terminate ();
   }
 
@@ -812,7 +812,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                              @Nullable final MIC aMIC,
                              @Nullable final EContentTransferEncoding eCTE,
                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
-                             @Nullable final IHTTPIncomingDumper aIncomingDumper) throws OpenAS2Exception,
+                             @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception,
                                                                                   IOException,
                                                                                   MessagingException
   {
@@ -890,7 +890,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // was not successful
         throw ex;
       }
-      catch (final OpenAS2Exception ex)
+      catch (final AS2Exception ex)
       {
         // Don't re-send or fail, just log an error if one occurs while
         // receiving the MDN
@@ -905,7 +905,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aBaseMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     final AS2Message aMsg = (AS2Message) aBaseMsg;
 
@@ -959,7 +959,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final IOException ex)
     {
       // Re-send if a network error occurs during transmission
-      final OpenAS2Exception wioe = WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
+      final AS2Exception wioe = WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
 
       if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, wioe, nRetries))
         throw wioe;
@@ -967,7 +967,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     catch (final Exception ex)
     {
       // Propagate error if it can't be handled by a re-send
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 

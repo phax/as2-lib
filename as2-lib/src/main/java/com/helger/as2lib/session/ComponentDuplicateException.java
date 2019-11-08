@@ -34,7 +34,7 @@ package com.helger.as2lib.session;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.Nonempty;
 
 /**
@@ -43,7 +43,7 @@ import com.helger.commons.annotation.Nonempty;
  *
  * @author Philip Helger
  */
-public class ComponentDuplicateException extends OpenAS2Exception
+public class ComponentDuplicateException extends AS2Exception
 {
   private final String m_sComponentID;
 

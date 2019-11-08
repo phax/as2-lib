@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.module.IProcessorModule;
@@ -53,11 +53,11 @@ public class AS2ServletXMLSession extends AS2Session
 
   private final String m_sBaseDirectory;
 
-  public AS2ServletXMLSession (@Nonnull final File aFile) throws OpenAS2Exception
+  public AS2ServletXMLSession (@Nonnull final File aFile) throws AS2Exception
   {
     ValueEnforcer.notNull (aFile, "File");
     if (!aFile.exists ())
-      throw new OpenAS2Exception ("AS2Session configuration file " + aFile.getAbsolutePath () + " does not exist!");
+      throw new AS2Exception ("AS2Session configuration file " + aFile.getAbsolutePath () + " does not exist!");
     m_sBaseDirectory = aFile.getParentFile ().getAbsolutePath ();
     LOGGER.info ("Loading AS2 configuration file '" + aFile.getAbsolutePath ());
     _load (FileHelper.getInputStream (aFile));
@@ -69,7 +69,7 @@ public class AS2ServletXMLSession extends AS2Session
     return m_sBaseDirectory;
   }
 
-  private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws OpenAS2Exception
+  private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("Loading certificates");
     final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement,
@@ -79,7 +79,7 @@ public class AS2ServletXMLSession extends AS2Session
     setCertificateFactory (aFactory);
   }
 
-  private void _loadPartnershipFactory (final IMicroElement eRootNode) throws OpenAS2Exception
+  private void _loadPartnershipFactory (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("Loading partnerships");
     final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode,
@@ -90,7 +90,7 @@ public class AS2ServletXMLSession extends AS2Session
   }
 
   private void _loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
-                                     @Nonnull final IMicroElement eModule) throws OpenAS2Exception
+                                     @Nonnull final IMicroElement eModule) throws AS2Exception
   {
     final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule,
                                                                             IProcessorModule.class,
@@ -100,7 +100,7 @@ public class AS2ServletXMLSession extends AS2Session
     LOGGER.info ("  Loaded processor module " + aProcessorModule.getName ());
   }
 
-  private void _loadMessageProcessor (final IMicroElement eRootNode) throws OpenAS2Exception
+  private void _loadMessageProcessor (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("Loading message processor");
     final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
@@ -113,7 +113,7 @@ public class AS2ServletXMLSession extends AS2Session
       _loadProcessorModule (aMsgProcessor, eModule);
   }
 
-  private void _load (@Nonnull @WillClose final InputStream aIS) throws OpenAS2Exception
+  private void _load (@Nonnull @WillClose final InputStream aIS) throws AS2Exception
   {
     final IMicroDocument aDoc = MicroReader.readMicroXML (aIS);
     final IMicroElement eRoot = aDoc.getDocumentElement ();
@@ -131,7 +131,7 @@ public class AS2ServletXMLSession extends AS2Session
           if (sNodeName.equals (EL_PARTNERSHIPS))
             _loadPartnershipFactory (eRootChild);
           else
-            throw new OpenAS2Exception ("Undefined tag: " + sNodeName);
+            throw new AS2Exception ("Undefined tag: " + sNodeName);
     }
   }
 }

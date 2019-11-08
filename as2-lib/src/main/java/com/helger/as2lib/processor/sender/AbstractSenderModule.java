@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
@@ -127,13 +127,13 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
    * @param nTriesLeft
    *        The number of retries left.
    * @return <code>true</code> if the message was scheduled for re-sending.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an error
    */
   protected final boolean doResend (@Nonnull final String sResendAction,
                                     @Nonnull final IMessage aMsg,
-                                    @Nullable final OpenAS2Exception aCause,
-                                    final int nTriesLeft) throws OpenAS2Exception
+                                    @Nullable final AS2Exception aCause,
+                                    final int nTriesLeft) throws AS2Exception
   {
     if (nTriesLeft <= 0)
     {

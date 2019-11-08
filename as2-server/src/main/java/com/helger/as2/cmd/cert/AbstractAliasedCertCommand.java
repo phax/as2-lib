@@ -37,7 +37,7 @@ import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
 import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 public abstract class AbstractAliasedCertCommand extends AbstractCommand
 {
@@ -54,7 +54,7 @@ public abstract class AbstractAliasedCertCommand extends AbstractCommand
       return new CommandResult (ECommandResultType.TYPE_COMMAND_NOT_SUPPORTED,
                                 "Not supported by current certificate store");
     }
-    catch (final OpenAS2Exception oae)
+    catch (final AS2Exception oae)
     {
       oae.terminate ();
 
@@ -63,5 +63,5 @@ public abstract class AbstractAliasedCertCommand extends AbstractCommand
   }
 
   protected abstract CommandResult execute (IAliasedCertificateFactory certFx,
-                                            Object [] params) throws OpenAS2Exception;
+                                            Object [] params) throws AS2Exception;
 }

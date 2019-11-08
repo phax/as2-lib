@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.AbstractDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.attr.IStringMap;
 
@@ -48,7 +48,7 @@ public abstract class AbstractCommand extends AbstractDynamicComponent implement
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session session,
-                                    @Nullable final IStringMap parameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap parameters) throws AS2Exception
   {
     super.initDynamicComponent (session, parameters);
     if (getName () == null)

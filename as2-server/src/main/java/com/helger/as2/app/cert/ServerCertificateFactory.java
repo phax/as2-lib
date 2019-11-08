@@ -44,7 +44,7 @@ import com.helger.as2.util.EFileMonitorEvent;
 import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
 import com.helger.as2lib.cert.CertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 
 public class ServerCertificateFactory extends CertificateFactory implements IFileMonitorListener
@@ -55,7 +55,7 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
   private FileMonitor m_aFileMonitor;
 
   @Override
-  public void load (@WillClose final InputStream in, final char [] password) throws OpenAS2Exception
+  public void load (@WillClose final InputStream in, final char [] password) throws AS2Exception
   {
     super.load (in, password);
     getFileMonitor ();
@@ -100,7 +100,7 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("- Certificates Reloaded -");
         }
-        catch (final OpenAS2Exception oae)
+        catch (final AS2Exception oae)
         {
           oae.terminate ();
         }

@@ -54,8 +54,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.AbstractDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.session.IAS2Session;
@@ -111,7 +111,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 
@@ -134,7 +134,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final Exception ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
 
     final String sFilename = getFilename ();
@@ -170,7 +170,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @Nonnull
   public String getAlias (@Nonnull final Partnership aPartnership,
-                          @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                          @Nonnull final ECertificatePartnershipType ePartnershipType) throws AS2Exception
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
     ValueEnforcer.notNull (ePartnershipType, "PartnershipType");
@@ -193,7 +193,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @Nonnull
   protected X509Certificate internalGetCertificate (@Nullable final String sAlias,
-                                                    @Nullable final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                                    @Nullable final ECertificatePartnershipType ePartnershipType) throws AS2Exception
   {
     final String sRealAlias = getUnifiedAlias (sAlias);
 
@@ -207,7 +207,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final KeyStoreException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -216,14 +216,14 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   }
 
   @Nonnull
-  public X509Certificate getCertificate (@Nullable final String sAlias) throws OpenAS2Exception
+  public X509Certificate getCertificate (@Nullable final String sAlias) throws AS2Exception
   {
     return internalGetCertificate (sAlias, null);
   }
 
   @Nonnull
   public X509Certificate getCertificate (@Nonnull final IBaseMessage aMsg,
-                                         @Nonnull final ECertificatePartnershipType ePartnershipType) throws OpenAS2Exception
+                                         @Nonnull final ECertificatePartnershipType ePartnershipType) throws AS2Exception
   {
     final String sAlias = getAlias (aMsg.partnership (), ePartnershipType);
     return internalGetCertificate (sAlias, ePartnershipType);
@@ -231,7 +231,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @Nonnull
   @ReturnsMutableCopy
-  public ICommonsOrderedMap <String, Certificate> getCertificates () throws OpenAS2Exception
+  public ICommonsOrderedMap <String, Certificate> getCertificates () throws AS2Exception
   {
     m_aRWLock.readLock ().lock ();
     try
@@ -247,7 +247,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -292,13 +292,13 @@ public class CertificateFactory extends AbstractDynamicComponent implements
    * Custom callback method that is invoked if something changes in the key
    * store. By default the changes are written back to disk.
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case saving fails.
    * @see #isSaveChangesToFile()
    * @see #setSaveChangesToFile(boolean)
    */
   @OverrideOnDemand
-  protected void onChange () throws OpenAS2Exception
+  protected void onChange () throws AS2Exception
   {
     if (isSaveChangesToFile ())
     {
@@ -309,7 +309,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   }
 
   @Nonnull
-  public PrivateKey getPrivateKey (@Nullable final X509Certificate aCert) throws OpenAS2Exception
+  public PrivateKey getPrivateKey (@Nullable final X509Certificate aCert) throws AS2Exception
   {
     String sRealAlias = null;
 
@@ -342,14 +342,14 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @Nonnull
   public PrivateKey getPrivateKey (@Nullable final IBaseMessage aMsg,
-                                   @Nullable final X509Certificate aCert) throws OpenAS2Exception
+                                   @Nullable final X509Certificate aCert) throws AS2Exception
   {
     return getPrivateKey (aCert);
   }
 
   public void addCertificate (@Nonnull @Nonempty final String sAlias,
                               @Nonnull final X509Certificate aCert,
-                              final boolean bOverwrite) throws OpenAS2Exception
+                              final boolean bOverwrite) throws AS2Exception
   {
     ValueEnforcer.notEmpty (sAlias, "Alias");
     ValueEnforcer.notNull (aCert, "Cert");
@@ -366,7 +366,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -381,7 +381,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   public void addPrivateKey (@Nonnull @Nonempty final String sAlias,
                              @Nonnull final Key aKey,
-                             @Nonnull final String sPassword) throws OpenAS2Exception
+                             @Nonnull final String sPassword) throws AS2Exception
   {
     ValueEnforcer.notEmpty (sAlias, "Alias");
     ValueEnforcer.notNull (aKey, "Key");
@@ -400,7 +400,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -413,7 +413,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
       LOGGER.info ("Added private key alias '" + sRealAlias + "'");
   }
 
-  public void clearCertificates () throws OpenAS2Exception
+  public void clearCertificates () throws AS2Exception
   {
     int nDeleted = 0;
 
@@ -429,7 +429,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -446,7 +446,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
   }
 
-  public void load (@Nonnull @WillClose final InputStream aIS, @Nonnull final char [] aPassword) throws OpenAS2Exception
+  public void load (@Nonnull @WillClose final InputStream aIS, @Nonnull final char [] aPassword) throws AS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -455,7 +455,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final IOException | GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -464,7 +464,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
   }
 
-  public void removeCertificate (@Nonnull final X509Certificate aCert) throws OpenAS2Exception
+  public void removeCertificate (@Nonnull final X509Certificate aCert) throws AS2Exception
   {
     ValueEnforcer.notNull (aCert, "Cert");
 
@@ -479,7 +479,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -489,7 +489,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     removeCertificate (sAlias);
   }
 
-  public void removeCertificate (@Nullable final String sAlias) throws OpenAS2Exception
+  public void removeCertificate (@Nullable final String sAlias) throws AS2Exception
   {
     final String sRealAlias = getUnifiedAlias (sAlias);
 
@@ -505,7 +505,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {
@@ -525,7 +525,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   }
 
   public void save (@Nonnull @WillClose final OutputStream aOS,
-                    @Nonnull final char [] aPassword) throws OpenAS2Exception
+                    @Nonnull final char [] aPassword) throws AS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try
@@ -534,7 +534,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
     catch (final IOException | GeneralSecurityException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
     finally
     {

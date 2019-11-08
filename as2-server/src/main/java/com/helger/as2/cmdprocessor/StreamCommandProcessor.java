@@ -49,8 +49,8 @@ import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.util.CommandTokenizer;
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsArrayList;
@@ -85,7 +85,7 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
   }
 
   public void initDynamicComponent (@Nonnull final IAS2Session session,
-                                    @Nullable final IStringMap parameters) throws OpenAS2Exception
+                                    @Nullable final IStringMap parameters) throws AS2Exception
   {}
 
   @Nonnull
@@ -108,14 +108,14 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
       while (true)
         processCommand ();
     }
-    catch (final OpenAS2Exception ex)
+    catch (final AS2Exception ex)
     {
       LOGGER.error ("Error running command processor " + CAS2Info.NAME_VERSION, ex);
     }
   }
 
   @Override
-  public void processCommand () throws OpenAS2Exception
+  public void processCommand () throws AS2Exception
   {
     try
     {
@@ -173,7 +173,7 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
     }
     catch (final IOException ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 

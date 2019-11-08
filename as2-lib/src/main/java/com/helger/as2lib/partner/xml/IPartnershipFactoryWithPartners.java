@@ -35,7 +35,7 @@ package com.helger.as2lib.partner.xml;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -57,10 +57,10 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
    *
    * @param aNewPartner
    *        The partner data to be used. May not be <code>null</code>.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         Generic error
    */
-  void addPartner (@Nonnull Partner aNewPartner) throws OpenAS2Exception;
+  void addPartner (@Nonnull Partner aNewPartner) throws AS2Exception;
 
   /**
    * Remove a partner.
@@ -69,11 +69,11 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
    *        The name of the partner to be removed.
    * @return {@link EChange#CHANGED} if the partner was successfully removed,
    *         {@link EChange#UNCHANGED} if no such partner exists.
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         Generic error
    */
   @Nonnull
-  EChange removePartner (@Nullable String sPartnerName) throws OpenAS2Exception;
+  EChange removePartner (@Nullable String sPartnerName) throws AS2Exception;
 
   /**
    * Get all the partner data of the partner with the given name.

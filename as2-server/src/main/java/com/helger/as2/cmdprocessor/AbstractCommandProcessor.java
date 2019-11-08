@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.cmd.ICommandRegistry;
 import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -78,7 +78,7 @@ public abstract class AbstractCommandProcessor implements ICommandProcessor, IDy
     throw new UnsupportedOperationException ("No session available!");
   }
 
-  public void init () throws OpenAS2Exception
+  public void init () throws AS2Exception
   {}
 
   @Nonnull
@@ -100,9 +100,9 @@ public abstract class AbstractCommandProcessor implements ICommandProcessor, IDy
   }
 
   @UnsupportedOperation
-  public void processCommand () throws OpenAS2Exception
+  public void processCommand () throws AS2Exception
   {
-    throw new OpenAS2Exception ("super class method call, not initialized correctly");
+    throw new AS2Exception ("super class method call, not initialized correctly");
   }
 
   public void addCommands (@Nonnull final ICommandRegistry aCommandRegistry)

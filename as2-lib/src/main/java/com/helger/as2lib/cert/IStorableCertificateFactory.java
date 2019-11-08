@@ -39,7 +39,7 @@ import java.io.OutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.io.EAppend;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.security.keystore.KeyStoreHelper;
@@ -88,51 +88,51 @@ public interface IStorableCertificateFactory extends ICertificateFactory
   /**
    * Shortcut for <code>load (getFilename (), getPassword ());</code>
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an internal error
    */
-  default void load () throws OpenAS2Exception
+  default void load () throws AS2Exception
   {
     load (getFilename (), getPassword ());
   }
 
-  default void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
+  default void load (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws AS2Exception
   {
     InputStream aFIS = null;
     try
     {
       aFIS = KeyStoreHelper.getResourceProvider ().getInputStream (sFilename);
       if (aFIS == null)
-        throw new OpenAS2Exception ("Failed to to open input stream from '" + sFilename + "'");
+        throw new AS2Exception ("Failed to to open input stream from '" + sFilename + "'");
     }
     catch (final RuntimeException ex)
     {
-      throw new OpenAS2Exception ("Failed to to open input stream from '" + sFilename + "'", ex);
+      throw new AS2Exception ("Failed to to open input stream from '" + sFilename + "'", ex);
     }
     load (aFIS, aPassword);
   }
 
-  void load (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws OpenAS2Exception;
+  void load (@Nonnull InputStream aIS, @Nonnull char [] aPassword) throws AS2Exception;
 
   /**
    * Shortcut for <code>save (getFilename (), getPassword ());</code>
    *
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of an internal error
    */
-  default void save () throws OpenAS2Exception
+  default void save () throws AS2Exception
   {
     save (getFilename (), getPassword ());
   }
 
-  default void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws OpenAS2Exception
+  default void save (@Nonnull final String sFilename, @Nonnull final char [] aPassword) throws AS2Exception
   {
     // Must be File by default
     final OutputStream fOut = FileHelper.getOutputStream (new File (sFilename), EAppend.TRUNCATE);
     if (fOut == null)
-      throw new OpenAS2Exception ("Failed to to open output stream to '" + sFilename + "'");
+      throw new AS2Exception ("Failed to to open output stream to '" + sFilename + "'");
     save (fOut, aPassword);
   }
 
-  void save (@Nonnull OutputStream aOS, @Nonnull char [] aPassword) throws OpenAS2Exception;
+  void save (@Nonnull OutputStream aOS, @Nonnull char [] aPassword) throws AS2Exception;
 }

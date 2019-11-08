@@ -41,8 +41,8 @@ import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2.util.ByteCoder;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 
 public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
@@ -66,7 +66,7 @@ public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
   }
 
   @Override
-  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws OpenAS2Exception
+  public CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws AS2Exception
   {
     if (params.length != 2)
     {
@@ -79,13 +79,13 @@ public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
     }
     catch (final Exception ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 
   private CommandResult _importCert (final IAliasedCertificateFactory certFx,
                                      final String alias,
-                                     final String encodedCert) throws CertificateException, OpenAS2Exception
+                                     final String encodedCert) throws CertificateException, AS2Exception
   {
     final byte [] aBytes = ByteCoder.decode (encodedCert).getBytes ();
     try (final NonBlockingByteArrayInputStream bais = new NonBlockingByteArrayInputStream (aBytes))

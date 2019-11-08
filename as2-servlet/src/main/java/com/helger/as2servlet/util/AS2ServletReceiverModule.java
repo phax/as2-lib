@@ -16,7 +16,7 @@
  */
 package com.helger.as2servlet.util;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 
 /**
@@ -28,14 +28,14 @@ import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 public class AS2ServletReceiverModule extends AS2ReceiverModule
 {
   @Override
-  public void doStart () throws OpenAS2Exception
+  public void doStart () throws AS2Exception
   {
     // Would start a thread - so don't do it
     throw new UnsupportedOperationException ("Never start this module!");
   }
 
   @Override
-  public void doStop () throws OpenAS2Exception
+  public void doStop () throws AS2Exception
   {
     // Would stop a thread - so don't do it
     throw new UnsupportedOperationException ("Never stop this module!");

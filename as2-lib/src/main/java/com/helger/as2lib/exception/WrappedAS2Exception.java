@@ -35,34 +35,34 @@ package com.helger.as2lib.exception;
 import javax.annotation.Nonnull;
 
 /**
- * An {@link OpenAS2Exception} that wraps an existing exception easily.
+ * An {@link AS2Exception} that wraps an existing exception easily.
  *
  * @author Philip Helger
  */
-public final class WrappedOpenAS2Exception extends OpenAS2Exception
+public final class WrappedAS2Exception extends AS2Exception
 {
-  private WrappedOpenAS2Exception (final Throwable aCause)
+  private WrappedAS2Exception (final Throwable aCause)
   {
     super (aCause);
   }
 
-  public WrappedOpenAS2Exception (final String sMsg, final Throwable aCause)
+  public WrappedAS2Exception (final String sMsg, final Throwable aCause)
   {
     super (sMsg, aCause);
   }
 
   /**
-   * Ensure the passed {@link Throwable} is an {@link OpenAS2Exception}.
+   * Ensure the passed {@link Throwable} is an {@link AS2Exception}.
    *
    * @param t
    *        The Throwable to use.
-   * @return Either t or a {@link WrappedOpenAS2Exception} containing t.
+   * @return Either t or a {@link WrappedAS2Exception} containing t.
    */
   @Nonnull
-  public static OpenAS2Exception wrap (@Nonnull final Throwable t)
+  public static AS2Exception wrap (@Nonnull final Throwable t)
   {
-    if (t instanceof OpenAS2Exception)
-      return (OpenAS2Exception) t;
-    return new WrappedOpenAS2Exception (t);
+    if (t instanceof AS2Exception)
+      return (AS2Exception) t;
+    return new WrappedAS2Exception (t);
   }
 }

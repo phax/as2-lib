@@ -47,8 +47,8 @@ import javax.annotation.WillClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
@@ -137,7 +137,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   {}
 
   @Override
-  public void doStart () throws OpenAS2Exception
+  public void doStart () throws AS2Exception
   {
     try
     {
@@ -149,12 +149,12 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     }
     catch (final IOException ioe)
     {
-      throw WrappedOpenAS2Exception.wrap (ioe);
+      throw WrappedAS2Exception.wrap (ioe);
     }
   }
 
   @Override
-  public void doStop () throws OpenAS2Exception
+  public void doStop () throws AS2Exception
   {
     if (m_aMainThread != null)
     {
@@ -165,7 +165,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   @Override
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
 
@@ -178,7 +178,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   @Nonnull
   public abstract INetModuleHandler createHandler ();
 
-  public void handleError (@Nonnull final IMessage aMsg, @Nonnull final OpenAS2Exception aSrcEx)
+  public void handleError (@Nonnull final IMessage aMsg, @Nonnull final AS2Exception aSrcEx)
   {
     if (LOGGER.isTraceEnabled ())
       LOGGER.trace ("Handling error in " +
@@ -226,7 +226,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     }
     catch (final Exception ex)
     {
-      WrappedOpenAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
+      WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
     }
   }
 
@@ -269,7 +269,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       }
       catch (final IOException ex)
       {
-        WrappedOpenAS2Exception.wrap (ex).terminate ();
+        WrappedAS2Exception.wrap (ex).terminate ();
       }
       finally
       {

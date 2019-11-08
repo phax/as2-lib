@@ -43,8 +43,8 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2.util.EFileMonitorEvent;
 import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
-import com.helger.as2lib.exception.OpenAS2Exception;
-import com.helger.as2lib.exception.WrappedOpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.partner.xml.XMLPartnershipFactory;
 import com.helger.commons.string.StringHelper;
@@ -104,7 +104,7 @@ public class ServerXMLPartnershipFactory extends XMLPartnershipFactory implement
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("- Partnerships Reloaded -");
         }
-        catch (final OpenAS2Exception oae)
+        catch (final AS2Exception oae)
         {
           oae.terminate ();
         }
@@ -114,7 +114,7 @@ public class ServerXMLPartnershipFactory extends XMLPartnershipFactory implement
   }
 
   @Override
-  public void refreshPartnershipFactory () throws OpenAS2Exception
+  public void refreshPartnershipFactory () throws AS2Exception
   {
     super.refreshPartnershipFactory ();
     try
@@ -123,7 +123,7 @@ public class ServerXMLPartnershipFactory extends XMLPartnershipFactory implement
     }
     catch (final Exception ex)
     {
-      throw WrappedOpenAS2Exception.wrap (ex);
+      throw WrappedAS2Exception.wrap (ex);
     }
   }
 }

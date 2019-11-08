@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.cert;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
-public class CertificateExistsException extends OpenAS2Exception
+public class CertificateExistsException extends AS2Exception
 {
   public CertificateExistsException (final String sAlias)
   {

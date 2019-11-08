@@ -42,7 +42,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.attr.IStringMap;
 
@@ -57,7 +57,7 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
   @Override
   @OverridingMethodsMustInvokeSuper
   public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws OpenAS2Exception
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_POLLING_INTERVAL);
@@ -76,14 +76,14 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
   public abstract void poll ();
 
   @Override
-  public void doStart () throws OpenAS2Exception
+  public void doStart () throws AS2Exception
   {
     m_aTimer = new Timer (true);
     m_aTimer.scheduleAtFixedRate (new PollTask (), 0, getInterval () * 1000);
   }
 
   @Override
-  public void doStop () throws OpenAS2Exception
+  public void doStop () throws AS2Exception
   {
     if (m_aTimer != null)
     {

@@ -34,14 +34,14 @@ package com.helger.as2lib.session;
 
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * Thrown from {@link AS2Session} if a component was not present.
  * 
  * @author Philip Helger
  */
-public class ComponentNotFoundException extends OpenAS2Exception
+public class ComponentNotFoundException extends AS2Exception
 {
   private final String m_sComponentName;
 

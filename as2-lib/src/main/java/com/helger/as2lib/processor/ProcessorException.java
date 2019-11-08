@@ -36,7 +36,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -51,7 +51,7 @@ import com.helger.commons.lang.StackTraceHelper;
  *
  * @author Philip Helger
  */
-public class ProcessorException extends OpenAS2Exception
+public class ProcessorException extends AS2Exception
 {
   private final IMessageProcessor m_aProcessor;
   private final ICommonsList <Throwable> m_aCauses;

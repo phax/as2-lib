@@ -44,7 +44,7 @@ import com.helger.as2.cmd.CommandManager;
 import com.helger.as2.cmd.ICommandRegistry;
 import com.helger.as2.cmdprocessor.AbstractCommandProcessor;
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.lang.ClassHelper;
 import com.helger.commons.string.StringHelper;
@@ -131,7 +131,7 @@ public class MainOpenAS2Server
         {
           aXMLSession.getMessageProcessor ().stopActiveModules ();
         }
-        catch (final OpenAS2Exception same)
+        catch (final AS2Exception same)
         {
           same.terminate ();
         }

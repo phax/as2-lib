@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
@@ -86,7 +86,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   @Override
   public final void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                          @Nullable final IStringMap aOptions) throws OpenAS2Exception
+                                          @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_FILENAME);
@@ -115,11 +115,11 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
    * @return File The {@link File} to be used
    * @throws IOException
    *         In case of IO error
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         In case of error
    */
   protected File getFile (final IMessage aMsg, final String sFileParam, final String sAction) throws IOException,
-                                                                                              OpenAS2Exception
+                                                                                              AS2Exception
   {
     final String sFilename = getFilename (aMsg, sFileParam, sAction);
 

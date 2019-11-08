@@ -36,7 +36,7 @@ import com.helger.as2lib.processor.module.IProcessorModule;
 
 /**
  * Base interface for a re-sender module.
- * 
+ *
  * @author OpenAS2
  * @author Philip Helger
  */
@@ -47,7 +47,7 @@ public interface IProcessorResenderModule extends IProcessorModule
   /** Action to resend an MDN */
   String DO_RESENDMDN = "resendmdn";
 
-  /** An OpenAS2Exception representing the cause of the error */
+  /** An AS2Exception representing the cause of the error */
   String OPTION_CAUSE = "cause";
   /** The internal object representing the original sender */
   String OPTION_INITIAL_SENDER = "initial_sender";

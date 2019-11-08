@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
@@ -59,13 +59,13 @@ public final class PartnerMap implements IPartnerMap
   public PartnerMap ()
   {}
 
-  public void addPartner (@Nonnull final Partner aNewPartner) throws OpenAS2Exception
+  public void addPartner (@Nonnull final Partner aNewPartner) throws AS2Exception
   {
     ValueEnforcer.notNull (aNewPartner, "NewPartner");
 
     final String sName = aNewPartner.getName ();
     if (m_aMap.containsKey (sName))
-      throw new OpenAS2Exception ("Partner is defined more than once: '" + sName + "'");
+      throw new AS2Exception ("Partner is defined more than once: '" + sName + "'");
 
     m_aMap.put (sName, aNewPartner);
   }

@@ -44,7 +44,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.annotation.ReturnsMutableObject;
@@ -138,7 +138,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
 
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
-                      @Nullable final Map <String, Object> aOptions) throws OpenAS2Exception
+                      @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("AsyncMessageProcessor.handle (" + sAction + "," + aMsg + "," + aOptions + ")");
@@ -150,7 +150,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
     catch (final InterruptedException ex)
     {
       Thread.currentThread ().interrupt ();
-      throw new OpenAS2Exception ("Failed to queue action " + sAction, ex);
+      throw new AS2Exception ("Failed to queue action " + sAction, ex);
     }
   }
 

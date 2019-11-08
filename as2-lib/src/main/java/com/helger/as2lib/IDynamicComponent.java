@@ -37,7 +37,7 @@ import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.helger.as2lib.exception.OpenAS2Exception;
+import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.attr.IStringMap;
@@ -93,11 +93,11 @@ public interface IDynamicComponent extends Serializable
    *        configuration values for the component. All parameters will be
    *        stored as attributes of this component. All attributes existing
    *        before this method is called will be removed!
-   * @throws OpenAS2Exception
+   * @throws AS2Exception
    *         If an error occurs while initializing the component
    * @throws InvalidParameterException
    *         If a required parameter is null in the parameters Map
    * @see IAS2Session
    */
-  void initDynamicComponent (@Nonnull IAS2Session aSession, @Nullable IStringMap aParameters) throws OpenAS2Exception;
+  void initDynamicComponent (@Nonnull IAS2Session aSession, @Nullable IStringMap aParameters) throws AS2Exception;
 }
