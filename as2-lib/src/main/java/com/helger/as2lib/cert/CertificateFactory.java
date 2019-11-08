@@ -105,7 +105,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @Nonnull
   @OverrideOnDemand
-  protected KeyStore createNewKeyStore (@Nonnull final EKeyStoreType eKeyStoreType) throws Exception
+  protected KeyStore createNewKeyStore (@Nonnull final EKeyStoreType eKeyStoreType) throws GeneralSecurityException
   {
     ValueEnforcer.notNull (eKeyStoreType, "KeystoreType");
     return AS2Helper.getCryptoHelper ().createNewKeyStore (eKeyStoreType);
@@ -134,7 +134,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
         m_aRWLock.writeLock ().unlock ();
       }
     }
-    catch (final Exception ex)
+    catch (final GeneralSecurityException ex)
     {
       throw WrappedAS2Exception.wrap (ex);
     }

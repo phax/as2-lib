@@ -33,6 +33,7 @@
 package com.helger.as2lib.crypto;
 
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -58,11 +59,11 @@ public interface ICryptoHelper
    * @param aKeyStoreType
    *        Key store type to use. May not be <code>null</code>.
    * @return A new key store.
-   * @throws Exception
+   * @throws GeneralSecurityException
    *         In case something goes wrong.
    */
   @Nonnull
-  KeyStore createNewKeyStore (@Nonnull IKeyStoreType aKeyStoreType) throws Exception;
+  KeyStore createNewKeyStore (@Nonnull IKeyStoreType aKeyStoreType) throws GeneralSecurityException;
 
   /**
    * Load a key store from the specified input stream.

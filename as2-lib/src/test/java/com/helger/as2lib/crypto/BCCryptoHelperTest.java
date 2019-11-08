@@ -38,10 +38,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
-import java.security.KeyStoreException;
-import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -84,7 +83,7 @@ public final class BCCryptoHelperTest
   }
 
   @Test
-  public void testCreateKeyStores () throws KeyStoreException, NoSuchProviderException
+  public void testCreateKeyStores () throws GeneralSecurityException
   {
     // Ensure each keystore type can be created
     final BCCryptoHelper x = new BCCryptoHelper ();

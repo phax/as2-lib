@@ -52,6 +52,6 @@ public class AS2KeyNotFoundException extends AS2Exception
                                   @Nonnull final ICommonsList <String> aAllAliases,
                                   @Nullable final Throwable aCause)
   {
-    super ("Alias '" + sAlias + "' for Certificate '" + aCert + "'. Possible aliases are: " + aAllAliases, aCause);
+    super ("Alias '" + sAlias + "' for Certificate '" + aCert + "'. All contained aliases are: " + aAllAliases, aCause);
   }
 }

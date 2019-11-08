@@ -39,9 +39,7 @@ import java.io.OutputStream;
 import java.security.DigestOutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.Security;
@@ -231,8 +229,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  public KeyStore createNewKeyStore (@Nonnull final IKeyStoreType aKeyStoreType) throws KeyStoreException,
-                                                                                 NoSuchProviderException
+  public KeyStore createNewKeyStore (@Nonnull final IKeyStoreType aKeyStoreType) throws GeneralSecurityException
   {
     try
     {
