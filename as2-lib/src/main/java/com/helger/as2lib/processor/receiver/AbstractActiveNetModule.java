@@ -217,7 +217,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
         }
 
         // make sure an error of this event is logged
-        new InvalidMessageException ("Stored invalid message to " + aMsgErrorFile.getAbsolutePath ()).terminate ();
+        new AS2InvalidMessageException ("Stored invalid message to " + aMsgErrorFile.getAbsolutePath ()).terminate ();
       }
       else
       {

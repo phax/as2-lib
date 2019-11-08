@@ -80,7 +80,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
 
   public void forceStop (@Nullable final Exception aCause)
   {
-    new ForcedStopException (aCause).terminate ();
+    new AS2ForcedStopException (aCause).terminate ();
 
     try
     {

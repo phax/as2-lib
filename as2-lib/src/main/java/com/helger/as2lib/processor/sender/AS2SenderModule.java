@@ -60,7 +60,7 @@ import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.crypto.IMICMatchingHandler;
 import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
-import com.helger.as2lib.disposition.DispositionException;
+import com.helger.as2lib.disposition.AS2DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
@@ -68,14 +68,14 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.CNetAttribute;
-import com.helger.as2lib.processor.NoModuleException;
+import com.helger.as2lib.processor.AS2NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
-import com.helger.as2lib.session.ComponentNotFoundException;
+import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2DateHelper;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
@@ -179,27 +179,27 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return IProcessorSenderModule.DO_SEND.equals (sAction) && aMsg instanceof AS2Message;
   }
 
-  protected void checkRequired (@Nonnull final AS2Message aMsg) throws InvalidParameterException
+  protected void checkRequired (@Nonnull final AS2Message aMsg) throws AS2InvalidParameterException
   {
     final Partnership aPartnership = aMsg.partnership ();
 
     try
     {
-      InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
-      InvalidParameterException.checkValue (aMsg,
+      AS2InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
+      AS2InvalidParameterException.checkValue (aMsg,
                                             "Attribute: " + CPartnershipIDs.PA_AS2_URL,
                                             aPartnership.getAS2URL ());
-      InvalidParameterException.checkValue (aMsg,
+      AS2InvalidParameterException.checkValue (aMsg,
                                             "Receiver: " + CPartnershipIDs.PID_AS2,
                                             aPartnership.getReceiverAS2ID ());
-      InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
-      InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
-      InvalidParameterException.checkValue (aMsg,
+      AS2InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
+      AS2InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
+      AS2InvalidParameterException.checkValue (aMsg,
                                             "Sender: " + CPartnershipIDs.PID_EMAIL,
                                             aPartnership.getSenderEmail ());
-      InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
+      AS2InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
-    catch (final InvalidParameterException ex)
+    catch (final AS2InvalidParameterException ex)
     {
       ex.setSourceMsg (aMsg);
       throw ex;
@@ -512,7 +512,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (sSignAlgorithm != null)
       {
         aSenderCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.SENDER);
-        aSenderKey = aCertFactory.getPrivateKey (aMsg, aSenderCert);
+        aSenderKey = aCertFactory.getPrivateKey (aSenderCert);
         eSignAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSignAlgorithm);
         if (eSignAlgorithm == null)
           throw new AS2Exception ("The signing algorithm '" + sSignAlgorithm + "' is not supported!");
@@ -656,8 +656,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
                                  @Nonnull final AS2HttpClient aHttpClient,
                                  @Nonnull final MIC aOriginalMIC,
-                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception,
-                                                                                      IOException
+                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception, IOException
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Receiving synchronous MDN for message" + aMsg.getLoggingText ());
@@ -731,7 +730,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException | NoModuleException ex)
+      catch (final AS2ComponentNotFoundException | AS2NoModuleException ex)
       {
         // No message processor found
         // Or no module found in message processor
@@ -764,7 +763,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         DispositionType.createFromString (sDisposition).validate ();
       }
-      catch (final DispositionException ex)
+      catch (final AS2DispositionException ex)
       {
         ex.setText (aMsg.getMDN ().getText ());
         if (ex.getDisposition ().isWarning ())
@@ -800,11 +799,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *         In case an overload wants to throw the exception
    */
   @OverrideOnDemand
-  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg,
-                                     @Nonnull final AS2Exception ex) throws AS2Exception
+  protected void onReceivedMDNError (@Nonnull final AS2Message aMsg, @Nonnull final AS2Exception ex) throws AS2Exception
   {
     new AS2Exception ("Message was sent but an error occured while receiving the MDN", ex).setSourceMsg (aMsg)
-                                                                                              .terminate ();
+                                                                                          .terminate ();
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
@@ -861,7 +859,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         if (LOGGER.isErrorEnabled ())
           LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
-        throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
+        throw new AS2HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
       // Asynch MDN 2007-03-12
@@ -884,7 +882,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           }
         }
       }
-      catch (final DispositionException ex)
+      catch (final AS2DispositionException ex)
       {
         // If a disposition error hasn't been handled, the message transfer
         // was not successful
@@ -947,7 +945,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         _sendViaHTTP (aMsg, aSecuredData, aMIC, true ? null : eCTE, aOutgoingDumper, aIncomingDumper);
       }
     }
-    catch (final HttpResponseException ex)
+    catch (final AS2HttpResponseException ex)
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Http Response Error " + ex.getMessage ());

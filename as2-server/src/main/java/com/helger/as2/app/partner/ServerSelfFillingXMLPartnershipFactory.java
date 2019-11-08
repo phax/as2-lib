@@ -45,7 +45,7 @@ import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
 import com.helger.commons.string.StringHelper;
 
@@ -70,7 +70,7 @@ public class ServerSelfFillingXMLPartnershipFactory extends SelfFillingXMLPartne
   }
 
   @Nonnull
-  public FileMonitor getFileMonitor () throws InvalidParameterException
+  public FileMonitor getFileMonitor () throws AS2InvalidParameterException
   {
     boolean bCreateMonitor = m_aFileMonitor == null && attrs ().containsKey (ATTR_INTERVAL);
 

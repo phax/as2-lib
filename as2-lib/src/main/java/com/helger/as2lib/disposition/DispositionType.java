@@ -132,13 +132,13 @@ public class DispositionType implements Serializable
     return EqualsHelper.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
   }
 
-  public void validate () throws DispositionException
+  public void validate () throws AS2DispositionException
   {
     if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
-      throw new DispositionException (this);
+      throw new AS2DispositionException (this);
 
     if (isError () || isWarning ())
-      throw new DispositionException (this);
+      throw new AS2DispositionException (this);
   }
 
   @Nonnull

@@ -30,32 +30,38 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.cert;
+package com.helger.as2lib.processor.receiver.net;
+
+import java.net.InetAddress;
+
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
 
 /**
- * Exceptions for certificate handling
- * 
+ * @author OpenAS2
  * @author Philip Helger
  */
-public class CertificateException extends AS2Exception
+public class AS2NetException extends AS2Exception
 {
-  public CertificateException ()
-  {}
+  private final InetAddress m_aAddress;
+  private final int m_nPort;
 
-  public CertificateException (final String sMsg)
+  public AS2NetException (@Nullable final InetAddress aAddress, final int nPort, @Nullable final Throwable aCause)
   {
-    super (sMsg);
+    super ("Address = " + aAddress + " port = " + nPort, aCause);
+    m_aAddress = aAddress;
+    m_nPort = nPort;
   }
 
-  public CertificateException (final String sMsg, final Throwable aCause)
+  @Nullable
+  public InetAddress getAddress ()
   {
-    super (sMsg, aCause);
+    return m_aAddress;
   }
 
-  public CertificateException (final Throwable aCause)
+  public int getPort ()
   {
-    super (aCause);
+    return m_nPort;
   }
 }

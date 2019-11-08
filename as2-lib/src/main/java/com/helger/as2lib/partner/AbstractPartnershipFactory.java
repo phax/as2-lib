@@ -97,7 +97,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
       }
 
       if (aRealPartnership == null)
-        throw new PartnershipNotFoundException (aPartnership);
+        throw new AS2PartnershipNotFoundException (aPartnership);
       return aRealPartnership;
     });
   }

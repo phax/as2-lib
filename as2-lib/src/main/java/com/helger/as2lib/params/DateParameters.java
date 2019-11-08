@@ -44,17 +44,17 @@ public class DateParameters extends AbstractParameterParser
    */
   @Override
   @Deprecated
-  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
+  public void setParameter (final String sKey, final String sValue) throws AS2InvalidParameterException
   {
-    throw new InvalidParameterException ("setParameter is not supported", this, sKey, sValue);
+    throw new AS2InvalidParameterException ("setParameter is not supported", this, sKey, sValue);
   }
 
   @Override
   @Nonnull
-  public String getParameter (@Nullable final String sKey) throws InvalidParameterException
+  public String getParameter (@Nullable final String sKey) throws AS2InvalidParameterException
   {
     if (sKey == null)
-      throw new InvalidParameterException ("Invalid key", this, sKey, null);
+      throw new AS2InvalidParameterException ("Invalid key", this, sKey, null);
 
     return AS2DateHelper.getFormattedDateNow (sKey);
   }

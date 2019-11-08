@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -108,7 +108,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     }
   }
 
-  protected void scanDirectory (final String sDirectory) throws InvalidParameterException
+  protected void scanDirectory (final String sDirectory) throws AS2InvalidParameterException
   {
     final File aDir = AS2IOHelper.getDirectoryFile (sDirectory);
 
@@ -116,7 +116,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     final File [] aFiles = aDir.listFiles ();
     if (aFiles == null)
     {
-      throw new InvalidParameterException ("Error getting list of files in directory",
+      throw new AS2InvalidParameterException ("Error getting list of files in directory",
                                            this,
                                            ATTR_OUTBOX_DIRECTORY,
                                            aDir.getAbsolutePath ());
@@ -230,7 +230,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       LOGGER.info ("file assigned to message " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
 
       if (aMsg.getData () == null)
-        throw new InvalidMessageException ("No Data");
+        throw new AS2InvalidMessageException ("No Data");
 
       // Transmit the message
       getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
@@ -338,7 +338,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         {
           sContentType = aParams.format (sContentType);
         }
-        catch (final InvalidParameterException ex)
+        catch (final AS2InvalidParameterException ex)
         {
           LOGGER.error ("Bad content-type '" + sContentType + "'" + aMsg.getLoggingText ());
           // Default to application/octet-stream

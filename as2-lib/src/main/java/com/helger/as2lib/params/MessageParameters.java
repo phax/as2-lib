@@ -59,11 +59,11 @@ public class MessageParameters extends AbstractParameterParser
   }
 
   @Override
-  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
+  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws AS2InvalidParameterException
   {
     final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey, 2);
     if (aKeyParts.length != 2)
-      throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+      throw new AS2InvalidParameterException ("Invalid key format", this, sKey, null);
 
     final String sArea = aKeyParts[0];
     final String sAreaID = aKeyParts[1];
@@ -80,7 +80,7 @@ public class MessageParameters extends AbstractParameterParser
           if (sArea.equals (KEY_HEADERS))
             m_aTarget.headers ().setHeader (sAreaID, sValue);
           else
-            throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
+            throw new AS2InvalidParameterException ("Invalid area in key", this, sKey, null);
   }
 
   @Nonnull
@@ -106,11 +106,11 @@ public class MessageParameters extends AbstractParameterParser
 
   @Override
   @Nullable
-  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
+  public String getParameter (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
     final String [] aKeyParts = StringHelper.getExplodedArray ('.', sKey);
     if (aKeyParts.length != 2)
-      throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+      throw new AS2InvalidParameterException ("Invalid key format", this, sKey, null);
 
     final String sArea = aKeyParts[0];
     final String sAreaValue = aKeyParts[1];
@@ -130,7 +130,7 @@ public class MessageParameters extends AbstractParameterParser
     if (sArea.equals (KEY_CONTENT_DISPOSITION) && sAreaValue.equals ("filename"))
       return _getContentDispositionFilename ();
 
-    throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
+    throw new AS2InvalidParameterException ("Invalid area in key", this, sKey, null);
   }
 
   @Nullable

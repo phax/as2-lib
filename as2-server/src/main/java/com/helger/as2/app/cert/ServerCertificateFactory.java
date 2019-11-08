@@ -45,7 +45,7 @@ import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
 import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 
 public class ServerCertificateFactory extends CertificateFactory implements IFileMonitorListener
 {
@@ -66,7 +66,7 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
     m_aFileMonitor = fileMonitor;
   }
 
-  public FileMonitor getFileMonitor () throws InvalidParameterException
+  public FileMonitor getFileMonitor () throws AS2InvalidParameterException
   {
     boolean bCreateMonitor = m_aFileMonitor == null && attrs ().getAsString (ATTR_INTERVAL) != null;
     if (!bCreateMonitor && m_aFileMonitor != null)

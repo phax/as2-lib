@@ -44,14 +44,14 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.disposition.DispositionException;
+import com.helger.as2lib.disposition.AS2DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.commons.http.CHttp;
@@ -90,7 +90,7 @@ public class MessageFileModule extends AbstractStorageModule
     }
     catch (final Exception ex)
     {
-      throw new DispositionException (DispositionType.createError ("Error storing transaction"),
+      throw new AS2DispositionException (DispositionType.createError ("Error storing transaction"),
                                       AbstractActiveNetModule.DISP_STORAGE_FAILED,
                                       ex);
     }
@@ -118,7 +118,7 @@ public class MessageFileModule extends AbstractStorageModule
   @Override
   protected String getFilename (final IMessage aMsg,
                                 final String sFileParam,
-                                final String sAction) throws InvalidParameterException
+                                final String sAction) throws AS2InvalidParameterException
   {
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("msg", new MessageParameters (aMsg));

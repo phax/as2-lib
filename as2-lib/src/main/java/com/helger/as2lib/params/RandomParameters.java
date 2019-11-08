@@ -46,21 +46,21 @@ public class RandomParameters extends AbstractParameterParser
    */
   @Override
   @Deprecated
-  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws InvalidParameterException
+  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws AS2InvalidParameterException
   {
-    throw new InvalidParameterException ("Set not supported", this, sKey, sValue);
+    throw new AS2InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
 
   @Override
   @Nonnull
-  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
+  public String getParameter (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
     if (sKey == null)
-      throw new InvalidParameterException ("Invalid key", this, sKey, null);
+      throw new AS2InvalidParameterException ("Invalid key", this, sKey, null);
 
     final int nWantedChars = sKey.length ();
     if (nWantedChars == 0)
-      throw new InvalidParameterException ("Empty key resulting in an empty random value is prohibited",
+      throw new AS2InvalidParameterException ("Empty key resulting in an empty random value is prohibited",
                                            this,
                                            sKey,
                                            null);

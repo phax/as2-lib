@@ -30,71 +30,55 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.params;
-
-import java.io.Serializable;
+package com.helger.as2lib.disposition;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.Nonempty;
 
-public class InvalidParameterException extends AS2Exception
+/**
+ * Exception thrown in case a message disposition contains an error or a
+ * warning. The content of {@link #getText()} is send back as the MDN in case of
+ * a receiving error.
+ *
+ * @author Philip Helger
+ */
+public class AS2DispositionException extends AS2Exception
 {
-  private final Serializable m_aTarget;
-  private final String m_sKey;
-  private final String m_sValue;
+  private final DispositionType m_aDisposition;
+  private String m_sText;
 
-  public InvalidParameterException (@Nullable final String sMsg,
-                                    @Nullable final Serializable aTarget,
-                                    @Nullable final String sKey,
-                                    @Nullable final String sValue)
+  public AS2DispositionException (@Nonnull final DispositionType aDisposition)
   {
-    super (sMsg + " - " + getAsString (sKey, sValue));
-    m_aTarget = aTarget;
-    m_sKey = sKey;
-    m_sValue = sValue;
+    this (aDisposition, null, null);
   }
 
-  public InvalidParameterException (@Nullable final String sMsg)
+  public AS2DispositionException (@Nonnull final DispositionType aDisposition,
+                               @Nullable final String sText,
+                               @Nullable final Throwable aCause)
   {
-    super (sMsg);
-    m_aTarget = null;
-    m_sKey = null;
-    m_sValue = null;
-  }
-
-  @Nullable
-  public String getKey ()
-  {
-    return m_sKey;
-  }
-
-  @Nullable
-  public Serializable getTarget ()
-  {
-    return m_aTarget;
-  }
-
-  @Nullable
-  public String getValue ()
-  {
-    return m_sValue;
-  }
-
-  public static void checkValue (@Nonnull final Serializable aTarget,
-                                 @Nonnull final String sValueName,
-                                 @Nullable final Object aValue) throws InvalidParameterException
-  {
-    if (aValue == null)
-      throw new InvalidParameterException ("Value is missing", aTarget, sValueName, null);
+    super (aDisposition.getAsString (), aCause);
+    m_aDisposition = aDisposition;
+    m_sText = sText;
   }
 
   @Nonnull
-  @Nonempty
-  public static String getAsString (@Nullable final String sKey, @Nullable final String sValue)
+  public final DispositionType getDisposition ()
   {
-    return "Invalid parameter value for " + sKey + ": " + sValue;
+    return m_aDisposition;
+  }
+
+  @Nullable
+  public final String getText ()
+  {
+    return m_sText;
+  }
+
+  @Nonnull
+  public final AS2DispositionException setText (@Nullable final String sText)
+  {
+    m_sText = sText;
+    return this;
   }
 }

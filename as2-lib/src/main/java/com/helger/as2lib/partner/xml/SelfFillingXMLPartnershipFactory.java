@@ -37,7 +37,7 @@ import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.partner.PartnershipNotFoundException;
+import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.commons.annotation.OverrideOnDemand;
 
 /**
@@ -78,7 +78,7 @@ public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
     {
       return super.getPartnership (aPartnership);
     }
-    catch (final PartnershipNotFoundException ex)
+    catch (final AS2PartnershipNotFoundException ex)
     {
       onBeforeAddPartnership (aPartnership);
 

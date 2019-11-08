@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
@@ -72,19 +72,19 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
   }
 
   @Nonnull
-  public final String getAttributeAsStringRequired (@Nonnull final String sKey) throws InvalidParameterException
+  public final String getAttributeAsStringRequired (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
     final String sValue = attrs ().getAsString (sKey);
     if (sValue == null)
-      throw new InvalidParameterException ("Parameter not found", this, sKey, null);
+      throw new AS2InvalidParameterException ("Parameter not found", this, sKey, null);
     return sValue;
   }
 
-  public final int getAttributeAsIntRequired (@Nonnull final String sKey) throws InvalidParameterException
+  public final int getAttributeAsIntRequired (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
     final int nValue = attrs ().getAsInt (sKey, Integer.MIN_VALUE);
     if (nValue == Integer.MIN_VALUE)
-      throw new InvalidParameterException ("Parameter not found", this, sKey, null);
+      throw new AS2InvalidParameterException ("Parameter not found", this, sKey, null);
     return nValue;
   }
 

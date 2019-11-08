@@ -30,37 +30,30 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.sender;
+package com.helger.as2lib.session;
+
+import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
 
-public class HttpResponseException extends AS2Exception
+/**
+ * Thrown from {@link AS2Session} if a component was not present.
+ * 
+ * @author Philip Helger
+ */
+public class AS2ComponentNotFoundException extends AS2Exception
 {
-  private final String m_sURL;
-  private final int m_nCode;
-  private final String m_sMessage;
+  private final String m_sComponentName;
 
-  public HttpResponseException (final String sUrl, final int nCode, final String sMessage)
+  public AS2ComponentNotFoundException (@Nullable final String sComponentName)
   {
-    super ("Http Response from " + sUrl + ": " + nCode + " - " + sMessage);
-    m_sURL = sUrl;
-    m_nCode = nCode;
-    m_sMessage = sMessage;
+    super ("No such component: " + sComponentName);
+    m_sComponentName = sComponentName;
   }
 
-  public String getUrl ()
+  @Nullable
+  public String getComponentName ()
   {
-    return m_sURL;
-  }
-
-  public int getCode ()
-  {
-    return m_nCode;
-  }
-
-  @Override
-  public String getMessage ()
-  {
-    return m_sMessage;
+    return m_sComponentName;
   }
 }

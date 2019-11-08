@@ -30,14 +30,37 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2.cmd;
+package com.helger.as2lib.processor.sender;
 
 import com.helger.as2lib.exception.AS2Exception;
 
-public class CommandException extends AS2Exception
+public class AS2HttpResponseException extends AS2Exception
 {
-  public CommandException (final String sMsg)
+  private final String m_sURL;
+  private final int m_nCode;
+  private final String m_sMessage;
+
+  public AS2HttpResponseException (final String sUrl, final int nCode, final String sMessage)
   {
-    super (sMsg);
+    super ("Http Response from " + sUrl + ": " + nCode + " - " + sMessage);
+    m_sURL = sUrl;
+    m_nCode = nCode;
+    m_sMessage = sMessage;
+  }
+
+  public String getUrl ()
+  {
+    return m_sURL;
+  }
+
+  public int getCode ()
+  {
+    return m_nCode;
+  }
+
+  @Override
+  public String getMessage ()
+  {
+    return m_sMessage;
   }
 }

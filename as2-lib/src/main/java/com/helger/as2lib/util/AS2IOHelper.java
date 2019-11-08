@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.processor.receiver.InvalidMessageException;
+import com.helger.as2lib.processor.receiver.AS2InvalidMessageException;
 import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.io.file.FileIOError;
@@ -173,7 +173,7 @@ public final class AS2IOHelper
     }
     catch (final IOException ex)
     {
-      final InvalidMessageException im = new InvalidMessageException ("Failed to move " +
+      final AS2InvalidMessageException im = new AS2InvalidMessageException ("Failed to move " +
                                                                       aFile.getAbsolutePath () +
                                                                       " to error directory " +
                                                                       aDestFile.getAbsolutePath ());
@@ -182,7 +182,7 @@ public final class AS2IOHelper
     }
 
     // make sure an error of this event is logged
-    final InvalidMessageException ex = new InvalidMessageException ("Moved " +
+    final AS2InvalidMessageException ex = new AS2InvalidMessageException ("Moved " +
                                                                     aFile.getAbsolutePath () +
                                                                     " to " +
                                                                     aDestFile.getAbsolutePath ());

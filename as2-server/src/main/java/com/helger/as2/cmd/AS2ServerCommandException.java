@@ -30,38 +30,14 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.receiver.net;
-
-import java.net.InetAddress;
-
-import javax.annotation.Nullable;
+package com.helger.as2.cmd;
 
 import com.helger.as2lib.exception.AS2Exception;
 
-/**
- * @author OpenAS2
- * @author Philip Helger
- */
-public class NetException extends AS2Exception
+public class AS2ServerCommandException extends AS2Exception
 {
-  private final InetAddress m_aAddress;
-  private final int m_nPort;
-
-  public NetException (@Nullable final InetAddress aAddress, final int nPort, @Nullable final Throwable aCause)
+  public AS2ServerCommandException (final String sMsg)
   {
-    super ("Address = " + aAddress + " port = " + nPort, aCause);
-    m_aAddress = aAddress;
-    m_nPort = nPort;
-  }
-
-  @Nullable
-  public InetAddress getAddress ()
-  {
-    return m_aAddress;
-  }
-
-  public int getPort ()
-  {
-    return m_nPort;
+    super (sMsg);
   }
 }

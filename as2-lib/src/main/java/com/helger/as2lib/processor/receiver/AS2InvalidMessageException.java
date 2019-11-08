@@ -30,33 +30,17 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.session;
-
-import javax.annotation.Nonnull;
+package com.helger.as2lib.processor.receiver;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.Nonempty;
 
-/**
- * Exception to be thrown from {@link AS2Session} if a component with the
- * specified ID is already registered.
- *
- * @author Philip Helger
- */
-public class ComponentDuplicateException extends AS2Exception
+public class AS2InvalidMessageException extends AS2Exception
 {
-  private final String m_sComponentID;
+  public AS2InvalidMessageException ()
+  {}
 
-  public ComponentDuplicateException (@Nonnull @Nonempty final String sComponentID)
+  public AS2InvalidMessageException (final String sMsg)
   {
-    super (sComponentID);
-    m_sComponentID = sComponentID;
-  }
-
-  @Nonnull
-  @Nonempty
-  public String getComponentID ()
-  {
-    return m_sComponentID;
+    super (sMsg);
   }
 }

@@ -49,7 +49,7 @@ import com.helger.commons.datetime.PDTFormatter;
 public final class CompositeParametersTest
 {
   @Test
-  public void testBasic () throws InvalidParameterException
+  public void testBasic () throws AS2InvalidParameterException
   {
     final AS2Message aMsg = new AS2Message ();
     aMsg.headers ().addHeader ("message-id", "12345");
@@ -85,7 +85,7 @@ public final class CompositeParametersTest
       aParams.format ("$dummy$");
       fail ();
     }
-    catch (final InvalidParameterException ex)
+    catch (final AS2InvalidParameterException ex)
     {}
 
     // Escaping test
@@ -99,7 +99,7 @@ public final class CompositeParametersTest
   }
 
   @Test
-  public void testIgnore () throws InvalidParameterException
+  public void testIgnore () throws AS2InvalidParameterException
   {
     final AS2Message aMsg = new AS2Message ();
     aMsg.headers ().addHeader ("message-id", "12345");

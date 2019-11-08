@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
 import com.helger.commons.annotation.Nonempty;
@@ -87,7 +87,7 @@ public class AS2Message extends AbstractMessage
     {
       aSB.append (aParams.format (sIDFormat));
     }
-    catch (final InvalidParameterException ex)
+    catch (final AS2InvalidParameterException ex)
     {
       // useless, but what to do?
       aSB.append (sIDFormat);

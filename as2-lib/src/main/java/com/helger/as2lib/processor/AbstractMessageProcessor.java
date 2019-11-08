@@ -152,7 +152,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
    *        Message it is about. Never <code>null</code>.
    * @param aOptions
    *        Optional options map to be used. May be <code>null</code>.
-   * @throws ProcessorException
+   * @throws AS2ProcessorException
    *         In case of error
    */
   protected final void executeAction (@Nonnull final String sAction,
@@ -194,13 +194,13 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
       }
 
     if (aCauses.isNotEmpty ())
-      throw new ProcessorException (this, aCauses);
+      throw new AS2ProcessorException (this, aCauses);
 
     if (aModulesFound.isEmpty ())
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("  no modules found for '" + sAction + "'; modules are: " + aAllModules);
-      throw new NoModuleException (sAction, aMsg, aOptions);
+      throw new AS2NoModuleException (sAction, aMsg, aOptions);
     }
 
     if (LOGGER.isDebugEnabled ())

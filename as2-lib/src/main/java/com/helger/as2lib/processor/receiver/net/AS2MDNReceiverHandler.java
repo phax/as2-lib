@@ -53,18 +53,18 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.IMICMatchingHandler;
 import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
-import com.helger.as2lib.disposition.DispositionException;
+import com.helger.as2lib.disposition.AS2DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.processor.NoModuleException;
+import com.helger.as2lib.processor.AS2NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
-import com.helger.as2lib.session.ComponentNotFoundException;
+import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
@@ -187,7 +187,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     }
     catch (final Exception ex)
     {
-      final NetException ne = new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
+      final AS2NetException ne = new AS2NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
       ne.terminate ();
     }
   }
@@ -260,7 +260,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException | NoModuleException ex)
+      catch (final AS2ComponentNotFoundException | AS2NoModuleException ex)
       {
         // No message processor found
         // Or no module found in message processor
@@ -277,7 +277,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         DispositionType.createFromString (sDisposition).validate ();
       }
-      catch (final DispositionException ex)
+      catch (final AS2DispositionException ex)
       {
         ex.setText (aMsg.getMDN ().getText ());
         if (ex.getDisposition ().isWarning ())
@@ -390,7 +390,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
           LOGGER.error ("Error delete pending file " + aPendingFile);
       }
     }
-    catch (final IOException | ComponentNotFoundException ex)
+    catch (final IOException | AS2ComponentNotFoundException ex)
     {
       LOGGER.error ("Error checking async MDN", ex);
       return false;

@@ -28,7 +28,7 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.partner.PartnershipNotFoundException;
+import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsArrayList;
@@ -125,7 +125,7 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
 
     if (aRealPartnership == null)
     {
-      throw new PartnershipNotFoundException (aPartnership);
+      throw new AS2PartnershipNotFoundException (aPartnership);
     }
     return aRealPartnership;
   }

@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.attr.IStringMap;
 
@@ -95,7 +95,7 @@ public interface IDynamicComponent extends Serializable
    *        before this method is called will be removed!
    * @throws AS2Exception
    *         If an error occurs while initializing the component
-   * @throws InvalidParameterException
+   * @throws AS2InvalidParameterException
    *         If a required parameter is null in the parameters Map
    * @see IAS2Session
    */

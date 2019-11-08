@@ -32,12 +32,26 @@
  */
 package com.helger.as2lib.cert;
 
-import com.helger.as2lib.exception.AS2Exception;
+import java.security.cert.X509Certificate;
 
-public class CertificateExistsException extends AS2Exception
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.commons.collection.impl.ICommonsList;
+
+/**
+ * AS2 exception to be thrown if a private key is not found
+ *
+ * @author Philip Helger
+ */
+public class AS2KeyNotFoundException extends AS2Exception
 {
-  public CertificateExistsException (final String sAlias)
+  public AS2KeyNotFoundException (@Nonnull final X509Certificate aCert,
+                                  @Nullable final String sAlias,
+                                  @Nonnull final ICommonsList <String> aAllAliases,
+                                  @Nullable final Throwable aCause)
   {
-    super (sAlias);
+    super ("Alias '" + sAlias + "' for Certificate '" + aCert + "'. Possible aliases are: " + aAllAliases, aCause);
   }
 }

@@ -51,7 +51,7 @@ import com.helger.commons.lang.StackTraceHelper;
  *
  * @author Philip Helger
  */
-public class ProcessorException extends AS2Exception
+public class AS2ProcessorException extends AS2Exception
 {
   private final IMessageProcessor m_aProcessor;
   private final ICommonsList <Throwable> m_aCauses;
@@ -71,7 +71,7 @@ public class ProcessorException extends AS2Exception
     return aSB.toString ();
   }
 
-  public ProcessorException (@Nonnull final IMessageProcessor aProcessor,
+  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor,
                              @Nonnull @Nonempty final List <Throwable> aCauses)
   {
     super ("Processor '" +

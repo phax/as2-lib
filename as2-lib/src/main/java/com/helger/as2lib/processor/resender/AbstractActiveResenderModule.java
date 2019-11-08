@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.CGlobal;
@@ -99,11 +99,11 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 
   /**
    * @return The defined delay until re-send in milliseconds.
-   * @throws InvalidParameterException
+   * @throws AS2InvalidParameterException
    *         If an invalid value is configured.
    */
   @Nonnegative
-  protected final long getResendDelayMS () throws InvalidParameterException
+  protected final long getResendDelayMS () throws AS2InvalidParameterException
   {
     if (!attrs ().containsKey (ATTR_RESEND_DELAY_SECONDS))
       return DEFAULT_RESEND_DELAY_MS;

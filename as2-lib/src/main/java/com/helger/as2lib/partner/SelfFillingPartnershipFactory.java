@@ -76,7 +76,7 @@ public class SelfFillingPartnershipFactory extends AbstractPartnershipFactory
     {
       return super.getPartnership (aPartnership);
     }
-    catch (final PartnershipNotFoundException ex)
+    catch (final AS2PartnershipNotFoundException ex)
     {
       onBeforeAddPartnership (aPartnership);
 

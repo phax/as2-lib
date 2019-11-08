@@ -116,7 +116,7 @@ public class MultiCommand extends AbstractCommand
 
     if (cmd != null)
       return cmd.execute (params);
-    throw new CommandException ("Command doesn't exist: " + name);
+    throw new AS2ServerCommandException ("Command doesn't exist: " + name);
   }
 
   public boolean supports (final String name)

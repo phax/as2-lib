@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.partner.IRefreshablePartnershipFactory;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.PartnershipMap;
@@ -85,7 +85,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     attrs ().putIn (ATTR_FILENAME, filename);
   }
 
-  public String getFilename () throws InvalidParameterException
+  public String getFilename () throws AS2InvalidParameterException
   {
     return getAttributeAsStringRequired (ATTR_FILENAME);
   }

@@ -57,18 +57,18 @@ public class MessageMDNParameters extends AbstractParameterParser
   }
 
   @Override
-  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
+  public void setParameter (final String sKey, final String sValue) throws AS2InvalidParameterException
   {
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
     if (aKeyParts.countTokens () < 2)
-      throw new InvalidParameterException ("Invalid key format", this, "key", sKey);
+      throw new AS2InvalidParameterException ("Invalid key format", this, "key", sKey);
 
     final String sArea = aKeyParts.nextToken ();
     if (sArea.equals (KEY_MESSAGE))
     {
       if (aKeyParts.countTokens () < 3)
-        throw new InvalidParameterException ("Invalid key format", this, "key", sKey);
+        throw new AS2InvalidParameterException ("Invalid key format", this, "key", sKey);
 
       // Set parameter of message
       final String sMessageKey = aKeyParts.nextToken () + "." + aKeyParts.nextToken ();
@@ -86,13 +86,13 @@ public class MessageMDNParameters extends AbstractParameterParser
           if (sArea.equals (KEY_HEADERS))
             m_aTarget.headers ().setHeader (sAreaValue, sValue);
           else
-            throw new InvalidParameterException ("Invalid area in key", this, "key", sKey);
+            throw new AS2InvalidParameterException ("Invalid area in key", this, "key", sKey);
     }
   }
 
   @Override
   @Nullable
-  public String getParameter (final String sKey) throws InvalidParameterException
+  public String getParameter (final String sKey) throws AS2InvalidParameterException
   {
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
     if (aKeyParts.countTokens () > 2)
@@ -104,7 +104,7 @@ public class MessageMDNParameters extends AbstractParameterParser
     }
 
     if (aKeyParts.countTokens () < 2)
-      throw new InvalidParameterException ("Invalid key format", this, "key", sKey);
+      throw new AS2InvalidParameterException ("Invalid key format", this, "key", sKey);
 
     final String sArea = aKeyParts.nextToken ();
     final String sAreaValue = aKeyParts.nextToken ();
@@ -120,6 +120,6 @@ public class MessageMDNParameters extends AbstractParameterParser
     if (sArea.equals (KEY_HEADERS))
       return m_aTarget.getHeader (sAreaValue);
 
-    throw new InvalidParameterException ("Invalid area in key", this, "key", sKey);
+    throw new AS2InvalidParameterException ("Invalid area in key", this, "key", sKey);
   }
 }

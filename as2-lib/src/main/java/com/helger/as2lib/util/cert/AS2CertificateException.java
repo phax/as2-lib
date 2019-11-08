@@ -30,17 +30,32 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.receiver;
+package com.helger.as2lib.util.cert;
 
 import com.helger.as2lib.exception.AS2Exception;
 
-public class InvalidMessageException extends AS2Exception
+/**
+ * Exceptions for certificate handling
+ * 
+ * @author Philip Helger
+ */
+public class AS2CertificateException extends AS2Exception
 {
-  public InvalidMessageException ()
+  public AS2CertificateException ()
   {}
 
-  public InvalidMessageException (final String sMsg)
+  public AS2CertificateException (final String sMsg)
   {
     super (sMsg);
+  }
+
+  public AS2CertificateException (final String sMsg, final Throwable aCause)
+  {
+    super (sMsg, aCause);
+  }
+
+  public AS2CertificateException (final Throwable aCause)
+  {
+    super (aCause);
   }
 }

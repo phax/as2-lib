@@ -66,7 +66,9 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.attr.IStringMap;
+import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.CommonsLinkedHashMap;
+import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsOrderedMap;
 import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.stream.StreamHelper;
@@ -187,7 +189,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     }
 
     if (sAlias == null)
-      throw new CertificateNotFoundException (ePartnershipType, aPartnership);
+      throw new AS2CertificateNotFoundException (ePartnershipType, aPartnership);
     return getUnifiedAlias (sAlias);
   }
 
@@ -202,7 +204,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     {
       final X509Certificate aCert = (X509Certificate) m_aKeyStore.getCertificate (sRealAlias);
       if (aCert == null)
-        throw new CertificateNotFoundException (ePartnershipType, sRealAlias);
+        throw new AS2CertificateNotFoundException (ePartnershipType, sRealAlias);
       return aCert;
     }
     catch (final KeyStoreException ex)
@@ -309,6 +311,27 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   }
 
   @Nonnull
+  private ICommonsList <String> _getAllAliases ()
+  {
+    // Get all aliases
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
+    m_aRWLock.readLock ().lock ();
+    try
+    {
+      ret.addAll (m_aKeyStore.aliases ());
+    }
+    catch (final KeyStoreException ex)
+    {
+      LOGGER.warn ("Failed to determine all aliases from keystore");
+    }
+    finally
+    {
+      m_aRWLock.readLock ().unlock ();
+    }
+    return ret;
+  }
+
+  @Nonnull
   public PrivateKey getPrivateKey (@Nullable final X509Certificate aCert) throws AS2Exception
   {
     String sRealAlias = null;
@@ -320,31 +343,24 @@ public class CertificateFactory extends AbstractDynamicComponent implements
       // result.
       final String sAlias = m_aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
-        throw new KeyNotFoundException (aCert);
+        throw new AS2CertificateNotFoundException (aCert);
 
       sRealAlias = getUnifiedAlias (sAlias);
 
       final PrivateKey aKey = (PrivateKey) m_aKeyStore.getKey (sRealAlias, getPassword ());
       if (aKey == null)
-        throw new KeyNotFoundException (aCert, sRealAlias);
+        throw new AS2KeyNotFoundException (aCert, sRealAlias, _getAllAliases (), null);
 
       return aKey;
     }
     catch (final GeneralSecurityException ex)
     {
-      throw new KeyNotFoundException (aCert, sRealAlias, ex);
+      throw new AS2KeyNotFoundException (aCert, sRealAlias, _getAllAliases (), ex);
     }
     finally
     {
       m_aRWLock.readLock ().unlock ();
     }
-  }
-
-  @Nonnull
-  public PrivateKey getPrivateKey (@Nullable final IBaseMessage aMsg,
-                                   @Nullable final X509Certificate aCert) throws AS2Exception
-  {
-    return getPrivateKey (aCert);
   }
 
   public void addCertificate (@Nonnull @Nonempty final String sAlias,
@@ -360,7 +376,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     try
     {
       if (m_aKeyStore.containsAlias (sRealAlias) && !bOverwrite)
-        throw new CertificateExistsException (sRealAlias);
+        throw new AS2CertificateExistsException (sRealAlias);
 
       m_aKeyStore.setCertificateEntry (sRealAlias, aCert);
     }
@@ -393,7 +409,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     try
     {
       if (!m_aKeyStore.containsAlias (sRealAlias))
-        throw new CertificateNotFoundException (null, sRealAlias);
+        throw new AS2CertificateNotFoundException (null, sRealAlias);
 
       final Certificate [] aCertChain = m_aKeyStore.getCertificateChain (sRealAlias);
       m_aKeyStore.setKeyEntry (sRealAlias, aKey, sPassword.toCharArray (), aCertChain);
@@ -475,7 +491,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     {
       sAlias = m_aKeyStore.getCertificateAlias (aCert);
       if (sAlias == null)
-        throw new CertificateNotFoundException (aCert);
+        throw new AS2CertificateNotFoundException (aCert);
     }
     catch (final GeneralSecurityException ex)
     {
@@ -499,7 +515,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     {
       aCert = m_aKeyStore.getCertificate (sRealAlias);
       if (aCert == null)
-        throw new CertificateNotFoundException (null, sRealAlias);
+        throw new AS2CertificateNotFoundException (null, sRealAlias);
 
       m_aKeyStore.deleteEntry (sRealAlias);
     }
@@ -524,8 +540,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
                                                      : ""));
   }
 
-  public void save (@Nonnull @WillClose final OutputStream aOS,
-                    @Nonnull final char [] aPassword) throws AS2Exception
+  public void save (@Nonnull @WillClose final OutputStream aOS, @Nonnull final char [] aPassword) throws AS2Exception
   {
     m_aRWLock.writeLock ().lock ();
     try

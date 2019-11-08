@@ -86,7 +86,7 @@ public class CompositeParameters extends AbstractParameterParser
   }
 
   @Override
-  public void setParameter (final String sKey, final String sValue) throws InvalidParameterException
+  public void setParameter (final String sKey, final String sValue) throws AS2InvalidParameterException
   {
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
@@ -94,7 +94,7 @@ public class CompositeParameters extends AbstractParameterParser
     if (aParser != null)
     {
       if (!aKeyParts.hasMoreTokens ())
-        throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+        throw new AS2InvalidParameterException ("Invalid key format", this, sKey, null);
 
       final StringBuilder aSB = new StringBuilder (aKeyParts.nextToken ());
       while (aKeyParts.hasMoreTokens ())
@@ -103,11 +103,11 @@ public class CompositeParameters extends AbstractParameterParser
     }
     else
       if (!isIgnoreMissingParsers ())
-        throw new InvalidParameterException ("Invalid area in key", this, sKey, sValue);
+        throw new AS2InvalidParameterException ("Invalid area in key", this, sKey, sValue);
   }
 
   @Override
-  public String getParameter (final String sKey) throws InvalidParameterException
+  public String getParameter (final String sKey) throws AS2InvalidParameterException
   {
     final StringTokenizer aKeyParts = new StringTokenizer (sKey, ".", false);
 
@@ -116,7 +116,7 @@ public class CompositeParameters extends AbstractParameterParser
     if (aParser != null)
     {
       if (!aKeyParts.hasMoreTokens ())
-        throw new InvalidParameterException ("Invalid key format", this, sKey, null);
+        throw new AS2InvalidParameterException ("Invalid key format", this, sKey, null);
 
       final StringBuilder aKeyBuf = new StringBuilder (aKeyParts.nextToken ());
       while (aKeyParts.hasMoreTokens ())
@@ -132,7 +132,7 @@ public class CompositeParameters extends AbstractParameterParser
       return aParser.getParameter (aKeyBuf.toString ());
     }
     if (!isIgnoreMissingParsers ())
-      throw new InvalidParameterException ("Invalid area in key", this, sKey, null);
+      throw new AS2InvalidParameterException ("Invalid area in key", this, sKey, null);
 
     return "";
   }

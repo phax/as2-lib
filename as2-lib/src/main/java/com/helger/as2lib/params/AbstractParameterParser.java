@@ -50,10 +50,10 @@ public abstract class AbstractParameterParser implements Serializable
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractParameterParser.class);
 
-  public abstract void setParameter (@Nonnull String sKey, @Nonnull String sValue) throws InvalidParameterException;
+  public abstract void setParameter (@Nonnull String sKey, @Nonnull String sValue) throws AS2InvalidParameterException;
 
   @Nullable
-  public abstract String getParameter (@Nonnull String sKey) throws InvalidParameterException;
+  public abstract String getParameter (@Nonnull String sKey) throws AS2InvalidParameterException;
 
   /**
    * Set parameters from a string, like
@@ -61,17 +61,17 @@ public abstract class AbstractParameterParser implements Serializable
    *
    * @param sEncodedParams
    *        string to parse
-   * @throws InvalidParameterException
+   * @throws AS2InvalidParameterException
    *         In case the string is incorrect
    */
-  public void setParameters (@Nonnull final String sEncodedParams) throws InvalidParameterException
+  public void setParameters (@Nonnull final String sEncodedParams) throws AS2InvalidParameterException
   {
     final StringTokenizer aParams = new StringTokenizer (sEncodedParams, "=,", false);
     while (aParams.hasMoreTokens ())
     {
       final String sKey = aParams.nextToken ().trim ();
       if (!aParams.hasMoreTokens ())
-        throw new InvalidParameterException ("Invalid value", this, sKey, null);
+        throw new AS2InvalidParameterException ("Invalid value", this, sKey, null);
 
       final String sValue = aParams.nextToken ();
       setParameter (sKey, sValue);
@@ -114,11 +114,11 @@ public abstract class AbstractParameterParser implements Serializable
    * @param sFormat
    *        the format string to fill in
    * @return the filled in format string.
-   * @throws InvalidParameterException
+   * @throws AS2InvalidParameterException
    *         In case the string is incorrect
    */
   @Nonnull
-  public String format (@Nullable final String sFormat) throws InvalidParameterException
+  public String format (@Nullable final String sFormat) throws AS2InvalidParameterException
   {
     if (LOGGER.isTraceEnabled ())
       LOGGER.trace ("Formatting '" + sFormat + "'");
@@ -148,7 +148,7 @@ public abstract class AbstractParameterParser implements Serializable
         nPrev = nNext + 1;
         nNext = sFormat.indexOf ('$', nPrev);
         if (nNext == -1)
-          throw new InvalidParameterException ("Invalid key (missing closing $)");
+          throw new AS2InvalidParameterException ("Invalid key (missing closing $)");
 
         // If we have just $$ then output $, else we have $xxx$, lookup xxx
         if (nNext == nPrev)

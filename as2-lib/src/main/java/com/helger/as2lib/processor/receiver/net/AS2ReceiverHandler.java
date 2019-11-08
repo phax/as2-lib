@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.ICryptoHelper;
-import com.helger.as2lib.disposition.DispositionException;
+import com.helger.as2lib.disposition.AS2DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
@@ -65,12 +65,12 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.CNetAttribute;
-import com.helger.as2lib.processor.NoModuleException;
+import com.helger.as2lib.processor.AS2NoModuleException;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
-import com.helger.as2lib.session.ComponentNotFoundException;
+import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
@@ -99,7 +99,7 @@ import com.helger.security.certificate.CertificateHelper;
 
 /**
  * The main handler for receiving messages.
- * 
+ *
  * @author Philip Helger
  */
 public class AS2ReceiverHandler extends AbstractReceiverHandler
@@ -237,7 +237,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
           final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg,
                                                                              ECertificatePartnershipType.RECEIVER);
-          final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aMsg, aReceiverCert);
+          final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aReceiverCert);
           final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
                                                                      aReceiverCert,
                                                                      aReceiverKey,
@@ -255,7 +255,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
 
-      throw new DispositionException (DispositionType.createError ("decryption-failed"),
+      throw new AS2DispositionException (DispositionType.createError ("decryption-failed"),
                                       AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
                                       ex);
     }
@@ -331,13 +331,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
 
-      throw new DispositionException (DispositionType.createError ("integrity-check-failed"),
+      throw new AS2DispositionException (DispositionType.createError ("integrity-check-failed"),
                                       AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED,
                                       ex);
     }
   }
 
-  protected void decompress (@Nonnull final IMessage aMsg) throws DispositionException
+  protected void decompress (@Nonnull final IMessage aMsg) throws AS2DispositionException
   {
     try
     {
@@ -387,7 +387,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Error decompressing received message", ex);
 
-      throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+      throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                       AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
                                       ex);
     }
@@ -457,7 +457,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           {
             aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
           }
-          catch (final ComponentNotFoundException | NoModuleException ex)
+          catch (final AS2ComponentNotFoundException | AS2NoModuleException ex)
           {
             // No message processor found
             // or No module found in message processor
@@ -534,7 +534,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final Exception ex)
       {
-        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         AbstractActiveNetModule.DISP_PARSING_MIME_FAILED,
                                         ex);
       }
@@ -554,7 +554,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final AS2Exception ex)
       {
-        throw new DispositionException (DispositionType.createError ("authentication-failed"),
+        throw new AS2DispositionException (DispositionType.createError ("authentication-failed"),
                                         AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND,
                                         ex);
       }
@@ -584,7 +584,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // or after signing of message but only in one place
         if (bIsDecompressed)
         {
-          throw new DispositionException (DispositionType.createError ("decompression-failed"),
+          throw new AS2DispositionException (DispositionType.createError ("decompression-failed"),
                                           AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
                                           new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
         }
@@ -621,14 +621,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_BEFORE_STORE, aMsg, null);
       }
-      catch (final NoModuleException ex)
+      catch (final AS2NoModuleException ex)
       {
         // No module installed - ignore
       }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
-        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
                                                                               CHttp.EOL,
                                                                               _getDispositionText (ex)),
@@ -640,14 +640,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
       }
-      catch (final NoModuleException ex)
+      catch (final AS2NoModuleException ex)
       {
         // No module installed - ignore
       }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
-        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
                                                                               CHttp.EOL,
                                                                               _getDispositionText (ex)),
@@ -659,14 +659,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_AFTER_STORE, aMsg, null);
       }
-      catch (final NoModuleException ex)
+      catch (final AS2NoModuleException ex)
       {
         // No module installed - ignore
       }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
-        throw new DispositionException (DispositionType.createError ("unexpected-processing-error"),
+        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
                                         StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
                                                                               CHttp.EOL,
                                                                               _getDispositionText (ex)),
@@ -704,7 +704,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         throw new WrappedAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
       }
     }
-    catch (final DispositionException ex)
+    catch (final AS2DispositionException ex)
     {
       sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
       m_aReceiverModule.handleError (aMsg, ex);
@@ -757,7 +757,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final Exception ex)
     {
-      new NetException (aSocket.getInetAddress (), aSocket.getPort (), ex).terminate ();
+      new AS2NetException (aSocket.getInetAddress (), aSocket.getPort (), ex).terminate ();
     }
 
     aSW.stop ();

@@ -45,7 +45,7 @@ import javax.annotation.WillClose;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
@@ -133,7 +133,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected abstract String getFilename (IMessage aMsg,
                                          String sFileParam,
-                                         String sAction) throws InvalidParameterException;
+                                         String sAction) throws AS2InvalidParameterException;
 
   private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS,
                                           @Nonnull final File aDestination) throws IOException

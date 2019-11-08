@@ -44,7 +44,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.cert.CertificateExistsException;
+import com.helger.as2lib.cert.AS2CertificateExistsException;
 import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
@@ -287,7 +287,7 @@ public class AS2Client
       {
         aCertFactory.addCertificate (aSettings.getReceiverKeyAlias (), aSettings.getReceiverCertificate (), false);
       }
-      catch (final CertificateExistsException ex)
+      catch (final AS2CertificateExistsException ex)
       {
         // ignore
       }

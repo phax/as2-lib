@@ -60,7 +60,7 @@ public interface ICertificateFactory extends IDynamicComponent
    * @return Never <code>null</code>-
    * @throws AS2Exception
    *         In case of error
-   * @throws CertificateNotFoundException
+   * @throws AS2CertificateNotFoundException
    *         If no certificate is present
    */
   @Nonnull
@@ -87,7 +87,7 @@ public interface ICertificateFactory extends IDynamicComponent
     {
       return getCertificate (aMsg, ePartnershipType);
     }
-    catch (final CertificateNotFoundException ex)
+    catch (final AS2CertificateNotFoundException ex)
     {
       // No such certificate
       return null;
@@ -95,5 +95,5 @@ public interface ICertificateFactory extends IDynamicComponent
   }
 
   @Nonnull
-  PrivateKey getPrivateKey (@Nullable IBaseMessage aMsg, @Nullable X509Certificate aCert) throws AS2Exception;
+  PrivateKey getPrivateKey (@Nullable X509Certificate aCert) throws AS2Exception;
 }

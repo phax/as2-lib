@@ -104,7 +104,7 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
           LOGGER.error ("Error taking elements from queue - queue has been interrupted!!!");
           break;
         }
-        catch (final NoModuleException ex)
+        catch (final AS2NoModuleException ex)
         {
           m_aExceptionCallbacks.forEach (x -> x.onException (ex));
           // No need to log

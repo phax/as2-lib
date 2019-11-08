@@ -52,7 +52,7 @@ import com.helger.as2lib.disposition.DispositionOptions;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
@@ -251,27 +251,27 @@ public class MainTestClient
     // logger.info(reply.getData().getRawInputStream().toString());
   }
 
-  protected static void checkRequired (@Nonnull final IMessage aMsg) throws InvalidParameterException
+  protected static void checkRequired (@Nonnull final IMessage aMsg) throws AS2InvalidParameterException
   {
     final Partnership aPartnership = aMsg.partnership ();
 
     try
     {
-      InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
-      InvalidParameterException.checkValue (aMsg,
+      AS2InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
+      AS2InvalidParameterException.checkValue (aMsg,
                                             "Attribute: " + CPartnershipIDs.PA_AS2_URL,
                                             aPartnership.getAS2URL ());
-      InvalidParameterException.checkValue (aMsg,
+      AS2InvalidParameterException.checkValue (aMsg,
                                             "Receiver: " + CPartnershipIDs.PID_AS2,
                                             aPartnership.getReceiverAS2ID ());
-      InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
-      InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
-      InvalidParameterException.checkValue (aMsg,
+      AS2InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
+      AS2InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
+      AS2InvalidParameterException.checkValue (aMsg,
                                             "Sender: " + CPartnershipIDs.PID_EMAIL,
                                             aPartnership.getSenderEmail ());
-      InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
+      AS2InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
-    catch (final InvalidParameterException ex)
+    catch (final AS2InvalidParameterException ex)
     {
       ex.setSourceMsg (aMsg);
       throw ex;

@@ -30,67 +30,71 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor;
+package com.helger.as2lib.params;
 
-import java.util.Map;
+import java.io.Serializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.message.IMessage;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
 
-public class NoModuleException extends AS2Exception
+public class AS2InvalidParameterException extends AS2Exception
 {
-  private final ICommonsMap <String, Object> m_aOptions;
-  private final IMessage m_aMsg;
-  private final String m_sAction;
+  private final Serializable m_aTarget;
+  private final String m_sKey;
+  private final String m_sValue;
 
-  public NoModuleException (@Nullable final String sAction,
-                            @Nullable final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public AS2InvalidParameterException (@Nullable final String sMsg,
+                                    @Nullable final Serializable aTarget,
+                                    @Nullable final String sKey,
+                                    @Nullable final String sValue)
   {
-    super (getAsString (sAction, aMsg, aOptions));
-    m_sAction = sAction;
-    m_aMsg = aMsg;
-    m_aOptions = new CommonsHashMap <> (aOptions);
+    super (sMsg + " - " + getAsString (sKey, sValue));
+    m_aTarget = aTarget;
+    m_sKey = sKey;
+    m_sValue = sValue;
+  }
+
+  public AS2InvalidParameterException (@Nullable final String sMsg)
+  {
+    super (sMsg);
+    m_aTarget = null;
+    m_sKey = null;
+    m_sValue = null;
   }
 
   @Nullable
-  public final String getAction ()
+  public String getKey ()
   {
-    return m_sAction;
+    return m_sKey;
   }
 
   @Nullable
-  public final IMessage getMsg ()
+  public Serializable getTarget ()
   {
-    return m_aMsg;
+    return m_aTarget;
   }
 
   @Nullable
-  @ReturnsMutableObject
-  public final ICommonsMap <String, Object> options ()
+  public String getValue ()
   {
-    return m_aOptions;
+    return m_sValue;
   }
 
-  @Nonnull
-  public String getAsString ()
+  public static void checkValue (@Nonnull final Serializable aTarget,
+                                 @Nonnull final String sValueName,
+                                 @Nullable final Object aValue) throws AS2InvalidParameterException
   {
-    return getAsString (m_sAction, m_aMsg, m_aOptions);
+    if (aValue == null)
+      throw new AS2InvalidParameterException ("Value is missing", aTarget, sValueName, null);
   }
 
   @Nonnull
   @Nonempty
-  protected static String getAsString (@Nullable final String sAction,
-                                       @Nullable final IMessage aMsg,
-                                       @Nullable final Map <String, Object> aOptions)
+  public static String getAsString (@Nullable final String sKey, @Nullable final String sValue)
   {
-    return "NoModuleException: Requested action: " + sAction + "; Message: " + aMsg + "; Options: " + aOptions;
+    return "Invalid parameter value for " + sKey + ": " + sValue;
   }
 }

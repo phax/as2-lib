@@ -55,23 +55,23 @@ public class ExceptionParameters extends AbstractParameterParser
   }
 
   @Override
-  public void setParameter (@Nonnull final String sKey, final String sValue) throws InvalidParameterException
+  public void setParameter (@Nonnull final String sKey, final String sValue) throws AS2InvalidParameterException
   {
     if (sKey == null)
-      throw new InvalidParameterException ("Invalid key", this, sKey, sValue);
+      throw new AS2InvalidParameterException ("Invalid key", this, sKey, sValue);
 
     if (sKey.equals (KEY_NAME) || sKey.equals (KEY_MESSAGE) || sKey.equals (KEY_TRACE) || sKey.equals (KEY_TERMINATED))
-      throw new InvalidParameterException ("Parameter is read-only", this, sKey, sValue);
+      throw new AS2InvalidParameterException ("Parameter is read-only", this, sKey, sValue);
 
-    throw new InvalidParameterException ("Invalid key", this, sKey, sValue);
+    throw new AS2InvalidParameterException ("Invalid key", this, sKey, sValue);
   }
 
   @Override
   @Nonnull
-  public String getParameter (@Nonnull final String sKey) throws InvalidParameterException
+  public String getParameter (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
     if (sKey == null)
-      throw new InvalidParameterException ("Invalid key", this, sKey, null);
+      throw new AS2InvalidParameterException ("Invalid key", this, sKey, null);
 
     Throwable aUnwrappedTarget;
     if (m_aTarget instanceof WrappedAS2Exception)
@@ -94,6 +94,6 @@ public class ExceptionParameters extends AbstractParameterParser
     if (sKey.equals (KEY_TERMINATED))
       return m_bTerminated ? "terminated" : "";
 
-    throw new InvalidParameterException ("Invalid key", this, sKey, null);
+    throw new AS2InvalidParameterException ("Invalid key", this, sKey, null);
   }
 }

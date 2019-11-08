@@ -30,30 +30,53 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.session;
+package com.helger.as2lib.cert;
 
+import java.security.cert.X509Certificate;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.partner.Partnership;
 
-/**
- * Thrown from {@link AS2Session} if a component was not present.
- * 
- * @author Philip Helger
- */
-public class ComponentNotFoundException extends AS2Exception
+public class AS2CertificateNotFoundException extends AS2Exception
 {
-  private final String m_sComponentName;
+  private final ECertificatePartnershipType m_ePartnershipType;
+  private final String m_sAlias;
 
-  public ComponentNotFoundException (@Nullable final String sComponentName)
+  public AS2CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
+                                       @Nonnull final Partnership aPartnership)
   {
-    super ("No such component: " + sComponentName);
-    m_sComponentName = sComponentName;
+    super ("Type " + ePartnershipType + ": no alias found for partnership " + aPartnership);
+    m_ePartnershipType = ePartnershipType;
+    m_sAlias = null;
+  }
+
+  public AS2CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
+                                       @Nullable final String sAlias)
+  {
+    super ("Type " + ePartnershipType + ": no such alias '" + sAlias + "'");
+    m_ePartnershipType = ePartnershipType;
+    m_sAlias = sAlias;
+  }
+
+  public AS2CertificateNotFoundException (@Nullable final X509Certificate aCert)
+  {
+    super ("Certificate not in store '" + aCert + "'");
+    m_ePartnershipType = null;
+    m_sAlias = null;
   }
 
   @Nullable
-  public String getComponentName ()
+  public ECertificatePartnershipType getPartnershipType ()
   {
-    return m_sComponentName;
+    return m_ePartnershipType;
+  }
+
+  @Nullable
+  public String getAlias ()
+  {
+    return m_sAlias;
   }
 }

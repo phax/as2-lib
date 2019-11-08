@@ -49,10 +49,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.cert.CertificateNotFoundException;
+import com.helger.as2lib.cert.AS2CertificateNotFoundException;
+import com.helger.as2lib.cert.AS2KeyNotFoundException;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.cert.KeyNotFoundException;
 import com.helger.as2lib.crypto.BCCryptoHelper;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.crypto.ICryptoHelper;
@@ -65,7 +65,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.partner.PartnershipNotFoundException;
+import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
@@ -185,7 +185,7 @@ public final class AS2Helper
       try
       {
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
-        final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aMdn, aSenderCert);
+        final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aSenderCert);
         final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
                                                                     aSenderCert,
                                                                     aSenderKey,
@@ -195,7 +195,7 @@ public final class AS2Helper
                                                                     EContentTransferEncoding.BASE64);
         aMdn.setData (aSignedReport);
       }
-      catch (final CertificateNotFoundException | KeyNotFoundException ex)
+      catch (final AS2CertificateNotFoundException | AS2KeyNotFoundException ex)
       {
         ex.terminate ();
         aMdn.setData (aReport);
@@ -266,7 +266,7 @@ public final class AS2Helper
     {
       aSession.getPartnershipFactory ().updatePartnership (aMDN, true);
     }
-    catch (final PartnershipNotFoundException ex)
+    catch (final AS2PartnershipNotFoundException ex)
     {
       // This would block sending an MDN in case a PartnershipNotFoundException
       // was the reason for sending the MDN :)

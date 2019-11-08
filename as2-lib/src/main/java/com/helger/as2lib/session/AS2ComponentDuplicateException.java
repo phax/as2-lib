@@ -30,33 +30,33 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.partner;
+package com.helger.as2lib.session;
 
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.commons.annotation.Nonempty;
 
 /**
- * Exception thrown if a desired partnership is not present.
+ * Exception to be thrown from {@link AS2Session} if a component with the
+ * specified ID is already registered.
  *
  * @author Philip Helger
  */
-public class PartnershipNotFoundException extends AS2Exception
+public class AS2ComponentDuplicateException extends AS2Exception
 {
-  private final Partnership m_aPartnership;
+  private final String m_sComponentID;
 
-  public PartnershipNotFoundException (@Nonnull final Partnership aPartnership)
+  public AS2ComponentDuplicateException (@Nonnull @Nonempty final String sComponentID)
   {
-    super ("Partnership not found: " + aPartnership);
-    m_aPartnership = aPartnership;
+    super (sComponentID);
+    m_sComponentID = sComponentID;
   }
 
-  /**
-   * @return The partnership that was not found. May not be <code>null</code>.
-   */
   @Nonnull
-  public Partnership getPartnership ()
+  @Nonempty
+  public String getComponentID ()
   {
-    return m_aPartnership;
+    return m_sComponentID;
   }
 }

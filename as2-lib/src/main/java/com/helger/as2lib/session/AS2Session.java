@@ -93,37 +93,37 @@ public class AS2Session implements IAS2Session
   }
 
   public final void addComponent (@Nonnull @Nonempty final String sComponentID,
-                                  @Nonnull final IDynamicComponent aComponent) throws ComponentDuplicateException
+                                  @Nonnull final IDynamicComponent aComponent) throws AS2ComponentDuplicateException
   {
     ValueEnforcer.notEmpty (sComponentID, "ComponentID");
     ValueEnforcer.notNull (aComponent, "Component");
     if (m_aComponents.containsKey (sComponentID))
-      throw new ComponentDuplicateException (sComponentID);
+      throw new AS2ComponentDuplicateException (sComponentID);
     m_aComponents.put (sComponentID, aComponent);
   }
 
-  public void setCertificateFactory (@Nonnull final ICertificateFactory aCertFactory) throws ComponentDuplicateException
+  public void setCertificateFactory (@Nonnull final ICertificateFactory aCertFactory) throws AS2ComponentDuplicateException
   {
     addComponent (COMPONENT_ID_CERTIFICATE_FACTORY, aCertFactory);
   }
 
-  public void setPartnershipFactory (@Nonnull final IPartnershipFactory aPartnershipFactory) throws ComponentDuplicateException
+  public void setPartnershipFactory (@Nonnull final IPartnershipFactory aPartnershipFactory) throws AS2ComponentDuplicateException
   {
     addComponent (COMPONENT_ID_PARTNERSHIP_FACTORY, aPartnershipFactory);
   }
 
-  public void setMessageProcessor (@Nonnull final IMessageProcessor aMsgProcessor) throws ComponentDuplicateException
+  public void setMessageProcessor (@Nonnull final IMessageProcessor aMsgProcessor) throws AS2ComponentDuplicateException
   {
     addComponent (COMPONENT_ID_MESSAGE_PROCESSOR, aMsgProcessor);
   }
 
   @Nonnull
-  public final IDynamicComponent getComponent (@Nonnull @Nonempty final String sComponentID) throws ComponentNotFoundException
+  public final IDynamicComponent getComponent (@Nonnull @Nonempty final String sComponentID) throws AS2ComponentNotFoundException
   {
     ValueEnforcer.notEmpty (sComponentID, "ComponentID");
     final IDynamicComponent aComponent = m_aComponents.get (sComponentID);
     if (aComponent == null)
-      throw new ComponentNotFoundException (sComponentID);
+      throw new AS2ComponentNotFoundException (sComponentID);
     return aComponent;
   }
 
@@ -135,19 +135,19 @@ public class AS2Session implements IAS2Session
   }
 
   @Nonnull
-  public final ICertificateFactory getCertificateFactory () throws ComponentNotFoundException
+  public final ICertificateFactory getCertificateFactory () throws AS2ComponentNotFoundException
   {
     return (ICertificateFactory) getComponent (COMPONENT_ID_CERTIFICATE_FACTORY);
   }
 
   @Nonnull
-  public final IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException
+  public final IPartnershipFactory getPartnershipFactory () throws AS2ComponentNotFoundException
   {
     return (IPartnershipFactory) getComponent (COMPONENT_ID_PARTNERSHIP_FACTORY);
   }
 
   @Nonnull
-  public final IMessageProcessor getMessageProcessor () throws ComponentNotFoundException
+  public final IMessageProcessor getMessageProcessor () throws AS2ComponentNotFoundException
   {
     return (IMessageProcessor) getComponent (COMPONENT_ID_MESSAGE_PROCESSOR);
   }

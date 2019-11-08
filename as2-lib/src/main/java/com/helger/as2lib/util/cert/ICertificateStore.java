@@ -50,22 +50,22 @@ public interface ICertificateStore
 {
   @Nonnull
   @ReturnsMutableCopy
-  ICommonsList <String> getAliases () throws CertificateException;
+  ICommonsList <String> getAliases () throws AS2CertificateException;
 
   @Nullable
-  Certificate getCertificate (@Nullable String sAlias) throws CertificateException;
+  Certificate getCertificate (@Nullable String sAlias) throws AS2CertificateException;
 
-  void setCertificate (@Nonnull String sAlias, @Nonnull Certificate aCert) throws CertificateException;
-
-  @Nullable
-  String getAlias (@Nullable Certificate aCert) throws CertificateException;
-
-  void removeCertificate (@Nullable String sAlias) throws CertificateException;
-
-  void clearCertificates () throws CertificateException;
+  void setCertificate (@Nonnull String sAlias, @Nonnull Certificate aCert) throws AS2CertificateException;
 
   @Nullable
-  Key getKey (@Nullable String sAlias, char [] aPassword) throws CertificateException;
+  String getAlias (@Nullable Certificate aCert) throws AS2CertificateException;
 
-  void setKey (@Nonnull String sAlias, @Nonnull Key aKey, char [] aPassword) throws CertificateException;
+  void removeCertificate (@Nullable String sAlias) throws AS2CertificateException;
+
+  void clearCertificates () throws AS2CertificateException;
+
+  @Nullable
+  Key getKey (@Nullable String sAlias, char [] aPassword) throws AS2CertificateException;
+
+  void setKey (@Nonnull String sAlias, @Nonnull Key aKey, char [] aPassword) throws AS2CertificateException;
 }

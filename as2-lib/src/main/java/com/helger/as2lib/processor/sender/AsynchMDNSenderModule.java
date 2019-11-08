@@ -50,9 +50,9 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.CNetAttribute;
-import com.helger.as2lib.processor.NoModuleException;
+import com.helger.as2lib.processor.AS2NoModuleException;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
-import com.helger.as2lib.session.ComponentNotFoundException;
+import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
@@ -144,7 +144,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
                         nResponseCode +
                         ") " +
                         aMsg.getLoggingText ());
-        throw new HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
+        throw new AS2HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
       if (LOGGER.isInfoEnabled ())
@@ -160,7 +160,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       {
         getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
       }
-      catch (final ComponentNotFoundException | NoModuleException ex)
+      catch (final AS2ComponentNotFoundException | AS2NoModuleException ex)
       {
         // No message processor found
         // Or no module found in message processor
@@ -191,7 +191,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       {
         _sendViaHTTP (aMsg, aDisposition, aOutgoingDumper);
       }
-      catch (final HttpResponseException ex)
+      catch (final AS2HttpResponseException ex)
       {
         if (LOGGER.isErrorEnabled ())
           LOGGER.error ("Http Response Error " + ex.getMessage ());

@@ -66,11 +66,11 @@ public interface IAS2Session extends Serializable
    * @param aComponent
    *        component to register
    * @see IDynamicComponent
-   * @throws ComponentDuplicateException
+   * @throws AS2ComponentDuplicateException
    *         In case a component with the same ID is already present
    */
   void addComponent (@Nonnull @Nonempty String sComponentID,
-                     @Nonnull IDynamicComponent aComponent) throws ComponentDuplicateException;
+                     @Nonnull IDynamicComponent aComponent) throws AS2ComponentDuplicateException;
 
   /**
    * Gets the <code>Component</code> currently registered with an ID
@@ -78,11 +78,11 @@ public interface IAS2Session extends Serializable
    * @param sComponentID
    *        ID to search for
    * @return the component registered to the ID and never <code>null</code>.
-   * @throws ComponentNotFoundException
+   * @throws AS2ComponentNotFoundException
    *         If a component is not registered with the ID
    */
   @Nonnull
-  IDynamicComponent getComponent (@Nonnull @Nonempty String sComponentID) throws ComponentNotFoundException;
+  IDynamicComponent getComponent (@Nonnull @Nonempty String sComponentID) throws AS2ComponentNotFoundException;
 
   /**
    * Return a map of component ID's to <code>Component</code> objects.
@@ -97,38 +97,38 @@ public interface IAS2Session extends Serializable
    * Short-cut method to retrieve a certificate factory.
    *
    * @return the currently registered <code>CertificateFactory</code> component
-   * @throws ComponentNotFoundException
+   * @throws AS2ComponentNotFoundException
    *         If a <code>CertificateFactory</code> component has not been
    *         registered
    * @see ICertificateFactory
    * @see IDynamicComponent
    */
   @Nonnull
-  ICertificateFactory getCertificateFactory () throws ComponentNotFoundException;
+  ICertificateFactory getCertificateFactory () throws AS2ComponentNotFoundException;
 
   /**
    * Short-cut method to retrieve a partner factory.
    *
    * @return the currently registered <code>PartnerFactory</code> component
-   * @throws ComponentNotFoundException
+   * @throws AS2ComponentNotFoundException
    *         If a <code>PartnerFactory</code> component has not been registered
    * @see IPartnershipFactory
    * @see IDynamicComponent
    */
   @Nonnull
-  IPartnershipFactory getPartnershipFactory () throws ComponentNotFoundException;
+  IPartnershipFactory getPartnershipFactory () throws AS2ComponentNotFoundException;
 
   /**
    * Short-cut method to retrieve a processor.
    *
    * @return the currently registered <code>Processor</code> component
-   * @throws ComponentNotFoundException
+   * @throws AS2ComponentNotFoundException
    *         If a <code>Processor</code> component has not been registered
    * @see IMessageProcessor
    * @see IDynamicComponent
    */
   @Nonnull
-  IMessageProcessor getMessageProcessor () throws ComponentNotFoundException;
+  IMessageProcessor getMessageProcessor () throws AS2ComponentNotFoundException;
 
   /**
    * @return <code>true</code> if the certificate used for signing a message

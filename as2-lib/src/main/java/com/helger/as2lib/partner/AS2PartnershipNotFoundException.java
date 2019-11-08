@@ -30,55 +30,33 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.disposition;
+package com.helger.as2lib.partner;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
 
 /**
- * Exception thrown in case a message disposition contains an error or a
- * warning. The content of {@link #getText()} is send back as the MDN in case of
- * a receiving error.
+ * Exception thrown if a desired partnership is not present.
  *
  * @author Philip Helger
  */
-public class DispositionException extends AS2Exception
+public class AS2PartnershipNotFoundException extends AS2Exception
 {
-  private final DispositionType m_aDisposition;
-  private String m_sText;
+  private final Partnership m_aPartnership;
 
-  public DispositionException (@Nonnull final DispositionType aDisposition)
+  public AS2PartnershipNotFoundException (@Nonnull final Partnership aPartnership)
   {
-    this (aDisposition, null, null);
+    super ("Partnership not found: " + aPartnership);
+    m_aPartnership = aPartnership;
   }
 
-  public DispositionException (@Nonnull final DispositionType aDisposition,
-                               @Nullable final String sText,
-                               @Nullable final Throwable aCause)
-  {
-    super (aDisposition.getAsString (), aCause);
-    m_aDisposition = aDisposition;
-    m_sText = sText;
-  }
-
+  /**
+   * @return The partnership that was not found. May not be <code>null</code>.
+   */
   @Nonnull
-  public final DispositionType getDisposition ()
+  public Partnership getPartnership ()
   {
-    return m_aDisposition;
-  }
-
-  @Nullable
-  public final String getText ()
-  {
-    return m_sText;
-  }
-
-  @Nonnull
-  public final DispositionException setText (@Nullable final String sText)
-  {
-    m_sText = sText;
-    return this;
+    return m_aPartnership;
   }
 }

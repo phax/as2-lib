@@ -30,16 +30,67 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.processor.module;
+package com.helger.as2lib.processor;
 
+import java.util.Map;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.message.IMessage;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableObject;
+import com.helger.commons.collection.impl.CommonsHashMap;
+import com.helger.commons.collection.impl.ICommonsMap;
 
-public class ForcedStopException extends AS2Exception
+public class AS2NoModuleException extends AS2Exception
 {
-  public ForcedStopException (@Nullable final Throwable aSource)
+  private final ICommonsMap <String, Object> m_aOptions;
+  private final IMessage m_aMsg;
+  private final String m_sAction;
+
+  public AS2NoModuleException (@Nullable final String sAction,
+                            @Nullable final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
-    super (aSource);
+    super (getAsString (sAction, aMsg, aOptions));
+    m_sAction = sAction;
+    m_aMsg = aMsg;
+    m_aOptions = new CommonsHashMap <> (aOptions);
+  }
+
+  @Nullable
+  public final String getAction ()
+  {
+    return m_sAction;
+  }
+
+  @Nullable
+  public final IMessage getMsg ()
+  {
+    return m_aMsg;
+  }
+
+  @Nullable
+  @ReturnsMutableObject
+  public final ICommonsMap <String, Object> options ()
+  {
+    return m_aOptions;
+  }
+
+  @Nonnull
+  public String getAsString ()
+  {
+    return getAsString (m_sAction, m_aMsg, m_aOptions);
+  }
+
+  @Nonnull
+  @Nonempty
+  protected static String getAsString (@Nullable final String sAction,
+                                       @Nullable final IMessage aMsg,
+                                       @Nullable final Map <String, Object> aOptions)
+  {
+    return "NoModuleException: Requested action: " + sAction + "; Message: " + aMsg + "; Options: " + aOptions;
   }
 }

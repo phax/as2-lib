@@ -30,53 +30,16 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.cert;
+package com.helger.as2lib.processor.module;
 
-import java.security.cert.X509Certificate;
-
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.Partnership;
 
-public class CertificateNotFoundException extends AS2Exception
+public class AS2ForcedStopException extends AS2Exception
 {
-  private final ECertificatePartnershipType m_ePartnershipType;
-  private final String m_sAlias;
-
-  public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
-                                       @Nonnull final Partnership aPartnership)
+  public AS2ForcedStopException (@Nullable final Throwable aSource)
   {
-    super ("Type: " + ePartnershipType + ", no alias found for partnership " + aPartnership);
-    m_ePartnershipType = ePartnershipType;
-    m_sAlias = null;
-  }
-
-  public CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
-                                       @Nullable final String sAlias)
-  {
-    super ("Type: " + ePartnershipType + ", Alias: " + sAlias);
-    m_ePartnershipType = ePartnershipType;
-    m_sAlias = sAlias;
-  }
-
-  public CertificateNotFoundException (@Nullable final X509Certificate aCert)
-  {
-    super ("Certificate not in store: " + aCert);
-    m_ePartnershipType = null;
-    m_sAlias = null;
-  }
-
-  @Nullable
-  public ECertificatePartnershipType getPartnershipType ()
-  {
-    return m_ePartnershipType;
-  }
-
-  @Nullable
-  public String getAlias ()
-  {
-    return m_sAlias;
+    super (aSource);
   }
 }

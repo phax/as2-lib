@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.params.InvalidParameterException;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2DateHelper;
@@ -148,11 +148,11 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
    * time when the document is to be re-send.
    *
    * @return The filename and never <code>null</code>.
-   * @throws InvalidParameterException
+   * @throws AS2InvalidParameterException
    *         Only theoretically
    */
   @Nonnull
-  protected String getFilename () throws InvalidParameterException
+  protected String getFilename () throws AS2InvalidParameterException
   {
     final long nResendDelayMS = getResendDelayMS ();
     return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT,
@@ -228,19 +228,19 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
 
   /**
    * @return A list with all files that are ready to be resend.
-   * @throws InvalidParameterException
+   * @throws AS2InvalidParameterException
    *         In case the directory listing fails
    */
   @Nonnull
   @ReturnsMutableCopy
-  protected ICommonsList <File> scanDirectory () throws InvalidParameterException
+  protected ICommonsList <File> scanDirectory () throws AS2InvalidParameterException
   {
     final File aResendDir = AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
 
     final File [] aFiles = aResendDir.listFiles ();
     if (aFiles == null)
     {
-      throw new InvalidParameterException ("Error getting list of files in directory",
+      throw new AS2InvalidParameterException ("Error getting list of files in directory",
                                            this,
                                            ATTR_RESEND_DIRECTORY,
                                            aResendDir.getAbsolutePath ());
