@@ -35,12 +35,13 @@ package com.helger.as2lib.util;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.CAS2Info;
+import com.helger.as2lib.CAS2Version;
 
 @Immutable
 public final class CAS2Header
 {
   public static final String DEFAULT_CONNECTION = "close, TE";
-  public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender-" + CAS2Info.VERSION;
+  public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender-" + CAS2Version.BUILD_VERSION;
   public static final String DEFAULT_MIME_VERSION = "1.0";
   /**
    * 1.0: default AS2 version<br>

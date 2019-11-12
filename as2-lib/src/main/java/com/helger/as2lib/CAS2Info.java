@@ -32,16 +32,7 @@
  */
 package com.helger.as2lib;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import javax.annotation.concurrent.Immutable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.lang.NonBlockingProperties;
 
 /**
  * Global information constants.
@@ -54,35 +45,15 @@ public final class CAS2Info
   /** The name of this AS2 client. May not contain blanks. */
   public static final String NAME = "as2-lib";
 
-  /** The version of this AS2 client. May not contain blanks. */
-  public static final String VERSION;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger (CAS2Info.class);
-
-  static
-  {
-    String sProjectVersion = "undefined";
-    try
-    {
-      final NonBlockingProperties p = new NonBlockingProperties ();
-      final InputStream aIS = ClassPathResource.getInputStream ("as2-lib-version.properties");
-      if (aIS != null)
-      {
-        p.load (aIS);
-        sProjectVersion = p.getProperty ("version");
-      }
-    }
-    catch (final IOException ex)
-    {
-      // Project version stays "undefined"
-    }
-    if (sProjectVersion == null)
-      LOGGER.warn ("Failed to load version number");
-    VERSION = sProjectVersion;
-  }
-
-  /** Combination of {@link #NAME} and {@link #VERSION} separated by a blank. */
-  public static final String NAME_VERSION = NAME + " " + VERSION;
+  /**
+   * The version of this AS2 client. May not contain blanks.
+   *
+   * @deprecated Use {@link CAS2Version#BUILD_VERSION} instead
+   */
+  @Deprecated
+  public static final String VERSION = CAS2Version.BUILD_VERSION;
+  /** Combination of {@link #NAME} and build version separated by a blank. */
+  public static final String NAME_VERSION = NAME + " " + CAS2Version.BUILD_VERSION;
 
   private CAS2Info ()
   {}
