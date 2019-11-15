@@ -374,7 +374,7 @@ public final class AS2Helper
   }
 
   public static void parseMDN (@Nonnull final IMessage aMsg,
-                               @Nonnull final X509Certificate aReceiverCert,
+                               @Nullable final X509Certificate aReceiverCert,
                                final boolean bUseCertificateInBodyPart,
                                @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer) throws Exception
   {
