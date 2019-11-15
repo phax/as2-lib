@@ -654,16 +654,22 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     m_aRWLock.writeLock ().lock ();
     try
     {
-      m_aKeyStore.load (aIS, aPassword);
-    }
-    catch (final IOException | GeneralSecurityException ex)
-    {
-      debugLog ( () -> "load -> " + _debug (ex));
-      throw WrappedAS2Exception.wrap (ex);
+      try
+      {
+        m_aKeyStore.load (aIS, aPassword);
+      }
+      catch (final IOException | GeneralSecurityException ex)
+      {
+        debugLog ( () -> "load -> " + _debug (ex));
+        throw WrappedAS2Exception.wrap (ex);
+      }
+      finally
+      {
+        StreamHelper.close (aIS);
+      }
     }
     finally
     {
-      StreamHelper.close (aIS);
       m_aRWLock.writeLock ().unlock ();
     }
 
@@ -679,16 +685,22 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     m_aRWLock.writeLock ().lock ();
     try
     {
-      m_aKeyStore.store (aOS, aPassword);
-    }
-    catch (final IOException | GeneralSecurityException ex)
-    {
-      debugLog ( () -> "save -> " + _debug (ex));
-      throw WrappedAS2Exception.wrap (ex);
+      try
+      {
+        m_aKeyStore.store (aOS, aPassword);
+      }
+      catch (final IOException | GeneralSecurityException ex)
+      {
+        debugLog ( () -> "save -> " + _debug (ex));
+        throw WrappedAS2Exception.wrap (ex);
+      }
+      finally
+      {
+        StreamHelper.close (aOS);
+      }
     }
     finally
     {
-      StreamHelper.close (aOS);
       m_aRWLock.writeLock ().unlock ();
     }
 
