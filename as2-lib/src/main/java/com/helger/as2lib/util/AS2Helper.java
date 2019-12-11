@@ -438,16 +438,22 @@ public final class AS2Helper
         else
           if (aReportPart.isMimeType ("message/disposition-notification"))
           {
-            final InternetHeaders aDisposition = new InternetHeaders (aReportPart.getInputStream ());
-            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDisposition.getHeader (HEADER_REPORTING_UA, ", "));
+            final InternetHeaders aDispositionHeaders = new InternetHeaders (aReportPart.getInputStream ());
             aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDisposition.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+                .putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDispositionHeaders.getHeader (HEADER_REPORTING_UA, ", "));
             aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDisposition.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+                .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
+                        aDispositionHeaders.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
             aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDisposition.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
-            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getHeader (HEADER_DISPOSITION, ", "));
-            aMdn.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aDisposition.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
+                .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
+                        aDispositionHeaders.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+            aMdn.attrs ()
+                .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
+                        aDispositionHeaders.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+            aMdn.attrs ()
+                .putIn (AS2MessageMDN.MDNA_DISPOSITION, aDispositionHeaders.getHeader (HEADER_DISPOSITION, ", "));
+            aMdn.attrs ()
+                .putIn (AS2MessageMDN.MDNA_MIC, aDispositionHeaders.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
           }
           else
             LOGGER.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());
