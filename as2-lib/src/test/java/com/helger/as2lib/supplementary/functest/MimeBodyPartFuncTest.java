@@ -41,13 +41,13 @@ import java.nio.charset.StandardCharsets;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeUtility;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.AS2HttpHelper;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.base64.Base64;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
@@ -143,7 +143,7 @@ public final class MimeBodyPartFuncTest
     final String sCTE = aHeaders.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING)[0];
 
     if (StringHelper.hasText (sCTE))
-      aIS = MimeUtility.decode (aIS, sCTE);
+      aIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aIS, sCTE);
 
     // Read the payload
     final byte [] aData = StreamHelper.getAllBytes (aIS);

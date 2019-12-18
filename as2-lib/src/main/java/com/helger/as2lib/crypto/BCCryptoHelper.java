@@ -60,7 +60,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -100,15 +99,11 @@ import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.base64.Base64;
-import com.helger.commons.base64.Base64OutputStream;
 import com.helger.commons.collection.CollectionHelper;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -119,7 +114,6 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
-import com.sun.mail.util.QPEncoderStream;
 
 /**
  * Implementation of {@link ICryptoHelper} based on BouncyCastle.
@@ -131,7 +125,6 @@ public final class BCCryptoHelper implements ICryptoHelper
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File s_aDumpDecryptedDirectory;
   private static final String DEFAULT_SECURITY_PROVIDER_NAME;
-  private static final byte [] EOF_BYTES = _getAllAsciiBytes (CHttp.EOL);
 
   static
   {
@@ -300,51 +293,6 @@ public final class BCCryptoHelper implements ICryptoHelper
   }
 
   @Nonnull
-  @ReturnsMutableCopy
-  private static byte [] _getAllAsciiBytes (@Nonnull final String sString)
-  {
-    final char [] aChars = sString.toCharArray ();
-    final int nLength = aChars.length;
-    final byte [] ret = new byte [nLength];
-    for (int i = 0; i < nLength; i++)
-      ret[i] = (byte) aChars[i];
-    return ret;
-  }
-
-  @Nonnull
-  private static OutputStream _getEncodingOS (@Nonnull final OutputStream aOS,
-                                              @Nullable final String sEncoding) throws MessagingException
-  {
-    if (false)
-    {
-      // Original code
-      // The problem with this Base64Encoder, is the trailing "\r\n"
-      return MimeUtility.encode (aOS, sEncoding);
-    }
-
-    if (sEncoding == null)
-      return aOS;
-    if (sEncoding.equalsIgnoreCase ("base64"))
-    {
-      // Use this Base64 OS - uses "\n" as default line end
-      final Base64OutputStream ret = new Base64OutputStream (aOS, Base64.ENCODE | Base64.DO_BREAK_LINES);
-      // Important, use "\r\n" instead of "\n"
-      ret.setNewLineBytes (EOF_BYTES);
-      return ret;
-    }
-
-    if (sEncoding.equalsIgnoreCase ("quoted-printable"))
-      return new QPEncoderStream (aOS);
-
-    if (sEncoding.equalsIgnoreCase ("binary") ||
-        sEncoding.equalsIgnoreCase ("7bit") ||
-        sEncoding.equalsIgnoreCase ("8bit"))
-      return aOS;
-
-    throw new MessagingException ("Unknown encoding '" + sEncoding + "'");
-  }
-
-  @Nonnull
   public MIC calculateMIC (@Nonnull final MimeBodyPart aPart,
                            @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
                            final boolean bIncludeHeaders) throws GeneralSecurityException,
@@ -377,15 +325,15 @@ public final class BCCryptoHelper implements ICryptoHelper
       {
         final String sHeaderLine = aHeaderLines.nextElement ();
 
-        aMessageDigest.update (_getAllAsciiBytes (sHeaderLine));
-        aMessageDigest.update (EOF_BYTES);
+        aMessageDigest.update (AS2IOHelper.getAllAsciiBytes (sHeaderLine));
+        aMessageDigest.update (AS2IOHelper.EOL_BYTES);
 
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Using header line '" + sHeaderLine + "' for MIC calculation");
       }
 
       // The CRLF separator between header and content
-      aMessageDigest.update (EOF_BYTES);
+      aMessageDigest.update (AS2IOHelper.EOL_BYTES);
     }
 
     final String sMICEncoding = aPart.getEncoding ();
@@ -394,7 +342,7 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = _getEncodingOS (aDigestOS, sMICEncoding))
+        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS, sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }

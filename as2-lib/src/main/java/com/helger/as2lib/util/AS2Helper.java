@@ -32,6 +32,7 @@
  */
 package com.helger.as2lib.util;
 
+import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
@@ -161,8 +162,8 @@ public final class AS2Helper
       aReportValues.setHeader (HEADER_DISPOSITION, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION));
       aReportValues.setHeader (HEADER_RECEIVED_CONTENT_MIC, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_MIC));
 
-      final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
       final StringBuilder aReportData = new StringBuilder ();
+      final Enumeration <?> aReportEn = aReportValues.getAllHeaderLines ();
       while (aReportEn.hasMoreElements ())
         aReportData.append ((String) aReportEn.nextElement ()).append (CHttp.EOL);
       aReportData.append (CHttp.EOL);
@@ -433,27 +434,38 @@ public final class AS2Helper
         if (aReportPart.isMimeType (CMimeType.TEXT_PLAIN.getAsString ()))
         {
           // XXX is this "toString" really a correct solution?
-          aMdn.setText (aReportPart.getContent ().toString ());
+          final Object aPartContent = aReportPart.getContent ();
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug (aPartContent == null ? "Report part content is null"
+                                               : "Report part content is a " + aPartContent.getClass ().getName ());
+          aMdn.setText (aPartContent.toString ());
         }
         else
           if (aReportPart.isMimeType ("message/disposition-notification"))
           {
-            final InternetHeaders aDispositionHeaders = new InternetHeaders (aReportPart.getInputStream ());
-            aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDispositionHeaders.getHeader (HEADER_REPORTING_UA, ", "));
-            aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
-                        aDispositionHeaders.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-            aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
-                        aDispositionHeaders.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-            aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
-                        aDispositionHeaders.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
-            aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_DISPOSITION, aDispositionHeaders.getHeader (HEADER_DISPOSITION, ", "));
-            aMdn.attrs ()
-                .putIn (AS2MessageMDN.MDNA_MIC, aDispositionHeaders.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
+            // https://github.com/phax/as2-lib/issues/100
+            final String sCTE = aReportPart.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, null);
+            try (
+                final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
+                                                                                                    sCTE))
+            {
+              final InternetHeaders aDispositionHeaders = new InternetHeaders (aRealIS);
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDispositionHeaders.getHeader (HEADER_REPORTING_UA, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
+                          aDispositionHeaders.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
+                          aDispositionHeaders.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
+                          aDispositionHeaders.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_DISPOSITION, aDispositionHeaders.getHeader (HEADER_DISPOSITION, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_MIC, aDispositionHeaders.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
+            }
           }
           else
             LOGGER.info ("Got unsupported MDN body part MIME type: " + aReportPart.getContentType ());

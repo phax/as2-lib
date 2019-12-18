@@ -241,7 +241,6 @@ public class MainTestClient
     final StringBuilder aSB2 = new StringBuilder ("Mime headers:\n");
     while (list2.hasMoreElements ())
     {
-
       final Header aHeader = list2.nextElement ();
       aSB2.append (aHeader.getName ()).append (" = ").append (aHeader.getValue ()).append ('\n');
     }
@@ -259,16 +258,18 @@ public class MainTestClient
     {
       AS2InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
       AS2InvalidParameterException.checkValue (aMsg,
-                                            "Attribute: " + CPartnershipIDs.PA_AS2_URL,
-                                            aPartnership.getAS2URL ());
+                                               "Attribute: " + CPartnershipIDs.PA_AS2_URL,
+                                               aPartnership.getAS2URL ());
       AS2InvalidParameterException.checkValue (aMsg,
-                                            "Receiver: " + CPartnershipIDs.PID_AS2,
-                                            aPartnership.getReceiverAS2ID ());
-      AS2InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
+                                               "Receiver: " + CPartnershipIDs.PID_AS2,
+                                               aPartnership.getReceiverAS2ID ());
+      AS2InvalidParameterException.checkValue (aMsg,
+                                               "Sender: " + CPartnershipIDs.PID_AS2,
+                                               aPartnership.getSenderAS2ID ());
       AS2InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
       AS2InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + CPartnershipIDs.PID_EMAIL,
-                                            aPartnership.getSenderEmail ());
+                                               "Sender: " + CPartnershipIDs.PID_EMAIL,
+                                               aPartnership.getSenderEmail ());
       AS2InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
     catch (final AS2InvalidParameterException ex)

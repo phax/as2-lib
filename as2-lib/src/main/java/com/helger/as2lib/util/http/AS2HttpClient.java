@@ -47,7 +47,6 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
@@ -65,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -184,7 +184,9 @@ public class AS2HttpClient
       {
         // Use MIME encoding here
         try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-            final OutputStream aEncodedOS = eCTE != null ? MimeUtility.encode (aDebugOS, eCTE.getID ()) : aDebugOS)
+            final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                               eCTE.getID ())
+                                                         : aDebugOS)
         {
           super.writeTo (aEncodedOS);
         }

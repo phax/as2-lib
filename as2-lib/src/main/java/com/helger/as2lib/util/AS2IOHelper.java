@@ -34,27 +34,41 @@ package com.helger.as2lib.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeUtility;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.receiver.AS2InvalidMessageException;
 import com.helger.commons.CGlobal;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.base64.Base64;
+import com.helger.commons.base64.Base64InputStream;
+import com.helger.commons.base64.Base64OutputStream;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.FileOperationManager;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.LoggingFileOperationCallback;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
+import com.sun.mail.util.QPDecoderStream;
+import com.sun.mail.util.QPEncoderStream;
 
 @Immutable
 public final class AS2IOHelper
 {
+  public static final byte [] EOL_BYTES = getAllAsciiBytes (CHttp.EOL);
+
   // Use a new instance to add the logging
   private static final FileOperationManager FOM = new FileOperationManager ();
+
   static
   {
     FOM.callbacks ().add (new LoggingFileOperationCallback ());
@@ -158,8 +172,7 @@ public final class AS2IOHelper
    * @throws AS2Exception
    *         In case moving failed
    */
-  public static void handleError (@Nonnull final File aFile,
-                                  @Nonnull final String sErrorDirectory) throws AS2Exception
+  public static void handleError (@Nonnull final File aFile, @Nonnull final String sErrorDirectory) throws AS2Exception
   {
     File aDestFile = null;
 
@@ -174,18 +187,18 @@ public final class AS2IOHelper
     catch (final IOException ex)
     {
       final AS2InvalidMessageException im = new AS2InvalidMessageException ("Failed to move " +
-                                                                      aFile.getAbsolutePath () +
-                                                                      " to error directory " +
-                                                                      aDestFile.getAbsolutePath ());
+                                                                            aFile.getAbsolutePath () +
+                                                                            " to error directory " +
+                                                                            aDestFile.getAbsolutePath ());
       im.initCause (ex);
       throw im;
     }
 
     // make sure an error of this event is logged
     final AS2InvalidMessageException ex = new AS2InvalidMessageException ("Moved " +
-                                                                    aFile.getAbsolutePath () +
-                                                                    " to " +
-                                                                    aDestFile.getAbsolutePath ());
+                                                                          aFile.getAbsolutePath () +
+                                                                          " to " +
+                                                                          aDestFile.getAbsolutePath ());
     ex.terminate ();
   }
 
@@ -255,5 +268,90 @@ public final class AS2IOHelper
     }
     // Cut the last separator
     return aSB.deleteCharAt (aSB.length () - 1).toString ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public static byte [] getAllAsciiBytes (@Nonnull final String sString)
+  {
+    final char [] aChars = sString.toCharArray ();
+    final int nLength = aChars.length;
+    final byte [] ret = new byte [nLength];
+    for (int i = 0; i < nLength; i++)
+      ret[i] = (byte) aChars[i];
+    return ret;
+  }
+
+  @Nonnull
+  public static OutputStream getContentTransferEncodingAwareOutputStream (@Nonnull final OutputStream aOS,
+                                                                          @Nullable final String sEncoding) throws MessagingException
+  {
+    if (false)
+    {
+      // Original code
+      // The problem with this Base64Encoder, is the trailing "\r\n"
+      return MimeUtility.encode (aOS, sEncoding);
+    }
+
+    if (sEncoding == null)
+    {
+      // Return as-is
+      return aOS;
+    }
+
+    if (sEncoding.equalsIgnoreCase ("base64"))
+    {
+      // Use this Base64 OS
+      final Base64OutputStream ret = new Base64OutputStream (aOS, Base64.ENCODE | Base64.DO_BREAK_LINES);
+      // Important, use "\r\n" instead of "\n"
+      ret.setNewLineBytes (EOL_BYTES);
+      return ret;
+    }
+
+    if (sEncoding.equalsIgnoreCase ("quoted-printable"))
+      return new QPEncoderStream (aOS);
+
+    if (sEncoding.equalsIgnoreCase ("binary") ||
+        sEncoding.equalsIgnoreCase ("7bit") ||
+        sEncoding.equalsIgnoreCase ("8bit"))
+    {
+      // Return as-is
+      return aOS;
+    }
+
+    throw new MessagingException ("Unknown Content-Transfer-Encoding '" + sEncoding + "'");
+  }
+
+  @Nonnull
+  public static InputStream getContentTransferEncodingAwareInputStream (@Nonnull final InputStream aIS,
+                                                                        @Nullable final String sEncoding) throws MessagingException
+  {
+    if (false)
+    {
+      // Original code
+      return MimeUtility.decode (aIS, sEncoding);
+    }
+
+    if (sEncoding == null)
+    {
+      // Return as-is
+      return aIS;
+    }
+
+    if (sEncoding.equalsIgnoreCase ("base64"))
+      return new Base64InputStream (aIS);
+
+    if (sEncoding.equalsIgnoreCase ("quoted-printable"))
+      return new QPDecoderStream (aIS);
+
+    if (sEncoding.equalsIgnoreCase ("binary") ||
+        sEncoding.equalsIgnoreCase ("7bit") ||
+        sEncoding.equalsIgnoreCase ("8bit"))
+    {
+      // Return as-is
+      return aIS;
+    }
+
+    throw new MessagingException ("Unknown Content-Transfer-Encoding '" + sEncoding + "'");
   }
 }
