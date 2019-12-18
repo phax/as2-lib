@@ -35,6 +35,7 @@ package com.helger.as2lib.util.javamail;
 import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataContentHandler;
@@ -48,6 +49,9 @@ import javax.mail.internet.MimeMultipart;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.mime.CMimeType;
+import com.helger.commons.mime.IMimeType;
+import com.helger.commons.mime.MimeTypeParser;
 
 public class DispositionDataContentHandler implements DataContentHandler
 {
@@ -86,6 +90,27 @@ public class DispositionDataContentHandler implements DataContentHandler
     return ArrayHelper.getCopy (ADFS);
   }
 
+  @Nullable
+  private static Charset _getCharset (@Nullable final String sMimeType)
+  {
+    try
+    {
+      final IMimeType aMimeType = MimeTypeParser.parseMimeType (sMimeType);
+      if (aMimeType != null)
+      {
+        final String sCharset = aMimeType.getParameterValueWithName (CMimeType.PARAMETER_NAME_CHARSET);
+        if (sCharset != null)
+          return Charset.forName (sCharset);
+      }
+      // fall through
+    }
+    catch (final Exception ex)
+    {
+      // Fall through
+    }
+    return null;
+  }
+
   public void writeTo (final Object obj, final String sMimeType, @Nonnull final OutputStream aOS) throws IOException
   {
     if (obj instanceof MimeBodyPart)
@@ -119,8 +144,11 @@ public class DispositionDataContentHandler implements DataContentHandler
         else
           if (obj instanceof String)
           {
-            // TODO uses system charset
-            aOS.write (((String) obj).getBytes ());
+            final Charset aCharset = _getCharset (sMimeType);
+            if (aCharset != null)
+              aOS.write (((String) obj).getBytes (aCharset));
+            else
+              aOS.write (((String) obj).getBytes ());
           }
           else
           {
