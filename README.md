@@ -18,4 +18,5 @@ and a server part (the "as2-server" submodule) which contains a stand alone (soc
 ---
 
 My personal [Coding Styleguide](https://github.com/phax/meta/blob/master/CodingStyleguide.md) |
-On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a>
+On Twitter: <a href="https://twitter.com/philiphelger">@philiphelger</a> |
+Kindly supported by [YourKit Java Profiler](https://www.yourkit.com)
