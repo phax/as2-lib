@@ -73,10 +73,7 @@ public class AS2Session implements IAS2Session
   private boolean m_bCryptoVerifyUseCertificateInBodyPart = DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART;
   private Proxy m_aHttpProxy;
 
-  /**
-   * Constructor
-   */
-  public AS2Session ()
+  public static void makeAS2CommandMapChanges ()
   {
     /*
      * Adds a group of content handlers to the Mailcap <code>CommandMap</code>.
@@ -90,6 +87,14 @@ public class AS2Session implements IAS2Session
       CommandMap.setDefaultCommandMap (aCommandMap);
       return null;
     });
+  }
+
+  /**
+   * Constructor
+   */
+  public AS2Session ()
+  {
+    makeAS2CommandMapChanges ();
   }
 
   public final void addComponent (@Nonnull @Nonempty final String sComponentID,

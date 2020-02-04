@@ -75,6 +75,7 @@ import com.helger.commons.exception.InitializationException;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.StringHelper;
 import com.helger.security.keystore.EKeyStoreType;
+import com.helger.security.keystore.IKeyStoreType;
 
 /**
  * An implementation of a file-based certificate factory using a custom key
@@ -121,6 +122,74 @@ public class CertificateFactory extends AbstractDynamicComponent implements
       LOGGER.info (aSupplier.get ());
   }
 
+  @Nullable
+  public final String getKeyStoreType ()
+  {
+    debugLog ( () -> "getKeyStoreType ()");
+    final String ret = m_aRWLock.readLocked ( () -> attrs ().getAsString (ATTR_TYPE));
+    debugLog ( () -> "getKeyStoreType -> " + ret);
+    return ret;
+  }
+
+  public final void setKeyStoreType (@Nullable final IKeyStoreType aKeyStoreType)
+  {
+    setKeyStoreType (aKeyStoreType == null ? null : aKeyStoreType.getID ());
+  }
+
+  public final void setKeyStoreType (@Nullable final String sKeyStoreType)
+  {
+    debugLog ( () -> "setKeyStoreType (" + sKeyStoreType + ")");
+    if (sKeyStoreType == null)
+      m_aRWLock.writeLocked ( () -> attrs ().remove (ATTR_TYPE));
+    else
+      m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_TYPE, sKeyStoreType));
+  }
+
+  public void setFilename (@Nullable final String sFilename)
+  {
+    debugLog ( () -> "setFilename (" + sFilename + ")");
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
+  }
+
+  @Nullable
+  public String getFilename ()
+  {
+    debugLog ( () -> "getFilename ()");
+    final String ret = m_aRWLock.readLocked ( () -> attrs ().getAsString (ATTR_FILENAME));
+    debugLog ( () -> "getFilename -> " + ret);
+    return ret;
+  }
+
+  public void setPassword (@Nullable final String sPassword)
+  {
+    debugLog ( () -> "setPassword (***)");
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_PASSWORD, sPassword));
+  }
+
+  @Nullable
+  public char [] getPassword ()
+  {
+    debugLog ( () -> "getPassword ()");
+    final char [] ret = m_aRWLock.readLocked ( () -> attrs ().getAsCharArray (ATTR_PASSWORD));
+    debugLog ( () -> "getPassword -> ***");
+    return ret;
+  }
+
+  public void setSaveChangesToFile (final boolean bSaveChangesToFile)
+  {
+    debugLog ( () -> "setSaveChangesToFile (" + bSaveChangesToFile + ")");
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
+  }
+
+  public boolean isSaveChangesToFile ()
+  {
+    debugLog ( () -> "isSaveChangesToFile ()");
+    final boolean ret = m_aRWLock.readLocked ( () -> attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE,
+                                                                            DEFAULT_SAVE_CHANGES_TO_FILE));
+    debugLog ( () -> "isSaveChangesToFile -> " + ret);
+    return ret;
+  }
+
   @Nonnull
   @Nonempty
   private static String _debug (@Nullable final X509Certificate aCert)
@@ -157,7 +226,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
     try
     {
-      final String sKeyStoreType = attrs ().getAsString (ATTR_TYPE);
+      final String sKeyStoreType = getKeyStoreType ();
       final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType,
                                                                                            DEFAULT_KEY_STORE_TYPE);
 
@@ -325,51 +394,6 @@ public class CertificateFactory extends AbstractDynamicComponent implements
       m_aRWLock.readLock ().unlock ();
     }
     debugLog ( () -> "getCertificates -> " + new CommonsLinkedHashMap <> (ret, x -> x, x -> _debug (x)).toString ());
-    return ret;
-  }
-
-  public void setFilename (@Nullable final String sFilename)
-  {
-    debugLog ( () -> "setFilename (" + sFilename + ")");
-    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
-  }
-
-  @Nullable
-  public String getFilename ()
-  {
-    debugLog ( () -> "getFilename ()");
-    final String ret = m_aRWLock.readLocked ( () -> attrs ().getAsString (ATTR_FILENAME));
-    debugLog ( () -> "getFilename -> " + ret);
-    return ret;
-  }
-
-  public void setPassword (@Nullable final String sPassword)
-  {
-    debugLog ( () -> "setPassword (***)");
-    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_PASSWORD, sPassword));
-  }
-
-  @Nullable
-  public char [] getPassword ()
-  {
-    debugLog ( () -> "getPassword ()");
-    final char [] ret = m_aRWLock.readLocked ( () -> attrs ().getAsCharArray (ATTR_PASSWORD));
-    debugLog ( () -> "getPassword -> ***");
-    return ret;
-  }
-
-  public void setSaveChangesToFile (final boolean bSaveChangesToFile)
-  {
-    debugLog ( () -> "setSaveChangesToFile (" + bSaveChangesToFile + ")");
-    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
-  }
-
-  public boolean isSaveChangesToFile ()
-  {
-    debugLog ( () -> "isSaveChangesToFile ()");
-    final boolean ret = m_aRWLock.readLocked ( () -> attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE,
-                                                                            DEFAULT_SAVE_CHANGES_TO_FILE));
-    debugLog ( () -> "isSaveChangesToFile -> " + ret);
     return ret;
   }
 
