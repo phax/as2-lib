@@ -37,6 +37,7 @@ import java.net.Proxy;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
@@ -167,6 +168,44 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     m_aHttpIncomingDumper = aHttpIncomingDumper;
   }
 
+  @Nonnegative
+  public final int getConnectionTimeoutMilliseconds ()
+  {
+    return attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS);
+  }
+
+  public final void setConnectionTimeoutMilliseconds (final int nMS)
+  {
+    if (nMS < 0)
+      attrs ().remove (ATTR_CONNECT_TIMEOUT);
+    else
+      attrs ().putIn (ATTR_CONNECT_TIMEOUT, nMS);
+  }
+
+  @Nonnegative
+  public final int getReadTimeoutMilliseconds ()
+  {
+    return attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS);
+  }
+
+  public final void setReadTimeoutMilliseconds (final int nMS)
+  {
+    if (nMS < 0)
+      attrs ().remove (ATTR_READ_TIMEOUT);
+    else
+      attrs ().putIn (ATTR_READ_TIMEOUT, nMS);
+  }
+
+  public final boolean isQuoteHeaderValues ()
+  {
+    return attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
+  }
+
+  public final void setQuoteHeaderValues (final boolean bQuoteHeaderValues)
+  {
+    attrs ().putIn (ATTR_QUOTE_HEADER_VALUES, bQuoteHeaderValues);
+  }
+
   /**
    * Create the {@link SSLContext} to be used for https connections. By default
    * the SSL context will trust all hosts and present no keys. Override this
@@ -251,8 +290,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       }
       aHV = createHostnameVerifier ();
     }
-    final int nConnectTimeoutMS = attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS);
-    final int nReadTimeoutMS = attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS);
+    final int nConnectTimeoutMS = getConnectionTimeoutMilliseconds ();
+    final int nReadTimeoutMS = getReadTimeoutMilliseconds ();
     return new AS2HttpClient (sUrl, nConnectTimeoutMS, nReadTimeoutMS, eRequestMethod, aProxy, aSSLCtx, aHV);
   }
 }

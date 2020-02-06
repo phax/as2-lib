@@ -81,7 +81,10 @@ public class MessageFileModule extends AbstractStorageModule
 
   public final void setHeaderFilename (@Nullable final String sHeaderFilename)
   {
-    attrs ().putIn (ATTR_HEADER, sHeaderFilename);
+    if (sHeaderFilename == null)
+      attrs ().remove (ATTR_HEADER);
+    else
+      attrs ().putIn (ATTR_HEADER, sHeaderFilename);
   }
 
   public void handle (@Nonnull final String sAction,

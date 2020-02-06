@@ -833,7 +833,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
-      final boolean bQuoteHeaderValues = attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
+      final boolean bQuoteHeaderValues = isQuoteHeaderValues ();
       updateHttpHeaders (new AS2HttpHeaderSetter (aConn, aOutgoingDumper, bQuoteHeaderValues), aMsg);
 
       if (aOutgoingDumper != null)

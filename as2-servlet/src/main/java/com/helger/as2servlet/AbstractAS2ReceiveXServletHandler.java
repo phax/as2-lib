@@ -34,7 +34,6 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
-import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.AS2HttpHelper;
@@ -252,9 +251,7 @@ public abstract class AbstractAS2ReceiveXServletHandler implements IXServletHand
     aMsg.headers ().setAllHeaders (aRequestScope.headers ());
 
     // Build the handler that performs the response handling
-    final boolean bQuoteHeaderValues = getReceiverModule ().attrs ()
-                                                           .getAsBoolean (AbstractActiveNetModule.ATTR_QUOTE_HEADER_VALUES,
-                                                                          AbstractActiveNetModule.DEFAULT_QUOTE_HEADER_VALUES);
+    final boolean bQuoteHeaderValues = getReceiverModule ().isQuoteHeaderValues ();
     final AS2OutputStreamCreatorHttpServletResponse aResponseHandler = new AS2OutputStreamCreatorHttpServletResponse (aHttpResponse,
                                                                                                                       bQuoteHeaderValues);
 

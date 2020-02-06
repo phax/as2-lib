@@ -57,7 +57,6 @@ import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.resender.ImmediateResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
-import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.commons.ValueEnforcer;
@@ -266,8 +265,7 @@ public class AS2Client
           LOGGER.info ("Loading AS2 client keystore from byte array. No changes will be saved.");
 
         aCertFactory.setSaveChangesToFile (false);
-        try (
-            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
         {
           aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
         }
@@ -422,9 +420,9 @@ public class AS2Client
         final AS2SenderModule aSender = m_aAS2SenderModuleFactory.get ();
         aSender.initDynamicComponent (aSession, null);
         // Set connect and read timeout
-        aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_CONNECT_TIMEOUT, aSettings.getConnectTimeoutMS ());
-        aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_READ_TIMEOUT, aSettings.getReadTimeoutMS ());
-        aSender.attrs ().putIn (AbstractHttpSenderModule.ATTR_QUOTE_HEADER_VALUES, aSettings.isQuoteHeaderValues ());
+        aSender.setConnectionTimeoutMilliseconds (aSettings.getConnectTimeoutMS ());
+        aSender.setReadTimeoutMilliseconds (aSettings.getReadTimeoutMS ());
+        aSender.setQuoteHeaderValues (aSettings.isQuoteHeaderValues ());
         aSender.setHttpOutgoingDumperFactory (aSettings.getHttpOutgoingDumperFactory ());
         aSender.setHttpIncomingDumper (aSettings.getHttpIncomingDumper ());
         if (aSettings.getMICMatchingHandler () != null)

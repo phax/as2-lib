@@ -64,8 +64,8 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
-import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.AS2NoModuleException;
+import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -256,8 +256,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         LOGGER.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
 
       throw new AS2DispositionException (DispositionType.createError ("decryption-failed"),
-                                      AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
-                                      ex);
+                                         AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
+                                         ex);
     }
   }
 
@@ -332,8 +332,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         LOGGER.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
 
       throw new AS2DispositionException (DispositionType.createError ("integrity-check-failed"),
-                                      AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED,
-                                      ex);
+                                         AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED,
+                                         ex);
     }
   }
 
@@ -388,8 +388,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         LOGGER.error ("Error decompressing received message", ex);
 
       throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                      AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
-                                      ex);
+                                         AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
+                                         ex);
     }
   }
 
@@ -535,8 +535,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final Exception ex)
       {
         throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        AbstractActiveNetModule.DISP_PARSING_MIME_FAILED,
-                                        ex);
+                                           AbstractActiveNetModule.DISP_PARSING_MIME_FAILED,
+                                           ex);
       }
 
       // Extract AS2 ID's from header, find the message's partnership and
@@ -555,8 +555,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final AS2Exception ex)
       {
         throw new AS2DispositionException (DispositionType.createError ("authentication-failed"),
-                                        AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND,
-                                        ex);
+                                           AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND,
+                                           ex);
       }
 
       // Per RFC5402 compression is always before encryption but can be before
@@ -585,8 +585,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         if (bIsDecompressed)
         {
           throw new AS2DispositionException (DispositionType.createError ("decompression-failed"),
-                                          AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
-                                          new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
+                                             AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
+                                             new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
         }
 
         if (LOGGER.isTraceEnabled ())
@@ -629,10 +629,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // Issue 90 - use CRLF as separator
         throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
-                                                                              CHttp.EOL,
-                                                                              _getDispositionText (ex)),
-                                        ex);
+                                           StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                                 CHttp.EOL,
+                                                                                 _getDispositionText (ex)),
+                                           ex);
       }
 
       // Store the received message
@@ -648,10 +648,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // Issue 90 - use CRLF as separator
         throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
-                                                                              CHttp.EOL,
-                                                                              _getDispositionText (ex)),
-                                        ex);
+                                           StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
+                                                                                 CHttp.EOL,
+                                                                                 _getDispositionText (ex)),
+                                           ex);
       }
 
       // Validate the received message after storing
@@ -667,10 +667,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // Issue 90 - use CRLF as separator
         throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                        StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
-                                                                              CHttp.EOL,
-                                                                              _getDispositionText (ex)),
-                                        ex);
+                                           StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                                 CHttp.EOL,
+                                                                                 _getDispositionText (ex)),
+                                           ex);
       }
 
       try
@@ -738,9 +738,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       LOGGER.info ("Incoming connection " + sClientInfo);
 
     final AS2Message aMsg = createMessage (aSocket);
-    final boolean bQuoteHeaderValues = m_aReceiverModule.attrs ()
-                                                        .getAsBoolean (AbstractActiveNetModule.ATTR_QUOTE_HEADER_VALUES,
-                                                                       AbstractActiveNetModule.DEFAULT_QUOTE_HEADER_VALUES);
+    final boolean bQuoteHeaderValues = m_aReceiverModule.isQuoteHeaderValues ();
     final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket, bQuoteHeaderValues);
 
     // Time the transmission

@@ -76,6 +76,10 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   public static final String DEFAULT_ERROR_FORMAT = "$date.uuuuMMddhhmmss$";
   // Since 3.0.4
   public static final String ATTR_ERROR_STORE_BODY = "errorstorebody";
+  /** Attribute name for quoting header values (boolean) */
+  public static final String ATTR_QUOTE_HEADER_VALUES = "quoteheadervalues";
+  /** Default quote header values: false */
+  public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
 
   // Macros for responses
   public static final String MSG_SENDER = "$" + MessageParameters.KEY_SENDER + "." + CPartnershipIDs.PID_AS2 + "$";
@@ -126,23 +130,93 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractActiveNetModule.class);
 
-  /** Attribute name for quoting header values (boolean) */
-  public static final String ATTR_QUOTE_HEADER_VALUES = "quoteheadervalues";
-  /** Default quote header values: false */
-  public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
-
   private MainThread m_aMainThread;
 
   public AbstractActiveNetModule ()
   {}
+
+  @Nullable
+  public final String getAddress ()
+  {
+    return attrs ().getAsString (ATTR_ADDRESS);
+  }
+
+  public final void setAddress (@Nullable final String sAddress)
+  {
+    if (sAddress == null)
+      attrs ().remove (ATTR_ADDRESS);
+    else
+      attrs ().putIn (ATTR_ADDRESS, sAddress);
+  }
+
+  public final int getPort ()
+  {
+    return attrs ().getAsInt (ATTR_PORT, 0);
+  }
+
+  public final void setPort (final int nPort)
+  {
+    if (nPort < 0)
+      attrs ().remove (ATTR_PORT);
+    else
+      attrs ().putIn (ATTR_PORT, nPort);
+  }
+
+  @Nullable
+  public final String getErrorDirectory ()
+  {
+    return attrs ().getAsString (ATTR_ERROR_DIRECTORY);
+  }
+
+  public final void setErrorDirectory (@Nullable final String sErrorDirectory)
+  {
+    if (sErrorDirectory == null)
+      attrs ().remove (ATTR_ERROR_DIRECTORY);
+    else
+      attrs ().putIn (ATTR_ERROR_DIRECTORY, sErrorDirectory);
+  }
+
+  @Nonnull
+  public final String getErrorFormat ()
+  {
+    return attrs ().getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT);
+  }
+
+  public final void setErrorFormat (@Nullable final String sErrorFormat)
+  {
+    if (sErrorFormat == null)
+      attrs ().remove (ATTR_ERROR_FORMAT);
+    else
+      attrs ().putIn (ATTR_ERROR_FORMAT, sErrorFormat);
+  }
+
+  public final boolean isErrorStoreBody ()
+  {
+    return attrs ().getAsBoolean (ATTR_ERROR_STORE_BODY, false);
+  }
+
+  public final void setErrorStoreBody (final boolean bErrorStoreBody)
+  {
+    attrs ().putIn (ATTR_ERROR_STORE_BODY, bErrorStoreBody);
+  }
+
+  public final boolean isQuoteHeaderValues ()
+  {
+    return attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
+  }
+
+  public final void setQuoteHeaderValues (final boolean bQuoteHeaderValues)
+  {
+    attrs ().putIn (ATTR_QUOTE_HEADER_VALUES, bQuoteHeaderValues);
+  }
 
   @Override
   public void doStart () throws AS2Exception
   {
     try
     {
-      final String sAddress = attrs ().getAsString (ATTR_ADDRESS);
-      final int nPort = attrs ().getAsInt (ATTR_PORT, 0);
+      final String sAddress = getAddress ();
+      final int nPort = getPort ();
       m_aMainThread = new MainThread (this, sAddress, nPort);
       m_aMainThread.setUncaughtExceptionHandler (BasicThreadFactory.getDefaultUncaughtExceptionHandler ());
       m_aMainThread.start ();
@@ -169,10 +243,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   {
     super.initDynamicComponent (aSession, aOptions);
 
-    // Ensure port parameter is present
-    // Disabled in 4.4.0
-    if (false)
-      getAttributeAsStringRequired (ATTR_PORT);
+    // In versions < 4.4.0 the port parameter was mandatory
   }
 
   @Nonnull
@@ -197,14 +268,14 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                          .add ("msg", new MessageParameters (aMsg));
 
-      final String sErrorFilename = aParams.format (attrs ().getAsString (ATTR_ERROR_FORMAT, DEFAULT_ERROR_FORMAT));
-      final String sErrorDirectory = aParams.format (attrs ().getAsString (ATTR_ERROR_DIRECTORY));
+      final String sErrorFilename = aParams.format (getErrorFormat ());
+      final String sErrorDirectory = aParams.format (getErrorDirectory ());
       if (StringHelper.hasText (sErrorDirectory))
       {
         final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
                                                               FilenameHelper.getAsSecureValidFilename (sErrorFilename));
         // Default false for backwards compatibility reason
-        final boolean bStoreBody = attrs ().getAsBoolean (ATTR_ERROR_STORE_BODY, false);
+        final boolean bStoreBody = isErrorStoreBody ();
 
         try (final OutputStream aFOS = FileHelper.getOutputStream (aMsgErrorFile))
         {

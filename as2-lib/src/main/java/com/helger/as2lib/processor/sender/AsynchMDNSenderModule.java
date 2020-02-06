@@ -49,8 +49,8 @@ import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.AS2NoModuleException;
+import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2IOHelper;
@@ -108,7 +108,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       aHeaderMap.setHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderMap.setHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
-      final boolean bQuoteHeaderValues = attrs ().getAsBoolean (ATTR_QUOTE_HEADER_VALUES, DEFAULT_QUOTE_HEADER_VALUES);
+      final boolean bQuoteHeaderValues = isQuoteHeaderValues ();
       final AS2HttpHeaderSetter aHeaderSetter = new AS2HttpHeaderSetter (aConn, aOutgoingDumper, bQuoteHeaderValues);
       // Copy all the header from mdn to the RequestProperties of conn
       // Unification needed, because original MDN headers may contain newlines

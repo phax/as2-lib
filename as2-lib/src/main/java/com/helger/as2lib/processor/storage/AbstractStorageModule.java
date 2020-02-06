@@ -79,7 +79,10 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   public final void setFilename (@Nullable final String sFilename)
   {
-    attrs ().putIn (ATTR_FILENAME, sFilename);
+    if (sFilename == null)
+      attrs ().remove (ATTR_FILENAME);
+    else
+      attrs ().putIn (ATTR_FILENAME, sFilename);
   }
 
   @Nullable
@@ -90,7 +93,10 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   public final void setProtocol (@Nullable final String sProtocol)
   {
-    attrs ().putIn (ATTR_PROTOCOL, sProtocol);
+    if (sProtocol == null)
+      attrs ().remove (ATTR_PROTOCOL);
+    else
+      attrs ().putIn (ATTR_PROTOCOL, sProtocol);
   }
 
   @Nullable
@@ -101,7 +107,10 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   public final void setTempDir (@Nullable final String sTempDir)
   {
-    attrs ().putIn (ATTR_TEMPDIR, sTempDir);
+    if (sTempDir == null)
+      attrs ().remove (ATTR_TEMPDIR);
+    else
+      attrs ().putIn (ATTR_TEMPDIR, sTempDir);
   }
 
   @Nullable
@@ -123,7 +132,10 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   public final void setCharsetName (@Nullable final String sCharsetName)
   {
-    attrs ().putIn (ATTR_CHARSET, sCharsetName);
+    if (sCharsetName == null)
+      attrs ().remove (ATTR_CHARSET);
+    else
+      attrs ().putIn (ATTR_CHARSET, sCharsetName);
   }
 
   public final boolean canHandle (@Nonnull final String sAction,
