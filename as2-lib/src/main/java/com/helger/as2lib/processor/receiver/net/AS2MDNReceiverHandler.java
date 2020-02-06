@@ -61,6 +61,7 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.AS2NoModuleException;
+import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
@@ -79,6 +80,7 @@ import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
+import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
@@ -88,9 +90,6 @@ import com.helger.mail.datasource.ByteArrayDataSource;
 
 public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 {
-  private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
-  private static final String ATTR_PENDINGMDN = "pendingmdn";
-
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2MDNReceiverHandler.class);
 
   private final AS2MDNReceiverModule m_aModule;
@@ -326,19 +325,19 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // from pendinginfo folder.
       final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
 
-      final String sPendingInfoFile = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
-                                                                                        .getMessageProcessor ()
-                                                                                        .attrs ()
-                                                                                        .getAsString (ATTR_PENDINGMDNINFO)) +
-                                      "/" +
+      final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
+                                                                                          .getMessageProcessor ()
+                                                                                          .attrs ()
+                                                                                          .getAsString (IMessageProcessor.ATTR_PENDINGMDNINFO));
+      final String sPendingInfoFile = sPendingInfoFolder +
+                                      FilenameHelper.UNIX_SEPARATOR_STR +
                                       AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
 
       final String sOriginalMIC;
       final MIC aOriginalMIC;
       final File aPendingFile;
-      try (
-          final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
-                                                                                             StandardCharsets.ISO_8859_1))
+      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
+                                                                                              StandardCharsets.ISO_8859_1))
       {
         // Get the original mic from the first line of pending information
         // file
@@ -370,7 +369,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("delete pendinginfo file : " +
                      aPendingInfoFile.getName () +
                      " from pending folder : " +
-                     getModule ().getSession ().getMessageProcessor ().attrs ().getAsString (ATTR_PENDINGMDN) +
+                     sPendingInfoFolder +
                      aMsg.getLoggingText ());
       if (!aPendingInfoFile.delete ())
       {

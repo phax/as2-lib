@@ -47,9 +47,9 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
-import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.MessageMDNParameters;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.system.ENewLineMode;
@@ -78,7 +78,7 @@ public class MDNFileModule extends AbstractStorageModule
 
     try
     {
-      final File aMdnFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), "");
+      final File aMdnFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME));
       final InputStream aIS = getMDNStream (aMsg.getMDN ());
       store (aMdnFile, aIS);
       LOGGER.info ("stored MDN to " + aMdnFile.getAbsolutePath ());
@@ -90,14 +90,13 @@ public class MDNFileModule extends AbstractStorageModule
   }
 
   @Override
-  protected String getFilename (final IMessage aMsg,
-                                final String sFileParam,
-                                final String sAction) throws AS2InvalidParameterException
+  protected String getFilename (@Nonnull final IMessage aMsg,
+                                @Nullable final String sFileParam) throws AS2InvalidParameterException
   {
-    final IMessageMDN aMdn = aMsg.getMDN ();
+    final IMessageMDN aMDN = aMsg.getMDN ();
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("mdn",
-                                                                                 new MessageMDNParameters (aMdn));
+                                                                                 new MessageMDNParameters (aMDN));
     return aCompParams.format (sFileParam);
   }
 

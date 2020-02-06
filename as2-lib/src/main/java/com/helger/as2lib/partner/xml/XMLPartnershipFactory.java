@@ -80,14 +80,28 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   private static final String ATTR_PARTNERSHIP_NAME = Partner.PARTNER_NAME;
   private static final Logger LOGGER = LoggerFactory.getLogger (XMLPartnershipFactory.class);
 
+  @Nonnull
+  public String getFilename () throws AS2InvalidParameterException
+  {
+    return getAttributeAsStringRequired (ATTR_FILENAME);
+  }
+
   public void setFilename (final String filename)
   {
     attrs ().putIn (ATTR_FILENAME, filename);
   }
 
-  public String getFilename () throws AS2InvalidParameterException
+  public boolean isDisableBackup ()
   {
-    return getAttributeAsStringRequired (ATTR_FILENAME);
+    return attrs ().containsKey (ATTR_DISABLE_BACKUP);
+  }
+
+  public void setDisableBackup (final boolean bDisableBackup)
+  {
+    if (bDisableBackup)
+      attrs ().putIn (ATTR_DISABLE_BACKUP, true);
+    else
+      attrs ().remove (ATTR_DISABLE_BACKUP);
   }
 
   @Override
@@ -140,8 +154,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
             final Partnership aNewPartnership = loadPartnership (eRootNode, aNewPartners);
             if (aNewPartnerships.getPartnershipByName (aNewPartnership.getName ()) != null)
               throw new AS2Exception ("Partnership with name '" +
-                                          aNewPartnership.getName () +
-                                          "' is defined more than once");
+                                      aNewPartnership.getName () +
+                                      "' is defined more than once");
             aNewPartnerships.addPartnership (aNewPartnership);
           }
           else
@@ -186,10 +200,10 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final IMicroElement ePartner = ePartnership.getFirstChildElement (sPartnerType);
     if (ePartner == null)
       throw new AS2Exception ("Partnership '" +
-                                  aPartnership.getName () +
-                                  "' is missing '" +
-                                  sPartnerType +
-                                  "' child element");
+                              aPartnership.getName () +
+                              "' is missing '" +
+                              sPartnerType +
+                              "' child element");
 
     final IStringMap aPartnerAttrs = AS2XMLHelper.getAllAttrsWithLowercaseName (ePartner);
 
@@ -202,12 +216,12 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
       if (aPartner == null)
       {
         throw new AS2Exception ("Partnership '" +
-                                    aPartnership.getName () +
-                                    "' has a non-existing " +
-                                    sPartnerType +
-                                    " partner: '" +
-                                    sPartnerName +
-                                    "'");
+                                aPartnership.getName () +
+                                "' has a non-existing " +
+                                sPartnerType +
+                                " partner: '" +
+                                sPartnerName +
+                                "'");
       }
 
       // Set all attributes from the stored partner
@@ -268,7 +282,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   {
     final String sFilename = getFilename ();
 
-    if (!attrs ().containsKey (ATTR_DISABLE_BACKUP))
+    if (!isDisableBackup ())
     {
       final File aBackupFile = _getUniqueBackupFile (sFilename);
 

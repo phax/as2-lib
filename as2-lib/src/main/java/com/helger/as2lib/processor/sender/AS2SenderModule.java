@@ -71,9 +71,10 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.processor.AS2NoModuleException;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.CNetAttribute;
-import com.helger.as2lib.processor.AS2NoModuleException;
+import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2DateHelper;
@@ -109,8 +110,6 @@ import com.helger.mail.cte.EContentTransferEncoding;
  */
 public class AS2SenderModule extends AbstractHttpSenderModule
 {
-  private static final String ATTR_PENDINGMDNINFO = "pendingmdninfo";
-  private static final String ATTR_PENDINGMDN = "pendingmdn";
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2SenderModule.class);
 
   private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
@@ -187,16 +186,18 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       AS2InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
       AS2InvalidParameterException.checkValue (aMsg,
-                                            "Attribute: " + CPartnershipIDs.PA_AS2_URL,
-                                            aPartnership.getAS2URL ());
+                                               "Attribute: " + CPartnershipIDs.PA_AS2_URL,
+                                               aPartnership.getAS2URL ());
       AS2InvalidParameterException.checkValue (aMsg,
-                                            "Receiver: " + CPartnershipIDs.PID_AS2,
-                                            aPartnership.getReceiverAS2ID ());
-      AS2InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
+                                               "Receiver: " + CPartnershipIDs.PID_AS2,
+                                               aPartnership.getReceiverAS2ID ());
+      AS2InvalidParameterException.checkValue (aMsg,
+                                               "Sender: " + CPartnershipIDs.PID_AS2,
+                                               aPartnership.getSenderAS2ID ());
       AS2InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
       AS2InvalidParameterException.checkValue (aMsg,
-                                            "Sender: " + CPartnershipIDs.PID_EMAIL,
-                                            aPartnership.getSenderEmail ());
+                                               "Sender: " + CPartnershipIDs.PID_EMAIL,
+                                               aPartnership.getSenderEmail ());
       AS2InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
     catch (final AS2InvalidParameterException ex)
@@ -227,13 +228,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
       final String sPendingFilename = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
                                                                                          .attrs ()
-                                                                                         .getAsString (ATTR_PENDINGMDN)) +
-                                      "/" +
+                                                                                         .getAsString (IMessageProcessor.ATTR_PENDINGMDN)) +
+                                      FilenameHelper.UNIX_SEPARATOR_STR +
                                       sMsgFilename;
 
       final String sPendingInfoFile = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
                                                                                          .attrs ()
-                                                                                         .getAsString (ATTR_PENDINGMDNINFO)) +
+                                                                                         .getAsString (IMessageProcessor.ATTR_PENDINGMDNINFO)) +
                                       FilenameHelper.UNIX_SEPARATOR_STR +
                                       sMsgFilename;
 

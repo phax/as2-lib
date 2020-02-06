@@ -49,9 +49,9 @@ import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
+import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
-import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.commons.http.CHttp;
@@ -73,6 +73,17 @@ public class MessageFileModule extends AbstractStorageModule
     super (DO_STORE);
   }
 
+  @Nullable
+  public final String getHeaderFilename ()
+  {
+    return attrs ().getAsString (ATTR_HEADER);
+  }
+
+  public final void setHeaderFilename (@Nullable final String sHeaderFilename)
+  {
+    attrs ().putIn (ATTR_HEADER, sHeaderFilename);
+  }
+
   public void handle (@Nonnull final String sAction,
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
@@ -80,7 +91,7 @@ public class MessageFileModule extends AbstractStorageModule
     // store message content
     try
     {
-      final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME), sAction);
+      final File aMsgFile = getFile (aMsg, getAttributeAsStringRequired (ATTR_FILENAME));
       try (final InputStream aIS = aMsg.getData ().getInputStream ())
       {
         store (aMsgFile, aIS);
@@ -91,17 +102,17 @@ public class MessageFileModule extends AbstractStorageModule
     catch (final Exception ex)
     {
       throw new AS2DispositionException (DispositionType.createError ("Error storing transaction"),
-                                      AbstractActiveNetModule.DISP_STORAGE_FAILED,
-                                      ex);
+                                         AbstractActiveNetModule.DISP_STORAGE_FAILED,
+                                         ex);
     }
 
     // Store message headers and attributes
-    final String sHeaderFilename = attrs ().getAsString (ATTR_HEADER);
+    final String sHeaderFilename = getHeaderFilename ();
     if (sHeaderFilename != null)
     {
       try
       {
-        final File aHeaderFile = getFile (aMsg, sHeaderFilename, sAction);
+        final File aHeaderFile = getFile (aMsg, sHeaderFilename);
         try (final InputStream aIS = getHeaderStream (aMsg, getCharset ()))
         {
           store (aHeaderFile, aIS);
@@ -116,9 +127,9 @@ public class MessageFileModule extends AbstractStorageModule
   }
 
   @Override
-  protected String getFilename (final IMessage aMsg,
-                                final String sFileParam,
-                                final String sAction) throws AS2InvalidParameterException
+  @Nonnull
+  protected String getFilename (@Nonnull final IMessage aMsg,
+                                @Nullable final String sFileParam) throws AS2InvalidParameterException
   {
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("msg", new MessageParameters (aMsg));

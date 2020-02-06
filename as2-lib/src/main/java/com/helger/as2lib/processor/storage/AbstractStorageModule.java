@@ -71,6 +71,61 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     m_sModuleAction = ValueEnforcer.notEmpty (sModuleAction, "ModuleAction");
   }
 
+  @Nullable
+  public final String getFilename ()
+  {
+    return attrs ().getAsString (ATTR_FILENAME);
+  }
+
+  public final void setFilename (@Nullable final String sFilename)
+  {
+    attrs ().putIn (ATTR_FILENAME, sFilename);
+  }
+
+  @Nullable
+  public final String getProtocol ()
+  {
+    return attrs ().getAsString (ATTR_PROTOCOL);
+  }
+
+  public final void setProtocol (@Nullable final String sProtocol)
+  {
+    attrs ().putIn (ATTR_PROTOCOL, sProtocol);
+  }
+
+  @Nullable
+  public final String getTempDir ()
+  {
+    return attrs ().getAsString (ATTR_TEMPDIR);
+  }
+
+  public final void setTempDir (@Nullable final String sTempDir)
+  {
+    attrs ().putIn (ATTR_TEMPDIR, sTempDir);
+  }
+
+  @Nullable
+  public final String getCharsetName ()
+  {
+    return attrs ().getAsString (ATTR_CHARSET);
+  }
+
+  /**
+   * @return The charset configured via {@link #ATTR_CHARSET} parameter or the
+   *         system default. Never <code>null</code>.
+   */
+  @Nonnull
+  protected Charset getCharset ()
+  {
+    final Charset aCharset = CharsetHelper.getCharsetFromNameOrNull (getCharsetName ());
+    return aCharset != null ? aCharset : SystemHelper.getSystemCharset ();
+  }
+
+  public final void setCharsetName (@Nullable final String sCharsetName)
+  {
+    attrs ().putIn (ATTR_CHARSET, sCharsetName);
+  }
+
   public final boolean canHandle (@Nonnull final String sAction,
                                   @Nonnull final IMessage aMsg,
                                   @Nullable final Map <String, Object> aOptions)
@@ -78,7 +133,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     if (!sAction.equals (m_sModuleAction))
       return false;
 
-    final String sModProtocol = attrs ().getAsString (ATTR_PROTOCOL);
+    // Usually "as2"
+    final String sModProtocol = getProtocol ();
     if (sModProtocol == null)
       return false;
     return sModProtocol.equals (aMsg.getProtocol ());
@@ -92,17 +148,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     getAttributeAsStringRequired (ATTR_FILENAME);
   }
 
-  /**
-   * @return The charset configured via {@link #ATTR_CHARSET} parameter or the
-   *         system default. Never <code>null</code>.
-   */
-  @Nonnull
-  protected Charset getCharset ()
-  {
-    final String sCharsetName = attrs ().getAsString (ATTR_CHARSET);
-    final Charset aCharset = CharsetHelper.getCharsetFromNameOrNull (sCharsetName);
-    return aCharset != null ? aCharset : SystemHelper.getSystemCharset ();
-  }
+  protected abstract String getFilename (IMessage aMsg, String sFileParam) throws AS2InvalidParameterException;
 
   /**
    * @since 2007-06-01
@@ -110,18 +156,17 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
    *        The source message
    * @param sFileParam
    *        The parameter name including the filename
-   * @param sAction
-   *        Action name
    * @return File The {@link File} to be used
    * @throws IOException
    *         In case of IO error
    * @throws AS2Exception
    *         In case of error
    */
-  protected File getFile (final IMessage aMsg, final String sFileParam, final String sAction) throws IOException,
-                                                                                              AS2Exception
+  @Nonnull
+  protected final File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException,
+                                                                                                 AS2Exception
   {
-    final String sFilename = getFilename (aMsg, sFileParam, sAction);
+    final String sFilename = getFilename (aMsg, sFileParam);
 
     // make sure the parent directories exist
     final File aFile = new File (sFilename);
@@ -130,10 +175,6 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     return AS2IOHelper.getUniqueFile (aFile.getParentFile (),
                                       FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
-
-  protected abstract String getFilename (IMessage aMsg,
-                                         String sFileParam,
-                                         String sAction) throws AS2InvalidParameterException;
 
   private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS,
                                           @Nonnull final File aDestination) throws IOException
@@ -145,7 +186,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   protected void store (@Nonnull final File aMsgFile, @Nonnull @WillClose final InputStream aIS) throws IOException
   {
-    final String sTempDirname = attrs ().getAsString (ATTR_TEMPDIR);
+    final String sTempDirname = getTempDir ();
     if (sTempDirname != null)
     {
       // write the data to a temporary directory first
