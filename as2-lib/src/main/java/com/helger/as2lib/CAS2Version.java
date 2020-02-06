@@ -69,13 +69,13 @@ public final class CAS2Version
     if (sProjectVersion == null)
     {
       sProjectVersion = "undefined";
-      LOGGER.warn ("Failed to load version number");
+      LOGGER.warn ("Failed to load as2-lib version number");
     }
     BUILD_VERSION = sProjectVersion;
     if (sProjectTimestamp == null)
     {
       sProjectTimestamp = "undefined";
-      LOGGER.warn ("Failed to load timestamp");
+      LOGGER.warn ("Failed to load as2-lib build timestamp");
     }
     BUILD_TIMESTAMP = sProjectTimestamp;
   }
