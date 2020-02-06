@@ -149,8 +149,8 @@ public class DispositionType implements Serializable
     if (m_sStatusModifier != null)
     {
       aSB.append ('/').append (m_sStatusModifier).append (':');
-      if (m_sStatusDescription != null)
-        aSB.append (m_sStatusDescription);
+      if (StringHelper.hasText (m_sStatusDescription))
+        aSB.append (' ').append (m_sStatusDescription);
     }
     return aSB.toString ();
   }
