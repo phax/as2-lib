@@ -33,6 +33,7 @@
 package com.helger.as2lib.processor.module;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,16 +52,16 @@ import com.helger.commons.string.ToStringGenerator;
  */
 public abstract class AbstractActiveModule extends AbstractProcessorModule implements IProcessorActiveModule
 {
-  private boolean m_bRunning;
+  private final AtomicBoolean m_aRunning = new AtomicBoolean (false);
 
   public final boolean isRunning ()
   {
-    return m_bRunning;
+    return m_aRunning.get ();
   }
 
   private void _setRunning (final boolean bRunning)
   {
-    m_bRunning = bRunning;
+    m_aRunning.set (bRunning);
   }
 
   @OverrideOnDemand
@@ -137,6 +138,6 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   @Override
   public String toString ()
   {
-    return ToStringGenerator.getDerived (super.toString ()).append ("running", m_bRunning).getToString ();
+    return ToStringGenerator.getDerived (super.toString ()).append ("Running", isRunning ()).getToString ();
   }
 }
