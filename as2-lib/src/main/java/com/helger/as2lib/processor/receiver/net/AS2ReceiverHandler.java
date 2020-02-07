@@ -65,6 +65,7 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.AS2NoModuleException;
+import com.helger.as2lib.processor.AS2ProcessorException;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
@@ -474,7 +475,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   @Nonnull
-  private String _getDispositionText (@Nonnull final Exception ex)
+  private String _getDispositionText (@Nonnull final AS2Exception ex)
   {
     // Issue 90 - use CRLF as separator
     if (m_bSendExceptionsInMDN)
@@ -488,7 +489,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       else
       {
         // Exception message only
-        sExceptionText = ex.toString ();
+        if (ex instanceof AS2ProcessorException)
+          sExceptionText = ((AS2ProcessorException) ex).getShortToString ();
+        else
+          sExceptionText = ex.toString ();
       }
       return CHttp.EOL + MessageParameters.getEscapedString (sExceptionText);
     }

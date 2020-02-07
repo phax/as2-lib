@@ -57,28 +57,32 @@ public class AS2ProcessorException extends AS2Exception
   private final ICommonsList <Throwable> m_aCauses;
 
   @Nonnull
-  private static String _getMessage (@Nonnull @Nonempty final Iterable <Throwable> aCauses)
+  private static String _getMessage (@Nonnull @Nonempty final Iterable <? extends Throwable> aCauses,
+                                     final boolean bAddStackTrace)
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
     {
       // Issue 90: all newlines should be CRLF
-      aSB.append (CHttp.EOL)
-         .append (aCause.getMessage ())
-         .append (CHttp.EOL)
-         .append (StackTraceHelper.getStackAsString (aCause, true, CHttp.EOL));
+      aSB.append (CHttp.EOL);
+      if (bAddStackTrace)
+      {
+        // This includes the exception message
+        aSB.append (StackTraceHelper.getStackAsString (aCause, true, CHttp.EOL));
+      }
+      else
+        aSB.append (aCause.getMessage ());
     }
     return aSB.toString ();
   }
 
   public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor,
-                             @Nonnull @Nonempty final List <Throwable> aCauses)
+                                @Nonnull @Nonempty final List <? extends Throwable> aCauses)
   {
     super ("Processor '" +
            ClassHelper.getClassLocalName (aProcessor) +
            "' threw " +
-           (aCauses.size () == 1 ? "exception:" : "exceptions:") +
-           _getMessage (aCauses));
+           (aCauses.size () == 1 ? "exception:" : "exceptions:"));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
@@ -92,6 +96,18 @@ public class AS2ProcessorException extends AS2Exception
     return m_aProcessor;
   }
 
+  @Override
+  public String getMessage ()
+  {
+    return getMessage (true);
+  }
+
+  @Nonnull
+  public String getMessage (final boolean bAddStackTrace)
+  {
+    return super.getMessage () + _getMessage (m_aCauses, bAddStackTrace);
+  }
+
   /**
    * @return A list of all causing exceptions. Never <code>null</code> nor
    *         empty.
@@ -102,5 +118,15 @@ public class AS2ProcessorException extends AS2Exception
   public final ICommonsList <Throwable> getAllCauses ()
   {
     return m_aCauses.getClone ();
+  }
+
+  /**
+   * @return A short version of "toString" without exception stack traces. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public String getShortToString ()
+  {
+    return getClass ().getName () + ": " + getMessage (false);
   }
 }
