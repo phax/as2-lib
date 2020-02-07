@@ -44,6 +44,11 @@ import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 
+/**
+ * AS2 exception that is thrown if no handling module was found.
+ * 
+ * @author Philip Helger
+ */
 public class AS2NoModuleException extends AS2Exception
 {
   private final ICommonsMap <String, Object> m_aOptions;
@@ -51,8 +56,8 @@ public class AS2NoModuleException extends AS2Exception
   private final String m_sAction;
 
   public AS2NoModuleException (@Nullable final String sAction,
-                            @Nullable final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+                               @Nullable final IMessage aMsg,
+                               @Nullable final Map <String, Object> aOptions)
   {
     super (getAsString (sAction, aMsg, aOptions));
     m_sAction = sAction;
