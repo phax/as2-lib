@@ -334,8 +334,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final String sOriginalMIC;
       final MIC aOriginalMIC;
       final File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
-                                                                                              StandardCharsets.ISO_8859_1))
+      try (
+          final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
+                                                                                             StandardCharsets.ISO_8859_1))
       {
         // Get the original mic from the first line of pending information
         // file

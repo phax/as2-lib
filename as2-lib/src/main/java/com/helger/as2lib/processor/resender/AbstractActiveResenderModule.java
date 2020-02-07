@@ -93,7 +93,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
       m_nPollingMS = attrs ().getAsLong (ATTR_POLLING_INTERVAL_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
       if (m_nPollingMS < 1)
         throw new AS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " +
-                                    m_nPollingMS);
+                                m_nPollingMS);
     }
   }
 

@@ -117,9 +117,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     if (aFiles == null)
     {
       throw new AS2InvalidParameterException ("Error getting list of files in directory",
-                                           this,
-                                           ATTR_OUTBOX_DIRECTORY,
-                                           aDir.getAbsolutePath ());
+                                              this,
+                                              ATTR_OUTBOX_DIRECTORY,
+                                              aDir.getAbsolutePath ());
     }
 
     // iterator through each entry, and start tracking new files
@@ -250,9 +250,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         final FileIOError aIOErr = AS2IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new AS2Exception ("File was successfully sent but not copied to pending folder: " +
-                                      aPendingFile +
-                                      " - " +
-                                      aIOErr.toString ());
+                                  aPendingFile +
+                                  " - " +
+                                  aIOErr.toString ());
 
         LOGGER.info ("copied " +
                      aFile.getAbsolutePath () +
@@ -280,8 +280,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         }
         catch (final IOException ex)
         {
-          new AS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile,
-                                ex).terminate ();
+          new AS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile, ex).terminate ();
         }
       }
       else

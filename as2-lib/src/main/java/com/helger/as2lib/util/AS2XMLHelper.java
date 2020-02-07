@@ -91,10 +91,7 @@ public final class AS2XMLHelper
     final StringMap aAttributes = getAllAttrsWithLowercaseName (aElement);
     for (final String sRequiredAttribute : aRequiredAttributes)
       if (!aAttributes.containsKey (sRequiredAttribute))
-        throw new AS2Exception (aElement.getTagName () +
-                                    " is missing required attribute '" +
-                                    sRequiredAttribute +
-                                    "'");
+        throw new AS2Exception (aElement.getTagName () + " is missing required attribute '" + sRequiredAttribute + "'");
     return aAttributes;
   }
 
@@ -133,12 +130,7 @@ public final class AS2XMLHelper
 
       final String sValue = eChild.getAttributeValue (sNodeValueName);
       if (sValue == null)
-        throw new AS2Exception (sNodeName +
-                                    "[" +
-                                    nIndex +
-                                    "] does not have value attribute '" +
-                                    sNodeValueName +
-                                    "'");
+        throw new AS2Exception (sNodeName + "[" + nIndex + "] does not have value attribute '" + sNodeValueName + "'");
 
       ret.put (sName, sValue);
       ++nIndex;

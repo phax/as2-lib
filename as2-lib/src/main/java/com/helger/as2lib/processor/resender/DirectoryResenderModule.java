@@ -241,9 +241,9 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     if (aFiles == null)
     {
       throw new AS2InvalidParameterException ("Error getting list of files in directory",
-                                           this,
-                                           ATTR_RESEND_DIRECTORY,
-                                           aResendDir.getAbsolutePath ());
+                                              this,
+                                              ATTR_RESEND_DIRECTORY,
+                                              aResendDir.getAbsolutePath ());
     }
 
     final ICommonsList <File> ret = new CommonsArrayList <> ();

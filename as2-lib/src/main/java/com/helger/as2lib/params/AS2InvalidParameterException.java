@@ -47,9 +47,9 @@ public class AS2InvalidParameterException extends AS2Exception
   private final String m_sValue;
 
   public AS2InvalidParameterException (@Nullable final String sMsg,
-                                    @Nullable final Serializable aTarget,
-                                    @Nullable final String sKey,
-                                    @Nullable final String sValue)
+                                       @Nullable final Serializable aTarget,
+                                       @Nullable final String sKey,
+                                       @Nullable final String sValue)
   {
     super (sMsg + " - " + getAsString (sKey, sValue));
     m_aTarget = aTarget;

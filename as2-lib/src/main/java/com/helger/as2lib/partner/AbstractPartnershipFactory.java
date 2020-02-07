@@ -182,8 +182,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
     }
   }
 
-  public final void updatePartnership (@Nonnull final IMessageMDN aMdn,
-                                       final boolean bOverwrite) throws AS2Exception
+  public final void updatePartnership (@Nonnull final IMessageMDN aMdn, final boolean bOverwrite) throws AS2Exception
   {
     ValueEnforcer.notNull (aMdn, "MessageMDN");
 

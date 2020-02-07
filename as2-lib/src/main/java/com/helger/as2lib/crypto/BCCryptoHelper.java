@@ -342,7 +342,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS, sMICEncoding))
+        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
+                                                                                                 sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }

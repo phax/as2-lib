@@ -46,7 +46,7 @@ public class AS2CertificateNotFoundException extends AS2Exception
   private final String m_sAlias;
 
   public AS2CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
-                                       @Nonnull final Partnership aPartnership)
+                                          @Nonnull final Partnership aPartnership)
   {
     super ("Type " + ePartnershipType + ": no alias found for partnership " + aPartnership);
     m_ePartnershipType = ePartnershipType;
@@ -54,7 +54,7 @@ public class AS2CertificateNotFoundException extends AS2Exception
   }
 
   public AS2CertificateNotFoundException (@Nullable final ECertificatePartnershipType ePartnershipType,
-                                       @Nullable final String sAlias)
+                                          @Nullable final String sAlias)
   {
     super ("Type " + ePartnershipType + ": no such alias '" + sAlias + "'");
     m_ePartnershipType = ePartnershipType;

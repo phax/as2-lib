@@ -55,8 +55,8 @@ public class AS2DispositionException extends AS2Exception
   }
 
   public AS2DispositionException (@Nonnull final DispositionType aDisposition,
-                               @Nullable final String sText,
-                               @Nullable final Throwable aCause)
+                                  @Nullable final String sText,
+                                  @Nullable final Throwable aCause)
   {
     super (aDisposition.getAsString (), aCause);
     m_aDisposition = aDisposition;
