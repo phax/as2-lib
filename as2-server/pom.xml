@@ -37,7 +37,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>as2-lib-parent-pom</artifactId>
-    <version>4.5.2</version>
+    <version>4.5.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>as2-server</artifactId>
