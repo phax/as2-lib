@@ -264,8 +264,10 @@ public class AS2Client
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("Loading AS2 client keystore from byte array. No changes will be saved.");
 
+        aCertFactory.setPassword (aSettings.getKeyStorePassword ());
         aCertFactory.setSaveChangesToFile (false);
-        try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        try (
+            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
         {
           aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
         }
