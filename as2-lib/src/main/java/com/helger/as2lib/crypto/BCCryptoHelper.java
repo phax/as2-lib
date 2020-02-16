@@ -104,6 +104,7 @@ import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.datetime.PDTFactory;
 import com.helger.commons.equals.EqualsHelper;
+import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
@@ -125,6 +126,7 @@ public final class BCCryptoHelper implements ICryptoHelper
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File s_aDumpDecryptedDirectory;
   private static final String DEFAULT_SECURITY_PROVIDER_NAME;
+  private static final byte [] EOL_BYTES = AS2IOHelper.getAllAsciiBytes (CHttp.EOL);
 
   static
   {
@@ -326,14 +328,14 @@ public final class BCCryptoHelper implements ICryptoHelper
         final String sHeaderLine = aHeaderLines.nextElement ();
 
         aMessageDigest.update (AS2IOHelper.getAllAsciiBytes (sHeaderLine));
-        aMessageDigest.update (AS2IOHelper.EOL_BYTES);
+        aMessageDigest.update (EOL_BYTES);
 
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Using header line '" + sHeaderLine + "' for MIC calculation");
       }
 
       // The CRLF separator between header and content
-      aMessageDigest.update (AS2IOHelper.EOL_BYTES);
+      aMessageDigest.update (EOL_BYTES);
     }
 
     final String sMICEncoding = aPart.getEncoding ();
@@ -342,8 +344,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
-                                                                                                 sMICEncoding))
+         final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
+                                                                                                  sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }
@@ -439,8 +441,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (s_aDumpDecryptedDirectory != null)
     {
       // dump decrypted
-      try (
-          final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
       {
         aDecryptedDataBodyPart.writeTo (aBAOS);
         _dumpDecrypted (aBAOS.toByteArray ());

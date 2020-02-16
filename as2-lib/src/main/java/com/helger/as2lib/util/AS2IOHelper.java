@@ -64,7 +64,7 @@ import com.sun.mail.util.QPEncoderStream;
 @Immutable
 public final class AS2IOHelper
 {
-  public static final byte [] EOL_BYTES = getAllAsciiBytes (CHttp.EOL);
+  private static final byte [] EOL_BYTES = getAllAsciiBytes (CHttp.EOL);
 
   // Use a new instance to add the logging
   private static final FileOperationManager FOM = new FileOperationManager ();
