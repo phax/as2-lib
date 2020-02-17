@@ -129,6 +129,8 @@
             <Import-Package>!javax.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
             <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
+            <!-- The latter one has precedence -->
+            <Include-Resource>{maven-resources},as2-lib-version.properties=target/classes/as2-lib-version.properties</Include-Resource>
           </instructions>
         </configuration>
       </plugin>
