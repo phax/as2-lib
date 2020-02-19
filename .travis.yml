@@ -49,6 +49,6 @@ jobs:
       script:
         - mvn test -B
     - stage: test
-      jdk: openjdk12
+      jdk: openjdk13
       script:
         - mvn test -B
