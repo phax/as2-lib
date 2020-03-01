@@ -69,6 +69,7 @@ import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
@@ -153,7 +154,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     byte [] aData = null;
 
     // Read in the message request, headers, and data
-    try
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
       final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
       final DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
@@ -180,7 +181,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       aMsg.setData (aReceivedPart);
 
-      receiveMDN (aMsg, aData, aResponseHandler);
+      receiveMDN (aMsg, aData, aResponseHandler, aResHelper);
     }
     catch (final Exception ex)
     {
@@ -199,6 +200,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    *        The MDN content
    * @param aResponseHandler
    *        The HTTP response handler for setting the correct HTTP response code
+   * @param aResHelper
+   *        Resource helper
    * @throws AS2Exception
    *         In case of error
    * @throws IOException
@@ -206,8 +209,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    */
   protected final void receiveMDN (@Nonnull final AS2Message aMsg,
                                    final byte [] aData,
-                                   @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws AS2Exception,
-                                                                                            IOException
+                                   @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                   @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception, IOException
   {
     try
     {
@@ -244,7 +247,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         bUseCertificateInBodyPart = getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, getVerificationCertificateConsumer ());
+      AS2Helper.parseMDN (aMsg,
+                          aSenderCert,
+                          bUseCertificateInBodyPart,
+                          getVerificationCertificateConsumer (),
+                          aResHelper);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
@@ -334,9 +341,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final String sOriginalMIC;
       final MIC aOriginalMIC;
       final File aPendingFile;
-      try (
-          final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
-                                                                                             StandardCharsets.ISO_8859_1))
+      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
+                                                                                              StandardCharsets.ISO_8859_1))
       {
         // Get the original mic from the first line of pending information
         // file

@@ -377,7 +377,8 @@ public final class AS2Helper
   public static void parseMDN (@Nonnull final IMessage aMsg,
                                @Nullable final X509Certificate aReceiverCert,
                                final boolean bUseCertificateInBodyPart,
-                               @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer) throws Exception
+                               @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer,
+                               @Nonnull final AS2ResourceHelper aResHelper) throws Exception
   {
     final String sLoggingText = aMsg.getLoggingText ();
     LOGGER.info ("Start parsing MDN of" + sLoggingText);
@@ -407,7 +408,8 @@ public final class AS2Helper
                                           aReceiverCert,
                                           bUseCertificateInBodyPart,
                                           bForceVerify,
-                                          x -> aCertHolder.set (x));
+                                          aCertHolder::set,
+                                          aResHelper);
         if (aEffectiveCertificateConsumer != null)
           aEffectiveCertificateConsumer.accept (aCertHolder.get ());
 
@@ -445,9 +447,8 @@ public final class AS2Helper
           {
             // https://github.com/phax/as2-lib/issues/100
             final String sCTE = aReportPart.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, null);
-            try (
-                final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
-                                                                                                    sCTE))
+            try (final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
+                                                                                                     sCTE))
             {
               final InternetHeaders aDispositionHeaders = new InternetHeaders (aRealIS);
               aMdn.attrs ()

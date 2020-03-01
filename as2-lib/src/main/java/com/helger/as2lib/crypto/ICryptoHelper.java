@@ -45,6 +45,7 @@ import javax.annotation.WillNotClose;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
 
@@ -152,7 +153,8 @@ public interface ICryptoHelper
   MimeBodyPart decrypt (@Nonnull MimeBodyPart aPart,
                         @Nonnull X509Certificate aCert,
                         @Nonnull PrivateKey aKey,
-                        boolean bForceDecrypt) throws Exception;
+                        boolean bForceDecrypt,
+                        @Nonnull AS2ResourceHelper aResHelper) throws Exception;
 
   /**
    * Sign a MIME body part.
@@ -208,6 +210,8 @@ public interface ICryptoHelper
    * @param aEffectiveCertificateConsumer
    *        An optional consumer that takes the effective certificate that was
    *        used for verification. May be <code>null</code>.
+   * @param aResHelper
+   *        The resource helper to use. May not be <code>null</code>.
    * @return The signed content. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -218,5 +222,6 @@ public interface ICryptoHelper
                        @Nullable X509Certificate aCert,
                        boolean bUseCertificateInBodyPart,
                        boolean bForceVerify,
-                       @Nullable Consumer <X509Certificate> aEffectiveCertificateConsumer) throws Exception;
+                       @Nullable Consumer <X509Certificate> aEffectiveCertificateConsumer,
+                       @Nonnull AS2ResourceHelper aResHelper) throws Exception;
 }

@@ -81,6 +81,7 @@ import com.helger.as2lib.util.AS2DateHelper;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
@@ -649,6 +650,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
    *        mic value from original msg
    * @param aIncomingDumper
    *        Incoming dumper. May be <code>null</code>.
+   * @param aResHelper
+   *        Resource helper
    * @throws AS2Exception
    *         in case of an error
    * @throws IOException
@@ -657,7 +660,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   protected void receiveSyncMDN (@Nonnull final AS2Message aMsg,
                                  @Nonnull final AS2HttpClient aHttpClient,
                                  @Nonnull final MIC aOriginalMIC,
-                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception, IOException
+                                 @Nullable final IHTTPIncomingDumper aIncomingDumper,
+                                 @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception, IOException
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Receiving synchronous MDN for message" + aMsg.getLoggingText ());
@@ -725,7 +729,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         bUseCertificateInBodyPart = getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, m_aVerificationCertificateConsumer);
+      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, m_aVerificationCertificateConsumer, aResHelper);
 
       try
       {
@@ -811,9 +815,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                              @Nullable final MIC aMIC,
                              @Nullable final EContentTransferEncoding eCTE,
                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
-                             @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception,
-                                                                                  IOException,
-                                                                                  MessagingException
+                             @Nullable final IHTTPIncomingDumper aIncomingDumper,
+                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception,
+                                                                          IOException,
+                                                                          MessagingException
   {
     final Partnership aPartnership = aMsg.partnership ();
 
@@ -876,7 +881,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
             // go ahead to receive sync MDN
             // Note: If an MDN is requested, a MIC is present
             assert aMIC != null;
-            receiveSyncMDN (aMsg, aConn, aMIC, aIncomingDumper);
+            receiveSyncMDN (aMsg, aConn, aMIC, aIncomingDumper, aResHelper);
 
             if (LOGGER.isInfoEnabled ())
               LOGGER.info ("message sent" + aMsg.getLoggingText ());
@@ -916,7 +921,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     final int nRetries = getRetryCount (aMsg.partnership (), aOptions);
 
-    try
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
       // Get Content-Transfer-Encoding to use
       final String sContentTransferEncoding = aMsg.partnership ()
@@ -943,7 +948,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
         // Use no CTE, because it was set on all MIME parts
-        _sendViaHTTP (aMsg, aSecuredData, aMIC, true ? null : eCTE, aOutgoingDumper, aIncomingDumper);
+        _sendViaHTTP (aMsg, aSecuredData, aMIC, true ? null : eCTE, aOutgoingDumper, aIncomingDumper, aResHelper);
       }
     }
     catch (final AS2HttpResponseException ex)

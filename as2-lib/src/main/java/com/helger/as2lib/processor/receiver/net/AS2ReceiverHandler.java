@@ -76,6 +76,7 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
@@ -208,7 +209,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     return aMsg;
   }
 
-  protected void decrypt (@Nonnull final IMessage aMsg) throws AS2Exception
+  protected void decrypt (@Nonnull final IMessage aMsg, @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
@@ -242,7 +243,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
                                                                      aReceiverCert,
                                                                      aReceiverKey,
-                                                                     bForceDecrypt);
+                                                                     bForceDecrypt,
+                                                                     aResHelper);
           aMsg.setData (aDecryptedData);
           // Remember that message was encrypted
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_ENCRYPTED, true);
@@ -262,7 +264,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  protected void verify (@Nonnull final IMessage aMsg) throws AS2Exception
+  protected void verify (@Nonnull final IMessage aMsg, @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception
   {
     final ICertificateFactory aCertFactory = m_aReceiverModule.getSession ().getCertificateFactory ();
     final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
@@ -309,7 +311,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                    aSenderCert,
                                                                    bUseCertificateInBodyPart,
                                                                    bForceVerify,
-                                                                   aCertHolder::set);
+                                                                   aCertHolder::set,
+                                                                   aResHelper);
           final IConsumer <X509Certificate> aExternalConsumer = getVerificationCertificateConsumer ();
           if (aExternalConsumer != null)
             aExternalConsumer.accept (aCertHolder.get ());
@@ -520,7 +523,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                      @Nonnull final AS2Message aMsg,
                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
-    try
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
       final IAS2Session aSession = m_aReceiverModule.getSession ();
 
@@ -570,7 +573,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
       // Decrypt and verify signature of the data, and attach data to the
       // message
-      decrypt (aMsg);
+      decrypt (aMsg, aResHelper);
 
       if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
       {
@@ -580,7 +583,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         bIsDecompressed = true;
       }
 
-      verify (aMsg);
+      verify (aMsg, aResHelper);
 
       if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
       {

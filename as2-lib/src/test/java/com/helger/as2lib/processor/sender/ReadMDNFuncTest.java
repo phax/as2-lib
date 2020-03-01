@@ -54,6 +54,7 @@ import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.IReadableResource;
@@ -76,8 +77,7 @@ public class ReadMDNFuncTest
     assertTrue (aCertRes.exists ());
 
     final HttpHeaderMap aHeaders = new HttpHeaderMap ();
-    try (
-        NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
+    try (NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
     {
       String s;
       while ((s = aBR.readLine ()) != null)
@@ -114,9 +114,9 @@ public class ReadMDNFuncTest
     assertFalse (aCryptoHelper.isCompressed (aPart.getContentType ()));
 
     final Consumer <X509Certificate> aCertHolder = null;
-    try
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
-      AS2Helper.parseMDN (aMsg, aCert, true, aCertHolder);
+      AS2Helper.parseMDN (aMsg, aCert, true, aCertHolder, aResHelper);
       fail ();
     }
     catch (final CMSException ex)
@@ -142,8 +142,7 @@ public class ReadMDNFuncTest
     }
 
     final HttpHeaderMap aHeaders = new HttpHeaderMap ();
-    try (
-        NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
+    try (NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
     {
       String s;
       while ((s = aBR.readLine ()) != null)
@@ -181,7 +180,10 @@ public class ReadMDNFuncTest
     assertFalse (aCryptoHelper.isEncrypted (aPart));
     assertFalse (aCryptoHelper.isCompressed (aPart.getContentType ()));
 
-    final Consumer <X509Certificate> aCertHolder = null;
-    AS2Helper.parseMDN (aMsg, null, true, aCertHolder);
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
+    {
+      final Consumer <X509Certificate> aCertHolder = null;
+      AS2Helper.parseMDN (aMsg, null, true, aCertHolder, aResHelper);
+    }
   }
 }

@@ -87,6 +87,7 @@ import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.bouncycastle.mail.smime.SMIMESignedParser;
 import org.bouncycastle.mail.smime.SMIMEUtil;
+import org.bouncycastle.mail.smime.util.FileBackedMimeBodyPart;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.OutputEncryptor;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
@@ -96,6 +97,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.bc.PBCProvider;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -395,15 +397,17 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart decrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final PrivateKey aPrivateKey,
-                               final boolean bForceDecrypt) throws GeneralSecurityException,
-                                                            MessagingException,
-                                                            CMSException,
-                                                            SMIMEException,
-                                                            IOException
+                               final boolean bForceDecrypt,
+                               @Nonnull final AS2ResourceHelper aResHelper) throws GeneralSecurityException,
+                                                                            MessagingException,
+                                                                            CMSException,
+                                                                            SMIMEException,
+                                                                            IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
     ValueEnforcer.notNull (aPrivateKey, "PrivateKey");
+    ValueEnforcer.notNull (aResHelper, "ResHelper");
 
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.decrypt; X509 subject=" +
@@ -436,7 +440,9 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new GeneralSecurityException ("Certificate does not match part signature");
 
     // try to decrypt the data
-    final MimeBodyPart aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName)));
+    // Custom file: see #103
+    final FileBackedMimeBodyPart aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName)),
+                                                                                    aResHelper.createTempFile ());
 
     if (s_aDumpDecryptedDirectory != null)
     {
@@ -624,11 +630,12 @@ public final class BCCryptoHelper implements ICryptoHelper
                               @Nullable final X509Certificate aX509Cert,
                               final boolean bUseCertificateInBodyPart,
                               final boolean bForceVerify,
-                              @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer) throws GeneralSecurityException,
-                                                                                                        IOException,
-                                                                                                        MessagingException,
-                                                                                                        CMSException,
-                                                                                                        OperatorCreationException
+                              @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer,
+                              @Nonnull final AS2ResourceHelper aResHelper) throws GeneralSecurityException,
+                                                                           IOException,
+                                                                           MessagingException,
+                                                                           CMSException,
+                                                                           OperatorCreationException
   {
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("BCCryptoHelper.verify; X509 subject=" +
@@ -649,11 +656,13 @@ public final class BCCryptoHelper implements ICryptoHelper
       throw new IllegalStateException ("Expected Part content to be MimeMultipart but it isn't. It is " +
                                        ClassHelper.getClassName (aContent));
     final MimeMultipart aMainPart = (MimeMultipart) aContent;
+
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (m_sSecurityProviderName)
                                                                                                             .build (),
                                                                    aMainPart,
-                                                                   EContentTransferEncoding.AS2_DEFAULT.getID ());
+                                                                   EContentTransferEncoding.AS2_DEFAULT.getID (),
+                                                                   aResHelper.createTempFile ());
 
     final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
@@ -662,7 +671,8 @@ public final class BCCryptoHelper implements ICryptoHelper
                                                 aX509Cert) ? "Verifying signature using the provided certificate (partnership)"
                                                            : "Verifying signature using the certificate contained in the MIME body part");
 
-    // Call before validity check to retrieve the information about the details
+    // Call before validity check to retrieve the information about the
+    // details
     // outside
     if (aEffectiveCertificateConsumer != null)
       aEffectiveCertificateConsumer.accept (aRealX509Cert);
