@@ -42,9 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stream to read a chuncked body stream. Input stream should be at the
- * beginning of a chunk, i.e. at the body beginning (after the end of headers
- * marker). THe resulting stream reads the data through the chunks.
+ * Stream to read a chunked body stream. Input stream should be at the beginning
+ * of a chunk, i.e. at the body beginning (after the end of headers marker). THe
+ * resulting stream reads the data through the chunks.
  *
  * @author Ziv Harpaz
  */

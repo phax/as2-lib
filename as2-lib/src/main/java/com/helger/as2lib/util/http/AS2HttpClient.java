@@ -132,23 +132,25 @@ public class AS2HttpClient
   }
 
   /**
-   * @return URL
+   * @return The URL to send to. Should be the same as the one passed in the
+   *         constructor. Never <code>null</code>.
    * @throws AS2Exception
-   *         in case of error
+   *         in case of error (e.g. if the URI could not be converted to a URL).
    */
   @Nonnull
   public URL getURL () throws AS2Exception
   {
-    URI uri = null;
+    URI aURI = null;
     try
     {
-      uri = m_aRequestBuilder.getUri ();
-      return uri.toURL ();
+      aURI = m_aRequestBuilder.getUri ();
+      return aURI.toURL ();
     }
     catch (final MalformedURLException ex)
     {
       if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Failed to get URL from connection, URI: " + uri.toASCIIString (), ex);
+        LOGGER.error ("Failed to get URL from connection" + (aURI != null ? ", URI: " + aURI.toASCIIString () : ""),
+                      ex);
       throw new AS2Exception (ex.getCause ());
     }
   }
@@ -304,14 +306,14 @@ public class AS2HttpClient
   {
     try
     {
-      if (null != aProxy)
+      if (aProxy != null)
       {
         final SocketAddress aSocketAddress = aProxy.address ();
         if (aSocketAddress instanceof InetSocketAddress)
         {
           final InetSocketAddress aISocketAdress = (InetSocketAddress) aSocketAddress;
           final InetAddress aInetAddr = aISocketAdress.getAddress ();
-          if (null != aInetAddr)
+          if (aInetAddr != null)
           {
             final HttpHost aHost = new HttpHost (aInetAddr, aISocketAdress.getPort ());
             aConfBuilder.setProxy (aHost);
