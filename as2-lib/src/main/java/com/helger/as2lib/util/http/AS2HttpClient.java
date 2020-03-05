@@ -140,17 +140,15 @@ public class AS2HttpClient
   @Nonnull
   public URL getURL () throws AS2Exception
   {
-    URI aURI = null;
+    final URI aURI = m_aRequestBuilder.getUri ();
     try
     {
-      aURI = m_aRequestBuilder.getUri ();
       return aURI.toURL ();
     }
     catch (final MalformedURLException ex)
     {
       if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Failed to get URL from connection" + (aURI != null ? ", URI: " + aURI.toASCIIString () : ""),
-                      ex);
+        LOGGER.error ("Failed to get URL from connection, URI: " + aURI.toASCIIString (), ex);
       throw new AS2Exception (ex.getCause ());
     }
   }
