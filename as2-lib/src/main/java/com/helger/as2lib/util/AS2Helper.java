@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.util;
 
-import static com.helger.as2lib.cert.ECertificatePartnershipType.RECEIVER;
-
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -187,7 +185,7 @@ public final class AS2Helper
       final ICertificateFactory aCertFactory = aSession.getCertificateFactory ();
       try
       {
-        final X509Certificate aMdnInitiatorCert = aCertFactory.getCertificate(aMdn, RECEIVER);
+        final X509Certificate aMdnInitiatorCert = aCertFactory.getCertificate(aMdn, ECertificatePartnershipType.RECEIVER);
         final PrivateKey aMdnInitiatorKey = aCertFactory.getPrivateKey(aMdnInitiatorCert);
         final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
                                                                     aMdnInitiatorCert,
