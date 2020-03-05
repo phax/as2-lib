@@ -185,8 +185,8 @@ public final class AS2Helper
       final ICertificateFactory aCertFactory = aSession.getCertificateFactory ();
       try
       {
-        final X509Certificate aMdnInitiatorCert = aCertFactory.getCertificate(aMdn, ECertificatePartnershipType.RECEIVER);
-        final PrivateKey aMdnInitiatorKey = aCertFactory.getPrivateKey(aMdnInitiatorCert);
+        final X509Certificate aMdnInitiatorCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.RECEIVER);
+        final PrivateKey aMdnInitiatorKey = aCertFactory.getPrivateKey (aMdnInitiatorCert);
         final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
                                                                     aMdnInitiatorCert,
                                                                     aMdnInitiatorKey,
