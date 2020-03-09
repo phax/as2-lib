@@ -272,7 +272,7 @@ public final class HTTPHelper
     final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
 
     byte [] aBytePayLoad = null;
-    DataSource aPayload;
+    final DataSource aPayload;
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
     if (sContentLength == null)
     {

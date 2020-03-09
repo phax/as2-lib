@@ -64,8 +64,8 @@ public class Partnership implements Serializable
   public static final String DEFAULT_NAME = "auto-created-dummy";
 
   private String m_sName;
-  private final StringMap m_aSenderIDs = new StringMap ();
-  private final StringMap m_aReceiverIDs = new StringMap ();
+  private final StringMap m_aSenderAttrs = new StringMap ();
+  private final StringMap m_aReceiverAttrs = new StringMap ();
   private final StringMap m_aAttributes = new StringMap ();
 
   public Partnership (@Nonnull final String sName)
@@ -73,18 +73,18 @@ public class Partnership implements Serializable
     setName (sName);
   }
 
-  public final void setName (@Nonnull final String sName)
-  {
-    m_sName = ValueEnforcer.notNull (sName, "Name");
-  }
-
   /**
    * @return The partnership name. Never <code>null</code>.
    */
   @Nonnull
-  public String getName ()
+  public final String getName ()
   {
     return m_sName;
+  }
+
+  public final void setName (@Nonnull final String sName)
+  {
+    m_sName = ValueEnforcer.notNull (sName, "Name");
   }
 
   /**
@@ -98,7 +98,7 @@ public class Partnership implements Serializable
    */
   public void setSenderID (@Nonnull final String sKey, @Nullable final String sValue)
   {
-    m_aSenderIDs.putIn (sKey, sValue);
+    m_aSenderAttrs.putIn (sKey, sValue);
   }
 
   /**
@@ -149,7 +149,7 @@ public class Partnership implements Serializable
    */
   public void addSenderIDs (@Nullable final Map <String, String> aMap)
   {
-    m_aSenderIDs.putAllIn (aMap);
+    m_aSenderAttrs.putAllIn (aMap);
   }
 
   /**
@@ -163,7 +163,7 @@ public class Partnership implements Serializable
   @Nullable
   public String getSenderID (@Nullable final String sKey)
   {
-    return m_aSenderIDs.getAsString (sKey);
+    return m_aSenderAttrs.getAsString (sKey);
   }
 
   /**
@@ -209,7 +209,7 @@ public class Partnership implements Serializable
    */
   public boolean containsSenderID (@Nullable final String sKey)
   {
-    return m_aSenderIDs.containsKey (sKey);
+    return m_aSenderAttrs.containsKey (sKey);
   }
 
   /**
@@ -252,7 +252,7 @@ public class Partnership implements Serializable
   @ReturnsMutableCopy
   public IStringMap getAllSenderIDs ()
   {
-    return m_aSenderIDs.getClone ();
+    return m_aSenderAttrs.getClone ();
   }
 
   /**
@@ -266,7 +266,7 @@ public class Partnership implements Serializable
    */
   public void setReceiverID (@Nonnull final String sKey, @Nullable final String sValue)
   {
-    m_aReceiverIDs.putIn (sKey, sValue);
+    m_aReceiverAttrs.putIn (sKey, sValue);
   }
 
   /**
@@ -317,7 +317,7 @@ public class Partnership implements Serializable
    */
   public void addReceiverIDs (@Nullable final Map <String, String> aMap)
   {
-    m_aReceiverIDs.putAllIn (aMap);
+    m_aReceiverAttrs.putAllIn (aMap);
   }
 
   /**
@@ -331,7 +331,7 @@ public class Partnership implements Serializable
   @Nullable
   public String getReceiverID (@Nullable final String sKey)
   {
-    return m_aReceiverIDs.getAsString (sKey);
+    return m_aReceiverAttrs.getAsString (sKey);
   }
 
   /**
@@ -377,7 +377,7 @@ public class Partnership implements Serializable
    */
   public boolean containsReceiverID (@Nullable final String sKey)
   {
-    return m_aReceiverIDs.containsKey (sKey);
+    return m_aReceiverAttrs.containsKey (sKey);
   }
 
   /**
@@ -420,7 +420,7 @@ public class Partnership implements Serializable
   @ReturnsMutableCopy
   public IStringMap getAllReceiverIDs ()
   {
-    return m_aReceiverIDs.getClone ();
+    return m_aReceiverAttrs.getClone ();
   }
 
   /**
@@ -958,8 +958,8 @@ public class Partnership implements Serializable
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    return compareIDs (m_aSenderIDs, aPartnership.m_aSenderIDs) &&
-           compareIDs (m_aReceiverIDs, aPartnership.m_aReceiverIDs);
+    return compareIDs (m_aSenderAttrs, aPartnership.m_aSenderAttrs) &&
+           compareIDs (m_aReceiverAttrs, aPartnership.m_aReceiverAttrs);
   }
 
   /**
@@ -1004,8 +1004,8 @@ public class Partnership implements Serializable
     if (aPartnership != this)
     {
       m_sName = aPartnership.getName ();
-      m_aSenderIDs.putAllIn (aPartnership.m_aSenderIDs);
-      m_aReceiverIDs.putAllIn (aPartnership.m_aReceiverIDs);
+      m_aSenderAttrs.putAllIn (aPartnership.m_aSenderAttrs);
+      m_aReceiverAttrs.putAllIn (aPartnership.m_aReceiverAttrs);
       m_aAttributes.putAllIn (aPartnership.m_aAttributes);
     }
   }
@@ -1014,8 +1014,8 @@ public class Partnership implements Serializable
   public String toString ()
   {
     return new ToStringGenerator (this).append ("name", m_sName)
-                                       .append ("senderIDs", m_aSenderIDs)
-                                       .append ("receiverIDs", m_aReceiverIDs)
+                                       .append ("senderIDs", m_aSenderAttrs)
+                                       .append ("receiverIDs", m_aReceiverAttrs)
                                        .append ("attributes", m_aAttributes)
                                        .getToString ();
   }

@@ -61,19 +61,8 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     aMsg.setMDN (this);
   }
 
-  @Nullable
-  public MimeBodyPart getData ()
-  {
-    return m_aData;
-  }
-
-  public void setData (@Nullable final MimeBodyPart aData)
-  {
-    m_aData = aData;
-  }
-
   @Nonnull
-  public IMessage getMessage ()
+  public final IMessage getMessage ()
   {
     return m_aMessage;
   }
@@ -85,12 +74,23 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   }
 
   @Nullable
-  public String getText ()
+  public final MimeBodyPart getData ()
+  {
+    return m_aData;
+  }
+
+  public final void setData (@Nullable final MimeBodyPart aData)
+  {
+    m_aData = aData;
+  }
+
+  @Nullable
+  public final String getText ()
   {
     return m_sText;
   }
 
-  public void setText (@Nullable final String sText)
+  public final void setText (@Nullable final String sText)
   {
     m_sText = sText;
   }
@@ -124,9 +124,9 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
   {
     // Avoid endless loop when we reference Message which again references MDN
     return ToStringGenerator.getDerived (super.toString ())
-                            .append ("message", m_aMessage != null ? m_aMessage.getMessageID () : null)
-                            .append ("data", m_aData)
-                            .append ("text", m_sText)
+                            .append ("Message", m_aMessage != null ? m_aMessage.getMessageID () : null)
+                            .append ("Data", m_aData)
+                            .append ("Text", m_sText)
                             .getToString ();
   }
 
