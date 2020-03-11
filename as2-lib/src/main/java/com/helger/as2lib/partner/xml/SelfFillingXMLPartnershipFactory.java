@@ -36,8 +36,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
+import com.helger.as2lib.partner.Partnership;
+import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.commons.annotation.OverrideOnDemand;
 
 /**
@@ -62,12 +63,7 @@ public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
   @OverridingMethodsMustInvokeSuper
   protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
-    // Ensure the X509 key is contained for certificate store alias retrieval
-    if (!aPartnership.containsSenderX509Alias ())
-      aPartnership.setSenderX509Alias (aPartnership.getSenderAS2ID ());
-
-    if (!aPartnership.containsReceiverX509Alias ())
-      aPartnership.setReceiverX509Alias (aPartnership.getReceiverAS2ID ());
+    SelfFillingPartnershipFactory.ensureUsablePartnership (aPartnership);
   }
 
   @Override

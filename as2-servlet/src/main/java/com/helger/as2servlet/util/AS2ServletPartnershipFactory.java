@@ -16,11 +16,7 @@
  */
 package com.helger.as2servlet.util;
 
-import javax.annotation.Nonnull;
-
-import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
 
 /**
@@ -31,23 +27,6 @@ import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
  */
 public class AS2ServletPartnershipFactory extends SelfFillingXMLPartnershipFactory
 {
-  @Override
-  protected void onBeforeAddPartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
-  {
-    super.onBeforeAddPartnership (aPartnership);
-
-    // Ensure a nice name
-    if (Partnership.DEFAULT_NAME.equals (aPartnership.getName ()))
-      aPartnership.setName (aPartnership.getSenderAS2ID () + "-" + aPartnership.getReceiverAS2ID ());
-
-    // Ensure a signing algorithm is present in the partnership. This is
-    // relevant for MIC calculation, so that the headers are included
-    // The algorithm itself does not really matter as for sending the algorithm
-    // is specified anyway and for the MIC it is specified explicitly
-    if (aPartnership.getSigningAlgorithm () == null)
-      aPartnership.setSigningAlgorithm (ECryptoAlgorithmSign.DIGEST_SHA_1);
-  }
-
   @Override
   protected void markAsChanged () throws AS2Exception
   {
