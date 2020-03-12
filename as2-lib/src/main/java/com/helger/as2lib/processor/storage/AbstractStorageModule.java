@@ -51,6 +51,7 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.charset.CharsetHelper;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.io.file.FilenameHelper;
@@ -163,20 +164,23 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   protected abstract String getFilename (IMessage aMsg, String sFileParam) throws AS2InvalidParameterException;
 
   /**
-   * @since 2007-06-01
+   * Not final - see #105
+   * 
    * @param aMsg
    *        The source message
    * @param sFileParam
    *        The parameter name including the filename
    * @return File The {@link File} to be used
+   * @since 2007-06-01
    * @throws IOException
    *         In case of IO error
    * @throws AS2Exception
    *         In case of error
    */
   @Nonnull
-  protected final File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException,
-                                                                                                 AS2Exception
+  @OverrideOnDemand
+  protected File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException,
+                                                                                           AS2Exception
   {
     final String sFilename = getFilename (aMsg, sFileParam);
 
