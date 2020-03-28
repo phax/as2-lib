@@ -87,7 +87,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
 
-    return m_aRWLock.readLockedThrowing ( () -> {
+    return m_aRWLock.readLockedGetThrowing ( () -> {
       Partnership aRealPartnership = m_aPartnerships.getPartnershipByName (aPartnership.getName ());
       if (aRealPartnership == null)
       {
@@ -105,27 +105,27 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nullable
   public Partnership getPartnershipByName (@Nullable final String sName)
   {
-    return m_aRWLock.readLocked ( () -> m_aPartnerships.getPartnershipByName (sName));
+    return m_aRWLock.readLockedGet ( () -> m_aPartnerships.getPartnershipByName (sName));
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsSet <String> getAllPartnershipNames ()
   {
-    return m_aRWLock.readLocked (m_aPartnerships::getAllPartnershipNames);
+    return m_aRWLock.readLockedGet (m_aPartnerships::getAllPartnershipNames);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <Partnership> getAllPartnerships ()
   {
-    return m_aRWLock.readLocked (m_aPartnerships::getAllPartnerships);
+    return m_aRWLock.readLockedGet (m_aPartnerships::getAllPartnerships);
   }
 
   @Nonnull
   public IPartnershipMap getPartnershipMap ()
   {
-    return m_aRWLock.readLocked ( () -> m_aPartnerships);
+    return m_aRWLock.readLockedGet ( () -> m_aPartnerships);
   }
 
   protected final void setPartnerships (@Nonnull final PartnershipMap aPartnerships) throws AS2Exception
@@ -139,7 +139,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nonnull
   public final EChange addPartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
-    return m_aRWLock.writeLockedThrowing ( () -> {
+    return m_aRWLock.writeLockedGetThrowing ( () -> {
       if (m_aPartnerships.addPartnership (aPartnership).isUnchanged ())
         return EChange.UNCHANGED;
       markAsChanged ();
@@ -150,7 +150,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   @Nonnull
   public final EChange removePartnership (@Nonnull final Partnership aPartnership) throws AS2Exception
   {
-    return m_aRWLock.writeLockedThrowing ( () -> {
+    return m_aRWLock.writeLockedGetThrowing ( () -> {
       if (m_aPartnerships.removePartnership (aPartnership).isUnchanged ())
         return EChange.UNCHANGED;
       markAsChanged ();

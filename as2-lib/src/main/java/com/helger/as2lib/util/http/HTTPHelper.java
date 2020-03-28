@@ -192,7 +192,7 @@ public final class HTTPHelper
   @Nullable
   public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
-    return s_aRWLock.readLocked ( () -> s_aHTTPIncomingDumperFactory.get ());
+    return s_aRWLock.readLockedGet ( () -> s_aHTTPIncomingDumperFactory.get ());
   }
 
   /**
@@ -203,7 +203,7 @@ public final class HTTPHelper
   @Nonnull
   public static ISupplier <? extends IHTTPIncomingDumper> getHTTPIncomingDumperFactory ()
   {
-    return s_aRWLock.readLocked ( () -> s_aHTTPIncomingDumperFactory);
+    return s_aRWLock.readLockedGet ( () -> s_aHTTPIncomingDumperFactory);
   }
 
   /**
@@ -216,7 +216,7 @@ public final class HTTPHelper
   public static void setHTTPIncomingDumperFactory (@Nonnull final ISupplier <? extends IHTTPIncomingDumper> aHttpDumperFactory)
   {
     ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
-    s_aRWLock.writeLocked ( () -> s_aHTTPIncomingDumperFactory = aHttpDumperFactory);
+    s_aRWLock.writeLockedGet ( () -> s_aHTTPIncomingDumperFactory = aHttpDumperFactory);
   }
 
   /**

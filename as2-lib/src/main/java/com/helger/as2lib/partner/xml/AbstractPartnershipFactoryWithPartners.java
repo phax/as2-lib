@@ -75,7 +75,7 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
   @Nonnull
   public EChange removePartner (@Nullable final String sPartnerName) throws AS2Exception
   {
-    return m_aRWLock.writeLockedThrowing ( () -> {
+    return m_aRWLock.writeLockedGetThrowing ( () -> {
       if (m_aPartners.removePartner (sPartnerName).isUnchanged ())
         return EChange.UNCHANGED;
       markAsChanged ();
@@ -86,27 +86,27 @@ public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPar
   @Nullable
   public Partner getPartnerOfName (@Nullable final String sPartnerName)
   {
-    return m_aRWLock.readLocked ( () -> m_aPartners.getPartnerOfName (sPartnerName));
+    return m_aRWLock.readLockedGet ( () -> m_aPartners.getPartnerOfName (sPartnerName));
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsSet <String> getAllPartnerNames ()
   {
-    return m_aRWLock.readLocked (m_aPartners::getAllPartnerNames);
+    return m_aRWLock.readLockedGet (m_aPartners::getAllPartnerNames);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public ICommonsList <Partner> getAllPartners ()
   {
-    return m_aRWLock.readLocked (m_aPartners::getAllPartners);
+    return m_aRWLock.readLockedGet (m_aPartners::getAllPartners);
   }
 
   @Nonnull
   public IPartnerMap getPartnerMap ()
   {
-    return m_aRWLock.readLocked ( () -> m_aPartners);
+    return m_aRWLock.readLockedGet ( () -> m_aPartners);
   }
 
   @Override

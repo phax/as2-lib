@@ -126,7 +126,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   public final String getKeyStoreType ()
   {
     debugLog ( () -> "getKeyStoreType ()");
-    final String ret = m_aRWLock.readLocked ( () -> attrs ().getAsString (ATTR_TYPE));
+    final String ret = m_aRWLock.readLockedGet ( () -> attrs ().getAsString (ATTR_TYPE));
     debugLog ( () -> "getKeyStoreType -> " + ret);
     return ret;
   }
@@ -140,22 +140,22 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   {
     debugLog ( () -> "setKeyStoreType (" + sKeyStoreType + ")");
     if (sKeyStoreType == null)
-      m_aRWLock.writeLocked ( () -> attrs ().remove (ATTR_TYPE));
+      m_aRWLock.writeLockedGet ( () -> attrs ().remove (ATTR_TYPE));
     else
-      m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_TYPE, sKeyStoreType));
+      m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_TYPE, sKeyStoreType));
   }
 
   public void setFilename (@Nullable final String sFilename)
   {
     debugLog ( () -> "setFilename (" + sFilename + ")");
-    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
+    m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
   }
 
   @Nullable
   public String getFilename ()
   {
     debugLog ( () -> "getFilename ()");
-    final String ret = m_aRWLock.readLocked ( () -> attrs ().getAsString (ATTR_FILENAME));
+    final String ret = m_aRWLock.readLockedGet ( () -> attrs ().getAsString (ATTR_FILENAME));
     debugLog ( () -> "getFilename -> " + ret);
     return ret;
   }
@@ -163,14 +163,14 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   public void setPassword (@Nullable final String sPassword)
   {
     debugLog ( () -> "setPassword (***)");
-    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_PASSWORD, sPassword));
+    m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_PASSWORD, sPassword));
   }
 
   @Nullable
   public char [] getPassword ()
   {
     debugLog ( () -> "getPassword ()");
-    final char [] ret = m_aRWLock.readLocked ( () -> attrs ().getAsCharArray (ATTR_PASSWORD));
+    final char [] ret = m_aRWLock.readLockedGet ( () -> attrs ().getAsCharArray (ATTR_PASSWORD));
     debugLog ( () -> "getPassword -> ***");
     return ret;
   }
@@ -178,14 +178,14 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   public void setSaveChangesToFile (final boolean bSaveChangesToFile)
   {
     debugLog ( () -> "setSaveChangesToFile (" + bSaveChangesToFile + ")");
-    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
+    m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
   }
 
   public boolean isSaveChangesToFile ()
   {
     debugLog ( () -> "isSaveChangesToFile ()");
-    final boolean ret = m_aRWLock.readLocked ( () -> attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE,
-                                                                            DEFAULT_SAVE_CHANGES_TO_FILE));
+    final boolean ret = m_aRWLock.readLockedBoolean ( () -> attrs ().getAsBoolean (ATTR_SAVE_CHANGES_TO_FILE,
+                                                                                   DEFAULT_SAVE_CHANGES_TO_FILE));
     debugLog ( () -> "isSaveChangesToFile -> " + ret);
     return ret;
   }
@@ -264,7 +264,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   @Nonnull
   public KeyStore getKeyStore ()
   {
-    final KeyStore ret = m_aRWLock.readLocked ( () -> m_aKeyStore);
+    final KeyStore ret = m_aRWLock.readLockedGet ( () -> m_aKeyStore);
     if (ret == null)
       throw new IllegalStateException ("No keystore present");
     return ret;

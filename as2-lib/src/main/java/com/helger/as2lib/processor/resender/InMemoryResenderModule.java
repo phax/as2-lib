@@ -103,7 +103,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
 
     // Build the item and add it to the vector
     final ResendItem aItem = new ResendItem (sResendAction, nRetries, aMsg, getResendDelayMS ());
-    m_aRWLock.writeLocked ( () -> m_aItems.add (aItem));
+    m_aRWLock.writeLockedBoolean ( () -> m_aItems.add (aItem));
 
     LOGGER.info ("Message put in resend queue" + aMsg.getLoggingText ());
   }
@@ -129,7 +129,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
       // Finally remove from list
-      m_aRWLock.writeLocked ( () -> m_aItems.remove (aItem));
+      m_aRWLock.writeLockedBoolean ( () -> m_aItems.remove (aItem));
     }
     catch (final AS2Exception ex)
     {
@@ -160,7 +160,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   @Nonnegative
   public int getResendItemCount ()
   {
-    return m_aRWLock.readLocked (m_aItems::size);
+    return m_aRWLock.readLockedInt (m_aItems::size);
   }
 
   /**
@@ -181,7 +181,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   @ReturnsMutableCopy
   public ICommonsList <ResendItem> getAllResendItems ()
   {
-    return m_aRWLock.readLocked (m_aItems::getClone);
+    return m_aRWLock.readLockedGet (m_aItems::getClone);
   }
 
   @Override
