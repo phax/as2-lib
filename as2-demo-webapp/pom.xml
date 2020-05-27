@@ -60,12 +60,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.helger</groupId>
+      <groupId>com.helger.photon</groupId>
       <artifactId>ph-oton-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.helger</groupId>
+      <groupId>com.helger.photon</groupId>
       <artifactId>ph-oton-jetty</artifactId>
       <scope>test</scope>
     </dependency>

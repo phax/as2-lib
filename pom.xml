@@ -95,9 +95,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>com.helger</groupId>
+        <groupId>com.helger.photon</groupId>
         <artifactId>ph-oton-parent-pom</artifactId>
-        <version>8.2.4</version>
+        <version>8.2.5</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
