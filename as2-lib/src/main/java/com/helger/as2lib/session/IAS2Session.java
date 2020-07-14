@@ -69,8 +69,7 @@ public interface IAS2Session extends Serializable
    * @throws AS2ComponentDuplicateException
    *         In case a component with the same ID is already present
    */
-  void addComponent (@Nonnull @Nonempty String sComponentID,
-                     @Nonnull IDynamicComponent aComponent) throws AS2ComponentDuplicateException;
+  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent) throws AS2ComponentDuplicateException;
 
   /**
    * Gets the <code>Component</code> currently registered with an ID
@@ -189,4 +188,22 @@ public interface IAS2Session extends Serializable
    * @see #getHttpProxy()
    */
   void setHttpProxy (@Nullable Proxy aHttpProxy);
+
+  /**
+   * @return The AS2 version to use. The default is
+   *         {@link com.helger.as2lib.util.CAS2Header#DEFAULT_AS2_VERSION}.
+   *         Neither <code>null</code> nor empty.
+   * @since 4.6.1
+   */
+  @Nonnull
+  @Nonempty
+  String getAS2VersionID ();
+
+  /**
+   * @param sAS2Version
+   *        Set the AS2 version to use. May neither be <code>null</code> nor
+   *        empty.
+   * @since 4.6.1
+   */
+  void setAS2VersionID (@Nonnull @Nonempty String sAS2Version);
 }

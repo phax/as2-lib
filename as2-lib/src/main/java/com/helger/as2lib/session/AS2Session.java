@@ -44,6 +44,7 @@ import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
+import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -72,6 +73,7 @@ public class AS2Session implements IAS2Session
   private boolean m_bCryptoSignIncludeCertificateInBodyPart = DEFAULT_CRYPTO_SIGN_INCLUDE_CERTIFICATE_IN_BODY_PART;
   private boolean m_bCryptoVerifyUseCertificateInBodyPart = DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART;
   private Proxy m_aHttpProxy;
+  private String m_sAS2VersionID = CAS2Header.DEFAULT_AS2_VERSION;
 
   public static void makeAS2CommandMapChanges ()
   {
@@ -81,8 +83,7 @@ public class AS2Session implements IAS2Session
      * information of specific mime types.
      */
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
-                            DispositionDataContentHandler.class.getName ());
+    aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" + DispositionDataContentHandler.class.getName ());
     AccessControllerHelper.run ( () -> {
       CommandMap.setDefaultCommandMap (aCommandMap);
       return null;
@@ -188,15 +189,27 @@ public class AS2Session implements IAS2Session
     m_aHttpProxy = aHttpProxy;
   }
 
+  @Nonnull
+  @Nonempty
+  public String getAS2VersionID ()
+  {
+    return m_sAS2VersionID;
+  }
+
+  public void setAS2VersionID (@Nonnull @Nonempty final String sAS2Version)
+  {
+    ValueEnforcer.notEmpty (sAS2Version, "AS2Version");
+    m_sAS2VersionID = sAS2Version;
+  }
+
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("components", m_aComponents)
-                                       .append ("CryptoSignIncludeCertificateInBodyPart",
-                                                m_bCryptoSignIncludeCertificateInBodyPart)
-                                       .append ("CryptoVerifyUseCertificateInBodyPart",
-                                                m_bCryptoVerifyUseCertificateInBodyPart)
+    return new ToStringGenerator (this).append ("Components", m_aComponents)
+                                       .append ("CryptoSignIncludeCertificateInBodyPart", m_bCryptoSignIncludeCertificateInBodyPart)
+                                       .append ("CryptoVerifyUseCertificateInBodyPart", m_bCryptoVerifyUseCertificateInBodyPart)
                                        .append ("HttpProxy", m_aHttpProxy)
+                                       .append ("AS2VersionID", m_sAS2VersionID)
                                        .getToString ();
   }
 }
