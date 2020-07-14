@@ -825,7 +825,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Transfer the data
       final StopWatch aSW = StopWatch.createdStarted ();
-      final long nBytes = aConn.send (aMsgIS, eCTE, aOutgoingDumper);
+      final long nBytes = aConn.send (aMsgIS, eCTE, aOutgoingDumper, aResHelper);
       aSW.stop ();
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("AS2 Message transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());

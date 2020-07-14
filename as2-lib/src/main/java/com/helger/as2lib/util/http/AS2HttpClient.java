@@ -51,6 +51,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
 import org.apache.http.client.config.RequestConfig;
@@ -65,6 +66,7 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -79,6 +81,7 @@ import com.helger.mail.cte.EContentTransferEncoding;
  * Http connection, Implemented as HttpClient.
  *
  * @author Ziv Harpaz
+ * @author Philip Helger
  */
 public class AS2HttpClient
 {
@@ -160,6 +163,8 @@ public class AS2HttpClient
    *        Content-Transfer-Encoding to be used. May not be <code>null</code>.
    * @param aOutgoingDumper
    *        Optional outgoing dumper
+   * @param aResHelper
+   *        Resource helper
    * @return bytes sent. Must be &ge; 0.
    * @throws IOException
    *         In case of error
@@ -167,7 +172,8 @@ public class AS2HttpClient
   @Nonnegative
   public long send (@Nonnull final InputStream aISToSend,
                     @Nullable final EContentTransferEncoding eCTE,
-                    @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws IOException
+                    @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
+                    @Nonnull final AS2ResourceHelper aResHelper) throws IOException
   {
     final CountingInputStream aCIS = new CountingInputStream (aISToSend);
     final InputStreamEntity aISE = new InputStreamEntity (aCIS)
@@ -184,9 +190,9 @@ public class AS2HttpClient
       {
         // Use MIME encoding here
         try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-            final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                    eCTE.getID ())
-                                                         : aDebugOS)
+             final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                                     eCTE.getID ())
+                                                          : aDebugOS)
         {
           super.writeTo (aEncodedOS);
         }
@@ -196,7 +202,9 @@ public class AS2HttpClient
         }
       }
     };
-    m_aRequestBuilder.setEntity (aISE);
+    // Use a temporary file to get the Content length
+    final HttpEntity aEntity = aResHelper.createRepeatableHttpEntity (aISE);
+    m_aRequestBuilder.setEntity (aEntity);
     final HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build ();
     m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
     return aCIS.getBytesRead ();
@@ -299,8 +307,7 @@ public class AS2HttpClient
    * @param aProxy
    *        My by <code>null</code>, in such case nothing is done.
    */
-  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
-                                                @Nullable final Proxy aProxy)
+  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder, @Nullable final Proxy aProxy)
   {
     try
     {
@@ -319,10 +326,7 @@ public class AS2HttpClient
           else
           {
             if (LOGGER.isDebugEnabled ())
-              LOGGER.debug ("No address in proxy:" +
-                            aProxy.address () +
-                            "-" +
-                            (null != aProxy.type () ? aProxy.type ().name () : "null"));
+              LOGGER.debug ("No address in proxy:" + aProxy.address () + "-" + (null != aProxy.type () ? aProxy.type ().name () : "null"));
           }
         }
       }

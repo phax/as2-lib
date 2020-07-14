@@ -54,6 +54,7 @@ import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2IOHelper;
+import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
@@ -71,18 +72,15 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   public AsynchMDNSenderModule ()
   {}
 
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorSenderModule.DO_SEND_ASYNC_MDN) && aMsg instanceof AS2Message;
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition,
-                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper) throws AS2Exception,
-                                                                                  IOException,
-                                                                                  MessagingException
+                             @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
+                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception, IOException, MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -124,7 +122,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       // Transfer the data
       final StopWatch aSW = StopWatch.createdStarted ();
-      final long nBytes = aConn.send (aMsgIS, (EContentTransferEncoding) null, aOutgoingDumper);
+      final long nBytes = aConn.send (aMsgIS, (EContentTransferEncoding) null, aOutgoingDumper, aResHelper);
       aSW.stop ();
 
       if (LOGGER.isInfoEnabled ())
@@ -138,22 +136,12 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       if (AS2HttpClient.isErrorResponseCode (nResponseCode))
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("sent AsyncMDN [" +
-                        aDisposition.getAsString () +
-                        "] Fail(" +
-                        nResponseCode +
-                        ") " +
-                        aMsg.getLoggingText ());
+          LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail(" + nResponseCode + ") " + aMsg.getLoggingText ());
         throw new AS2HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
       }
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("sent AsyncMDN [" +
-                     aDisposition.getAsString () +
-                     "] OK(" +
-                     nResponseCode +
-                     ") " +
-                     aMsg.getLoggingText ());
+        LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK(" + nResponseCode + ") " + aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try
@@ -176,7 +164,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
                       @Nonnull final IMessage aBaseMsg,
                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
-    try
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
       final AS2Message aMsg = (AS2Message) aBaseMsg;
 
@@ -189,7 +177,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
 
       try (final IHTTPOutgoingDumper aOutgoingDumper = getHttpOutgoingDumper (aMsg))
       {
-        _sendViaHTTP (aMsg, aDisposition, aOutgoingDumper);
+        _sendViaHTTP (aMsg, aDisposition, aOutgoingDumper, aResHelper);
       }
       catch (final AS2HttpResponseException ex)
       {
