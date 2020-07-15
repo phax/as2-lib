@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.11.1</version>
+    <version>1.11.2</version>
   </parent>
   <groupId>com.helger.as2</groupId>
   <artifactId>as2-lib-parent-pom</artifactId>
@@ -76,14 +76,14 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>9.4.5</version>
+        <version>9.4.6</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>9.3.0</version>
+        <version>9.3.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -105,7 +105,7 @@
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
-        <version>4.0.4</version>
+        <version>4.0.5</version>
       </dependency>
       <dependency>
         <groupId>de.flapdoodle.embed</groupId>
