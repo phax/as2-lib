@@ -58,9 +58,7 @@ public class AS2ReceiveXServletHandlerFileBasedConfig extends AbstractAS2Receive
   {
     final String sConfigurationFilename = aInitParams.get (SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME);
     if (StringHelper.hasNoText (sConfigurationFilename))
-      throw new ServletException ("Servlet Init-Parameter '" +
-                                  SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME +
-                                  "' is missing or empty!");
+      throw new ServletException ("Servlet Init-Parameter '" + SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME + "' is missing or empty!");
 
     try
     {
@@ -74,8 +72,7 @@ public class AS2ReceiveXServletHandlerFileBasedConfig extends AbstractAS2Receive
 
   @Override
   @Nonnull
-  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws AS2Exception,
-                                                                                                  ServletException
+  protected AS2Session createAS2Session (@Nonnull final ICommonsMap <String, String> aInitParams) throws AS2Exception, ServletException
   {
     // Get configuration file
     final File aConfigurationFile = getConfigurationFile (aInitParams);

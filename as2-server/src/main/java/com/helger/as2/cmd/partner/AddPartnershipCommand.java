@@ -68,8 +68,7 @@ public class AddPartnershipCommand extends AbstractAliasedPartnershipsCommand
   }
 
   @Override
-  public CommandResult execute (final IPartnershipFactoryWithPartners partFx,
-                                final Object [] params) throws AS2Exception
+  public CommandResult execute (final IPartnershipFactoryWithPartners partFx, final Object [] params) throws AS2Exception
   {
     if (params.length < 3)
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());
@@ -115,8 +114,7 @@ public class AddPartnershipCommand extends AbstractAliasedPartnershipsCommand
     }
 
     final XMLPartnershipFactory aXMLPartnershipFactory = (XMLPartnershipFactory) partFx;
-    final Partnership aPartnership = aXMLPartnershipFactory.loadPartnership (root,
-                                                                             aXMLPartnershipFactory.getPartnerMap ());
+    final Partnership aPartnership = aXMLPartnershipFactory.loadPartnership (root, aXMLPartnershipFactory.getPartnerMap ());
     if (aXMLPartnershipFactory.getPartnershipByName (aPartnership.getName ()) != null)
       return new CommandResult (ECommandResultType.TYPE_ERROR,
                                 "A partnership with name '" + aPartnership.getName () + "' is already present!");

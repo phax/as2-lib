@@ -958,8 +958,7 @@ public class Partnership implements Serializable
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    return compareIDs (m_aSenderAttrs, aPartnership.m_aSenderAttrs) &&
-           compareIDs (m_aReceiverAttrs, aPartnership.m_aReceiverAttrs);
+    return compareIDs (m_aSenderAttrs, aPartnership.m_aSenderAttrs) && compareIDs (m_aReceiverAttrs, aPartnership.m_aReceiverAttrs);
   }
 
   /**

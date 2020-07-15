@@ -56,8 +56,7 @@ public final class DispositionOptionsTest
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("optional", aDO.getMICAlgImportance ());
     assertEquals ("sha1, md5", aDO.getMICAlgAsString ());
-    assertEquals ("signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1, md5",
-                  aDO.getAsString ());
+    assertEquals ("signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1, md5", aDO.getAsString ());
 
     aDO = DispositionOptions.createFromString ("signed-receipt-protocol=required,pkcs7-signature; signed-receipt-micalg=required,sha1");
     assertNotNull (aDO);
@@ -65,8 +64,7 @@ public final class DispositionOptionsTest
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
     assertEquals ("sha1", aDO.getMICAlgAsString ());
-    assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1",
-                  aDO.getAsString ());
+    assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1", aDO.getAsString ());
 
     // With additional whitespaces
     aDO = DispositionOptions.createFromString ("   signed-receipt-protocol   =   required   ,   pkcs7-signature   ;   signed-receipt-micalg   =   required   ,   sha1");
@@ -75,8 +73,7 @@ public final class DispositionOptionsTest
     assertEquals ("pkcs7-signature", aDO.getProtocol ());
     assertEquals ("required", aDO.getMICAlgImportance ());
     assertEquals ("sha1", aDO.getMICAlgAsString ());
-    assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1",
-                  aDO.getAsString ());
+    assertEquals ("signed-receipt-protocol=required, pkcs7-signature; signed-receipt-micalg=required, sha1", aDO.getAsString ());
 
     // Only protocol
     aDO = DispositionOptions.createFromString ("signed-receipt-protocol=required,pkcs7-signature");

@@ -65,9 +65,9 @@ public final class AS2KeyStoreHelper
 
   @Nonnull
   public static AS2KeyStore readKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
-                                              @Nonnull final String sFilename,
-                                              @Nonnull final char [] aPassword,
-                                              @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
+                                          @Nonnull final String sFilename,
+                                          @Nonnull final char [] aPassword,
+                                          @Nonnull final ICryptoHelper aCryptoHelper) throws Exception
   {
     final InputStream aIS = FileHelper.getInputStream (new File (sFilename));
     if (aIS == null)

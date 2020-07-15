@@ -115,20 +115,14 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
   protected void loadCertificates (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("  loading certificates");
-    final ICertificateFactory certFx = AS2XMLHelper.createComponent (aElement,
-                                                                     ICertificateFactory.class,
-                                                                     this,
-                                                                     m_sBaseDirectory);
+    final ICertificateFactory certFx = AS2XMLHelper.createComponent (aElement, ICertificateFactory.class, this, m_sBaseDirectory);
     setCertificateFactory (certFx);
   }
 
   protected void loadCommands (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("  loading commands");
-    final ICommandRegistry cmdReg = AS2XMLHelper.createComponent (aElement,
-                                                                  ICommandRegistry.class,
-                                                                  this,
-                                                                  m_sBaseDirectory);
+    final ICommandRegistry cmdReg = AS2XMLHelper.createComponent (aElement, ICommandRegistry.class, this, m_sBaseDirectory);
     m_aCommandRegistry = cmdReg;
   }
 
@@ -140,8 +134,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
       loadCommandProcessor (m_aCmdManager, processor);
   }
 
-  protected void loadCommandProcessor (@Nonnull final CommandManager aCommandMgr,
-                                       @Nonnull final IMicroElement aElement) throws AS2Exception
+  protected void loadCommandProcessor (@Nonnull final CommandManager aCommandMgr, @Nonnull final IMicroElement aElement) throws AS2Exception
   {
     final AbstractCommandProcessor aCmdProcesor = AS2XMLHelper.createComponent (aElement,
                                                                                 AbstractCommandProcessor.class,
@@ -154,20 +147,14 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
   protected void loadPartnerships (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("  loading partnerships");
-    final IPartnershipFactory partnerFx = AS2XMLHelper.createComponent (eRootNode,
-                                                                        IPartnershipFactory.class,
-                                                                        this,
-                                                                        m_sBaseDirectory);
+    final IPartnershipFactory partnerFx = AS2XMLHelper.createComponent (eRootNode, IPartnershipFactory.class, this, m_sBaseDirectory);
     setPartnershipFactory (partnerFx);
   }
 
   protected void loadMessageProcessor (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("  loading message processor");
-    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
-                                                                          IMessageProcessor.class,
-                                                                          this,
-                                                                          m_sBaseDirectory);
+    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode, IMessageProcessor.class, this, m_sBaseDirectory);
     setMessageProcessor (aMsgProcessor);
 
     for (final IMicroElement eModule : eRootNode.getAllChildElements ("module"))
@@ -177,10 +164,7 @@ public class AS2ServerXMLSession extends AS2Session implements ICommandRegistryF
   protected void loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
                                       @Nonnull final IMicroElement eModule) throws AS2Exception
   {
-    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule,
-                                                                            IProcessorModule.class,
-                                                                            this,
-                                                                            m_sBaseDirectory);
+    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule, IProcessorModule.class, this, m_sBaseDirectory);
     aMsgProcessor.addModule (aProcessorModule);
     LOGGER.info ("    loaded processor module " + aProcessorModule.getName ());
   }

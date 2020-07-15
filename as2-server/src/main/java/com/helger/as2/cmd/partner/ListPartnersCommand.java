@@ -63,8 +63,7 @@ public class ListPartnersCommand extends AbstractAliasedPartnershipsCommand
   }
 
   @Override
-  public CommandResult execute (final IPartnershipFactoryWithPartners partFx,
-                                final Object [] params) throws AS2Exception
+  public CommandResult execute (final IPartnershipFactoryWithPartners partFx, final Object [] params) throws AS2Exception
   {
     final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK);
 

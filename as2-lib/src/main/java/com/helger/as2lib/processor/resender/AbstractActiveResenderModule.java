@@ -83,8 +83,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aParameters);
 
@@ -92,8 +91,7 @@ public abstract class AbstractActiveResenderModule extends AbstractActiveModule 
     {
       m_nPollingMS = attrs ().getAsLong (ATTR_POLLING_INTERVAL_SECONDS) * CGlobal.MILLISECONDS_PER_SECOND;
       if (m_nPollingMS < 1)
-        throw new AS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " +
-                                m_nPollingMS);
+        throw new AS2Exception ("The provided polling milliseconds value is invalid. It must be > 0 but is " + m_nPollingMS);
     }
   }
 

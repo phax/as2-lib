@@ -162,8 +162,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   protected DataSource readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                                  @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                                  @Nonnull final IMessage aMsg,
-                                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
-                                                                                                      MessagingException
+                                                 @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException, MessagingException
   {
     // Main read
     DataSource aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg, aIncomingDumper);
@@ -171,8 +170,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
     // Check the transfer encoding of the request. If none is provided, check
     // the partnership for a default one. If none is in the partnership used the
     // default one
-    final String sCTE = aMsg.partnership ()
-                            .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    final String sCTE = aMsg.partnership ().getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
     final String sContentTransferEncoding = aMsg.getHeaderOrDefault (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
     if (StringHelper.hasText (sContentTransferEncoding))
     {
@@ -195,9 +193,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
           final int nOriginalContentLength = aActualBytes.length;
 
           if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
-                         sContentTransferEncoding +
-                         "' - decoding");
+            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
           aActualBytes = aCodec.getDecoded (aActualBytes);
           aPayload = new ByteArrayDataSource (aActualBytes, aPayload.getContentType (), aPayload.getName ());
 

@@ -65,9 +65,7 @@ public abstract class AbstractActiveModule extends AbstractProcessorModule imple
   }
 
   @OverrideOnDemand
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return false;
   }

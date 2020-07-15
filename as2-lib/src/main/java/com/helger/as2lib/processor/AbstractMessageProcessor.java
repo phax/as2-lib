@@ -188,12 +188,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
     final ICommonsList <IProcessorModule> aModulesFound = new CommonsArrayList <> ();
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("  handling action '" +
-                    sAction +
-                    "' on message '" +
-                    aMsg.getMessageID () +
-                    "' with options " +
-                    aOptions);
+      LOGGER.debug ("  handling action '" + sAction + "' on message '" + aMsg.getMessageID () + "' with options " + aOptions);
 
     final ICommonsList <IProcessorModule> aAllModules = getAllModules ();
     for (final IProcessorModule aModule : aAllModules)

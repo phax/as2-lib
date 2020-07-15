@@ -70,7 +70,7 @@ public final class ChunkedInputStreamTest
   public void readPastEOS () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream ("3\n123\r\n0\r\n".getBytes ());
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       final byte [] buf = new byte [17];
       int ret = cIS.read (buf, 0, buf.length);
@@ -85,7 +85,7 @@ public final class ChunkedInputStreamTest
   public void readByteFromEmpty () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream (ArrayHelper.EMPTY_BYTE_ARRAY);
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       cIS.read ();
       fail ("An EOFException should have been thrown");
@@ -96,7 +96,7 @@ public final class ChunkedInputStreamTest
   public void readOneChunkBuffer () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream ("3\n123".getBytes ());
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       final byte [] buf = new byte [3];
       final int ret = cIS.read (buf, 0, buf.length);
@@ -109,7 +109,7 @@ public final class ChunkedInputStreamTest
   public void readOneChunkBytes () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream ("3\n123".getBytes ());
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       int ret = cIS.read ();
       assertEquals ("Read first char", '1', ret);
@@ -124,7 +124,7 @@ public final class ChunkedInputStreamTest
   public void readTwoChunkBuffer () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes ());
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       final byte [] buf = new byte [3];
       final int ret = cIS.read (buf, 0, buf.length);
@@ -137,7 +137,7 @@ public final class ChunkedInputStreamTest
   public void readTwoChunkBufferMultipleReads () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes ());
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       final byte [] buf = new byte [3];
       int ret = cIS.read (buf, 0, 1);
@@ -156,7 +156,7 @@ public final class ChunkedInputStreamTest
   public void readTwoChunkByteMultipleReads () throws Exception
   {
     try (final InputStream empty = new NonBlockingByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes ());
-        final ChunkedInputStream cIS = new ChunkedInputStream (empty))
+         final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       int ret = cIS.read ();
       assertEquals ("Read one Chunk-1: correct data returned", '1', ret);

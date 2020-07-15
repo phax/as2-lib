@@ -138,8 +138,7 @@ public final class PartnershipMap implements IPartnershipMap
    *         searchIds match values in partnerIds. This means that partnerIds
    *         can contain more elements than searchIds
    */
-  private static boolean _arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs,
-                                                @Nonnull final IStringMap aPartnerIDs)
+  private static boolean _arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs, @Nonnull final IStringMap aPartnerIDs)
   {
     if (aSearchIDs.isEmpty ())
       return false;

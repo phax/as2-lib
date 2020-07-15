@@ -57,8 +57,7 @@ public class AS2ProcessorException extends AS2Exception
   private final ICommonsList <Throwable> m_aCauses;
 
   @Nonnull
-  private static String _getMessage (@Nonnull @Nonempty final Iterable <? extends Throwable> aCauses,
-                                     final boolean bAddStackTrace)
+  private static String _getMessage (@Nonnull @Nonempty final Iterable <? extends Throwable> aCauses, final boolean bAddStackTrace)
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
@@ -76,13 +75,9 @@ public class AS2ProcessorException extends AS2Exception
     return aSB.toString ();
   }
 
-  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor,
-                                @Nonnull @Nonempty final List <? extends Throwable> aCauses)
+  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <? extends Throwable> aCauses)
   {
-    super ("Processor '" +
-           ClassHelper.getClassLocalName (aProcessor) +
-           "' threw " +
-           (aCauses.size () == 1 ? "exception:" : "exceptions:"));
+    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + "' threw " + (aCauses.size () == 1 ? "exception:" : "exceptions:"));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 

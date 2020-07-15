@@ -58,10 +58,6 @@ public class LoggingMICMatchingHandler implements IMICMatchingHandler
   public void onMICMismatch (final IMessage aMsg, final String sOriginalMIC, final String sReceivedMIC)
   {
     if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("MIC IS NOT MATCHED; original MIC: " +
-                   sOriginalMIC +
-                   " received MIC: " +
-                   sReceivedMIC +
-                   aMsg.getLoggingText ());
+      LOGGER.info ("MIC IS NOT MATCHED; original MIC: " + sOriginalMIC + " received MIC: " + sReceivedMIC + aMsg.getLoggingText ());
   }
 }

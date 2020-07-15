@@ -61,9 +61,7 @@ public class Partner implements IPartner
   {
     m_aAttrs = new StringMap (aAttrs);
     if (!m_aAttrs.containsKey (PARTNER_NAME))
-      throw new IllegalArgumentException ("The provided attributes are missing the required '" +
-                                          PARTNER_NAME +
-                                          "' attribute!");
+      throw new IllegalArgumentException ("The provided attributes are missing the required '" + PARTNER_NAME + "' attribute!");
   }
 
   @Nonnull

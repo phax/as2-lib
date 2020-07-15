@@ -92,8 +92,7 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
       if (aRealPartnership == null)
       {
         // Found no partnership by name
-        aRealPartnership = m_aPartnerships.getPartnershipByID (aPartnership.getAllSenderIDs (),
-                                                               aPartnership.getAllReceiverIDs ());
+        aRealPartnership = m_aPartnerships.getPartnershipByID (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
       }
 
       if (aRealPartnership == null)

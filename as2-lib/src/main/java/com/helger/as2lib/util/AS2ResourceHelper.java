@@ -95,9 +95,7 @@ public class AS2ResourceHelper implements Closeable
   {
     if (aTempDir != null)
       if (!aTempDir.isDirectory ())
-        throw new IllegalArgumentException ("Temporary directory '" +
-                                            aTempDir.getAbsolutePath () +
-                                            "' is not a directory");
+        throw new IllegalArgumentException ("Temporary directory '" + aTempDir.getAbsolutePath () + "' is not a directory");
     s_aTempDir = aTempDir;
   }
 
@@ -248,10 +246,7 @@ public class AS2ResourceHelper implements Closeable
     // can be created
     final File aTempFile = createTempFile ();
 
-    LOGGER.info ("Converting " +
-                 aSrcEntity +
-                 " to a repeatable HTTP entity using file " +
-                 aTempFile.getAbsolutePath ());
+    LOGGER.info ("Converting " + aSrcEntity + " to a repeatable HTTP entity using file " + aTempFile.getAbsolutePath ());
 
     try (final OutputStream aOS = FileHelper.getBufferedOutputStream (aTempFile))
     {

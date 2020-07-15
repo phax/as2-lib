@@ -45,7 +45,8 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 
-public class MongoDBPartnershipFactoryTest {
+public class MongoDBPartnershipFactoryTest
+{
   private static final Logger LOGGER = LoggerFactory.getLogger (MongoDBPartnershipFactoryTest.class);
 
   private static MongodExecutable mongodExecutable;
@@ -55,7 +56,8 @@ public class MongoDBPartnershipFactoryTest {
   private static MongoCollection <Document> collection;
 
   @BeforeClass
-  public static void setupSpec () throws IOException {
+  public static void setupSpec () throws IOException
+  {
     final MongodStarter starter = MongodStarter.getDefaultInstance ();
     final int port = 12345;
     final IMongodConfig mongodConfig = new MongodConfigBuilder ().version (Version.Main.PRODUCTION)
@@ -64,8 +66,7 @@ public class MongoDBPartnershipFactoryTest {
     mongodExecutable = starter.prepare (mongodConfig);
     mongodExecutable.start ();
     mongo = MongoClients.create (MongoClientSettings.builder ()
-                                                    .applyConnectionString (new ConnectionString ("mongodb://localhost:" +
-                                                                                                  port))
+                                                    .applyConnectionString (new ConnectionString ("mongodb://localhost:" + port))
                                                     .build ());
     database = mongo.getDatabase ("as2-lib-test");
     collection = database.getCollection ("partnerships");
@@ -74,7 +75,8 @@ public class MongoDBPartnershipFactoryTest {
   }
 
   @AfterClass
-  public static void cleanupSpec () {
+  public static void cleanupSpec ()
+  {
     if (mongo != null)
       mongo.close ();
     if (mongodExecutable != null)
@@ -82,7 +84,8 @@ public class MongoDBPartnershipFactoryTest {
   }
 
   @Test
-  public void testAddPartnership () throws AS2Exception {
+  public void testAddPartnership () throws AS2Exception
+  {
     final Partnership partnership = new Partnership ("Test partnership");
     assertTrue (mongoDBPartnershipFactory.addPartnership (partnership).isChanged ());
     assertEquals (1, collection.countDocuments ());

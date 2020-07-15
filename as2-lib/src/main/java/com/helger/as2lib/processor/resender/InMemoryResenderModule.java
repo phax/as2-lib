@@ -68,9 +68,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   private final ICommonsList <ResendItem> m_aItems = new CommonsArrayList <> ();
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
@@ -81,8 +79,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     // Get the action to be used
-    String sResendAction = aOptions == null ? null
-                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");

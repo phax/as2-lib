@@ -93,8 +93,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
 
   @OverrideOnDemand
   @Nullable
-  protected String [] getEnabledAnonymousCipherSuites (@Nonnull final String [] aEnabled,
-                                                       @Nonnull final String [] aSupported)
+  protected String [] getEnabledAnonymousCipherSuites (@Nonnull final String [] aEnabled, @Nonnull final String [] aSupported)
   {
     final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
     for (final String sSupported : aSupported)
@@ -116,8 +115,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParams) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParams) throws AS2Exception
   {
     final StringMap aParameters = aParams == null ? new StringMap () : new StringMap (aParams);
     final String sPort = aParameters.getAsString (ATTR_PORTID);

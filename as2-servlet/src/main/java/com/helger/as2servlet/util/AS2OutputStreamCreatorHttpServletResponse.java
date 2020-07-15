@@ -41,8 +41,7 @@ public class AS2OutputStreamCreatorHttpServletResponse implements IAS2HttpRespon
   private final HttpServletResponse m_aHttpResponse;
   private final boolean m_bQuoteHeaderValues;
 
-  public AS2OutputStreamCreatorHttpServletResponse (@Nonnull final HttpServletResponse aHttpResponse,
-                                                    final boolean bQuoteHeaderValues)
+  public AS2OutputStreamCreatorHttpServletResponse (@Nonnull final HttpServletResponse aHttpResponse, final boolean bQuoteHeaderValues)
   {
     m_aHttpResponse = ValueEnforcer.notNull (aHttpResponse, "HttpResponse");
     m_bQuoteHeaderValues = bQuoteHeaderValues;

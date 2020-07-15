@@ -64,8 +64,7 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
    * @return 0 to indicate no retry.
    */
   @Nonnegative
-  protected final int getRetryCount (@Nullable final Partnership aPartnerhsip,
-                                     @Nullable final Map <String, Object> aOptions)
+  protected final int getRetryCount (@Nullable final Partnership aPartnerhsip, @Nullable final Map <String, Object> aOptions)
   {
     int nRetries = -1;
 

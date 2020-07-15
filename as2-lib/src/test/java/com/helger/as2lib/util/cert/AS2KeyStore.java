@@ -92,8 +92,7 @@ public class AS2KeyStore implements ICertificateStore
     }
   }
 
-  public void setCertificate (@Nonnull final String sAlias,
-                              @Nonnull final Certificate aCert) throws AS2CertificateException
+  public void setCertificate (@Nonnull final String sAlias, @Nonnull final Certificate aCert) throws AS2CertificateException
   {
     ValueEnforcer.notNull (sAlias, "Alias");
     ValueEnforcer.notNull (aCert, "Certificate");

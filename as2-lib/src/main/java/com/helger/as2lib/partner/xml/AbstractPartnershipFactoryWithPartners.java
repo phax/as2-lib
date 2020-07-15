@@ -51,8 +51,7 @@ import com.helger.commons.state.EChange;
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPartnershipFactory implements
-                                                             IPartnershipFactoryWithPartners
+public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPartnershipFactory implements IPartnershipFactoryWithPartners
 {
   private final PartnerMap m_aPartners = new PartnerMap ();
 

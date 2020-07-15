@@ -65,8 +65,7 @@ public class ViewCertCommand extends AbstractAliasedCertCommand
   }
 
   @Override
-  protected CommandResult execute (final IAliasedCertificateFactory certFx,
-                                   final Object [] params) throws AS2Exception
+  protected CommandResult execute (final IAliasedCertificateFactory certFx, final Object [] params) throws AS2Exception
   {
     if (params.length < 1)
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());

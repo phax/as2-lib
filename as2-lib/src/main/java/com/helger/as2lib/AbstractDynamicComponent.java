@@ -97,8 +97,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
   }
 
   @OverridingMethodsMustInvokeSuper
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws AS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
     attrs ().putAllIn (aParameters);

@@ -56,8 +56,7 @@ import com.helger.commons.string.StringHelper;
  * @author Philip Helger
  * @since 4.3.0
  */
-public class ServerSelfFillingXMLPartnershipFactory extends SelfFillingXMLPartnershipFactory implements
-                                                    IFileMonitorListener
+public class ServerSelfFillingXMLPartnershipFactory extends SelfFillingXMLPartnershipFactory implements IFileMonitorListener
 {
   public static final String ATTR_INTERVAL = "interval";
   private static final Logger LOGGER = LoggerFactory.getLogger (ServerSelfFillingXMLPartnershipFactory.class);

@@ -72,30 +72,21 @@ public class AS2ServletXMLSession extends AS2Session
   private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("Loading certificates");
-    final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement,
-                                                                       ICertificateFactory.class,
-                                                                       this,
-                                                                       m_sBaseDirectory);
+    final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement, ICertificateFactory.class, this, m_sBaseDirectory);
     setCertificateFactory (aFactory);
   }
 
   private void _loadPartnershipFactory (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("Loading partnerships");
-    final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode,
-                                                                       IPartnershipFactory.class,
-                                                                       this,
-                                                                       m_sBaseDirectory);
+    final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode, IPartnershipFactory.class, this, m_sBaseDirectory);
     setPartnershipFactory (aFactory);
   }
 
   private void _loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
                                      @Nonnull final IMicroElement eModule) throws AS2Exception
   {
-    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule,
-                                                                            IProcessorModule.class,
-                                                                            this,
-                                                                            m_sBaseDirectory);
+    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule, IProcessorModule.class, this, m_sBaseDirectory);
     aMsgProcessor.addModule (aProcessorModule);
     LOGGER.info ("  Loaded processor module " + aProcessorModule.getName ());
   }
@@ -103,10 +94,7 @@ public class AS2ServletXMLSession extends AS2Session
   private void _loadMessageProcessor (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("Loading message processor");
-    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
-                                                                          IMessageProcessor.class,
-                                                                          this,
-                                                                          m_sBaseDirectory);
+    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode, IMessageProcessor.class, this, m_sBaseDirectory);
     setMessageProcessor (aMsgProcessor);
 
     for (final IMicroElement eModule : eRootNode.getAllChildElements ("module"))

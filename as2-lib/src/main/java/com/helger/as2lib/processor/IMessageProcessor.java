@@ -57,9 +57,7 @@ public interface IMessageProcessor extends IDynamicComponent
   String ATTR_PENDINGMDN = "pendingmdn";
   String ATTR_PENDINGMDNINFO = "pendingmdninfo";
 
-  void handle (@Nonnull String sAction,
-               @Nonnull IMessage aMsg,
-               @Nullable Map <String, Object> aOptions) throws AS2Exception;
+  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws AS2Exception;
 
   void addModule (@Nonnull IProcessorModule aModule);
 

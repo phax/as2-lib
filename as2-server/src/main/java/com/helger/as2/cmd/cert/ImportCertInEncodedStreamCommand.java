@@ -98,8 +98,7 @@ public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
         {
           certFx.addCertificate (alias, (X509Certificate) cert, true);
 
-          final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK,
-                                                          "Certificate(s) imported successfully");
+          final CommandResult cmdRes = new CommandResult (ECommandResultType.TYPE_OK, "Certificate(s) imported successfully");
           cmdRes.addResult ("Imported certificate: " + cert.toString ());
           return cmdRes;
         }

@@ -82,8 +82,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   private ICommonsMap <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -268,15 +267,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         File aSentFile = null;
         try
         {
-          aSentFile = new File (AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)),
-                                aFile.getName ());
+          aSentFile = new File (AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)), aFile.getName ());
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
-          LOGGER.info ("moved " +
-                       aFile.getAbsolutePath () +
-                       " to " +
-                       aSentFile.getAbsolutePath () +
-                       aMsg.getLoggingText ());
+          LOGGER.info ("moved " + aFile.getAbsolutePath () + " to " + aSentFile.getAbsolutePath () + aMsg.getLoggingText ());
         }
         catch (final IOException ex)
         {
@@ -350,8 +344,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (aByteSource.getAsDataHandler ());
 
       // Headers must be set AFTER the DataHandler
-      final String sCTE = aMsg.partnership ()
-                              .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+      final String sCTE = aMsg.partnership ().getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
       aBody.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
 
       // below statement is not filename related, just want to make it

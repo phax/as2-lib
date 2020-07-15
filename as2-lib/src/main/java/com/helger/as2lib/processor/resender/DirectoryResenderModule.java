@@ -84,8 +84,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);
@@ -93,9 +92,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   }
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
@@ -109,11 +106,9 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     {
       final File aResendDir = AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
       final File aResendFile = AS2IOHelper.getUniqueFile (aResendDir, getFilename ());
-      try (final FileOutputStream aFOS = new FileOutputStream (aResendFile);
-          final ObjectOutputStream aOOS = new ObjectOutputStream (aFOS))
+      try (final FileOutputStream aFOS = new FileOutputStream (aResendFile); final ObjectOutputStream aOOS = new ObjectOutputStream (aFOS))
       {
-        String sResendAction = aOptions == null ? null
-                                                : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+        String sResendAction = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
         if (sResendAction == null)
         {
           LOGGER.warn ("The resending method is missing - default to message sending!");
@@ -124,9 +119,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         if (sRetries == null)
         {
           if (LOGGER.isWarnEnabled ())
-            LOGGER.warn ("The resending retry count is missing - default to " +
-                         IProcessorResenderModule.DEFAULT_RETRIES +
-                         "!");
+            LOGGER.warn ("The resending retry count is missing - default to " + IProcessorResenderModule.DEFAULT_RETRIES + "!");
           sRetries = Integer.toString (IProcessorResenderModule.DEFAULT_RETRIES);
         }
 
@@ -155,8 +148,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   protected String getFilename () throws AS2InvalidParameterException
   {
     final long nResendDelayMS = getResendDelayMS ();
-    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT,
-                                     PDTFactory.getCurrentZonedDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
+    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT, PDTFactory.getCurrentZonedDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
   }
 
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
@@ -185,8 +177,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       {
         final String sResendAction;
         String sRetries;
-        try (final FileInputStream aFIS = new FileInputStream (aFile);
-            final ObjectInputStream aOIS = new ObjectInputStream (aFIS))
+        try (final FileInputStream aFIS = new FileInputStream (aFile); final ObjectInputStream aOIS = new ObjectInputStream (aFIS))
         {
           sResendAction = (String) aOIS.readObject ();
           sRetries = (String) aOIS.readObject ();

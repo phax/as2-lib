@@ -53,20 +53,17 @@ public class XMLCommandRegistry extends BaseCommandRegistry
   public static final String ATTR_FILENAME = "filename";
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aParameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aParameters);
 
     refresh ();
   }
 
-  protected void loadCommand (final IMicroElement eCommand,
-                              @Nullable final MultiCommand aParent) throws AS2Exception
+  protected void loadCommand (final IMicroElement eCommand, @Nullable final MultiCommand aParent) throws AS2Exception
   {
     final IAS2Session aSession = getSession ();
-    final String sBaseDirectory = aSession instanceof AS2ServerXMLSession ? ((AS2ServerXMLSession) aSession).getBaseDirectory ()
-                                                                          : null;
+    final String sBaseDirectory = aSession instanceof AS2ServerXMLSession ? ((AS2ServerXMLSession) aSession).getBaseDirectory () : null;
     final ICommand aCommand = AS2XMLHelper.createComponent (eCommand, ICommand.class, aSession, sBaseDirectory);
     if (aParent != null)
       aParent.getCommands ().add (aCommand);
@@ -74,8 +71,7 @@ public class XMLCommandRegistry extends BaseCommandRegistry
       addCommand (aCommand);
   }
 
-  protected void loadMultiCommand (@Nonnull final IMicroElement aCommand,
-                                   @Nullable final MultiCommand parent) throws AS2Exception
+  protected void loadMultiCommand (@Nonnull final IMicroElement aCommand, @Nullable final MultiCommand parent) throws AS2Exception
   {
     final MultiCommand cmd = new MultiCommand ();
     cmd.initDynamicComponent (getSession (), AS2XMLHelper.getAllAttrsWithLowercaseName (aCommand));

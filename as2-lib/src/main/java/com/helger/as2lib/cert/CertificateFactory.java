@@ -194,8 +194,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   @Nonempty
   private static String _debug (@Nullable final X509Certificate aCert)
   {
-    return aCert == null ? "null"
-                         : aCert.getSubjectX500Principal ().getName () + "/" + aCert.getSerialNumber ().toString ();
+    return aCert == null ? "null" : aCert.getSubjectX500Principal ().getName () + "/" + aCert.getSerialNumber ().toString ();
   }
 
   @Nonnull
@@ -217,8 +216,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
   {
     debugLog ( () -> "initDynamicComponent (" + aSession + ", " + aOptions + ")");
 
@@ -227,8 +225,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     try
     {
       final String sKeyStoreType = getKeyStoreType ();
-      final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType,
-                                                                                           DEFAULT_KEY_STORE_TYPE);
+      final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType, DEFAULT_KEY_STORE_TYPE);
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Using internal keystore of type " + eKeyStoreType);

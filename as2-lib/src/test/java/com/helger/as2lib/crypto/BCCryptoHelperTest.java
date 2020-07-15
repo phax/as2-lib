@@ -67,8 +67,7 @@ public final class BCCryptoHelperTest
 {
   private static final String PATH = "src/test/resources/mendelson/key3.pfx";
   private static final KeyStore KS = KeyStoreHelper.loadKeyStore (EKeyStoreType.PKCS12, PATH, "test").getKeyStore ();
-  private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key3", "test".toCharArray ())
-                                                           .getKeyEntry ();
+  private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key3", "test".toCharArray ()).getKeyEntry ();
   private static final X509Certificate CERT_ENCRYPT;
   static
   {
@@ -121,8 +120,7 @@ public final class BCCryptoHelperTest
           final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
                                         eAlgo.getID () +
                                         "; \r\n\tboundary=\"----=_Part";
-          assertTrue (sContentType + " does not start with " + sExpectedStart,
-                      sContentType.startsWith (sExpectedStart));
+          assertTrue (sContentType + " does not start with " + sExpectedStart, sContentType.startsWith (sExpectedStart));
         }
   }
 
@@ -325,14 +323,12 @@ public final class BCCryptoHelperTest
 
     for (final ECryptoAlgorithmCrypt eAlgo : ECryptoAlgorithmCrypt.values ())
     {
-      final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ()
-                                               .encrypt (aPart, CERT_ENCRYPT, eAlgo, EContentTransferEncoding.BASE64);
+      final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ().encrypt (aPart, CERT_ENCRYPT, eAlgo, EContentTransferEncoding.BASE64);
       assertNotNull (aEncrypted);
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
                          aEncrypted.getHeader (CHttpHeader.CONTENT_TYPE));
-      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" },
-                         aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
+      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" }, aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
     }
   }
 
@@ -345,16 +341,12 @@ public final class BCCryptoHelperTest
     for (final EContentTransferEncoding eCTE : EContentTransferEncoding.values ())
     {
       final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ()
-                                               .encrypt (aPart,
-                                                         CERT_ENCRYPT,
-                                                         ECryptoAlgorithmCrypt.CRYPT_AES256_GCM,
-                                                         eCTE);
+                                               .encrypt (aPart, CERT_ENCRYPT, ECryptoAlgorithmCrypt.CRYPT_AES256_GCM, eCTE);
       assertNotNull (aEncrypted);
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
                          aEncrypted.getHeader (CHttpHeader.CONTENT_TYPE));
-      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" },
-                         aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
+      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" }, aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
     }
   }
 

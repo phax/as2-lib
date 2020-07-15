@@ -139,9 +139,7 @@ public interface ICryptoHelper
    *         In case something goes wrong.
    */
   @Nonnull
-  MIC calculateMIC (@Nonnull MimeBodyPart aPart,
-                    @Nonnull ECryptoAlgorithmSign eDigestAlgorithm,
-                    boolean bIncludeHeaders) throws Exception;
+  MIC calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull ECryptoAlgorithmSign eDigestAlgorithm, boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,

@@ -506,8 +506,7 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
-                                              final boolean bCompressBeforeSigning)
+  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType, final boolean bCompressBeforeSigning)
   {
     m_eCompressionType = eCompressionType;
     m_bCompressBeforeSigning = bCompressBeforeSigning;

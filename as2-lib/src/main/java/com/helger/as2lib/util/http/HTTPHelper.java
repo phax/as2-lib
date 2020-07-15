@@ -242,8 +242,7 @@ public final class HTTPHelper
   public static DataSource readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                             @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                             @Nonnull final IMessage aMsg,
-                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
-                                                                                                 MessagingException
+                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException, MessagingException
   {
     // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
@@ -307,10 +306,7 @@ public final class HTTPHelper
       }
 
       // Content-length present, or chunked encoding
-      aPayload = new InputStreamDataSource (aRealIS,
-                                            aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
-                                            sReceivedContentType,
-                                            true);
+      aPayload = new InputStreamDataSource (aRealIS, aMsg.getAS2From () == null ? "" : aMsg.getAS2From (), sReceivedContentType, true);
     }
     else
     {
@@ -366,10 +362,7 @@ public final class HTTPHelper
   {
     try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
     {
-      final String sHTTPLine = Integer.toString (nResponseCode) +
-                               " " +
-                               CHttp.getHttpResponseMessage (nResponseCode) +
-                               CHttp.EOL;
+      final String sHTTPLine = Integer.toString (nResponseCode) + " " + CHttp.getHttpResponseMessage (nResponseCode) + CHttp.EOL;
       aData.write (sHTTPLine.getBytes (CHttp.HTTP_CHARSET));
 
       aResponseHandler.sendHttpResponse (nResponseCode, new HttpHeaderMap (), aData);

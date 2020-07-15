@@ -57,7 +57,5 @@ public interface IHTTPIncomingDumper
    * @param aMsg
    *        The message stub. May be <code>null</code> for legacy reasons.
    */
-  void dumpIncomingRequest (@Nonnull List <String> aHeaderLines,
-                            @Nonnull byte [] aPayload,
-                            @Nullable IBaseMessage aMsg);
+  void dumpIncomingRequest (@Nonnull List <String> aHeaderLines, @Nonnull byte [] aPayload, @Nullable IBaseMessage aMsg);
 }

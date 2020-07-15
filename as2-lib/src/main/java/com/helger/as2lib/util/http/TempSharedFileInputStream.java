@@ -130,8 +130,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *         in case of IO error
    */
   @Nonnull
-  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS,
-                                                @Nonnull final String sName) throws IOException
+  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS, @Nonnull final String sName) throws IOException
   {
     // create temp file and write steam content to it
     // name may contain ":" on Windows and that would fail the tests!

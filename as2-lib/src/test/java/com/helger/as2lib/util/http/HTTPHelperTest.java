@@ -257,8 +257,7 @@ public final class HTTPHelperTest
     aMsg = new AS2Message ();
     mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-    assertTrue ("Compare regular and stream read",
-                _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
+    assertTrue ("Compare regular and stream read", _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
   }
 
   @Test
@@ -276,8 +275,7 @@ public final class HTTPHelperTest
     mockStreamProvider = new MockAS2InputStreamProvider (is);
     final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
 
-    assertTrue ("Compare regular and stream read",
-                _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
+    assertTrue ("Compare regular and stream read", _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
   }
 
   @Test (expected = IOException.class)
@@ -320,8 +318,7 @@ public final class HTTPHelperTest
     HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
   }
 
-  private static boolean _compareLineByLine (@Nonnull @WillClose final InputStream is1,
-                                             @Nonnull @WillClose final InputStream is2)
+  private static boolean _compareLineByLine (@Nonnull @WillClose final InputStream is1, @Nonnull @WillClose final InputStream is2)
   {
     try
     {

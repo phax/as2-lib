@@ -55,9 +55,7 @@ public class ImmediateResenderModule extends AbstractResenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (ImmediateResenderModule.class);
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
@@ -70,8 +68,7 @@ public class ImmediateResenderModule extends AbstractResenderModule
     if (LOGGER.isInfoEnabled ())
       LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
 
-    String sResendAction = aOptions == null ? null
-                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");

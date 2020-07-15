@@ -175,11 +175,7 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   public boolean isRFC5751Algorithm ()
   {
-    return this == DIGEST_MD5 ||
-           this == DIGEST_SHA_1 ||
-           this == DIGEST_SHA_256 ||
-           this == DIGEST_SHA_384 ||
-           this == DIGEST_SHA_512;
+    return this == DIGEST_MD5 || this == DIGEST_SHA_1 || this == DIGEST_SHA_256 || this == DIGEST_SHA_384 || this == DIGEST_SHA_512;
   }
 
   @Nullable
@@ -197,8 +193,7 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   }
 
   @Nullable
-  public static ECryptoAlgorithmSign getFromIDOrDefault (@Nullable final String sID,
-                                                         @Nullable final ECryptoAlgorithmSign eDefault)
+  public static ECryptoAlgorithmSign getFromIDOrDefault (@Nullable final String sID, @Nullable final ECryptoAlgorithmSign eDefault)
   {
     // Case insensitive for #32
     return EnumHelper.getFromIDCaseInsensitiveOrDefault (ECryptoAlgorithmSign.class, sID, eDefault);

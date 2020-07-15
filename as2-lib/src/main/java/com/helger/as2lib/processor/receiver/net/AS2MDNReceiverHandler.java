@@ -247,11 +247,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         bUseCertificateInBodyPart = getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg,
-                          aSenderCert,
-                          bUseCertificateInBodyPart,
-                          getVerificationCertificateConsumer (),
-                          aResHelper);
+      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, getVerificationCertificateConsumer (), aResHelper);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
@@ -436,8 +432,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
-                                           aMDNStream != null ? aMDNStream.toByteArray ()
-                                                              : ArrayHelper.EMPTY_BYTE_ARRAY,
+                                           aMDNStream != null ? aMDNStream.toByteArray () : ArrayHelper.EMPTY_BYTE_ARRAY,
                                            aMDN);
 
     MimeBodyPart aPart = null;

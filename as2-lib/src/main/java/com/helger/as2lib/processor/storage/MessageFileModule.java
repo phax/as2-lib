@@ -131,8 +131,7 @@ public class MessageFileModule extends AbstractStorageModule
 
   @Override
   @Nonnull
-  protected String getFilename (@Nonnull final IMessage aMsg,
-                                @Nullable final String sFileParam) throws AS2InvalidParameterException
+  protected String getFilename (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws AS2InvalidParameterException
   {
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("msg", new MessageParameters (aMsg));

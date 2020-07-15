@@ -160,9 +160,7 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
       filter.append (SENDER_IDS + "." + entry.getKey (), entry.getValue ());
     }
 
-    final Partnership inverseResult = m_aPartnerships.find (filter)
-                                                     .map (MongoDBPartnershipFactory::_toPartnership)
-                                                     .first ();
+    final Partnership inverseResult = m_aPartnerships.find (filter).map (MongoDBPartnershipFactory::_toPartnership).first ();
     if (inverseResult != null)
     {
       result = new Partnership (inverseResult.getName () + "-inverse");
@@ -180,9 +178,7 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   @Override
   public Partnership getPartnershipByName (final String sName)
   {
-    return m_aPartnerships.find (new Document (NAME_KEY, sName))
-                          .map (MongoDBPartnershipFactory::_toPartnership)
-                          .first ();
+    return m_aPartnerships.find (new Document (NAME_KEY, sName)).map (MongoDBPartnershipFactory::_toPartnership).first ();
   }
 
   @Override

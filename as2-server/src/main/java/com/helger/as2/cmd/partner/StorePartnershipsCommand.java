@@ -77,8 +77,7 @@ public class StorePartnershipsCommand extends AbstractCommand
 
         return new CommandResult (ECommandResultType.TYPE_OK, "Stored partnerships");
       }
-      return new CommandResult (ECommandResultType.TYPE_COMMAND_NOT_SUPPORTED,
-                                "Not supported by current partnership store, must be XML");
+      return new CommandResult (ECommandResultType.TYPE_COMMAND_NOT_SUPPORTED, "Not supported by current partnership store, must be XML");
     }
     catch (final AS2Exception oae)
     {

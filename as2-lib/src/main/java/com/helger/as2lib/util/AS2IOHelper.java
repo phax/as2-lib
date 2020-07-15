@@ -129,10 +129,7 @@ public final class AS2IOHelper
       if (nKBytesPerSecond < CGlobal.BYTES_PER_KILOBYTE)
       {
         // < 1048576
-        aSB.append (nKBytesPerSecond)
-           .append ('.')
-           .append (nBytesPerSecond % CGlobal.BYTES_PER_KILOBYTE)
-           .append (" KBps");
+        aSB.append (nKBytesPerSecond).append ('.').append (nBytesPerSecond % CGlobal.BYTES_PER_KILOBYTE).append (" KBps");
       }
       else
       {
@@ -153,8 +150,7 @@ public final class AS2IOHelper
     int nCounter = -1;
     while (true)
     {
-      final File aTest = new File (aDir,
-                                   nCounter == -1 ? sBaseFilename : sBaseFilename + "." + Integer.toString (nCounter));
+      final File aTest = new File (aDir, nCounter == -1 ? sBaseFilename : sBaseFilename + "." + Integer.toString (nCounter));
       if (!aTest.exists ())
         return aTest;
 
@@ -311,9 +307,7 @@ public final class AS2IOHelper
     if (sEncoding.equalsIgnoreCase ("quoted-printable"))
       return new QPEncoderStream (aOS);
 
-    if (sEncoding.equalsIgnoreCase ("binary") ||
-        sEncoding.equalsIgnoreCase ("7bit") ||
-        sEncoding.equalsIgnoreCase ("8bit"))
+    if (sEncoding.equalsIgnoreCase ("binary") || sEncoding.equalsIgnoreCase ("7bit") || sEncoding.equalsIgnoreCase ("8bit"))
     {
       // Return as-is
       return aOS;
@@ -344,9 +338,7 @@ public final class AS2IOHelper
     if (sEncoding.equalsIgnoreCase ("quoted-printable"))
       return new QPDecoderStream (aIS);
 
-    if (sEncoding.equalsIgnoreCase ("binary") ||
-        sEncoding.equalsIgnoreCase ("7bit") ||
-        sEncoding.equalsIgnoreCase ("8bit"))
+    if (sEncoding.equalsIgnoreCase ("binary") || sEncoding.equalsIgnoreCase ("7bit") || sEncoding.equalsIgnoreCase ("8bit"))
     {
       // Return as-is
       return aIS;

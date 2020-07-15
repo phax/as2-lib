@@ -44,11 +44,9 @@ public class ServletConfig
     // Required to be called before the servlet is initialized
     AS2WebAppListener.staticInit (m_aSC);
 
-    final ServletRegistrationBean <AS2ReceiveServlet> bean = new ServletRegistrationBean <> (new AS2ReceiveServlet (),
-                                                                                             "/as2");
+    final ServletRegistrationBean <AS2ReceiveServlet> bean = new ServletRegistrationBean <> (new AS2ReceiveServlet (), "/as2");
     final Map <String, String> aInitParams = new HashMap <> ();
-    aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME,
-                     "config/config.xml");
+    aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME, "config/config.xml");
     bean.setInitParameters (aInitParams);
     return bean;
   }

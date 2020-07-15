@@ -74,8 +74,7 @@ public class RefreshPartnershipsCommand extends AbstractCommand
 
         return new CommandResult (ECommandResultType.TYPE_OK, "Refreshed partnerships");
       }
-      return new CommandResult (ECommandResultType.TYPE_COMMAND_NOT_SUPPORTED,
-                                "Not supported by current certificate store");
+      return new CommandResult (ECommandResultType.TYPE_COMMAND_NOT_SUPPORTED, "Not supported by current certificate store");
     }
     catch (final AS2Exception oae)
     {

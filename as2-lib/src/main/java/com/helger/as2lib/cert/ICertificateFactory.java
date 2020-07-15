@@ -64,8 +64,7 @@ public interface ICertificateFactory extends IDynamicComponent
    *         If no certificate is present
    */
   @Nonnull
-  X509Certificate getCertificate (@Nonnull IBaseMessage aMsg,
-                                  @Nonnull ECertificatePartnershipType ePartnershipType) throws AS2Exception;
+  X509Certificate getCertificate (@Nonnull IBaseMessage aMsg, @Nonnull ECertificatePartnershipType ePartnershipType) throws AS2Exception;
 
   /**
    * Get the certificate of the specified type for the partnership defined in

@@ -90,8 +90,7 @@ public class ReadMDNFuncTest
     }
 
     if (false)
-      assertEquals ("<MOKOsi42435716cf621589dnode1POP000046@sfgt1.unix.fina.hr>",
-                    aHeaders.getFirstHeaderValue ("Message-ID"));
+      assertEquals ("<MOKOsi42435716cf621589dnode1POP000046@sfgt1.unix.fina.hr>", aHeaders.getFirstHeaderValue ("Message-ID"));
 
     final X509Certificate aCert = CertificateHelper.convertStringToCertficateOrNull (StreamHelper.getAllBytesAsString (aCertRes,
                                                                                                                        StandardCharsets.ISO_8859_1));
@@ -155,8 +154,7 @@ public class ReadMDNFuncTest
     }
 
     if (false)
-      assertEquals ("<MOKOsi42435716cf621589dnode1POP000046@sfgt1.unix.fina.hr>",
-                    aHeaders.getFirstHeaderValue ("Message-ID"));
+      assertEquals ("<MOKOsi42435716cf621589dnode1POP000046@sfgt1.unix.fina.hr>", aHeaders.getFirstHeaderValue ("Message-ID"));
 
     // final X509Certificate aCert =
     // CertificateHelper.convertStringToCertficateOrNull

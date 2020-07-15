@@ -138,8 +138,7 @@ public final class AS2XMLHelper
     return ret;
   }
 
-  private static void _updateDirectories (@Nonnull final StringMap aAttributes,
-                                          @Nullable final String sBaseDirectory) throws AS2Exception
+  private static void _updateDirectories (@Nonnull final StringMap aAttributes, @Nullable final String sBaseDirectory) throws AS2Exception
   {
     for (final Map.Entry <String, String> attrEntry : aAttributes.entrySet ())
     {

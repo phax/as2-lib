@@ -150,11 +150,7 @@ public class HTTPOutgoingDumperStreamBased implements IHTTPOutgoingDumper
   {
     if (m_bDumpComment)
     {
-      final String sLine = "# Starting AS2 transmission to '" +
-                           sURL +
-                           "' with message ID " +
-                           aMsg.getMessageID () +
-                           CHttp.EOL;
+      final String sLine = "# Starting AS2 transmission to '" + sURL + "' with message ID " + aMsg.getMessageID () + CHttp.EOL;
       _write (sLine.getBytes (CHttp.HTTP_CHARSET));
     }
   }
