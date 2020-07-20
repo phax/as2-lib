@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
+import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,20 +51,28 @@ public class AS2ServletXMLSession extends AS2Session
 
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ServletXMLSession.class);
 
+  private final File m_aConfigFile;
   private final String m_sBaseDirectory;
 
   public AS2ServletXMLSession (@Nonnull final File aFile) throws AS2Exception
   {
     ValueEnforcer.notNull (aFile, "File");
     if (!aFile.exists ())
-      throw new AS2Exception ("AS2Session configuration file " + aFile.getAbsolutePath () + " does not exist!");
+      throw new AS2Exception ("AS2ServletXMLSession configuration file " + aFile.getAbsolutePath () + " does not exist!");
+    m_aConfigFile = aFile;
     m_sBaseDirectory = aFile.getParentFile ().getAbsolutePath ();
     LOGGER.info ("Loading AS2 configuration file '" + aFile.getAbsolutePath ());
     _load (FileHelper.getInputStream (aFile));
   }
 
   @Nonnull
-  public String getBaseDirectory ()
+  public final File getConfigFile ()
+  {
+    return m_aConfigFile;
+  }
+
+  @Nonnull
+  public final String getBaseDirectory ()
   {
     return m_sBaseDirectory;
   }
@@ -101,25 +109,38 @@ public class AS2ServletXMLSession extends AS2Session
       _loadProcessorModule (aMsgProcessor, eModule);
   }
 
-  private void _load (@Nonnull @WillClose final InputStream aIS) throws AS2Exception
+  private void _load (@Nullable final InputStream aIS) throws AS2Exception
   {
-    final IMicroDocument aDoc = MicroReader.readMicroXML (aIS);
-    final IMicroElement eRoot = aDoc.getDocumentElement ();
-
-    for (final IMicroElement eRootChild : eRoot.getAllChildElements ())
+    if (aIS != null)
     {
-      final String sNodeName = eRootChild.getTagName ();
+      final IMicroDocument aDoc = MicroReader.readMicroXML (aIS);
+      final IMicroElement eRoot = aDoc.getDocumentElement ();
 
-      if (sNodeName.equals (EL_CERTIFICATES))
-        _loadCertificateFactory (eRootChild);
-      else
-        if (sNodeName.equals (EL_PROCESSOR))
-          _loadMessageProcessor (eRootChild);
+      for (final IMicroElement eRootChild : eRoot.getAllChildElements ())
+      {
+        final String sNodeName = eRootChild.getTagName ();
+
+        if (sNodeName.equals (EL_CERTIFICATES))
+          _loadCertificateFactory (eRootChild);
         else
-          if (sNodeName.equals (EL_PARTNERSHIPS))
-            _loadPartnershipFactory (eRootChild);
+          if (sNodeName.equals (EL_PROCESSOR))
+            _loadMessageProcessor (eRootChild);
           else
-            throw new AS2Exception ("Undefined tag: " + sNodeName);
+            if (sNodeName.equals (EL_PARTNERSHIPS))
+              _loadPartnershipFactory (eRootChild);
+            else
+              throw new AS2Exception ("Undefined tag: " + sNodeName);
+      }
     }
+  }
+
+  public void reloadConfiguration () throws AS2Exception
+  {
+    LOGGER.info ("Loading AS2 configuration file '" + m_aConfigFile.getAbsolutePath ());
+
+    // Clear old stuff
+    resetToDefault ();
+
+    _load (FileHelper.getInputStream (m_aConfigFile));
   }
 }

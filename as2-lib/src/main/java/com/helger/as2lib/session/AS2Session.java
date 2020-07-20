@@ -38,6 +38,7 @@ import javax.activation.CommandMap;
 import javax.activation.MailcapCommandMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import com.helger.as2lib.IDynamicComponent;
@@ -49,6 +50,7 @@ import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
@@ -133,6 +135,18 @@ public class AS2Session implements IAS2Session
     return aComponent;
   }
 
+  /**
+   * All modifications done here, have impact on the whole session
+   *
+   * @return The mutual component map. Never <code>null</code> handle with care.
+   */
+  @Nonnull
+  @ReturnsMutableObject
+  protected final ICommonsMap <String, IDynamicComponent> components ()
+  {
+    return m_aComponents;
+  }
+
   @Nonnull
   @ReturnsMutableCopy
   public final ICommonsMap <String, IDynamicComponent> getAllComponents ()
@@ -158,48 +172,59 @@ public class AS2Session implements IAS2Session
     return (IMessageProcessor) getComponent (COMPONENT_ID_MESSAGE_PROCESSOR);
   }
 
-  public boolean isCryptoSignIncludeCertificateInBodyPart ()
+  public final boolean isCryptoSignIncludeCertificateInBodyPart ()
   {
     return m_bCryptoSignIncludeCertificateInBodyPart;
   }
 
-  public void setCryptoSignIncludeCertificateInBodyPart (final boolean bCryptoSignIncludeCertificateInBodyPart)
+  public final void setCryptoSignIncludeCertificateInBodyPart (final boolean bCryptoSignIncludeCertificateInBodyPart)
   {
     m_bCryptoSignIncludeCertificateInBodyPart = bCryptoSignIncludeCertificateInBodyPart;
   }
 
-  public boolean isCryptoVerifyUseCertificateInBodyPart ()
+  public final boolean isCryptoVerifyUseCertificateInBodyPart ()
   {
     return m_bCryptoVerifyUseCertificateInBodyPart;
   }
 
-  public void setCryptoVerifyUseCertificateInBodyPart (final boolean bCryptoVerifyUseCertificateInBodyPart)
+  public final void setCryptoVerifyUseCertificateInBodyPart (final boolean bCryptoVerifyUseCertificateInBodyPart)
   {
     m_bCryptoVerifyUseCertificateInBodyPart = bCryptoVerifyUseCertificateInBodyPart;
   }
 
   @Nullable
-  public Proxy getHttpProxy ()
+  public final Proxy getHttpProxy ()
   {
     return m_aHttpProxy;
   }
 
-  public void setHttpProxy (@Nullable final Proxy aHttpProxy)
+  public final void setHttpProxy (@Nullable final Proxy aHttpProxy)
   {
     m_aHttpProxy = aHttpProxy;
   }
 
   @Nonnull
   @Nonempty
-  public String getAS2VersionID ()
+  public final String getAS2VersionID ()
   {
     return m_sAS2VersionID;
   }
 
-  public void setAS2VersionID (@Nonnull @Nonempty final String sAS2Version)
+  public final void setAS2VersionID (@Nonnull @Nonempty final String sAS2Version)
   {
     ValueEnforcer.notEmpty (sAS2Version, "AS2Version");
     m_sAS2VersionID = sAS2Version;
+  }
+
+  @OverridingMethodsMustInvokeSuper
+  public void resetToDefault ()
+  {
+    // Clear old stuff
+    components ().clear ();
+    setCryptoSignIncludeCertificateInBodyPart (DEFAULT_CRYPTO_SIGN_INCLUDE_CERTIFICATE_IN_BODY_PART);
+    setCryptoVerifyUseCertificateInBodyPart (DEFAULT_CRYPTO_VERIFY_USE_CERTIFICATE_IN_BODY_PART);
+    setHttpProxy (null);
+    setAS2VersionID (CAS2Header.DEFAULT_AS2_VERSION);
   }
 
   @Override
