@@ -68,7 +68,7 @@
   </developers>
   
   <properties>
-    <spring-boot.version>2.3.3.RELEASE</spring-boot.version>
+    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
   </properties>
   
   <dependencyManagement>
@@ -76,14 +76,14 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>9.4.8</version>
+        <version>9.5.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>9.3.3</version>
+        <version>9.3.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -97,16 +97,11 @@
       <dependency>
         <groupId>com.helger.photon</groupId>
         <artifactId>ph-oton-parent-pom</artifactId>
-        <version>8.2.6</version>
+        <version>8.2.8</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver-core</artifactId>
-        <version>4.1.0</version>
-      </dependency>
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
@@ -163,4 +158,16 @@
     <module>as2-server</module>
     <module>as2-demo-spring-boot</module>
   </modules>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <source>8</source>
+        </configuration>
+      </plugin> 
+    </plugins>
+  </build>
 </project>
