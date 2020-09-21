@@ -154,7 +154,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   @Override
-  public final void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
+  public final void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                          @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_FILENAME);
@@ -164,7 +165,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
 
   /**
    * Not final - see #105
-   * 
+   *
    * @param aMsg
    *        The source message
    * @param sFileParam
@@ -178,7 +179,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
    */
   @Nonnull
   @OverrideOnDemand
-  protected File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException, AS2Exception
+  protected File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException,
+                                                                                           AS2Exception
   {
     final String sFilename = getFilename (aMsg, sFileParam);
 
@@ -186,10 +188,12 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     final File aFile = new File (sFilename);
     AS2IOHelper.getFileOperationManager ().createDirRecursiveIfNotExisting (aFile.getParentFile ());
     // don't overwrite existing files
-    return AS2IOHelper.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
+    return AS2IOHelper.getUniqueFile (aFile.getParentFile (),
+                                      FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
-  private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS, @Nonnull final File aDestination) throws IOException
+  private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS,
+                                          @Nonnull final File aDestination) throws IOException
   {
     final FileOutputStream aOS = new FileOutputStream (aDestination);
     if (StreamHelper.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())
@@ -207,8 +211,7 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
       _writeStreamToFile (aIS, aTempFile);
 
       // copy the temp file over to the destination
-      if (AS2IOHelper.getFileOperationManager ().renameFile (aTempFile, aMsgFile).isFailure ())
-        throw new IOException ("Rename from " + aTempFile.getAbsolutePath () + " to " + aMsgFile.getAbsolutePath () + " failed!");
+      AS2IOHelper.moveFile (aTempFile, aMsgFile, true, true);
     }
     else
     {
