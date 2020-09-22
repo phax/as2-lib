@@ -32,13 +32,34 @@
  */
 package com.helger.as2lib.params;
 
+import java.time.ZonedDateTime;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.util.AS2DateHelper;
+import com.helger.commons.annotation.VisibleForTesting;
 
 public class DateParameters extends AbstractParameterParser
 {
+  private ZonedDateTime m_aDateTime;
+
+  public DateParameters ()
+  {}
+
+  /**
+   * Constructor that uses a predefined date and time for consistent tests.
+   *
+   * @param aZDT
+   *        The date time to use. <code>null</code> means "use current date
+   *        time"
+   */
+  @VisibleForTesting
+  public DateParameters (@Nullable final ZonedDateTime aZDT)
+  {
+    m_aDateTime = aZDT;
+  }
+
   /**
    * @deprecated Don't call this
    */
@@ -56,6 +77,11 @@ public class DateParameters extends AbstractParameterParser
     if (sKey == null)
       throw new AS2InvalidParameterException ("Invalid key", this, sKey, null);
 
+    if (m_aDateTime != null)
+    {
+      // Use predefined date time
+      return AS2DateHelper.formatDate (sKey, m_aDateTime);
+    }
     return AS2DateHelper.getFormattedDateNow (sKey);
   }
 }
