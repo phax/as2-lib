@@ -39,8 +39,8 @@ import com.mongodb.client.MongoDatabase;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.ImmutableMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
@@ -60,9 +60,10 @@ public class MongoDBPartnershipFactoryTest
   {
     final MongodStarter starter = MongodStarter.getDefaultInstance ();
     final int port = 12345;
-    final IMongodConfig mongodConfig = new MongodConfigBuilder ().version (Version.Main.PRODUCTION)
-                                                                 .net (new Net (port, Network.localhostIsIPv6 ()))
-                                                                 .build ();
+    final MongodConfig mongodConfig = ImmutableMongodConfig.builder ()
+                                                           .version (Version.Main.PRODUCTION)
+                                                           .net (new Net (port, Network.localhostIsIPv6 ()))
+                                                           .build ();
     mongodExecutable = starter.prepare (mongodConfig);
     mongodExecutable.start ();
     mongo = MongoClients.create (MongoClientSettings.builder ()
