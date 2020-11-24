@@ -1,7 +1,8 @@
 # as2-lib
 
-[![Build Status](https://travis-ci.org/phax/as2-lib.svg?branch=master)](https://travis-ci.org/phax/as2-lib)
-﻿
+[![Build Status](https://travis-ci.com/phax/as2-lib.svg?branch=master)](https://travis-ci.com/phax/as2-lib)
+[![javadoc](https://javadoc.io/badge2/com.helger.as2/as2-lib/javadoc.svg)](https://javadoc.io/doc/com.helger.as2/as2-lib)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.as2/as2-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.as2/as2-lib) 
 [![Join the chat at https://gitter.im/phax/as2-lib](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/phax/as2-lib?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 AS2 is a transport protocol specified in [RFC 4130](http://www.ietf.org/rfc/rfc4130.txt).
