@@ -126,7 +126,7 @@ import com.helger.security.keystore.IKeyStoreType;
 public final class BCCryptoHelper implements ICryptoHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
-  private static final File s_aDumpDecryptedDirectory;
+  private static final File DUMP_DECRYPTED_DIR_PATH;
   private static final String DEFAULT_SECURITY_PROVIDER_NAME;
   private static final byte [] EOL_BYTES = AS2IOHelper.getAllAsciiBytes (CHttp.EOL);
 
@@ -164,14 +164,14 @@ public final class BCCryptoHelper implements ICryptoHelper
     final String sDumpDecryptedDirectory = SystemProperties.getPropertyValueOrNull ("AS2.dumpDecryptedDirectory");
     if (StringHelper.hasText (sDumpDecryptedDirectory))
     {
-      s_aDumpDecryptedDirectory = new File (sDumpDecryptedDirectory);
-      AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (s_aDumpDecryptedDirectory);
+      DUMP_DECRYPTED_DIR_PATH = new File (sDumpDecryptedDirectory);
+      AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (DUMP_DECRYPTED_DIR_PATH);
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Using directory " + s_aDumpDecryptedDirectory.getAbsolutePath () + " to dump all decrypted AS2 body parts to.");
+        LOGGER.info ("Using directory " + DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () + " to dump all decrypted AS2 body parts to.");
     }
     else
-      s_aDumpDecryptedDirectory = null;
+      DUMP_DECRYPTED_DIR_PATH = null;
   }
 
   private String m_sSecurityProviderName = DEFAULT_SECURITY_PROVIDER_NAME;
@@ -365,7 +365,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     int nIndex = 0;
     do
     {
-      aDestinationFile = new File (s_aDumpDecryptedDirectory,
+      aDestinationFile = new File (DUMP_DECRYPTED_DIR_PATH,
                                    "as2-decrypted-" + Long.toString (PDTFactory.getCurrentMillis ()) + "-" + nIndex + ".part");
       nIndex++;
     } while (aDestinationFile.exists ());
@@ -432,7 +432,7 @@ public final class BCCryptoHelper implements ICryptoHelper
     final FileBackedMimeBodyPart aDecryptedDataBodyPart = SMIMEUtil.toMimeBodyPart (aRecipient.getContentStream (new JceKeyTransEnvelopedRecipient (aPrivateKey).setProvider (m_sSecurityProviderName)),
                                                                                     aResHelper.createTempFile ());
 
-    if (s_aDumpDecryptedDirectory != null)
+    if (DUMP_DECRYPTED_DIR_PATH != null)
     {
       // dump decrypted
       try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
