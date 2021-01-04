@@ -81,7 +81,7 @@ public interface ICryptoHelper
    *         In case loading fails.
    */
   @Nonnull
-  KeyStore loadKeyStore (@Nonnull final IKeyStoreType aKeyStoreType,
+  KeyStore loadKeyStore (@Nonnull IKeyStoreType aKeyStoreType,
                          @Nonnull @WillNotClose InputStream aIS,
                          @Nonnull char [] aPassword) throws Exception;
 
