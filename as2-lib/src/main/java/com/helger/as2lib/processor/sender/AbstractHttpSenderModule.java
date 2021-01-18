@@ -221,7 +221,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   {
     // Trust all server certificates
     final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
-    aSSLCtx.init (null, new TrustManager [] { new TrustManagerTrustAll () }, null);
+    aSSLCtx.init (null, new TrustManager [] { new TrustManagerTrustAll (false) }, null);
     return aSSLCtx;
   }
 
