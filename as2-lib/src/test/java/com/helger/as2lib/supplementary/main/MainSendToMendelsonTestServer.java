@@ -90,7 +90,10 @@ public final class MainSendToMendelsonTestServer
     aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key3");
 
     // Fixed receiver - key alias must be "mendelsontestAS2"
-    aSettings.setReceiverData ("mendelsontestAS2", "mendelsontestAS2", "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
+    aSettings.setReceiverData ("mendelsontestAS2",
+                               "mendelsontestAS2",
+                               true ? "https://testas2.mendelson-e-c.com:8444/as2/HttpReceiver"
+                                    : "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
     final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
@@ -121,7 +124,9 @@ public final class MainSendToMendelsonTestServer
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
     aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
-    aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
+
+    if (false)
+      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings, aRequest);
