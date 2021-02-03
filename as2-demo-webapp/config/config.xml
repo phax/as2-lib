@@ -34,5 +34,7 @@
             port="10080"
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
+
+    <module classname="com.helger.as2.webapp.module.MyHandlerModule"/>        
   </processor>
 </openas2>
