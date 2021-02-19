@@ -87,13 +87,19 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringParser;
+import com.helger.commons.timing.StopWatch;
 import com.helger.mail.datasource.ByteArrayDataSource;
 
+/**
+ * The main handler for receiving AS2 async MDN messages.
+ *
+ * @author Philip Helger
+ */
 public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2MDNReceiverHandler.class);
 
-  private final AS2MDNReceiverModule m_aModule;
+  private final AS2MDNReceiverModule m_aReceiverModule;
   private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
 
   /**
@@ -103,7 +109,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    */
   public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
-    m_aModule = ValueEnforcer.notNull (aModule, "Module");
+    m_aReceiverModule = ValueEnforcer.notNull (aModule, "Module");
   }
 
   /**
@@ -113,7 +119,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   @Nonnull
   public final AS2MDNReceiverModule getModule ()
   {
-    return m_aModule;
+    return m_aReceiverModule;
   }
 
   /**
@@ -139,55 +145,98 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     m_aMICMatchingHandler = aMICMatchingHandler;
   }
 
-  public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
+  // Asynch MDN 2007-03-12
+  /**
+   * verify if the mic is matched.
+   *
+   * @param aMsg
+   *        Message
+   * @return true if mdn processed
+   * @throws AS2Exception
+   *         In case of error; e.g. MIC mismatch
+   */
+  public boolean checkAsyncMDN (@Nonnull final AS2Message aMsg) throws AS2Exception
   {
-    final String sClientInfo = getClientInfo (aSocket);
-
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("incoming connection [" + sClientInfo + "]");
-
-    final AS2Message aMsg = new AS2Message ();
-
-    final boolean bQuoteHeaderValues = m_aModule.isQuoteHeaderValues ();
-    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket, bQuoteHeaderValues);
-
-    byte [] aData = null;
-
-    // Read in the message request, headers, and data
-    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
+    try
     {
-      final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-      final DataSource aDataSourceBody = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
-                                                                   aResponseHandler,
-                                                                   aMsg,
-                                                                   aIncomingDumper);
-      aData = StreamHelper.getAllBytes (aDataSourceBody.getInputStream ());
+      // get the returned mic from mdn object
+      final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
+      final MIC aReturnMIC = MIC.parse (sReturnMIC);
 
-      // Asynch MDN 2007-03-12
-      // check if the requested URL is defined in attribute "as2_receipt_option"
-      // in one of partnerships, if yes, then process incoming AsyncMDN
+      // use original message id. to open the pending information file
+      // from pendinginfo folder.
+      final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
+
+      final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
+                                                                                          .getMessageProcessor ()
+                                                                                          .attrs ()
+                                                                                          .getAsString (IMessageProcessor.ATTR_PENDINGMDNINFO));
+      final String sPendingInfoFile = sPendingInfoFolder +
+                                      FilenameHelper.UNIX_SEPARATOR_STR +
+                                      AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
+
+      final String sOriginalMIC;
+      final MIC aOriginalMIC;
+      final File aPendingFile;
+      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
+                                                                                              StandardCharsets.ISO_8859_1))
+      {
+        // Get the original mic from the first line of pending information
+        // file
+        sOriginalMIC = aPendingInfoReader.readLine ();
+        aOriginalMIC = MIC.parse (sOriginalMIC);
+
+        // Get the original pending file from the second line of pending
+        // information file
+        aPendingFile = new File (aPendingInfoReader.readLine ());
+      }
+
+      final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
+
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("incoming connection for receiving AsyncMDN" + " [" + sClientInfo + "]" + aMsg.getLoggingText ());
+        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
-      final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
+      if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
+      {
+        m_aMICMatchingHandler.onMICMismatch (aMsg, sOriginalMIC, sReturnMIC);
+        return false;
+      }
 
-      final MimeBodyPart aReceivedPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMsg.headers ()), aData);
-      aMsg.setData (aReceivedPart);
+      m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
 
-      // MimeBodyPart receivedPart = new MimeBodyPart();
-      aReceivedPart.setDataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null).getAsDataHandler ());
-      // Must be set AFTER the DataHandler!
-      aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
+      // delete the pendinginfo & pending file if mic is matched
 
-      aMsg.setData (aReceivedPart);
+      final File aPendingInfoFile = new File (sPendingInfoFile);
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("delete pendinginfo file : " +
+                     aPendingInfoFile.getName () +
+                     " from pending folder : " +
+                     sPendingInfoFolder +
+                     aMsg.getLoggingText ());
+      if (!aPendingInfoFile.delete ())
+      {
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Error delete pendinginfo file " + aPendingFile);
+      }
 
-      receiveMDN (aMsg, aData, aResponseHandler, aResHelper);
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("delete pending file : " +
+                     aPendingFile.getName () +
+                     " from pending folder : " +
+                     aPendingFile.getParent () +
+                     aMsg.getLoggingText ());
+      if (!aPendingFile.delete ())
+      {
+        if (LOGGER.isErrorEnabled ())
+          LOGGER.error ("Error delete pending file " + aPendingFile);
+      }
     }
-    catch (final Exception ex)
+    catch (final IOException | AS2ComponentNotFoundException ex)
     {
-      final AS2NetException ne = new AS2NetException (aSocket.getInetAddress (), aSocket.getPort (), ex);
-      ne.terminate ();
+      LOGGER.error ("Error checking async MDN", ex);
+      return false;
     }
+    return true;
   }
 
   // Asynch MDN 2007-03-12
@@ -304,100 +353,6 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  // Asynch MDN 2007-03-12
-  /**
-   * verify if the mic is matched.
-   *
-   * @param aMsg
-   *        Message
-   * @return true if mdn processed
-   * @throws AS2Exception
-   *         In case of error; e.g. MIC mismatch
-   */
-  public boolean checkAsyncMDN (@Nonnull final AS2Message aMsg) throws AS2Exception
-  {
-    try
-    {
-      // get the returned mic from mdn object
-      final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
-      final MIC aReturnMIC = MIC.parse (sReturnMIC);
-
-      // use original message id. to open the pending information file
-      // from pendinginfo folder.
-      final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-
-      final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
-                                                                                          .getMessageProcessor ()
-                                                                                          .attrs ()
-                                                                                          .getAsString (IMessageProcessor.ATTR_PENDINGMDNINFO));
-      final String sPendingInfoFile = sPendingInfoFolder +
-                                      FilenameHelper.UNIX_SEPARATOR_STR +
-                                      AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
-
-      final String sOriginalMIC;
-      final MIC aOriginalMIC;
-      final File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
-                                                                                              StandardCharsets.ISO_8859_1))
-      {
-        // Get the original mic from the first line of pending information
-        // file
-        sOriginalMIC = aPendingInfoReader.readLine ();
-        aOriginalMIC = MIC.parse (sOriginalMIC);
-
-        // Get the original pending file from the second line of pending
-        // information file
-        aPendingFile = new File (aPendingInfoReader.readLine ());
-      }
-
-      final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
-
-      if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
-      {
-        m_aMICMatchingHandler.onMICMismatch (aMsg, sOriginalMIC, sReturnMIC);
-        return false;
-      }
-
-      m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
-
-      // delete the pendinginfo & pending file if mic is matched
-
-      final File aPendingInfoFile = new File (sPendingInfoFile);
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("delete pendinginfo file : " +
-                     aPendingInfoFile.getName () +
-                     " from pending folder : " +
-                     sPendingInfoFolder +
-                     aMsg.getLoggingText ());
-      if (!aPendingInfoFile.delete ())
-      {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error delete pendinginfo file " + aPendingFile);
-      }
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("delete pending file : " +
-                     aPendingFile.getName () +
-                     " from pending folder : " +
-                     aPendingFile.getParent () +
-                     aMsg.getLoggingText ());
-      if (!aPendingFile.delete ())
-      {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error delete pending file " + aPendingFile);
-      }
-    }
-    catch (final IOException | AS2ComponentNotFoundException ex)
-    {
-      LOGGER.error ("Error checking async MDN", ex);
-      return false;
-    }
-    return true;
-  }
-
   public void reparse (@Nonnull final AS2Message aMsg,
                        @Nonnull final AS2HttpClient aHttpClient,
                        @Nullable final IHTTPIncomingDumper aIncomingDumper) throws AS2Exception
@@ -450,5 +405,86 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     // get the MDN partnership info
     aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
     aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
+  }
+
+  public void handleIncomingMessage (@Nullable final DataSource aMsgData,
+                                     @Nonnull final AS2Message aMsg,
+                                     @Nonnull final IAS2HttpResponseHandler aResponseHandler)
+  {
+    // Read in the message request, headers, and data
+    try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
+    {
+      final byte [] aData = StreamHelper.getAllBytes (aMsgData.getInputStream ());
+
+      // Asynch MDN 2007-03-12
+      // check if the requested URL is defined in attribute "as2_receipt_option"
+      // in one of partnerships, if yes, then process incoming AsyncMDN
+      final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
+
+      final MimeBodyPart aReceivedPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMsg.headers ()), aData);
+      aMsg.setData (aReceivedPart);
+
+      // MimeBodyPart receivedPart = new MimeBodyPart();
+      aReceivedPart.setDataHandler (new ByteArrayDataSource (aData, sReceivedContentType, null).getAsDataHandler ());
+      // Must be set AFTER the DataHandler!
+      aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
+
+      aMsg.setData (aReceivedPart);
+
+      receiveMDN (aMsg, aData, aResponseHandler, aResHelper);
+    }
+    catch (final AS2Exception ex)
+    {
+      m_aReceiverModule.handleError (aMsg, ex);
+    }
+    catch (final Exception ex)
+    {
+      m_aReceiverModule.handleError (aMsg, WrappedAS2Exception.wrap (ex));
+    }
+  }
+
+  public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
+  {
+    final String sClientInfo = getClientInfo (aSocket);
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("incoming connection for receiving AsyncMDN [" + sClientInfo + "]");
+
+    final AS2Message aMsg = new AS2Message ();
+    final boolean bQuoteHeaderValues = m_aReceiverModule.isQuoteHeaderValues ();
+    final IAS2HttpResponseHandler aResponseHandler = new AS2HttpResponseHandlerSocket (aSocket, bQuoteHeaderValues);
+
+    // Time the transmission
+    final StopWatch aSW = StopWatch.createdStarted ();
+    DataSource aMdnDataSource = null;
+    try
+    {
+      // Read in the message request, headers, and data
+      final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
+      aMdnDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg, aIncomingDumper);
+    }
+    catch (final Exception ex)
+    {
+      new AS2NetException (aSocket.getInetAddress (), aSocket.getPort (), ex).terminate ();
+    }
+
+    aSW.stop ();
+
+    if (aMdnDataSource != null)
+      if (aMdnDataSource instanceof ByteArrayDataSource)
+      {
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("received " +
+                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length, aSW) +
+                       " from " +
+                       sClientInfo +
+                       aMsg.getLoggingText ());
+
+      }
+      else
+      {
+        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+      }
+
+    handleIncomingMessage (aMdnDataSource, aMsg, aResponseHandler);
   }
 }
