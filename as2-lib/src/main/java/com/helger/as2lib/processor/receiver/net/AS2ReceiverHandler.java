@@ -100,7 +100,7 @@ import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.security.certificate.CertificateHelper;
 
 /**
- * The main handler for receiving messages.
+ * The main handler for receiving AS2 messages.
  *
  * @author Philip Helger
  */
@@ -767,8 +767,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       else
       {
         LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
-
       }
+
     handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);
   }
 }
