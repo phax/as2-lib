@@ -30,7 +30,7 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.StringHelper;
 
 /**
- * A special {@link AbstractAS2ReceiveXServletHandler} with a file based
+ * A special {@link AbstractAS2ReceiveBaseXServletHandler} with a file based
  * configuration.
  *
  * @author Philip Helger

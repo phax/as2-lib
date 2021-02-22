@@ -28,9 +28,11 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
-import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
+import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
+import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
+import com.helger.as2servlet.util.AS2ServletMDNReceiverModule;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
@@ -39,16 +41,13 @@ import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.web.scope.IRequestWebScope;
 
 /**
- * This is the main XServlet handler that takes AS2 messages and processes them.
- * This class contains a lot of methods that may be overridden. In v4.6.4 the
- * abstract base class {@link AbstractAS2ReceiveBaseXServletHandler} was
- * extracted to contain the common parts for async MDNs.<br>
- * It expects a module of class {@link AS2ServletReceiverModule} to be
- * registered in the messages processor of the created session.
+ * This is the main XServlet handler that takes async MDNs messages and
+ * processes them. This class contains a lot of methods that may be overridden.
  *
  * @author Philip Helger
+ * @since 4.6.4
  */
-public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2ReceiveBaseXServletHandler
+public abstract class AbstractAS2MDNReceiveXServletHandler extends AbstractAS2ReceiveBaseXServletHandler
 {
   /**
    * The name of the Servlet's init-parameter from which the absolute path to
@@ -56,9 +55,24 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
    */
   public static final String SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME = "as2-servlet-config-filename";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAS2ReceiveXServletHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAS2MDNReceiveXServletHandler.class);
 
-  private AS2ServletReceiverModule m_aReceiver;
+  private AS2ServletMDNReceiverModule m_aReceiver;
+
+  /**
+   * Create the AS2 session to be used based on the provided configuration file.
+   *
+   * @param aInitParams
+   * @return The created session. May not be <code>null</code>.
+   * @throws AS2Exception
+   *         In case something goes wrong when initializing the session
+   * @throws ServletException
+   *         In case an overriding methods wants to throw a different exception
+   */
+  @Override
+  @Nonnull
+  @OverrideOnDemand
+  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws AS2Exception, ServletException;
 
   @Override
   public void onServletInit (@Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException
@@ -67,7 +81,7 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
 
     try
     {
-      m_aReceiver = getSession ().getMessageProcessor ().getModuleOfClass (AS2ServletReceiverModule.class);
+      m_aReceiver = getSession ().getMessageProcessor ().getModuleOfClass (AS2ServletMDNReceiverModule.class);
       if (m_aReceiver == null)
         throw new ServletException ("Failed to retrieve AS2ReceiverModule which is a mandatory module! Please ensure your configuration file contains at least the module '" +
                                     AS2ServletReceiverModule.class.getName () +
@@ -88,17 +102,11 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
    *         In case initialization failed
    */
   @Nonnull
-  protected final AS2ServletReceiverModule getReceiverModule ()
+  protected final AS2ServletMDNReceiverModule getMDNReceiverModule ()
   {
     if (m_aReceiver == null)
       throw new IllegalStateException ("This servlet was not initialized properly! No receiver is present.");
     return m_aReceiver;
-  }
-
-  @Override
-  protected final boolean isQuoteHeaderValues ()
-  {
-    return m_aReceiver.isQuoteHeaderValues ();
   }
 
   /**
@@ -143,7 +151,7 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
     final DataSource aPayload = new ByteArrayDataSource (aMsgData, sReceivedContentType, null);
 
     // This call internally invokes the AS2ServletSBDModule
-    final AS2ReceiverHandler aReceiverHandler = getReceiverModule ().createHandler ();
+    final AS2MDNReceiverHandler aReceiverHandler = getMDNReceiverModule ().createHandler ();
     aReceiverHandler.handleIncomingMessage (sClientInfo, aPayload, aMsg, aResponseHandler);
   }
 }

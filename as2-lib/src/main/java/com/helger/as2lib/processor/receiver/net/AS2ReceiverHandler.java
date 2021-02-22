@@ -370,7 +370,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           LOGGER.debug (aSB.toString ());
         }
 
-        final SMIMECompressedParser aCompressedParser = new SMIMECompressedParser (aMsg.getData (), 8 * 1024);
+        // The default buffer size in BufferedInputStream is 8192
+        final SMIMECompressedParser aCompressedParser = new SMIMECompressedParser (aMsg.getData ());
         // TODO: get buffer from configuration
         aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressedParser.getContent (aExpander));
 

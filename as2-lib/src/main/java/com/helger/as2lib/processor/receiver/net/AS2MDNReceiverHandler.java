@@ -77,6 +77,7 @@ import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
@@ -407,7 +408,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
   }
 
-  public void handleIncomingMessage (@Nullable final DataSource aMsgData,
+  public void handleIncomingMessage (@Nonnull @Nonempty final String sClientInfo,
+                                     @Nullable final DataSource aMsgData,
                                      @Nonnull final AS2Message aMsg,
                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
@@ -432,6 +434,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMsg.setData (aReceivedPart);
 
       receiveMDN (aMsg, aData, aResponseHandler, aResHelper);
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Received async MDN " + sClientInfo + aMsg.getLoggingText ());
     }
     catch (final AS2Exception ex)
     {
@@ -485,6 +490,6 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
       }
 
-    handleIncomingMessage (aMdnDataSource, aMsg, aResponseHandler);
+    handleIncomingMessage (sClientInfo, aMdnDataSource, aMsg, aResponseHandler);
   }
 }
