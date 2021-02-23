@@ -36,6 +36,8 @@ import java.security.KeyStore;
 
 import javax.annotation.Nonnull;
 
+import com.helger.as2lib.exception.AS2Exception;
+
 /**
  * Base interface for a certificate factory that is based on a key store.
  *
@@ -45,4 +47,13 @@ public interface IKeyStoreCertificateFactory extends ICertificateFactory
 {
   @Nonnull
   KeyStore getKeyStore ();
+
+  /**
+   * Reload the key store from the configured source.
+   *
+   * @throws AS2Exception
+   *         in case of error
+   * @since 4.6.4
+   */
+  void reloadKeyStore () throws AS2Exception;
 }
