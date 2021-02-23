@@ -226,6 +226,23 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
     super.initDynamicComponent (aSession, aOptions);
 
+    reloadKeyStore ();
+
+    debugLog ( () -> "initDynamicComponent -> done");
+  }
+
+  @Nonnull
+  public KeyStore getKeyStore ()
+  {
+    final KeyStore ret = m_aRWLock.readLockedGet ( () -> m_aKeyStore);
+    if (ret == null)
+      throw new IllegalStateException ("No keystore present");
+    return ret;
+  }
+
+  public void reloadKeyStore () throws AS2Exception
+  {
+    debugLog ( () -> "reloadKeyStore ()");
     try
     {
       final String sKeyStoreType = getKeyStoreType ();
@@ -259,16 +276,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     if (StringHelper.hasText (sFilename))
       load (sFilename, getPassword ());
 
-    debugLog ( () -> "initDynamicComponent -> done");
-  }
-
-  @Nonnull
-  public KeyStore getKeyStore ()
-  {
-    final KeyStore ret = m_aRWLock.readLockedGet ( () -> m_aKeyStore);
-    if (ret == null)
-      throw new IllegalStateException ("No keystore present");
-    return ret;
+    debugLog ( () -> "reloadKeyStore -> done");
   }
 
   /**
