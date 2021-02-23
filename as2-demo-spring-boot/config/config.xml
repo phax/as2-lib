@@ -18,21 +18,25 @@
 
 -->
 <openas2>
-    <certificates classname="com.helger.as2lib.cert.CertificateFactory"
-                  type="pkcs12"
-                  filename="%home%/certs.p12"
-                  password="test"
-                  interval="300"/>
-    <partnerships classname="com.helger.as2lib.partner.SelfFillingPartnershipFactory"
-                  filename="%home%/partnerships.xml"/>
+  <certificates classname="com.helger.as2lib.cert.CertificateFactory"
+                type="pkcs12"
+                filename="%home%/certs.p12"
+                password="test"
+                interval="300"/>
+  <partnerships classname="com.helger.as2lib.partner.SelfFillingPartnershipFactory"
+                filename="%home%/partnerships.xml"/>
 
-    <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
-               pendingMDN="data/pendingMDN"
-               pendingMDNinfo="data/pendinginfoMDN">
-        <!-- port is required internally - simply ignore it for servlets -->
-        <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"
-                port="10080"
-                errordir="data/inbox/error"
-                errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>
-    </processor>
+  <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
+             pendingMDN="data/pendingMDN"
+             pendingMDNinfo="data/pendinginfoMDN">
+    <!-- Required to receive messages -->
+    <!-- port is required internally - simply ignore it for servlets -->
+    <module classname="com.helger.as2.webapp.module.ConfigurableAS2ServletReceiverModule"      
+            port="10080"
+            errordir="data/inbox/error"
+            errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
+
+    <!-- Only needed to receive asynchronous MDNs -->
+    <module classname="com.helger.as2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
+  </processor>
 </openas2>

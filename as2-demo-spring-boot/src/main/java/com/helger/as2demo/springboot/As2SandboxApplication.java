@@ -17,18 +17,32 @@
  */
 package com.helger.as2demo.springboot;
 
+import javax.annotation.Nonnull;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.helger.as2servlet.AS2WebAppListener;
 
 @SpringBootApplication
-public class As2SandboxApplication
+public class As2SandboxApplication implements ServletContextListener
 {
   public static void main (final String [] args)
   {
     SpringApplication.run (As2SandboxApplication.class, args);
 
+  }
+
+  public void contextInitialized (@Nonnull final ServletContextEvent sce)
+  {
+    // Required to be called before the servlet is initialized
+    AS2WebAppListener.staticInit (sce.getServletContext ());
+  }
+
+  public void contextDestroyed (@Nonnull final ServletContextEvent sce)
+  {
     // Shutdown here
     AS2WebAppListener.staticDestroy ();
   }

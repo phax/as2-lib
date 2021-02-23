@@ -20,31 +20,31 @@ package com.helger.as2demo.springboot;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.helger.as2servlet.AS2ReceiveServlet;
-import com.helger.as2servlet.AS2WebAppListener;
 import com.helger.as2servlet.AbstractAS2ReceiveXServletHandler;
+import com.helger.as2servlet.mdn.AS2MDNReceiveServlet;
 
 @Configuration
 public class ServletConfig
 {
-  /** The ServletContext to be used */
-  @Autowired
-  private ServletContext m_aSC;
+  @Bean
+  public ServletRegistrationBean <AS2ReceiveServlet> servletRegistrationBeanAS2 ()
+  {
+    final ServletRegistrationBean <AS2ReceiveServlet> bean = new ServletRegistrationBean <> (new AS2ReceiveServlet (), "/as2");
+    final Map <String, String> aInitParams = new HashMap <> ();
+    aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME, "config/config.xml");
+    bean.setInitParameters (aInitParams);
+    return bean;
+  }
 
   @Bean
-  public ServletRegistrationBean <AS2ReceiveServlet> servletRegistrationBean ()
+  public ServletRegistrationBean <AS2MDNReceiveServlet> servletRegistrationBeanMDN ()
   {
-    // Required to be called before the servlet is initialized
-    AS2WebAppListener.staticInit (m_aSC);
-
-    final ServletRegistrationBean <AS2ReceiveServlet> bean = new ServletRegistrationBean <> (new AS2ReceiveServlet (), "/as2");
+    final ServletRegistrationBean <AS2MDNReceiveServlet> bean = new ServletRegistrationBean <> (new AS2MDNReceiveServlet (), "/as2mdn");
     final Map <String, String> aInitParams = new HashMap <> ();
     aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME, "config/config.xml");
     bean.setInitParameters (aInitParams);
