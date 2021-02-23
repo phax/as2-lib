@@ -240,9 +240,8 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     return ret;
   }
 
-  public void reloadKeyStore () throws AS2Exception
+  protected void initEmptyKeyStore () throws AS2Exception
   {
-    debugLog ( () -> "reloadKeyStore ()");
     try
     {
       final String sKeyStoreType = getKeyStoreType ();
@@ -271,6 +270,13 @@ public class CertificateFactory extends AbstractDynamicComponent implements
       debugLog ( () -> "initDynamicComponent -> " + _debug (ex));
       throw WrappedAS2Exception.wrap (ex);
     }
+  }
+
+  public void reloadKeyStore () throws AS2Exception
+  {
+    debugLog ( () -> "reloadKeyStore ()");
+
+    initEmptyKeyStore ();
 
     final String sFilename = getFilename ();
     if (StringHelper.hasText (sFilename))
