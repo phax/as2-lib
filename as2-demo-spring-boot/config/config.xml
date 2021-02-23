@@ -31,12 +31,12 @@
              pendingMDNinfo="data/pendinginfoMDN">
     <!-- Required to receive messages -->
     <!-- port is required internally - simply ignore it for servlets -->
-    <module classname="com.helger.as2.webapp.module.ConfigurableAS2ServletReceiverModule"      
+    <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"      
             port="10080"
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
 
     <!-- Only needed to receive asynchronous MDNs -->
-    <module classname="com.helger.as2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
+    <module classname="com.helger.as2servlet.util.AS2ServletMDNReceiverModule" />        
   </processor>
 </openas2>
