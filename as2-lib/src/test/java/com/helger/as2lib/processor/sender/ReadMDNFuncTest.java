@@ -39,12 +39,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
 import java.util.function.Consumer;
 
 import javax.mail.internet.MimeBodyPart;
 
-import org.bouncycastle.cms.CMSException;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -118,8 +118,9 @@ public class ReadMDNFuncTest
       AS2Helper.parseMDN (aMsg, aCert, true, aCertHolder, aResHelper);
       fail ();
     }
-    catch (final CMSException ex)
+    catch (final CertificateExpiredException ex)
     {
+      // Expired 11.02.2021
       // expected to fail
       ex.printStackTrace ();
     }
