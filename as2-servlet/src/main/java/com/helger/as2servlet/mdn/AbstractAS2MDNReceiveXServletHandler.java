@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.as2servlet;
+package com.helger.as2servlet.mdn;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnull;
@@ -31,9 +31,9 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.AS2HttpHelper;
+import com.helger.as2servlet.AbstractAS2ReceiveBaseXServletHandler;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.as2servlet.util.AS2ServletMDNReceiverModule;
-import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
@@ -83,8 +83,8 @@ public abstract class AbstractAS2MDNReceiveXServletHandler extends AbstractAS2Re
     {
       m_aReceiver = getSession ().getMessageProcessor ().getModuleOfClass (AS2ServletMDNReceiverModule.class);
       if (m_aReceiver == null)
-        throw new ServletException ("Failed to retrieve AS2ReceiverModule which is a mandatory module! Please ensure your configuration file contains at least the module '" +
-                                    AS2ServletReceiverModule.class.getName () +
+        throw new ServletException ("Failed to retrieve 'AS2ServletMDNReceiverModule' which is a mandatory module! Please ensure your configuration file contains at least the module '" +
+                                    AS2ServletMDNReceiverModule.class.getName () +
                                     "'");
     }
     catch (final AS2Exception ex)
@@ -107,6 +107,12 @@ public abstract class AbstractAS2MDNReceiveXServletHandler extends AbstractAS2Re
     if (m_aReceiver == null)
       throw new IllegalStateException ("This servlet was not initialized properly! No receiver is present.");
     return m_aReceiver;
+  }
+
+  @Override
+  protected final boolean isQuoteHeaderValues ()
+  {
+    return m_aReceiver.isQuoteHeaderValues ();
   }
 
   /**

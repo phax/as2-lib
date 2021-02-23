@@ -27,9 +27,11 @@
   <error-page>
     <location>/index.html</location>
   </error-page>
+  
   <listener>
     <listener-class>com.helger.as2servlet.AS2WebAppListener</listener-class>
   </listener>
+  
   <servlet>
     <servlet-name>AS2ReceiveServlet</servlet-name>
     <servlet-class>com.helger.as2servlet.AS2ReceiveServlet</servlet-class>
@@ -41,5 +43,18 @@
   <servlet-mapping>
     <servlet-name>AS2ReceiveServlet</servlet-name>
     <url-pattern>/as2</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>AS2MDNReceiveServlet</servlet-name>
+    <servlet-class>com.helger.as2servlet.mdn.AS2MDNReceiveServlet</servlet-class>
+    <init-param>
+      <param-name>as2-servlet-config-filename</param-name>
+      <param-value>config/config.xml</param-value>
+    </init-param>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AS2MDNReceiveServlet</servlet-name>
+    <url-pattern>/as2mdn</url-pattern>
   </servlet-mapping>
 </web-app>

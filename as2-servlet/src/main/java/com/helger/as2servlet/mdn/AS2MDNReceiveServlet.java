@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.as2servlet;
+package com.helger.as2servlet.mdn;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
@@ -23,15 +23,16 @@ import com.helger.commons.http.EHttpMethod;
 import com.helger.xservlet.AbstractXServlet;
 
 /**
- * This is the main servlet that takes AS2 messages and processes them. This
- * servlet is configured to accept only POST requests. The logic for receiving
- * is contained in {@link AbstractAS2ReceiveXServletHandler}.
+ * This is the main servlet that takes async AS2 MDN messages and processes
+ * them. This servlet is configured to accept only POST requests. The logic for
+ * receiving is contained in {@link AbstractAS2MDNReceiveXServletHandler}.
  *
  * @author Philip Helger
+ * @since 4.6.4
  */
-public class AS2ReceiveServlet extends AbstractXServlet
+public class AS2MDNReceiveServlet extends AbstractXServlet
 {
-  public AS2ReceiveServlet ()
+  public AS2MDNReceiveServlet ()
   {}
 
   @Override
@@ -40,6 +41,6 @@ public class AS2ReceiveServlet extends AbstractXServlet
   {
     // Multipart is handled specifically inside
     settings ().setMultipartEnabled (false);
-    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandlerFileBasedConfig (), false);
+    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2MDNReceiveXServletHandlerFileBasedConfig (), false);
   }
 }

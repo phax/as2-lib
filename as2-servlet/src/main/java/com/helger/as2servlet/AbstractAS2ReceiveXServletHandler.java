@@ -69,7 +69,7 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
     {
       m_aReceiver = getSession ().getMessageProcessor ().getModuleOfClass (AS2ServletReceiverModule.class);
       if (m_aReceiver == null)
-        throw new ServletException ("Failed to retrieve AS2ReceiverModule which is a mandatory module! Please ensure your configuration file contains at least the module '" +
+        throw new ServletException ("Failed to retrieve 'AS2ServletReceiverModule' which is a mandatory module! Please ensure your configuration file contains at least the module '" +
                                     AS2ServletReceiverModule.class.getName () +
                                     "'");
     }

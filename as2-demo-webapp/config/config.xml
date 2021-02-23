@@ -29,12 +29,17 @@
   <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
              pendingMDN="data/pendingMDN"
              pendingMDNinfo="data/pendinginfoMDN">
+    <!-- Required to receive messages -->
     <!-- port is required internally - simply ignore it for servlets -->
     <module classname="com.helger.as2.webapp.module.ConfigurableAS2ServletReceiverModule"      
             port="10080"
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
 
+    <!-- Only needed to receive asynchronous MDNs -->
+    <module classname="com.helger.as2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
+
+    <!-- Custom handler for incoming AS2 messages -->
     <module classname="com.helger.as2.webapp.module.MyHandlerModule"/>        
   </processor>
 </openas2>
