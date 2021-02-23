@@ -35,6 +35,7 @@ package com.helger.as2lib;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.annotation.concurrent.GuardedBy;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.AS2InvalidParameterException;
@@ -55,6 +56,7 @@ import com.helger.commons.string.ToStringGenerator;
 public abstract class AbstractDynamicComponent implements IDynamicComponent
 {
   protected final SimpleReadWriteLock m_aRWLock = new SimpleReadWriteLock ();
+  @GuardedBy ("m_aRWLock")
   private final StringMap m_aAttrs = new StringMap ();
   private IAS2Session m_aSession;
 
@@ -74,7 +76,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
   @Nonnull
   public final String getAttributeAsStringRequired (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
-    final String sValue = attrs ().getAsString (sKey);
+    final String sValue = m_aRWLock.readLockedGet ( () -> attrs ().getAsString (sKey));
     if (sValue == null)
       throw new AS2InvalidParameterException ("Parameter not found", this, sKey, null);
     return sValue;
@@ -82,7 +84,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
 
   public final int getAttributeAsIntRequired (@Nonnull final String sKey) throws AS2InvalidParameterException
   {
-    final int nValue = attrs ().getAsInt (sKey, Integer.MIN_VALUE);
+    final int nValue = m_aRWLock.readLockedInt ( () -> attrs ().getAsInt (sKey, Integer.MIN_VALUE));
     if (nValue == Integer.MIN_VALUE)
       throw new AS2InvalidParameterException ("Parameter not found", this, sKey, null);
     return nValue;
@@ -100,7 +102,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
   public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws AS2Exception
   {
     m_aSession = ValueEnforcer.notNull (aSession, "Session");
-    attrs ().putAllIn (aParameters);
+    m_aRWLock.writeLockedGet ( () -> attrs ().putAllIn (aParameters));
   }
 
   @Override

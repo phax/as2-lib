@@ -85,8 +85,8 @@ import com.helger.security.keystore.IKeyStoreType;
  */
 @ThreadSafe
 public class CertificateFactory extends AbstractDynamicComponent implements
-                                IAliasedCertificateFactory,
                                 IKeyStoreCertificateFactory,
+                                IAliasedCertificateFactory,
                                 IStorableCertificateFactory
 {
   public static final EKeyStoreType DEFAULT_KEY_STORE_TYPE = EKeyStoreType.PKCS12;
@@ -101,6 +101,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   @GuardedBy ("m_aRWLock")
   private KeyStore m_aKeyStore;
+  @GuardedBy ("m_aRWLock")
   private boolean m_bDebugLog = false;
 
   public CertificateFactory ()
@@ -108,17 +109,17 @@ public class CertificateFactory extends AbstractDynamicComponent implements
 
   public final boolean isDebugLogEnabled ()
   {
-    return m_bDebugLog;
+    return m_aRWLock.readLockedBoolean ( () -> m_bDebugLog);
   }
 
   public final void setDebugLogEnaled (final boolean bDebugLog)
   {
-    m_bDebugLog = bDebugLog;
+    m_aRWLock.writeLockedBoolean ( () -> m_bDebugLog = bDebugLog);
   }
 
   protected final void debugLog (@Nonnull final Supplier <String> aSupplier)
   {
-    if (m_bDebugLog && LOGGER.isInfoEnabled ())
+    if (isDebugLogEnabled () && LOGGER.isInfoEnabled ())
       LOGGER.info (aSupplier.get ());
   }
 
@@ -139,10 +140,13 @@ public class CertificateFactory extends AbstractDynamicComponent implements
   public final void setKeyStoreType (@Nullable final String sKeyStoreType)
   {
     debugLog ( () -> "setKeyStoreType (" + sKeyStoreType + ")");
-    if (sKeyStoreType == null)
-      m_aRWLock.writeLockedGet ( () -> attrs ().remove (ATTR_TYPE));
-    else
-      m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_TYPE, sKeyStoreType));
+
+    m_aRWLock.writeLocked ( () -> {
+      if (sKeyStoreType == null)
+        attrs ().remove (ATTR_TYPE);
+      else
+        attrs ().putIn (ATTR_TYPE, sKeyStoreType);
+    });
   }
 
   public void setFilename (@Nullable final String sFilename)
@@ -390,7 +394,7 @@ public class CertificateFactory extends AbstractDynamicComponent implements
     {
       m_aRWLock.readLock ().unlock ();
     }
-    debugLog ( () -> "getCertificates -> " + new CommonsLinkedHashMap <> (ret, x -> x, x -> _debug (x)).toString ());
+    debugLog ( () -> "getCertificates -> " + new CommonsLinkedHashMap <> (ret, x -> x, CertificateFactory::_debug).toString ());
     return ret;
   }
 

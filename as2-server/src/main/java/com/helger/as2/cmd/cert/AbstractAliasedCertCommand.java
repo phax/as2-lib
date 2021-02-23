@@ -32,6 +32,8 @@
  */
 package com.helger.as2.cmd.cert;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2.cmd.AbstractCommand;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
@@ -61,5 +63,5 @@ public abstract class AbstractAliasedCertCommand extends AbstractCommand
     }
   }
 
-  protected abstract CommandResult execute (IAliasedCertificateFactory certFx, Object [] params) throws AS2Exception;
+  protected abstract CommandResult execute (@Nonnull IAliasedCertificateFactory certFx, Object [] params) throws AS2Exception;
 }
