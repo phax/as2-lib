@@ -59,12 +59,26 @@ public interface IMessageProcessor extends IDynamicComponent
   String ATTR_PENDINGMDN = "pendingmdn";
   String ATTR_PENDINGMDNINFO = "pendingmdninfo";
 
+  /**
+   * @return The name of the folder that contains the messages with the pending
+   *         MDNs. May be <code>null</code>.
+   * @see #ATTR_PENDINGMDN
+   * @since 4.6.4
+   */
   @Nullable
   default String getPendingMDNFolder ()
   {
     return attrs ().getAsString (ATTR_PENDINGMDN);
   }
 
+  /**
+   * Set the name of the folder that contains the messages with the pending MDN.
+   *
+   * @param sPendingMDNFolder
+   *        The name of the folder. May neither be <code>null</code> nor empty.
+   * @see #ATTR_PENDINGMDN
+   * @since 4.6.4
+   */
   default void setPendingMDNFolder (@Nonnull @Nonempty final String sPendingMDNFolder)
   {
     ValueEnforcer.notEmpty (sPendingMDNFolder, "PendingMDNFolder");
