@@ -74,7 +74,6 @@ import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.AS2NoModuleException;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.CNetAttribute;
-import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
 import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2lib.util.AS2DateHelper;
@@ -217,15 +216,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Original MIC is '" + aMIC.getAsAS2String () + "'" + aMsg.getLoggingText ());
 
       final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
-      final String sPendingFilename = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
-                                                                                         .attrs ()
-                                                                                         .getAsString (IMessageProcessor.ATTR_PENDINGMDN)) +
+      final String sPendingFilename = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ().getPendingMDNFolder ()) +
                                       FilenameHelper.UNIX_SEPARATOR_STR +
                                       sMsgFilename;
 
+      // The file that is written
       final String sPendingInfoFile = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
-                                                                                         .attrs ()
-                                                                                         .getAsString (IMessageProcessor.ATTR_PENDINGMDNINFO)) +
+                                                                                         .getPendingMDNInfoFolder ()) +
                                       FilenameHelper.UNIX_SEPARATOR_STR +
                                       sMsgFilename;
 
@@ -240,7 +237,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         aWriter.write (aMIC.getAsAS2String () + ENewLineMode.DEFAULT.getText () + sPendingFilename);
       }
 
-      // remember
+      // remember that MDN is pending
       aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
       aMsg.attrs ().putIn (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
     }

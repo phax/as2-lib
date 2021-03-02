@@ -47,7 +47,6 @@ import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
@@ -68,30 +67,6 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
 
   protected AbstractMessageProcessor ()
   {}
-
-  @Nullable
-  public final String getPendingMDNFolder ()
-  {
-    return attrs ().getAsString (ATTR_PENDINGMDN);
-  }
-
-  public final void setPendingMDNFolder (@Nonnull @Nonempty final String sPendingMDNFolder)
-  {
-    ValueEnforcer.notEmpty (sPendingMDNFolder, "PendingMDNFolder");
-    attrs ().putIn (ATTR_PENDINGMDN, sPendingMDNFolder);
-  }
-
-  @Nullable
-  public final String getPendingMDNInfoFolder ()
-  {
-    return attrs ().getAsString (ATTR_PENDINGMDNINFO);
-  }
-
-  public final void setPendingMDNInfoFolder (@Nonnull @Nonempty final String sPendingMDNInfoFolder)
-  {
-    ValueEnforcer.notEmpty (sPendingMDNInfoFolder, "PendingMDNInfoFolder");
-    attrs ().putIn (ATTR_PENDINGMDNINFO, sPendingMDNInfoFolder);
-  }
 
   public void addModule (@Nonnull final IProcessorModule aModule)
   {
