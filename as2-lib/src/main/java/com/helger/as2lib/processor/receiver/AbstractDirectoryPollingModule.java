@@ -244,6 +244,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
        */
       if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.attrs ().getAsString (CFileAttribute.MA_STATUS)))
       {
+        // Copy the file to the pending folder
         final File aPendingFile = new File (aMsg.partnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
                                             aMsg.attrs ().getAsString (CFileAttribute.MA_PENDING_FILENAME));
         final FileIOError aIOErr = AS2IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
@@ -261,10 +262,10 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                      aMsg.getLoggingText ());
       }
 
-      // If the Sent Directory option is set, move the transmitted file to
-      // the sent directory
       if (attrs ().containsKey (ATTR_SENT_DIRECTORY))
       {
+        // If the Sent Directory option is set, move the transmitted file to
+        // the sent directory
         File aSentFile = null;
         try
         {
@@ -282,6 +283,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       }
       else
       {
+        // The "Sent Directory" option was not set - so delete the file
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Trying to delete file " + aFile.getAbsolutePath ());
 

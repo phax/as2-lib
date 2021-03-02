@@ -87,7 +87,9 @@ public interface IMessageProcessor extends IDynamicComponent
    * Set the name of the folder that contains the pending MDN information files.
    *
    * @param sPendingMDNInfoFolder
-   *        The nae of the folder. May neither be <code>null</code> nor empty.
+   *        The name of the folder. May neither be <code>null</code> nor empty.
+   * @see #ATTR_PENDINGMDNINFO
+   * @since 4.6.4
    */
   default void setPendingMDNInfoFolder (@Nonnull @Nonempty final String sPendingMDNInfoFolder)
   {

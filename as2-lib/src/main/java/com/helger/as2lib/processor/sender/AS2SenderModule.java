@@ -216,6 +216,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Original MIC is '" + aMIC.getAsAS2String () + "'" + aMsg.getLoggingText ());
 
       final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
+
+      // The filename is created here, but the file is moved there later
       final String sPendingFilename = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ().getPendingMDNFolder ()) +
                                       FilenameHelper.UNIX_SEPARATOR_STR +
                                       sMsgFilename;
