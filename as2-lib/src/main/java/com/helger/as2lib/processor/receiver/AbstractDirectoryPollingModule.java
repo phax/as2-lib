@@ -244,6 +244,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
        */
       if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.attrs ().getAsString (CFileAttribute.MA_STATUS)))
       {
+        // Copy the file to the pending folder
         final File aPendingFile = new File (aMsg.partnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
                                             aMsg.attrs ().getAsString (CFileAttribute.MA_PENDING_FILENAME));
         final FileIOError aIOErr = AS2IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
@@ -253,41 +254,46 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
                                   " - " +
                                   aIOErr.toString ());
 
-        LOGGER.info ("copied " +
+        LOGGER.info ("Copied '" +
                      aFile.getAbsolutePath () +
-                     " to pending folder : " +
+                     "' to pending folder '" +
                      aPendingFile.getAbsolutePath () +
+                     "'" +
                      aMsg.getLoggingText ());
       }
 
-      // If the Sent Directory option is set, move the transmitted file to
-      // the sent directory
       if (attrs ().containsKey (ATTR_SENT_DIRECTORY))
       {
+        // If the Sent Directory option is set, move the transmitted file to
+        // the sent directory
         File aSentFile = null;
         try
         {
           aSentFile = new File (AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)), aFile.getName ());
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
-          LOGGER.info ("moved " + aFile.getAbsolutePath () + " to " + aSentFile.getAbsolutePath () + aMsg.getLoggingText ());
+          if (LOGGER.isInfoEnabled ())
+            LOGGER.info ("Moved '" + aFile.getAbsolutePath () + "' to '" + aSentFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
         }
         catch (final IOException ex)
         {
-          new AS2Exception ("File was successfully sent but not moved to sent folder: " + aSentFile, ex).terminate ();
+          new AS2Exception ("File was successfully sent but not moved to sent folder: '" + aSentFile.getAbsolutePath () + "'",
+                            ex).terminate ();
         }
       }
       else
       {
+        // The "Sent Directory" option was not set - so delete the file
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Trying to delete file " + aFile.getAbsolutePath ());
 
         if (AS2IOHelper.getFileOperationManager ().deleteFileIfExisting (aFile).isFailure ())
         {
           // Delete the file if a sent directory isn't set
-          throw new AS2Exception ("File was successfully sent but not deleted: " + aFile);
+          throw new AS2Exception ("File was successfully sent but not deleted: '" + aFile.getAbsolutePath () + "'");
         }
-        LOGGER.info ("deleted " + aFile.getAbsolutePath () + aMsg.getLoggingText ());
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Deleted file '" + aFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
       }
     }
     catch (final AS2Exception ex)

@@ -102,6 +102,11 @@ public class AS2Exception extends Exception
     return this;
   }
 
+  /**
+   * Log the exception but don't throw it.
+   *
+   * @return this for chaining
+   */
   @Nonnull
   public final AS2Exception terminate ()
   {

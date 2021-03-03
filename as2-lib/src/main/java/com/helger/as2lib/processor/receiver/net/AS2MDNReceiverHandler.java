@@ -61,7 +61,6 @@ import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.processor.AS2NoModuleException;
-import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.receiver.AS2MDNReceiverModule;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
 import com.helger.as2lib.processor.storage.IProcessorStorageModule;
@@ -87,6 +86,7 @@ import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.state.ETriState;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -170,8 +170,13 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
                                                                                           .getMessageProcessor ()
-                                                                                          .attrs ()
-                                                                                          .getAsString (IMessageProcessor.ATTR_PENDINGMDNINFO));
+                                                                                          .getPendingMDNInfoFolder ());
+      if (StringHelper.hasNoText (sPendingInfoFolder))
+      {
+        LOGGER.error ("The pending MDN info folder is not properly configured. Cannot check for async MDNs.");
+        return false;
+      }
+
       final String sPendingInfoFile = sPendingInfoFolder +
                                       FilenameHelper.UNIX_SEPARATOR_STR +
                                       AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
@@ -209,27 +214,29 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       final File aPendingInfoFile = new File (sPendingInfoFile);
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("delete pendinginfo file : " +
+        LOGGER.info ("Delete pendinginfo file '" +
                      aPendingInfoFile.getName () +
-                     " from pending folder : " +
+                     "' from pending folder '" +
                      sPendingInfoFolder +
+                     "'" +
                      aMsg.getLoggingText ());
       if (!aPendingInfoFile.delete ())
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error delete pendinginfo file " + aPendingFile);
+          LOGGER.error ("Error delete pendinginfo file '" + aPendingFile.getAbsolutePath () + "'");
       }
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("delete pending file : " +
+        LOGGER.info ("Delete pending file '" +
                      aPendingFile.getName () +
-                     " from pending folder : " +
+                     "' from pending folder '" +
                      aPendingFile.getParent () +
+                     "'" +
                      aMsg.getLoggingText ());
       if (!aPendingFile.delete ())
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error delete pending file " + aPendingFile);
+          LOGGER.error ("Error delete pending file '" + aPendingFile.getAbsolutePath () + "'");
       }
     }
     catch (final IOException | AS2ComponentNotFoundException ex)

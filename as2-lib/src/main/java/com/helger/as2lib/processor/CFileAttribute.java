@@ -39,8 +39,11 @@ public final class CFileAttribute
 {
   public static final String MA_FILEPATH = "filepath";
   public static final String MA_FILENAME = "filename";
+  /** The path and name of the file containing a message without an MDN yet */
   public static final String MA_PENDING_FILENAME = "pendingfilename";
+  /** Only used to indicate, whether an async MDN is awaited or not. */
   public static final String MA_STATUS = "status";
+  /** A status value to be used with {@link #MA_STATUS} */
   public static final String MA_STATUS_PENDING = "pending";
 
   private CFileAttribute ()

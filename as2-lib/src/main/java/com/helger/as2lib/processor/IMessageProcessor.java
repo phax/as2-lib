@@ -43,6 +43,8 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.module.IProcessorActiveModule;
 import com.helger.as2lib.processor.module.IProcessorModule;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.state.EChange;
@@ -56,6 +58,58 @@ public interface IMessageProcessor extends IDynamicComponent
 {
   String ATTR_PENDINGMDN = "pendingmdn";
   String ATTR_PENDINGMDNINFO = "pendingmdninfo";
+
+  /**
+   * @return The name of the folder that contains the messages with the pending
+   *         MDNs. May be <code>null</code>.
+   * @see #ATTR_PENDINGMDN
+   * @since 4.6.4
+   */
+  @Nullable
+  default String getPendingMDNFolder ()
+  {
+    return attrs ().getAsString (ATTR_PENDINGMDN);
+  }
+
+  /**
+   * Set the name of the folder that contains the messages with the pending MDN.
+   *
+   * @param sPendingMDNFolder
+   *        The name of the folder. May neither be <code>null</code> nor empty.
+   * @see #ATTR_PENDINGMDN
+   * @since 4.6.4
+   */
+  default void setPendingMDNFolder (@Nonnull @Nonempty final String sPendingMDNFolder)
+  {
+    ValueEnforcer.notEmpty (sPendingMDNFolder, "PendingMDNFolder");
+    attrs ().putIn (ATTR_PENDINGMDN, sPendingMDNFolder);
+  }
+
+  /**
+   * @return The name of the folder that contains the pending MDN information
+   *         files. May be <code>null</code>.
+   * @see #ATTR_PENDINGMDNINFO
+   * @since 4.6.4
+   */
+  @Nullable
+  default String getPendingMDNInfoFolder ()
+  {
+    return attrs ().getAsString (ATTR_PENDINGMDNINFO);
+  }
+
+  /**
+   * Set the name of the folder that contains the pending MDN information files.
+   *
+   * @param sPendingMDNInfoFolder
+   *        The name of the folder. May neither be <code>null</code> nor empty.
+   * @see #ATTR_PENDINGMDNINFO
+   * @since 4.6.4
+   */
+  default void setPendingMDNInfoFolder (@Nonnull @Nonempty final String sPendingMDNInfoFolder)
+  {
+    ValueEnforcer.notEmpty (sPendingMDNInfoFolder, "PendingMDNInfoFolder");
+    attrs ().putIn (ATTR_PENDINGMDNINFO, sPendingMDNInfoFolder);
+  }
 
   void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws AS2Exception;
 
