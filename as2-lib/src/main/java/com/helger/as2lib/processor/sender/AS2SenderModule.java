@@ -98,6 +98,7 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
+import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.ENewLineMode;
 import com.helger.commons.timing.StopWatch;
@@ -197,19 +198,23 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
   }
 
-  // Asynch MDN 2007-03-12
   /**
-   * for storing original mic and outgoing file into pending information file
+   * For storing original MIC and outgoing file into pending information file.
+   * Override this method if you want to store the pending MDN information in a
+   * separate data storage like a DB etc.
    *
    * @param aMsg
-   *        AS2Message
+   *        AS2Message. May not be <code>null</code>.
    * @param aMIC
-   *        MIC value
+   *        MIC value. May not be <code>null</code>.
    * @throws AS2Exception
    *         In case of an error
    */
   protected void storePendingInfo (@Nonnull final AS2Message aMsg, @Nonnull final MIC aMIC) throws AS2Exception
   {
+    ValueEnforcer.notNull (aMsg, "Msg");
+    ValueEnforcer.notNull (aMIC, "MIC");
+
     try
     {
       if (LOGGER.isDebugEnabled ())
@@ -217,23 +222,35 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
 
-      // The filename is created here, but the file is moved there later
-      final String sPendingFilename = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ().getPendingMDNFolder ()) +
-                                      FilenameHelper.UNIX_SEPARATOR_STR +
-                                      sMsgFilename;
+      // The filename is created here, but the file content is placed there
+      // from somewhere else
+      final String sPendingMDNFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ().getPendingMDNFolder ());
+      if (StringHelper.hasNoText (sPendingMDNFolder))
+      {
+        LOGGER.error ("The pending MDN folder is not properly configured. Cannot store async MDN data.");
+        return;
+      }
+      final String sPendingFilename = sPendingMDNFolder + FilenameHelper.UNIX_SEPARATOR_STR + sMsgFilename;
 
       // The file that is written
-      final String sPendingInfoFile = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
-                                                                                         .getPendingMDNInfoFolder ()) +
-                                      FilenameHelper.UNIX_SEPARATOR_STR +
-                                      sMsgFilename;
+      final String sPendingMDNInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
+                                                                                              .getPendingMDNInfoFolder ());
+      if (StringHelper.hasNoText (sPendingMDNInfoFolder))
+      {
+        LOGGER.error ("The pending MDN info folder is not properly configured. Cannot store async MDN data.");
+        return;
+      }
+      final File aPendingInfoFile = new File (sPendingMDNInfoFolder + FilenameHelper.UNIX_SEPARATOR_STR + sMsgFilename);
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Save Original MIC & message id information into folder '" + sPendingInfoFile + "'" + aMsg.getLoggingText ());
+        LOGGER.info ("Saving original MIC and message id information into file '" +
+                     aPendingInfoFile.getAbsolutePath () +
+                     "'" +
+                     aMsg.getLoggingText ());
 
       // input pending folder & original outgoing file name to get and
       // unique file name in order to avoid file overwriting.
-      try (final Writer aWriter = FileHelper.getWriter (new File (sPendingInfoFile), StandardCharsets.ISO_8859_1))
+      try (final Writer aWriter = FileHelper.getWriter (aPendingInfoFile, StandardCharsets.ISO_8859_1))
       {
         // Write in 2 lines
         aWriter.write (aMIC.getAsAS2String () + ENewLineMode.DEFAULT.getText () + sPendingFilename);

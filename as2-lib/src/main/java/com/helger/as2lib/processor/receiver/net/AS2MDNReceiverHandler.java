@@ -177,16 +177,30 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         return false;
       }
 
-      final String sPendingInfoFile = sPendingInfoFolder +
-                                      FilenameHelper.UNIX_SEPARATOR_STR +
-                                      AS2IOHelper.getFilenameFromMessageID (sOrigMessageID);
+      final File aPendingInfoFile = new File (sPendingInfoFolder +
+                                              FilenameHelper.UNIX_SEPARATOR_STR +
+                                              AS2IOHelper.getFilenameFromMessageID (sOrigMessageID));
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Trying to read original MIC and message id information from file '" +
+                     aPendingInfoFile.getAbsolutePath () +
+                     "'" +
+                     aMsg.getLoggingText ());
 
       final String sOriginalMIC;
       final MIC aOriginalMIC;
       final File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (new File (sPendingInfoFile),
+      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (aPendingInfoFile,
                                                                                               StandardCharsets.ISO_8859_1))
       {
+        if (aPendingInfoReader == null)
+        {
+          LOGGER.error ("The pending info file '" +
+                        aPendingInfoFile.getAbsolutePath () +
+                        "' with the original MIC could not be opened for reading");
+          return false;
+        }
+
+        // TODO NPE if file does not exist
         // Get the original mic from the first line of pending information
         // file
         sOriginalMIC = aPendingInfoReader.readLine ();
@@ -212,7 +226,6 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       // delete the pendinginfo & pending file if mic is matched
 
-      final File aPendingInfoFile = new File (sPendingInfoFile);
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Delete pendinginfo file '" +
                      aPendingInfoFile.getName () +
@@ -291,7 +304,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final ICertificateFactory aCertFactory = getModule ().getSession ().getCertificateFactory ();
       final X509Certificate aSenderCert = aCertFactory.getCertificate (aMDN, ECertificatePartnershipType.SENDER);
 
-      boolean bUseCertificateInBodyPart;
+      final boolean bUseCertificateInBodyPart;
       final ETriState eUseCertificateInBodyPart = aMsg.partnership ().getVerifyUseCertificateInBodyPart ();
       if (eUseCertificateInBodyPart.isDefined ())
       {
