@@ -893,6 +893,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     }
     finally
     {
+      // Closes all resources
       aConn.disconnect ();
     }
   }
