@@ -42,6 +42,7 @@ import javax.mail.internet.MimeBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.cert.AbstractCertificateFactory;
 import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.client.AS2Client;
 import com.helger.as2lib.client.AS2ClientRequest;
@@ -206,9 +207,9 @@ public class MainTestClient
     // /Users/oleo/samples/parfum.spb.ru/as2/test/test.p12
 
     final StringMap aCertFactorySettings = new StringMap ();
-    aCertFactorySettings.putIn (CertificateFactory.ATTR_TYPE, EKeyStoreType.PKCS12.getID ());
+    aCertFactorySettings.putIn (AbstractCertificateFactory.ATTR_TYPE, EKeyStoreType.PKCS12.getID ());
     aCertFactorySettings.putIn (CertificateFactory.ATTR_FILENAME, filename);
-    aCertFactorySettings.putIn (CertificateFactory.ATTR_PASSWORD, password);
+    aCertFactorySettings.putIn (AbstractCertificateFactory.ATTR_PASSWORD, password);
 
     aCertFactory.initDynamicComponent (aSession, aCertFactorySettings);
 

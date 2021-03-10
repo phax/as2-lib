@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.cert.AS2CertificateExistsException;
+import com.helger.as2lib.cert.AbstractCertificateFactory;
 import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
@@ -241,7 +242,7 @@ public class AS2Client
   {
     final StringMap aParams = new StringMap ();
     // TYPE is the only parameter that must be present in initDynamicComponents
-    aParams.putIn (CertificateFactory.ATTR_TYPE, aSettings.getKeyStoreType ().getID ());
+    aParams.putIn (AbstractCertificateFactory.ATTR_TYPE, aSettings.getKeyStoreType ().getID ());
 
     final CertificateFactory aCertFactory = createCertificateFactory ();
     aCertFactory.initDynamicComponent (aSession, aParams);

@@ -37,23 +37,39 @@ import java.security.KeyStore;
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.commons.ValueEnforcer;
 
 /**
- * Base interface for a certificate factory that is based on a key store.
+ * An example implementation of a Certificate factory that uses an external
+ * {@link KeyStore}. Nevertheless the password to load the key store must be set
+ * via {@link #setPassword(String)}.
  *
  * @author Philip Helger
+ * @since 4.6.4
  */
-public interface IKeyStoreCertificateFactory extends ICertificateFactory
+public class PredefinedCertificateFactory extends AbstractCertificateFactory
 {
-  @Nonnull
-  KeyStore getKeyStore ();
+  // Separate member to avoid that it gets overridden
+  private final KeyStore m_aCtorKeyStore;
 
-  /**
-   * Reload the key store from the configured source.
-   *
-   * @throws AS2Exception
-   *         in case of error
-   * @since 4.6.4
-   */
-  void reinitKeyStore () throws AS2Exception;
+  public PredefinedCertificateFactory (@Nonnull final KeyStore aKeyStore)
+  {
+    ValueEnforcer.notNull (aKeyStore, "KeyStore");
+    m_aCtorKeyStore = aKeyStore;
+  }
+
+  @Nonnull
+  public final KeyStore getKeyStoreFromCtor ()
+  {
+    return m_aCtorKeyStore;
+  }
+
+  public void reinitKeyStore () throws AS2Exception
+  {
+    debugLog ( () -> "reinitKeyStore ()");
+
+    setKeyStore (m_aCtorKeyStore);
+
+    debugLog ( () -> "reinitKeyStore -> done");
+  }
 }
