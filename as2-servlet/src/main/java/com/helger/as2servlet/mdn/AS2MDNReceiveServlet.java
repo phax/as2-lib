@@ -25,7 +25,8 @@ import com.helger.xservlet.AbstractXServlet;
 /**
  * This is the main servlet that takes async AS2 MDN messages and processes
  * them. This servlet is configured to accept only POST requests. The logic for
- * receiving is contained in {@link AbstractAS2MDNReceiveXServletHandler}.
+ * receiving is contained in
+ * {@link AS2MDNReceiveXServletHandlerFileBasedConfig}.
  *
  * @author Philip Helger
  * @since 4.6.4

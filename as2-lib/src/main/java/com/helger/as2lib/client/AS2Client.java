@@ -237,6 +237,18 @@ public class AS2Client
     return new CertificateFactory ();
   }
 
+  /**
+   * This method initializes the certificate factory. If you override this
+   * method, please make sure that you call
+   * <code>aSession.setCertificateFactory (aCertFactory);</code>.
+   *
+   * @param aSettings
+   *        The AS2 client settings. Never <code>null</code>.
+   * @param aSession
+   *        The AS2 session to be initialized. Never <code>null</code>.
+   * @throws AS2Exception
+   *         In case of error
+   */
   @OverrideOnDemand
   protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession) throws AS2Exception
   {
@@ -294,6 +306,16 @@ public class AS2Client
     aSession.setCertificateFactory (aCertFactory);
   }
 
+  /**
+   * Init the partnership factory. If you override this method, please make sure
+   * that you call
+   * <code>aSession.setPartnershipFactory (aPartnershipFactory);</code>.
+   *
+   * @param aSession
+   *        The AS2 session to be filled. Never <code>null</code>.
+   * @throws AS2Exception
+   *         In case of error
+   */
   @OverrideOnDemand
   protected void initPartnershipFactory (@Nonnull final AS2Session aSession) throws AS2Exception
   {
@@ -302,6 +324,16 @@ public class AS2Client
     aSession.setPartnershipFactory (aPartnershipFactory);
   }
 
+  /**
+   * Init the message processor. If you override this method, please make sure
+   * that you call
+   * <code>aSession.setMessageProcessor (aMessageProcessor);</code>.
+   *
+   * @param aSession
+   *        The AS2 session to be filled. Never <code>null</code>.
+   * @throws AS2Exception
+   *         In case of error
+   */
   @OverrideOnDemand
   protected void initMessageProcessor (@Nonnull final AS2Session aSession) throws AS2Exception
   {
