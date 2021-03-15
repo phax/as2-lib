@@ -321,6 +321,7 @@ public class AS2Client
   {
     // Use a self-filling in-memory partnership factory
     final SelfFillingPartnershipFactory aPartnershipFactory = new SelfFillingPartnershipFactory ();
+    aPartnershipFactory.initDynamicComponent (aSession, null);
     aSession.setPartnershipFactory (aPartnershipFactory);
   }
 
@@ -338,6 +339,7 @@ public class AS2Client
   protected void initMessageProcessor (@Nonnull final AS2Session aSession) throws AS2Exception
   {
     final IMessageProcessor aMessageProcessor = new DefaultMessageProcessor ();
+    aMessageProcessor.initDynamicComponent (aSession, null);
     aSession.setMessageProcessor (aMessageProcessor);
   }
 
