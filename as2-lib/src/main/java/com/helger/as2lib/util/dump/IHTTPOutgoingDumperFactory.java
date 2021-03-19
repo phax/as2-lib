@@ -32,8 +32,9 @@
  */
 package com.helger.as2lib.util.dump;
 
+import java.util.function.Function;
+
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.commons.functional.IFunction;
 
 /**
  * Factory interface for creating {@link IHTTPOutgoingDumper} objects.
@@ -41,7 +42,7 @@ import com.helger.commons.functional.IFunction;
  * @author Philip Helger
  * @since v4.4.0
  */
-public interface IHTTPOutgoingDumperFactory extends IFunction <IBaseMessage, IHTTPOutgoingDumper>
+public interface IHTTPOutgoingDumperFactory extends Function <IBaseMessage, IHTTPOutgoingDumper>
 {
   /* empty */
 }

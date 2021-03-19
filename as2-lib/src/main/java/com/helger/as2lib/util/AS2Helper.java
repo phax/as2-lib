@@ -154,9 +154,11 @@ public final class AS2Helper
     {
       final InternetHeaders aReportValues = new InternetHeaders ();
       aReportValues.setHeader (HEADER_REPORTING_UA, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_REPORTING_UA));
-      aReportValues.setHeader (HEADER_ORIGINAL_RECIPIENT, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
+      aReportValues.setHeader (HEADER_ORIGINAL_RECIPIENT,
+                               aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_RECIPIENT));
       aReportValues.setHeader (HEADER_FINAL_RECIPIENT, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_FINAL_RECIPIENT));
-      aReportValues.setHeader (HEADER_ORIGINAL_MESSAGE_ID, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
+      aReportValues.setHeader (HEADER_ORIGINAL_MESSAGE_ID,
+                               aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
       aReportValues.setHeader (HEADER_DISPOSITION, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION));
       aReportValues.setHeader (HEADER_RECEIVED_CONTENT_MIC, aMdn.attrs ().getAsString (AS2MessageMDN.MDNA_MIC));
 
@@ -375,7 +377,7 @@ public final class AS2Helper
   public static void parseMDN (@Nonnull final IMessage aMsg,
                                @Nullable final X509Certificate aReceiverCert,
                                final boolean bUseCertificateInBodyPart,
-                               @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer,
+                               @Nullable final Consumer <? super X509Certificate> aEffectiveCertificateConsumer,
                                @Nonnull final AS2ResourceHelper aResHelper) throws Exception
   {
     final String sLoggingText = aMsg.getLoggingText ();
@@ -402,7 +404,12 @@ public final class AS2Helper
             LOGGER.debug ("Verifying MDN signature" + sLoggingText);
 
         final Wrapper <X509Certificate> aCertHolder = new Wrapper <> ();
-        aMainPart = aCryptoHelper.verify (aMainPart, aReceiverCert, bUseCertificateInBodyPart, bForceVerify, aCertHolder::set, aResHelper);
+        aMainPart = aCryptoHelper.verify (aMainPart,
+                                          aReceiverCert,
+                                          bUseCertificateInBodyPart,
+                                          bForceVerify,
+                                          aCertHolder::set,
+                                          aResHelper);
         if (aEffectiveCertificateConsumer != null)
           aEffectiveCertificateConsumer.accept (aCertHolder.get ());
 
@@ -411,7 +418,8 @@ public final class AS2Helper
         // Remember the PEM encoded version of the X509 certificate that was
         // used for verification
         aMsg.attrs ()
-            .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE, CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
+            .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
+                    CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
         LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
       }
@@ -439,15 +447,26 @@ public final class AS2Helper
           {
             // https://github.com/phax/as2-lib/issues/100
             final String sCTE = aReportPart.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, null);
-            try (final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (), sCTE))
+            try (
+                final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
+                                                                                                    sCTE))
             {
               final InternetHeaders aDispositionHeaders = new InternetHeaders (aRealIS);
-              aMdn.attrs ().putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDispositionHeaders.getHeader (HEADER_REPORTING_UA, ", "));
-              aMdn.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT, aDispositionHeaders.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-              aMdn.attrs ().putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT, aDispositionHeaders.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-              aMdn.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aDispositionHeaders.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
-              aMdn.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDispositionHeaders.getHeader (HEADER_DISPOSITION, ", "));
-              aMdn.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aDispositionHeaders.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDispositionHeaders.getHeader (HEADER_REPORTING_UA, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
+                          aDispositionHeaders.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
+                          aDispositionHeaders.getHeader (HEADER_FINAL_RECIPIENT, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
+                          aDispositionHeaders.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_DISPOSITION, aDispositionHeaders.getHeader (HEADER_DISPOSITION, ", "));
+              aMdn.attrs ()
+                  .putIn (AS2MessageMDN.MDNA_MIC, aDispositionHeaders.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
             }
           }
           else

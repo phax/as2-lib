@@ -37,6 +37,7 @@ import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
+import java.util.function.Consumer;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -84,7 +85,6 @@ import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.functional.IConsumer;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
@@ -237,7 +237,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             if (LOGGER.isDebugEnabled ())
               LOGGER.debug ("Decrypting" + aMsg.getLoggingText ());
 
-          final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg, ECertificatePartnershipType.RECEIVER);
+          final X509Certificate aReceiverCert = aCertFactory.getCertificate (aMsg,
+                                                                             ECertificatePartnershipType.RECEIVER);
           final PrivateKey aReceiverKey = aCertFactory.getPrivateKey (aReceiverCert);
           final MimeBodyPart aDecryptedData = aCryptoHelper.decrypt (aMsg.getData (),
                                                                      aReceiverCert,
@@ -290,7 +291,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             if (LOGGER.isDebugEnabled ())
               LOGGER.debug ("Verifying signature" + aMsg.getLoggingText ());
 
-          final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg, ECertificatePartnershipType.SENDER);
+          final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
+                                                                                 ECertificatePartnershipType.SENDER);
           boolean bUseCertificateInBodyPart;
           final ETriState eUseCertificateInBodyPart = aMsg.partnership ().getVerifyUseCertificateInBodyPart ();
           if (eUseCertificateInBodyPart.isDefined ())
@@ -311,7 +313,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                                                    bForceVerify,
                                                                    aCertHolder::set,
                                                                    aResHelper);
-          final IConsumer <X509Certificate> aExternalConsumer = getVerificationCertificateConsumer ();
+          final Consumer <X509Certificate> aExternalConsumer = getVerificationCertificateConsumer ();
           if (aExternalConsumer != null)
             aExternalConsumer.accept (aCertHolder.get ());
 
@@ -321,7 +323,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           // Remember the PEM encoded version of the X509 certificate that was
           // used for verification
           aMsg.attrs ()
-              .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE, CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
+              .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
+                      CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
@@ -424,7 +427,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           }
 
           if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Setup to send async MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
+            LOGGER.info ("Setup to send async MDN [" +
+                         aDisposition.getAsString () +
+                         "] " +
+                         sClientInfo +
+                         aMsg.getLoggingText ());
 
           // trigger explicit async sending
           aSession.getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND_ASYNC_MDN, aMsg, null);
@@ -433,7 +440,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         {
           // otherwise, send sync MDN back on same connection
           if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Sending back sync MDN [" + aDisposition.getAsString () + "] " + sClientInfo + aMsg.getLoggingText ());
+            LOGGER.info ("Sending back sync MDN [" +
+                         aDisposition.getAsString () +
+                         "] " +
+                         sClientInfo +
+                         aMsg.getLoggingText ());
 
           // Get data and therefore content length for sync MDN
           try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
@@ -745,7 +756,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     {
       // Read in the message request, headers, and data
       final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-      aMsgDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg, aIncomingDumper);
+      aMsgDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
+                                                 aResponseHandler,
+                                                 aMsg,
+                                                 aIncomingDumper);
     }
     catch (final Exception ex)
     {
@@ -759,7 +773,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("received " +
-                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length, aSW) +
+                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length,
+                                                    aSW) +
                        " from " +
                        sClientInfo +
                        aMsg.getLoggingText ());
@@ -767,7 +782,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       else
       {
-        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+        LOGGER.info ("received message from " +
+                     sClientInfo +
+                     aMsg.getLoggingText () +
+                     " in " +
+                     aSW.getMillis () +
+                     " ms");
       }
 
     handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);

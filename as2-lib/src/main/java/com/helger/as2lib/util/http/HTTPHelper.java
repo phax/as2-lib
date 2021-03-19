@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.util.function.Supplier;
 
 import javax.activation.DataSource;
 import javax.annotation.Nonnegative;
@@ -67,7 +68,6 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.functional.ISupplier;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
@@ -95,9 +95,9 @@ public final class HTTPHelper
 
   private static final Logger LOGGER = LoggerFactory.getLogger (HTTPHelper.class);
 
-  private static final SimpleReadWriteLock s_aRWLock = new SimpleReadWriteLock ();
-  @GuardedBy ("s_aRWLock")
-  private static ISupplier <? extends IHTTPIncomingDumper> s_aHTTPIncomingDumperFactory = () -> null;
+  private static final SimpleReadWriteLock RW_LOCK = new SimpleReadWriteLock ();
+  @GuardedBy ("RW_LOCK")
+  private static Supplier <? extends IHTTPIncomingDumper> s_aHTTPIncomingDumperFactory = () -> null;
 
   static
   {
@@ -192,7 +192,7 @@ public final class HTTPHelper
   @Nullable
   public static IHTTPIncomingDumper getHTTPIncomingDumper ()
   {
-    return s_aRWLock.readLockedGet ( () -> s_aHTTPIncomingDumperFactory.get ());
+    return RW_LOCK.readLockedGet ( () -> s_aHTTPIncomingDumperFactory.get ());
   }
 
   /**
@@ -201,9 +201,9 @@ public final class HTTPHelper
    * @since 4.4.0
    */
   @Nonnull
-  public static ISupplier <? extends IHTTPIncomingDumper> getHTTPIncomingDumperFactory ()
+  public static Supplier <? extends IHTTPIncomingDumper> getHTTPIncomingDumperFactory ()
   {
-    return s_aRWLock.readLockedGet ( () -> s_aHTTPIncomingDumperFactory);
+    return RW_LOCK.readLockedGet ( () -> s_aHTTPIncomingDumperFactory);
   }
 
   /**
@@ -213,10 +213,10 @@ public final class HTTPHelper
    *        The dumper factory to be used. May not be <code>null</code>.
    * @since 3.1.0
    */
-  public static void setHTTPIncomingDumperFactory (@Nonnull final ISupplier <? extends IHTTPIncomingDumper> aHttpDumperFactory)
+  public static void setHTTPIncomingDumperFactory (@Nonnull final Supplier <? extends IHTTPIncomingDumper> aHttpDumperFactory)
   {
     ValueEnforcer.notNull (aHttpDumperFactory, "HttpDumperFactory");
-    s_aRWLock.writeLockedGet ( () -> s_aHTTPIncomingDumperFactory = aHttpDumperFactory);
+    RW_LOCK.writeLocked ( () -> s_aHTTPIncomingDumperFactory = aHttpDumperFactory);
   }
 
   /**
@@ -242,7 +242,8 @@ public final class HTTPHelper
   public static DataSource readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                             @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                             @Nonnull final IMessage aMsg,
-                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException, MessagingException
+                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
+                                                                                                 MessagingException
   {
     // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
@@ -306,7 +307,10 @@ public final class HTTPHelper
       }
 
       // Content-length present, or chunked encoding
-      aPayload = new InputStreamDataSource (aRealIS, aMsg.getAS2From () == null ? "" : aMsg.getAS2From (), sReceivedContentType, true);
+      aPayload = new InputStreamDataSource (aRealIS,
+                                            aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
+                                            sReceivedContentType,
+                                            true);
     }
     else
     {
@@ -362,7 +366,10 @@ public final class HTTPHelper
   {
     try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
     {
-      final String sHTTPLine = Integer.toString (nResponseCode) + " " + CHttp.getHttpResponseMessage (nResponseCode) + CHttp.EOL;
+      final String sHTTPLine = Integer.toString (nResponseCode) +
+                               " " +
+                               CHttp.getHttpResponseMessage (nResponseCode) +
+                               CHttp.EOL;
       aData.write (sHTTPLine.getBytes (CHttp.HTTP_CHARSET));
 
       aResponseHandler.sendHttpResponse (nResponseCode, new HttpHeaderMap (), aData);

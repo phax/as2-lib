@@ -35,6 +35,7 @@ package com.helger.as2lib.client;
 import java.io.File;
 import java.io.Serializable;
 import java.security.cert.X509Certificate;
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,7 +53,6 @@ import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.functional.IConsumer;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.StringHelper;
 import com.helger.security.keystore.EKeyStoreType;
@@ -133,7 +133,7 @@ public class AS2ClientSettings implements Serializable
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory;
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private IMICMatchingHandler m_aMICMatchingHandler;
-  private IConsumer <X509Certificate> m_aVerificationCertificateConsumer;
+  private Consumer <? super X509Certificate> m_aVerificationCertificateConsumer;
 
   public AS2ClientSettings ()
   {}
@@ -506,7 +506,8 @@ public class AS2ClientSettings implements Serializable
    * @return this for chaining
    */
   @Nonnull
-  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType, final boolean bCompressBeforeSigning)
+  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
+                                              final boolean bCompressBeforeSigning)
   {
     m_eCompressionType = eCompressionType;
     m_bCompressBeforeSigning = bCompressBeforeSigning;
@@ -887,7 +888,7 @@ public class AS2ClientSettings implements Serializable
    * @since 4.4.5
    */
   @Nullable
-  public final IConsumer <X509Certificate> getVerificationCertificateConsumer ()
+  public final Consumer <? super X509Certificate> getVerificationCertificateConsumer ()
   {
     return m_aVerificationCertificateConsumer;
   }
@@ -901,7 +902,7 @@ public class AS2ClientSettings implements Serializable
    * @since 4.4.5
    */
   @Nonnull
-  public final AS2ClientSettings setVerificationCertificateConsumer (@Nullable final IConsumer <X509Certificate> aVerificationCertificateConsumer)
+  public final AS2ClientSettings setVerificationCertificateConsumer (@Nullable final Consumer <? super X509Certificate> aVerificationCertificateConsumer)
   {
     m_aVerificationCertificateConsumer = aVerificationCertificateConsumer;
     return this;

@@ -85,6 +85,7 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.io.stream.StreamHelper.CopyByteStreamBuilder;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
@@ -189,8 +190,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final String sOriginalMIC;
       final MIC aOriginalMIC;
       final File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (aPendingInfoFile,
-                                                                                              StandardCharsets.ISO_8859_1))
+      try (
+          final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (aPendingInfoFile,
+                                                                                             StandardCharsets.ISO_8859_1))
       {
         if (aPendingInfoReader == null)
         {
@@ -317,7 +319,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         bUseCertificateInBodyPart = getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, getVerificationCertificateConsumer (), aResHelper);
+      AS2Helper.parseMDN (aMsg,
+                          aSenderCert,
+                          bUseCertificateInBodyPart,
+                          getVerificationCertificateConsumer (),
+                          aResHelper);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
@@ -388,14 +394,20 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     try
     {
       final InputStream aIS = aHttpClient.getInputStream ();
+
+      // Don't instantiate if no HttpClient can be opened
       aMDNStream = new NonBlockingByteArrayOutputStream ();
 
+      final CopyByteStreamBuilder aBuilder = StreamHelper.copyByteStream ()
+                                                         .from (aIS)
+                                                         .closeFrom (true)
+                                                         .to (aMDNStream)
+                                                         .closeTo (false);
       // Retrieve the message content
       final long nContentLength = StringParser.parseLong (aMDN.getHeader (CHttpHeader.CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
-        StreamHelper.copyInputStreamToOutputStreamWithLimit (aIS, aMDNStream, nContentLength);
-      else
-        StreamHelper.copyInputStreamToOutputStream (aIS, aMDNStream);
+        aBuilder.limit (nContentLength);
+      aBuilder.build ();
     }
     catch (final IOException ex)
     {
@@ -408,7 +420,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
-                                           aMDNStream != null ? aMDNStream.toByteArray () : ArrayHelper.EMPTY_BYTE_ARRAY,
+                                           aMDNStream != null ? aMDNStream.toByteArray ()
+                                                              : ArrayHelper.EMPTY_BYTE_ARRAY,
                                            aMDN);
 
     MimeBodyPart aPart = null;
@@ -485,7 +498,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     {
       // Read in the message request, headers, and data
       final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-      aMdnDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg, aIncomingDumper);
+      aMdnDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
+                                                 aResponseHandler,
+                                                 aMsg,
+                                                 aIncomingDumper);
     }
     catch (final Exception ex)
     {
@@ -499,7 +515,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("received " +
-                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length, aSW) +
+                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length,
+                                                    aSW) +
                        " from " +
                        sClientInfo +
                        aMsg.getLoggingText ());
@@ -507,7 +524,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       }
       else
       {
-        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+        LOGGER.info ("received message from " +
+                     sClientInfo +
+                     aMsg.getLoggingText () +
+                     " in " +
+                     aSW.getMillis () +
+                     " ms");
       }
 
     handleIncomingMessage (sClientInfo, aMdnDataSource, aMsg, aResponseHandler);

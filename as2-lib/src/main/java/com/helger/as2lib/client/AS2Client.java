@@ -34,6 +34,7 @@ package com.helger.as2lib.client;
 
 import java.net.Proxy;
 import java.security.cert.X509Certificate;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,7 +67,6 @@ import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.factory.FactoryNewInstance;
-import com.helger.commons.functional.ISupplier;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.timing.StopWatch;
 import com.helger.security.certificate.CertificateHelper;
@@ -80,7 +80,8 @@ import com.helger.security.certificate.CertificateHelper;
 public class AS2Client
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2Client.class);
-  private ISupplier <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class, true);
+  private Supplier <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
+                                                                                            true);
   // proxy is not serializable
   private Proxy m_aHttpProxy;
 
@@ -97,7 +98,7 @@ public class AS2Client
    * @return this for chaining
    */
   @Nonnull
-  public AS2Client setAS2SenderModuleFactory (@Nonnull final ISupplier <AS2SenderModule> aAS2SenderModuleFactory)
+  public AS2Client setAS2SenderModuleFactory (@Nonnull final Supplier <AS2SenderModule> aAS2SenderModuleFactory)
   {
     m_aAS2SenderModuleFactory = ValueEnforcer.notNull (aAS2SenderModuleFactory, "AS2SenderModuleFactory");
     return this;
@@ -250,7 +251,8 @@ public class AS2Client
    *         In case of error
    */
   @OverrideOnDemand
-  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession) throws AS2Exception
+  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
+                                         @Nonnull final AS2Session aSession) throws AS2Exception
   {
     final StringMap aParams = new StringMap ();
     // TYPE is the only parameter that must be present in initDynamicComponents
@@ -277,7 +279,8 @@ public class AS2Client
 
         aCertFactory.setPassword (aSettings.getKeyStorePassword ());
         aCertFactory.setSaveChangesToFile (false);
-        try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        try (
+            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
         {
           aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
         }
@@ -382,7 +385,9 @@ public class AS2Client
    *        Current message. Never <code>null</code>.
    */
   @OverrideOnDemand
-  protected void beforeSend (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession, @Nonnull final IMessage aMsg)
+  protected void beforeSend (@Nonnull final AS2ClientSettings aSettings,
+                             @Nonnull final AS2Session aSession,
+                             @Nonnull final IMessage aMsg)
   {}
 
   /**
@@ -395,7 +400,8 @@ public class AS2Client
    * @return The response object. Never <code>null</code>.
    */
   @Nonnull
-  public AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2ClientRequest aRequest)
+  public AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings,
+                                            @Nonnull final AS2ClientRequest aRequest)
   {
     ValueEnforcer.notNull (aSettings, "ClientSettings");
     ValueEnforcer.notNull (aRequest, "ClientRequest");
