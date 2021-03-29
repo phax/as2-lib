@@ -43,6 +43,7 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.as2lib.crypto.MIC;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
@@ -72,7 +73,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   public AsynchMDNSenderModule ()
   {}
 
-  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorSenderModule.DO_SEND_ASYNC_MDN) && aMsg instanceof AS2Message;
   }
@@ -80,7 +83,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition,
                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
-                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception, IOException, MessagingException
+                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception,
+                                                                          IOException,
+                                                                          MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -102,7 +107,6 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       // mandatory ones in here)
       // Use HttpHeaderMap and not String to ensure name casing is identical!
       final HttpHeaderMap aHeaderMap = aMdn.headers ().getClone ();
-
       aHeaderMap.setHeader (CHttpHeader.CONNECTION, CAS2Header.DEFAULT_CONNECTION);
       aHeaderMap.setHeader (CHttpHeader.USER_AGENT, CAS2Header.DEFAULT_USER_AGENT);
 
@@ -131,17 +135,37 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
+      final int nHttpResponseCode = aConn.getResponseCode ();
+      if (getOutgoingHttpCallback () != null)
+        getOutgoingHttpCallback ().onOutgoingHttpMessage (false,
+                                                                 aMsg.getAS2From (),
+                                                                 aMsg.getAS2To (),
+                                                                 aMsg.getMessageID (),
+                                                                 (MIC) null,
+                                                                 (EContentTransferEncoding) null,
+                                                                 sUrl,
+                                                                 nHttpResponseCode);
+
       // Check the HTTP Response code
-      final int nResponseCode = aConn.getResponseCode ();
-      if (AS2HttpClient.isErrorResponseCode (nResponseCode))
+      if (AS2HttpClient.isErrorResponseCode (nHttpResponseCode))
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail(" + nResponseCode + ") " + aMsg.getLoggingText ());
-        throw new AS2HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
+          LOGGER.error ("sent AsyncMDN [" +
+                        aDisposition.getAsString () +
+                        "] Fail(" +
+                        nHttpResponseCode +
+                        ") " +
+                        aMsg.getLoggingText ());
+        throw new AS2HttpResponseException (sUrl, nHttpResponseCode, aConn.getResponseMessage ());
       }
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK(" + nResponseCode + ") " + aMsg.getLoggingText ());
+        LOGGER.info ("sent AsyncMDN [" +
+                     aDisposition.getAsString () +
+                     "] OK(" +
+                     nHttpResponseCode +
+                     ") " +
+                     aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try

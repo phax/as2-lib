@@ -869,13 +869,31 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
 
+      final int nHttpResponseCode = aConn.getResponseCode ();
+
+      if (getOutgoingHttpCallback () != null)
+        getOutgoingHttpCallback ().onOutgoingHttpMessage (true,
+                                                                 aMsg.getAS2From (),
+                                                                 aMsg.getAS2To (),
+                                                                 aMsg.getMessageID (),
+                                                                 aMIC == null ? null : aMIC.getClone (),
+                                                                 eCTE,
+                                                                 sUrl,
+                                                                 nHttpResponseCode);
+
       // Check the HTTP Response code
-      final int nResponseCode = aConn.getResponseCode ();
-      if (AS2HttpClient.isErrorResponseCode (nResponseCode))
+      if (AS2HttpClient.isErrorResponseCode (nHttpResponseCode))
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error URL '" + sUrl + "' - HTTP " + nResponseCode + " " + aConn.getResponseMessage ());
-        throw new AS2HttpResponseException (sUrl, nResponseCode, aConn.getResponseMessage ());
+          LOGGER.error ("Error URL '" +
+                        sUrl +
+                        "' - HTTP " +
+                        nHttpResponseCode +
+                        " " +
+                        aConn.getResponseMessage () +
+                        " " +
+                        aMsg.getLoggingText ());
+        throw new AS2HttpResponseException (sUrl, nHttpResponseCode, aConn.getResponseMessage ());
       }
 
       // Asynch MDN 2007-03-12

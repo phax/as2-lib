@@ -53,6 +53,7 @@ import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2OutgoingHttpCallback;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
@@ -103,6 +104,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 
   private IHTTPOutgoingDumperFactory m_aHttpOutgoingDumperFactory = DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
+  private IAS2OutgoingHttpCallback m_aOugoingHttpCallback;
 
   public AbstractHttpSenderModule ()
   {}
@@ -166,6 +168,29 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   public final void setHttpIncomingDumper (@Nullable final IHTTPIncomingDumper aHttpIncomingDumper)
   {
     m_aHttpIncomingDumper = aHttpIncomingDumper;
+  }
+
+  /**
+   * @return The outgoing HTTP callback object. May be <code>null</code>.
+   * @since 4.7.1
+   */
+  @Nullable
+  public final IAS2OutgoingHttpCallback getOutgoingHttpCallback ()
+  {
+    return m_aOugoingHttpCallback;
+  }
+
+  /**
+   * Set the http communication callback that is invoked with the most crucial
+   * data elements for easy logging.
+   *
+   * @param aRCC
+   *        The callback object. May be <code>null</code>.
+   * @since 4.7.1
+   */
+  public final void setOutgoingHttpCallback (@Nullable final IAS2OutgoingHttpCallback aRCC)
+  {
+    m_aOugoingHttpCallback = aRCC;
   }
 
   @Nonnegative
