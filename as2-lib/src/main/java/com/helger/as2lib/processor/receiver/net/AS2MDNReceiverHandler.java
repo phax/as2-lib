@@ -75,6 +75,7 @@ import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.AS2InputStreamProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
+import com.helger.as2lib.util.http.IAS2IncomingMDNCallback;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.collection.ArrayHelper;
@@ -103,6 +104,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
   private final AS2MDNReceiverModule m_aReceiverModule;
   private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
+  private IAS2IncomingMDNCallback m_aIncomingMDNCallback;
 
   /**
    * @param aModule
@@ -147,13 +149,35 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     m_aMICMatchingHandler = aMICMatchingHandler;
   }
 
-  // Asynch MDN 2007-03-12
+  /**
+   * @return The incoming MDN callback. May be <code>null</code>.
+   * @since v4.7.1
+   */
+  @Nullable
+  public final IAS2IncomingMDNCallback getIncomingMDNCallback ()
+  {
+    return m_aIncomingMDNCallback;
+  }
+
+  /**
+   * Set the incoming MDN callback that is invoked for each received MDN.
+   *
+   * @param aIMC
+   *        The callback to be invoked. May be null.
+   * @since v4.7.1
+   */
+  public final void setIncomingMDNCallback (@Nullable final IAS2IncomingMDNCallback aIMC)
+  {
+    m_aIncomingMDNCallback = aIMC;
+  }
+
   /**
    * verify if the mic is matched.
    *
    * @param aMsg
    *        Message
-   * @return true if mdn processed
+   * @return <code>true</code> if the MDN was processed, <code>false</code> e.g.
+   *         on MIC mismatch
    * @throws AS2Exception
    *         In case of error; e.g. MIC mismatch
    */
@@ -202,7 +226,6 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
           return false;
         }
 
-        // TODO NPE if file does not exist
         // Get the original mic from the first line of pending information
         // file
         sOriginalMIC = aPendingInfoReader.readLine ();
@@ -218,12 +241,21 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
-      if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
+      final boolean bMICMatch = aOriginalMIC != null && aReturnMIC != null && aReturnMIC.equals (aOriginalMIC);
+
+      if (!bMICMatch)
       {
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("MIC was not matched, so the pending file '" +
+                       aPendingFile.getAbsolutePath () +
+                       "' will NOT be deleted.");
+
+        // MIC was not matched
         m_aMICMatchingHandler.onMICMismatch (aMsg, sOriginalMIC, sReturnMIC);
         return false;
       }
 
+      // MIC was matched
       m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
 
       // delete the pendinginfo & pending file if mic is matched
@@ -292,7 +324,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMDN.headers ().setAllHeaders (aMsg.headers ());
 
       final MimeBodyPart aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()), aData);
-      aMsg.getMDN ().setData (aPart);
+      aMDN.setData (aPart);
 
       // get the MDN partnership info
       aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
@@ -331,7 +363,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMsg.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
       aMsg.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMsg, false);
-      aMsg.setMessageID (aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
+      aMsg.setMessageID (aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID));
       try
       {
         getModule ().getSession ().getMessageProcessor ().handle (IProcessorStorageModule.DO_STOREMDN, aMsg, null);
@@ -343,19 +375,29 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       }
 
       // check if the mic (message integrity check) is correct
-      if (checkAsyncMDN (aMsg))
-        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_OK);
-      else
-        HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_NOT_FOUND);
+      final boolean bMICMatch = checkAsyncMDN (aMsg);
+      HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, bMICMatch ? CHttp.HTTP_OK : CHttp.HTTP_NOT_FOUND);
 
-      final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
+      final String sDisposition = aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
+
+      if (m_aIncomingMDNCallback != null)
+        m_aIncomingMDNCallback.onIncomingMDN (false,
+                                              aMDN,
+                                              aMDN.getHeader (CHttpHeader.AS2_FROM),
+                                              aMDN.getHeader (CHttpHeader.AS2_TO),
+                                              sDisposition,
+                                              aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_MIC),
+                                              aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID),
+                                              aMDN.attrs ().getAsBoolean (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, false),
+                                              bMICMatch);
+
       try
       {
         DispositionType.createFromString (sDisposition).validate ();
       }
       catch (final AS2DispositionException ex)
       {
-        ex.setText (aMsg.getMDN ().getText ());
+        ex.setText (aMDN.getText ());
         if (ex.getDisposition ().isWarning ())
         {
           // Warning
@@ -434,7 +476,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         LOGGER.error ("Error creating MimeBodyPart", ex);
       }
-    aMsg.getMDN ().setData (aPart);
+    aMDN.setData (aPart);
 
     // get the MDN partnership info
     aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));

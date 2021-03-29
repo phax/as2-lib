@@ -86,6 +86,7 @@ import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
+import com.helger.as2lib.util.http.IAS2IncomingMDNCallback;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.CHttpHeader;
@@ -113,6 +114,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2SenderModule.class);
 
   private IMICMatchingHandler m_aMICMatchingHandler = new LoggingMICMatchingHandler ();
+  private IAS2IncomingMDNCallback m_aIncomingMDNCallback;
   private Consumer <? super X509Certificate> m_aVerificationCertificateConsumer;
 
   public AS2SenderModule ()
@@ -142,6 +144,28 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     ValueEnforcer.notNull (aMICMatchingHandler, "MICMatchingHandler");
     m_aMICMatchingHandler = aMICMatchingHandler;
     return this;
+  }
+
+  /**
+   * @return The incoming MDN callback. May be <code>null</code>.
+   * @since v4.7.1
+   */
+  @Nullable
+  public final IAS2IncomingMDNCallback getIncomingMDNCallback ()
+  {
+    return m_aIncomingMDNCallback;
+  }
+
+  /**
+   * Set the incoming MDN callback that is invoked for each received MDN.
+   *
+   * @param aIMC
+   *        The callback to be invoked. May be null.
+   * @since v4.7.1
+   */
+  public final void setIncomingMDNCallback (@Nullable final IAS2IncomingMDNCallback aIMC)
+  {
+    m_aIncomingMDNCallback = aIMC;
   }
 
   /**
@@ -712,7 +736,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       final MimeBodyPart aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()),
                                                    aMDNStream.getBufferOrCopy ());
-      aMsg.getMDN ().setData (aPart);
+      aMDN.setData (aPart);
 
       // get the MDN partnership info
       aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
@@ -751,28 +775,41 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         // Or no module found in message processor
       }
 
-      final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
+      final String sDisposition = aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN
-      final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
+      final String sReturnMIC = aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
       final MIC aReturnMIC = MIC.parse (sReturnMIC);
 
       // Catch ReturnMIC == null in case the attribute is simply missing
-      if (aOriginalMIC == null || aReturnMIC == null || !aReturnMIC.equals (aOriginalMIC))
+      final boolean bMICMatch = aOriginalMIC != null && aReturnMIC != null && aReturnMIC.equals (aOriginalMIC);
+      if (bMICMatch)
+      {
+        // MIC was matched - all good
+        m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
+      }
+      else
       {
         // file was sent completely but the returned mic was not matched,
         m_aMICMatchingHandler.onMICMismatch (aMsg,
                                              aOriginalMIC == null ? null : aOriginalMIC.getAsAS2String (),
                                              sReturnMIC);
       }
-      else
-      {
-        m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
-      }
+
+      if (m_aIncomingMDNCallback != null)
+        m_aIncomingMDNCallback.onIncomingMDN (true,
+                                              aMDN,
+                                              aMDN.getHeader (CHttpHeader.AS2_FROM),
+                                              aMDN.getHeader (CHttpHeader.AS2_TO),
+                                              sDisposition,
+                                              aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_MIC),
+                                              aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID),
+                                              aMDN.attrs ().getAsBoolean (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, false),
+                                              bMICMatch);
 
       try
       {
@@ -780,7 +817,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       }
       catch (final AS2DispositionException ex)
       {
-        ex.setText (aMsg.getMDN ().getText ());
+        ex.setText (aMDN.getText ());
         if (ex.getDisposition ().isWarning ())
         {
           // Warning
@@ -873,13 +910,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       if (getOutgoingHttpCallback () != null)
         getOutgoingHttpCallback ().onOutgoingHttpMessage (true,
-                                                                 aMsg.getAS2From (),
-                                                                 aMsg.getAS2To (),
-                                                                 aMsg.getMessageID (),
-                                                                 aMIC == null ? null : aMIC.getClone (),
-                                                                 eCTE,
-                                                                 sUrl,
-                                                                 nHttpResponseCode);
+                                                          aMsg.getAS2From (),
+                                                          aMsg.getAS2To (),
+                                                          aMsg.getMessageID (),
+                                                          aMIC == null ? null : aMIC.getClone (),
+                                                          eCTE,
+                                                          sUrl,
+                                                          nHttpResponseCode);
 
       // Check the HTTP Response code
       if (AS2HttpClient.isErrorResponseCode (nHttpResponseCode))
