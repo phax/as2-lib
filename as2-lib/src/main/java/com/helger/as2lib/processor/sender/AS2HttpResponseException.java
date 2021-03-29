@@ -32,15 +32,32 @@
  */
 package com.helger.as2lib.processor.sender;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.exception.AS2Exception;
 
+/**
+ * Special {@link AS2Exception} with HTTP URL details
+ *
+ * @author Philip Helger
+ */
 public class AS2HttpResponseException extends AS2Exception
 {
   private final String m_sURL;
   private final int m_nCode;
   private final String m_sMessage;
 
-  public AS2HttpResponseException (final String sUrl, final int nCode, final String sMessage)
+  /**
+   * Constructor
+   *
+   * @param sUrl
+   *        The URL that caused the error.
+   * @param nCode
+   *        The HTTP status code.
+   * @param sMessage
+   *        The HTTP status message
+   */
+  public AS2HttpResponseException (@Nonnull final String sUrl, final int nCode, @Nonnull final String sMessage)
   {
     super ("Http Response from " + sUrl + ": " + nCode + " - " + sMessage);
     m_sURL = sUrl;
@@ -48,16 +65,26 @@ public class AS2HttpResponseException extends AS2Exception
     m_sMessage = sMessage;
   }
 
+  /**
+   * @return The URL that failed. Never <code>null</code>.
+   */
+  @Nonnull
   public String getUrl ()
   {
     return m_sURL;
   }
 
+  /**
+   * @return The HTTP status code retrieved.
+   */
   public int getCode ()
   {
     return m_nCode;
   }
 
+  /**
+   * @return The HTTP status text retrieved.
+   */
   @Override
   public String getMessage ()
   {
