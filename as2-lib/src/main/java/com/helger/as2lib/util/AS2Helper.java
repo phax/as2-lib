@@ -383,8 +383,8 @@ public final class AS2Helper
     final String sLoggingText = aMsg.getLoggingText ();
     LOGGER.info ("Start parsing MDN of" + sLoggingText);
 
-    final IMessageMDN aMdn = aMsg.getMDN ();
-    MimeBodyPart aMainPart = aMdn.getData ();
+    final IMessageMDN aMDN = aMsg.getMDN ();
+    MimeBodyPart aMainPart = aMDN.getData ();
     final ICryptoHelper aCryptoHelper = getCryptoHelper ();
 
     final boolean bDisableVerify = aMsg.partnership ().isDisableVerify ();
@@ -414,12 +414,13 @@ public final class AS2Helper
           aEffectiveCertificateConsumer.accept (aCertHolder.get ());
 
         // Remember that message was signed and verified
-        aMdn.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
+        aMDN.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
         // Remember the PEM encoded version of the X509 certificate that was
         // used for verification
-        aMsg.attrs ()
-            .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
-                    CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
+        if (aCertHolder.isSet ())
+          aMsg.attrs ()
+              .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
+                      CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
         LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
       }
@@ -440,7 +441,7 @@ public final class AS2Helper
             LOGGER.debug (aPartContent == null ? "Report part content is null"
                                                : "Report part content is a " + aPartContent.getClass ().getName ());
           // XXX is this "toString" really a correct solution?
-          aMdn.setText (aPartContent.toString ());
+          aMDN.setText (aPartContent.toString ());
         }
         else
           if (aReportPart.isMimeType ("message/disposition-notification"))
@@ -452,20 +453,20 @@ public final class AS2Helper
                                                                                                     sCTE))
             {
               final InternetHeaders aDispositionHeaders = new InternetHeaders (aRealIS);
-              aMdn.attrs ()
+              aMDN.attrs ()
                   .putIn (AS2MessageMDN.MDNA_REPORTING_UA, aDispositionHeaders.getHeader (HEADER_REPORTING_UA, ", "));
-              aMdn.attrs ()
+              aMDN.attrs ()
                   .putIn (AS2MessageMDN.MDNA_ORIG_RECIPIENT,
                           aDispositionHeaders.getHeader (HEADER_ORIGINAL_RECIPIENT, ", "));
-              aMdn.attrs ()
+              aMDN.attrs ()
                   .putIn (AS2MessageMDN.MDNA_FINAL_RECIPIENT,
                           aDispositionHeaders.getHeader (HEADER_FINAL_RECIPIENT, ", "));
-              aMdn.attrs ()
+              aMDN.attrs ()
                   .putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID,
                           aDispositionHeaders.getHeader (HEADER_ORIGINAL_MESSAGE_ID, ", "));
-              aMdn.attrs ()
+              aMDN.attrs ()
                   .putIn (AS2MessageMDN.MDNA_DISPOSITION, aDispositionHeaders.getHeader (HEADER_DISPOSITION, ", "));
-              aMdn.attrs ()
+              aMDN.attrs ()
                   .putIn (AS2MessageMDN.MDNA_MIC, aDispositionHeaders.getHeader (HEADER_RECEIVED_CONTENT_MIC, ", "));
             }
           }
