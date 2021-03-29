@@ -275,8 +275,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
                                       @Nullable final Proxy aProxy) throws AS2Exception
   {
     ValueEnforcer.notEmpty (sUrl, "URL");
-    SSLContext aSSLCtx = null;
-    HostnameVerifier aHV = null;
+    final SSLContext aSSLCtx;
+    final HostnameVerifier aHV;
     if (isUseSSL (sUrl))
     {
       // Create SSL context and HostnameVerifier
@@ -289,6 +289,11 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
         throw new AS2Exception ("Error creating SSL Context", ex);
       }
       aHV = createHostnameVerifier ();
+    }
+    else
+    {
+      aSSLCtx = null;
+      aHV = null;
     }
     final int nConnectTimeoutMS = getConnectionTimeoutMilliseconds ();
     final int nReadTimeoutMS = getReadTimeoutMilliseconds ();

@@ -95,7 +95,6 @@ import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.io.stream.StreamHelper.CopyByteStreamBuilder;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringHelper;
@@ -690,27 +689,20 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // Receive the MDN data
       final InputStream aConnIS = aHttpClient.getInputStream ();
       final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ();
-      try
-      {
-        // Retrieve the whole MDN content
-        final CopyByteStreamBuilder aBuilder = StreamHelper.copyByteStream ()
-                                                           .from (aConnIS)
-                                                           .closeFrom (true)
-                                                           .to (aMDNStream)
-                                                           .closeTo (false);
-        final long nContentLength = StringParser.parseLong (aMDN.getHeader (CHttpHeader.CONTENT_LENGTH), -1);
-        if (nContentLength >= 0)
-          aBuilder.limit (nContentLength);
-        aBuilder.build ();
-      }
-      finally
-      {
-        StreamHelper.close (aMDNStream);
-      }
+      // Retrieve the whole MDN content
+      StreamHelper.copyByteStream ()
+                  .from (aConnIS)
+                  .closeFrom (true)
+                  .to (aMDNStream)
+                  .closeTo (true)
+                  .limit (StringParser.parseLong (aMDN.getHeader (CHttpHeader.CONTENT_LENGTH), -1))
+                  .build ();
 
       // Dump collected message
       if (aIncomingDumper != null)
-        aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true), aMDNStream.toByteArray (), aMDN);
+        aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
+                                             aMDNStream.getBufferOrCopy (),
+                                             aMDN);
 
       if (LOGGER.isTraceEnabled ())
       {
