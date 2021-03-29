@@ -44,6 +44,9 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.util.AS2IOHelper;
@@ -85,6 +88,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   /** Default quote header values: false */
   public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractHttpSenderModule.class);
   private static final IHTTPOutgoingDumperFactory DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY;
 
   static
@@ -94,6 +98,9 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     final String sHttpDumpOutgoingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryOutgoing");
     if (StringHelper.hasText (sHttpDumpOutgoingDirectory))
     {
+      LOGGER.info ("Using '" +
+                   sHttpDumpOutgoingDirectory +
+                   "' as the global directory to dump outgoing messages (source: system property)");
       final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
       DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = new DefaultHTTPOutgoingDumperFactory (aDumpDirectory);

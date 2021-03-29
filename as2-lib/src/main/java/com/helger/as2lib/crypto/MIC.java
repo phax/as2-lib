@@ -162,6 +162,17 @@ public class MIC implements Serializable, ICloneable <MIC>
                                        .getToString ();
   }
 
+  /**
+   * Parse the provided String representation of the MIC into a {@link MIC}
+   * object. This is the reverse operation to {@link MIC#getAsAS2String()}.
+   *
+   * @param sMIC
+   *        The MIC string to parse. May be <code>null</code>.
+   * @return <code>null</code> if an empty string was provided.
+   * @throws IllegalArgumentException
+   *         If the layout is invalid and either the bytes could not be Base64
+   *         decoded or if an invalid signing crypto algorithm was used.
+   */
   @Nullable
   public static MIC parse (@Nullable final String sMIC)
   {
