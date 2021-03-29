@@ -50,7 +50,8 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * The MIC value
+ * The MIC (Message Integrity Check) value. Basically a hash value over the
+ * message.
  *
  * @author Philip Helger
  * @since 4.4.0
