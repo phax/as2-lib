@@ -41,8 +41,11 @@ import javax.annotation.Nullable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.base64.Base64;
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.hashcode.HashCodeGenerator;
+import com.helger.commons.lang.ICloneable;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
@@ -52,7 +55,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  * @since 4.4.0
  */
-public class MIC implements Serializable
+public class MIC implements Serializable, ICloneable <MIC>
 {
   private final byte [] m_aMICBytes;
   private final ECryptoAlgorithmSign m_eDigestAlgorithm;
@@ -66,12 +69,19 @@ public class MIC implements Serializable
     m_eDigestAlgorithm = eDigestAlgorithm;
   }
 
+  /**
+   * @return The mutual MIC bytes. Handle with care. Never <code>null</code>.
+   */
   @Nonnull
   public byte [] micBytes ()
   {
     return m_aMICBytes;
   }
 
+  /**
+   * @return The algorithm that was used to create the MIC. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public ECryptoAlgorithmSign getDigestAlgorithm ()
   {
@@ -88,6 +98,13 @@ public class MIC implements Serializable
   public String getAsAS2String ()
   {
     return Base64.encodeBytes (m_aMICBytes) + ", " + m_eDigestAlgorithm.getID ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public MIC getClone ()
+  {
+    return new MIC (ArrayHelper.getCopy (m_aMICBytes), m_eDigestAlgorithm);
   }
 
   /**
@@ -127,7 +144,8 @@ public class MIC implements Serializable
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final MIC rhs = (MIC) o;
-    return Arrays.equals (m_aMICBytes, rhs.m_aMICBytes) && _getUnified (m_eDigestAlgorithm).equals (_getUnified (rhs.m_eDigestAlgorithm));
+    return Arrays.equals (m_aMICBytes, rhs.m_aMICBytes) &&
+           _getUnified (m_eDigestAlgorithm).equals (_getUnified (rhs.m_eDigestAlgorithm));
   }
 
   @Override
@@ -139,7 +157,9 @@ public class MIC implements Serializable
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("MICBytes", m_aMICBytes).append ("DigestAlgorithm", m_eDigestAlgorithm).getToString ();
+    return new ToStringGenerator (this).append ("MICBytes", m_aMICBytes)
+                                       .append ("DigestAlgorithm", m_eDigestAlgorithm)
+                                       .getToString ();
   }
 
   @Nullable
