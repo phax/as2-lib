@@ -32,21 +32,20 @@
  */
 package com.helger.as2lib.params;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RandomParameters extends AbstractParameterParser
 {
-  private static final Random RANDOM = new Random ();
-
   /**
    * @deprecated Don't call this
    */
   @Override
   @Deprecated
-  public void setParameter (@Nonnull final String sKey, @Nullable final String sValue) throws AS2InvalidParameterException
+  public void setParameter (@Nonnull final String sKey,
+                            @Nullable final String sValue) throws AS2InvalidParameterException
   {
     throw new AS2InvalidParameterException ("Set not supported", this, sKey, sValue);
   }
@@ -60,12 +59,15 @@ public class RandomParameters extends AbstractParameterParser
 
     final int nWantedChars = sKey.length ();
     if (nWantedChars == 0)
-      throw new AS2InvalidParameterException ("Empty key resulting in an empty random value is prohibited", this, sKey, null);
+      throw new AS2InvalidParameterException ("Empty key resulting in an empty random value is prohibited",
+                                              this,
+                                              sKey,
+                                              null);
 
     final StringBuilder ret = new StringBuilder (nWantedChars);
     for (int i = 0; i < nWantedChars; ++i)
     {
-      final char cRandom = (char) ('0' + RANDOM.nextInt (10));
+      final char cRandom = (char) ('0' + ThreadLocalRandom.current ().nextInt (10));
       ret.append (cRandom);
     }
     return ret.toString ();

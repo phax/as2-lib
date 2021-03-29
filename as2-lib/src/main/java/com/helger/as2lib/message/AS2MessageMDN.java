@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.message;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.annotation.Nonnull;
 
@@ -67,7 +67,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
     final String sDateFormat = partnership ().getDateFormat (DEFAULT_DATE_FORMAT);
     aSB.append ('<').append (CAS2Info.NAME).append ('-').append (AS2DateHelper.getFormattedDateNow (sDateFormat));
 
-    final int nRandom = new Random ().nextInt (10_000);
+    final int nRandom = ThreadLocalRandom.current ().nextInt (10_000);
     aSB.append ('-').append (StringHelper.getLeadingZero (nRandom, 4));
 
     // Message details
