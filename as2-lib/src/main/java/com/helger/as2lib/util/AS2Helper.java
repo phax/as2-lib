@@ -435,11 +435,11 @@ public final class AS2Helper
         final MimeBodyPart aReportPart = (MimeBodyPart) aReportParts.getBodyPart (j);
         if (aReportPart.isMimeType (CMimeType.TEXT_PLAIN.getAsString ()))
         {
-          // XXX is this "toString" really a correct solution?
           final Object aPartContent = aReportPart.getContent ();
           if (LOGGER.isDebugEnabled ())
             LOGGER.debug (aPartContent == null ? "Report part content is null"
                                                : "Report part content is a " + aPartContent.getClass ().getName ());
+          // XXX is this "toString" really a correct solution?
           aMdn.setText (aPartContent.toString ());
         }
         else
