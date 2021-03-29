@@ -48,7 +48,8 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Contains the disposition type for creating the MDN.
+ * Contains the disposition type for creating the MDN. That one determines if a
+ * message processed sucessful or not.
  *
  * @author Philip Helger
  */
@@ -132,6 +133,13 @@ public class DispositionType implements Serializable
     return EqualsHelper.equalsIgnoreCase (m_sStatusModifier, STATUS_MODIFIER_WARNING);
   }
 
+  /**
+   * Throws a {@link AS2DispositionException} if the message is a warning or an
+   * error. If the disposition is fine this method simply returns.
+   *
+   * @throws AS2DispositionException
+   *         The checked exception.
+   */
   public void validate () throws AS2DispositionException
   {
     if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
@@ -161,8 +169,8 @@ public class DispositionType implements Serializable
     return new ToStringGenerator (this).append ("Action", m_sAction)
                                        .append ("MDNAction", m_sMDNAction)
                                        .append ("Status", m_sStatus)
+                                       .append ("StatusModifier", m_sStatusModifier)
                                        .append ("StatusDescription", m_sStatusDescription)
-                                       .append ("StatusModified", m_sStatusModifier)
                                        .getToString ();
   }
 
@@ -202,7 +210,11 @@ public class DispositionType implements Serializable
   @Nonnull
   public static DispositionType createSuccess ()
   {
-    return new DispositionType (ACTION_AUTOMATIC_ACTION, MDNACTION_MDN_SENT_AUTOMATICALLY, STATUS_PROCESSED, null, null);
+    return new DispositionType (ACTION_AUTOMATIC_ACTION,
+                                MDNACTION_MDN_SENT_AUTOMATICALLY,
+                                STATUS_PROCESSED,
+                                null,
+                                null);
   }
 
   /**
