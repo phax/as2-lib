@@ -45,7 +45,6 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractMessageMDN extends AbstractBaseMessage implements IMessageMDN
@@ -155,8 +154,7 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     aOOS.writeObject (m_sText);
 
     // write the mime body
-    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
-    try
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ())
     {
       if (m_aData != null)
       {
@@ -172,10 +170,6 @@ public abstract class AbstractMessageMDN extends AbstractBaseMessage implements 
     catch (final MessagingException ex)
     {
       throw new IOException ("Messaging exception", ex);
-    }
-    finally
-    {
-      StreamHelper.close (aBAOS);
     }
   }
 }
