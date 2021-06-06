@@ -38,6 +38,13 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.commons.lang.StackTraceHelper;
 
+/**
+ * Parameters for exception handling.
+ *
+ * @author unknown
+ * @deprecated in 4.7.2 because it is not used in the code
+ */
+@Deprecated
 public class ExceptionParameters extends AbstractParameterParser
 {
   public static final String KEY_NAME = "name";
