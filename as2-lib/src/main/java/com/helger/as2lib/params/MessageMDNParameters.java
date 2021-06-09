@@ -37,9 +37,17 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.commons.ValueEnforcer;
 
+/**
+ * Access to MDN parameters
+ *
+ * @author unknown
+ */
 public class MessageMDNParameters extends AbstractParameterParser
 {
   public static final String KEY_MESSAGE = "msg";
@@ -49,11 +57,13 @@ public class MessageMDNParameters extends AbstractParameterParser
   public static final String KEY_ATTRIBUTES = "attributes";
   public static final String KEY_HEADERS = "headers";
 
-  private final IMessageMDN m_aTarget;
+  private static final Logger LOGGER = LoggerFactory.getLogger (MessageMDNParameters.class);
+
+  private final IMessageMDN m_aMDN;
 
   public MessageMDNParameters (@Nonnull final IMessageMDN aTarget)
   {
-    m_aTarget = ValueEnforcer.notNull (aTarget, "Target");
+    m_aMDN = ValueEnforcer.notNull (aTarget, "Target");
   }
 
   @Override
@@ -72,19 +82,19 @@ public class MessageMDNParameters extends AbstractParameterParser
 
       // Set parameter of message
       final String sMessageKey = aKeyParts.nextToken () + "." + aKeyParts.nextToken ();
-      new MessageParameters (m_aTarget.getMessage ()).setParameter (sMessageKey, sValue);
+      new MessageParameters (m_aMDN.getMessage ()).setParameter (sMessageKey, sValue);
     }
     else
     {
       final String sAreaValue = aKeyParts.nextToken ();
       if (sArea.equals (KEY_TEXT))
-        m_aTarget.setText (sValue);
+        m_aMDN.setText (sValue);
       else
         if (sArea.equals (KEY_ATTRIBUTES))
-          m_aTarget.attrs ().putIn (sAreaValue, sValue);
+          m_aMDN.attrs ().putIn (sAreaValue, sValue);
         else
           if (sArea.equals (KEY_HEADERS))
-            m_aTarget.headers ().setHeader (sAreaValue, sValue);
+            m_aMDN.headers ().setHeader (sAreaValue, sValue);
           else
             throw new AS2InvalidParameterException ("Invalid area in key", this, "key", sKey);
     }
@@ -98,9 +108,16 @@ public class MessageMDNParameters extends AbstractParameterParser
     if (aKeyParts.countTokens () > 2)
     {
       // Read from message
-      aKeyParts.nextToken ();
+      final String sSkippedToken = aKeyParts.nextToken ();
+      if (!"msg".equals (sSkippedToken))
+      {
+        LOGGER.warn ("Skipping the token '" +
+                     sSkippedToken +
+                     "' and accessing the message parameters instead of the MDN property. Please use `msg` as the name of the skipped token to indicate that this is done by purpose.");
+      }
+
       final String sMsgKey = aKeyParts.nextToken () + "." + aKeyParts.nextToken ();
-      return new MessageParameters (m_aTarget.getMessage ()).getParameter (sMsgKey);
+      return new MessageParameters (m_aMDN.getMessage ()).getParameter (sMsgKey);
     }
 
     if (aKeyParts.countTokens () < 2)
@@ -110,15 +127,15 @@ public class MessageMDNParameters extends AbstractParameterParser
     final String sAreaValue = aKeyParts.nextToken ();
 
     if (sArea.equals (KEY_SENDER))
-      return m_aTarget.partnership ().getSenderID (sAreaValue);
+      return m_aMDN.partnership ().getSenderID (sAreaValue);
     if (sArea.equals (KEY_RECEIVER))
-      return m_aTarget.partnership ().getReceiverID (sAreaValue);
+      return m_aMDN.partnership ().getReceiverID (sAreaValue);
     if (sArea.equals (KEY_TEXT))
-      return m_aTarget.getText ();
+      return m_aMDN.getText ();
     if (sArea.equals (KEY_ATTRIBUTES))
-      return m_aTarget.attrs ().getAsString (sAreaValue);
+      return m_aMDN.attrs ().getAsString (sAreaValue);
     if (sArea.equals (KEY_HEADERS))
-      return m_aTarget.getHeader (sAreaValue);
+      return m_aMDN.getHeader (sAreaValue);
 
     throw new AS2InvalidParameterException ("Invalid area in key", this, "key", sKey);
   }
