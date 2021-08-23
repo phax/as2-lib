@@ -24,8 +24,8 @@ Csp6cWSq7YCHomfEPfZDuL/5kdId/PQNenN49tX1lQ+kbf5MC/4+hDBQI/Pqf8gANwWOdHqQ9tYibxbx
 k3n/auO5/uY/wmRrWwhSiFLmxjGQozkwXoVhdGGKb6zjYMzainBlF0="
 
 install:
-#  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
-  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
+#  - mvn -T 1C install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U -P jdeps
+  - mvn -T 1C install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
 
 cache:
   directories:
@@ -40,16 +40,16 @@ jobs:
     - stage: test
       jdk: openjdk8
       script:
-        - mvn test -B
+        - mvn -T 1C test -B
       after_success:
-        - mvn deploy --settings travis-settings.xml -DskipTests=true -B -P travis-deploy
+        - mvn -T 1C deploy --settings travis-settings.xml -DskipTests=true -B -P travis-deploy
     - stage: test
       jdk: openjdk11
       script:
-        - mvn test -B -P coverage sonar:sonar
+        - mvn -T 1C test -B -P coverage sonar:sonar
       after_success:
         - bash <(curl -s https://codecov.io/bash)
     - stage: test
       jdk: openjdk14
       script:
-        - mvn test -B
+        - mvn -T 1C test -B
