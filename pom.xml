@@ -69,7 +69,7 @@
   
   <properties>
     <log4j.version>2.14.1</log4j.version>
-    <spring-boot.version>2.5.3</spring-boot.version>
+    <spring-boot.version>2.5.4</spring-boot.version>
   </properties>
   
   <dependencyManagement>
@@ -106,7 +106,7 @@
       <dependency>
         <groupId>org.mongodb</groupId>
         <artifactId>mongodb-driver-sync</artifactId>
-        <version>4.3.1</version>
+        <version>4.3.2</version>
       </dependency>
       <dependency>
         <groupId>de.flapdoodle.embed</groupId>
