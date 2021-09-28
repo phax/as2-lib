@@ -14,7 +14,7 @@ See the **[Wiki](https://github.com/phax/as2-lib/wiki)** for all details.
 It also contains [License details](https://github.com/phax/as2-lib/wiki/Licensing). 
 
 This library is a fork of [OpenAS2](http://sourceforge.net/projects/openas2/) which did not 
-release updates since 2010 (as per August 2015 they are on GitHub at https://github.com/OpenAS2/OpenAs2App). I than split the project into a common library part (the "as2-lib" submodule)
+release updates since 2010 (as per August 2015 they are on GitHub at https://github.com/OpenAS2/OpenAs2App). I then split the project into a common library part (the "as2-lib" submodule)
 and a server part (the "as2-server" submodule) which contains a stand alone (socket) server. The library project also contains a simple AS2 client which can be used to send messages to other AS2 servers (as part of "as2-lib").
 
 ---
