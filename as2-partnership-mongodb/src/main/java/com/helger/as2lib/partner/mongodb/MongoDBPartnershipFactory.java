@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2015-2021 jochenberger & Philip Helger
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
