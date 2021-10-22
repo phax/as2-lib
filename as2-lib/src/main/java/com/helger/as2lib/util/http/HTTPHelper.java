@@ -65,6 +65,8 @@ import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
+import com.helger.commons.codec.IByteArrayCodec;
+import com.helger.commons.codec.IdentityCodec;
 import com.helger.commons.collection.impl.CommonsArrayList;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.concurrent.SimpleReadWriteLock;
@@ -75,6 +77,8 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.system.SystemProperties;
+import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.mail.cte.IContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.mail.datasource.InputStreamDataSource;
 
@@ -92,6 +96,14 @@ public final class HTTPHelper
   public static final String MA_HTTP_REQ_URL = "HTTP_REQUEST_URL";
   /** The HTTP version used. E.g. "HTTP/1.1" */
   public static final String MA_HTTP_REQ_VERSION = "HTTP_REQUEST_VERSION";
+
+  /** The value of the Content-Transfer-Encoding header (if provided) */
+  public static final String MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING = "HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING";
+  /**
+   * The original content length before any eventual decoding (only if
+   * Content-Transfer-Encoding is provided)
+   */
+  public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (HTTPHelper.class);
 
@@ -242,8 +254,7 @@ public final class HTTPHelper
   public static DataSource readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
                                             @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                             @Nonnull final IMessage aMsg,
-                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
-                                                                                                 MessagingException
+                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException, MessagingException
   {
     // Get the stream to read from
     final InputStream aIS = aISP.getInputStream ();
@@ -307,10 +318,7 @@ public final class HTTPHelper
       }
 
       // Content-length present, or chunked encoding
-      aPayload = new InputStreamDataSource (aRealIS,
-                                            aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
-                                            sReceivedContentType,
-                                            true);
+      aPayload = new InputStreamDataSource (aRealIS, aMsg.getAS2From () == null ? "" : aMsg.getAS2From (), sReceivedContentType, true);
     }
     else
     {
@@ -350,6 +358,56 @@ public final class HTTPHelper
     // Don't close the IS here!
   }
 
+  @Nonnull
+  public static DataSource readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
+                                                     @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                                     @Nonnull final IMessage aMsg,
+                                                     @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
+                                                                                                          MessagingException
+  {
+    // Main read
+    DataSource aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg, aIncomingDumper);
+
+    // Check the transfer encoding of the request. If none is provided, check
+    // the partnership for a default one. If none is in the partnership used the
+    // default one
+    final String sCTE = aMsg.partnership ().getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    final String sContentTransferEncoding = aMsg.getHeaderOrDefault (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
+    if (StringHelper.hasText (sContentTransferEncoding))
+    {
+      final IContentTransferEncoding aCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
+      if (aCTE == null)
+      {
+        if (LOGGER.isWarnEnabled ())
+          LOGGER.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
+      }
+      else
+      {
+        // Decode data if necessary
+        final IByteArrayCodec aCodec = aCTE.createCodec ();
+
+        // TODO: Handle decoding when large file support is on
+        if (!(aCodec instanceof IdentityCodec <?>) && aPayload instanceof ByteArrayDataSource)
+        {
+          byte [] aActualBytes = ((ByteArrayDataSource) aPayload).directGetBytes ();
+          // Remember original length before continuing
+          final int nOriginalContentLength = aActualBytes.length;
+
+          if (LOGGER.isInfoEnabled ())
+            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
+          aActualBytes = aCodec.getDecoded (aActualBytes);
+          aPayload = new ByteArrayDataSource (aActualBytes, aPayload.getContentType (), aPayload.getName ());
+
+          // Remember that we potentially did something
+          aMsg.attrs ().putIn (MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING, sContentTransferEncoding);
+          aMsg.attrs ().putIn (MA_HTTP_ORIGINAL_CONTENT_LENGTH, nOriginalContentLength);
+        }
+      }
+    }
+
+    return aPayload;
+  }
+
   /**
    * Send a simple HTTP response that only contains the HTTP status code and the
    * respective descriptive text. An empty header map us used.
@@ -366,10 +424,7 @@ public final class HTTPHelper
   {
     try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
     {
-      final String sHTTPLine = Integer.toString (nResponseCode) +
-                               " " +
-                               CHttp.getHttpResponseMessage (nResponseCode) +
-                               CHttp.EOL;
+      final String sHTTPLine = Integer.toString (nResponseCode) + " " + CHttp.getHttpResponseMessage (nResponseCode) + CHttp.EOL;
       aData.write (sHTTPLine.getBytes (CHttp.HTTP_CHARSET));
 
       aResponseHandler.sendHttpResponse (nResponseCode, new HttpHeaderMap (), aData);

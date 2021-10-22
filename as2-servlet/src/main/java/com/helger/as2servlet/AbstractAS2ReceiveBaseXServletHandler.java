@@ -16,9 +16,9 @@
  */
 package com.helger.as2servlet;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 
+import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -26,18 +26,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.AS2Session;
+import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.HTTPHelper;
+import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.EHttpMethod;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.timing.StopWatch;
 import com.helger.http.EHttpVersion;
+import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.servlet.ServletHelper;
 import com.helger.web.scope.IRequestWebScope;
 import com.helger.xservlet.handler.IXServletHandler;
@@ -51,6 +57,8 @@ import com.helger.xservlet.handler.IXServletHandler;
  */
 public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServletHandler
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractAS2ReceiveBaseXServletHandler.class);
+
   private AS2Session m_aSession;
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
 
@@ -147,14 +155,10 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
   /**
    * Main handling method
    *
-   * @param aHttpRequest
-   *        HTTP request
-   * @param aHttpResponse
-   *        HTTP response
-   * @param aRequestScope
-   *        Current request scope
+   * @param sClientInfo
+   *        Client info for logging
    * @param aMsgData
-   *        Message content
+   *        Message payload
    * @param aMsg
    *        AS2 message object
    * @param aResponseHandler
@@ -162,14 +166,10 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
    * @throws ServletException
    *         In case of an error
    */
-  @OverrideOnDemand
-  @OverridingMethodsMustInvokeSuper
-  protected abstract void handeIncomingMessage (@Nonnull final HttpServletRequest aHttpRequest,
-                                                @Nonnull final HttpServletResponse aHttpResponse,
-                                                @Nonnull final IRequestWebScope aRequestScope,
-                                                @Nonnull final byte [] aMsgData,
-                                                @Nonnull final AS2Message aMsg,
-                                                @Nonnull final AS2OutputStreamCreatorHttpServletResponse aResponseHandler) throws ServletException;
+  protected abstract void handleIncomingMessage (@Nonnull final String sClientInfo,
+                                                 @Nonnull final DataSource aMsgData,
+                                                 @Nonnull final AS2Message aMsg,
+                                                 @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws ServletException;
 
   public final void onRequest (@Nonnull final HttpServletRequest aHttpRequest,
                                @Nonnull final HttpServletResponse aHttpResponse,
@@ -177,6 +177,9 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
                                @Nonnull final EHttpMethod eHttpMethod,
                                @Nonnull final IRequestWebScope aRequestScope) throws ServletException, IOException
   {
+    // Handle the incoming message, and return the MDN if necessary
+    final String sClientInfo = aHttpRequest.getRemoteAddr () + ":" + aHttpRequest.getRemotePort ();
+
     // Create empty message
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_IP, aHttpRequest.getRemoteAddr ());
@@ -203,30 +206,48 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
     if (nContentLength > Integer.MAX_VALUE)
       throw new IllegalStateException ("Currently only payload with up to 2GB can be handled!");
 
-    final byte [] aMsgData;
-    if (nContentLength >= 0)
+    // Time the transmission
+    final StopWatch aSW = StopWatch.createdStarted ();
+
+    DataSource aMsgDataSource = null;
+    try
     {
-      // Length is known
-      aMsgData = new byte [(int) nContentLength];
-      // Closes the HTTP request InputStream afterwards
-      try (final DataInputStream aDataIS = new DataInputStream (aHttpRequest.getInputStream ()))
-      {
-        aDataIS.readFully (aMsgData);
-      }
+      // Read in the message request, headers, and data
+      final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
+      aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2InputStreamProviderServletRequest (aHttpRequest),
+                                                            aResponseHandler,
+                                                            aMsg,
+                                                            aIncomingDumper);
+    }
+    catch (final Exception ex)
+    {
+      AS2Exception.log (ex.getClass (), true, "Failed to read Servlet Request: " + ex.getMessage (), null, null, ex.getCause ());
+    }
+
+    aSW.stop ();
+
+    if (aMsgDataSource == null)
+    {
+      LOGGER.error ("Not having a data source to operate on");
     }
     else
     {
-      // Length is unknown
-      // Closes the HTTP request InputStream afterwards
-      aMsgData = StreamHelper.getAllBytes (aHttpRequest.getInputStream ());
+      if (aMsgDataSource instanceof ByteArrayDataSource)
+      {
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("received " +
+                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length, aSW) +
+                       " from " +
+                       sClientInfo +
+                       aMsg.getLoggingText ());
+
+      }
+      else
+      {
+        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+      }
+
+      handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);
     }
-
-    // Dump on demand
-    final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-    if (aIncomingDumper != null)
-      aIncomingDumper.dumpIncomingRequest (aMsg.headers ().getAllHeaderLines (true), aMsgData, aMsg);
-
-    // Call main handling method
-    handeIncomingMessage (aHttpRequest, aHttpResponse, aRequestScope, aMsgData, aMsg, aResponseHandler);
   }
 }

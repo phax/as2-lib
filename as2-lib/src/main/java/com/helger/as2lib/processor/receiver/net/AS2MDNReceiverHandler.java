@@ -472,7 +472,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   }
 
   public void handleIncomingMessage (@Nonnull @Nonempty final String sClientInfo,
-                                     @Nullable final DataSource aMsgData,
+                                     @Nonnull final DataSource aMsgData,
                                      @Nonnull final AS2Message aMsg,
                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
@@ -528,7 +528,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     {
       // Read in the message request, headers, and data
       final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-      aMdnDataSource = readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket), aResponseHandler, aMsg, aIncomingDumper);
+      aMdnDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2InputStreamProviderSocket (aSocket),
+                                                            aResponseHandler,
+                                                            aMsg,
+                                                            aIncomingDumper);
     }
     catch (final Exception ex)
     {
@@ -537,7 +540,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     aSW.stop ();
 
-    if (aMdnDataSource != null)
+    if (aMdnDataSource == null)
+    {
+      LOGGER.error ("Not having a data source to operate on");
+    }
+    else
+    {
       if (aMdnDataSource instanceof ByteArrayDataSource)
       {
         if (LOGGER.isInfoEnabled ())
@@ -553,6 +561,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
       }
 
-    handleIncomingMessage (sClientInfo, aMdnDataSource, aMsg, aResponseHandler);
+      handleIncomingMessage (sClientInfo, aMdnDataSource, aMsg, aResponseHandler);
+    }
   }
 }

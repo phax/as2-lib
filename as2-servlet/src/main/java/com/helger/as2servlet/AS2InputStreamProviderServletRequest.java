@@ -30,47 +30,47 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.as2lib.util.http;
+package com.helger.as2servlet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
+import javax.servlet.ServletRequest;
 
+import com.helger.as2lib.util.http.IAS2InputStreamProvider;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
 /**
- * Implementation of {@link IAS2InputStreamProvider} based on a {@link Socket}
- * {@link InputStream}.
+ * Implementation of {@link IAS2InputStreamProvider} based on a
+ * {@link ServletRequest} {@link InputStream}.
  *
  * @author Philip Helger
+ * @since 4.8.0
  */
 @Immutable
-public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
+public class AS2InputStreamProviderServletRequest implements IAS2InputStreamProvider
 {
-  private final Socket m_aSocket;
+  private final ServletRequest m_aServletRequest;
 
   /**
    * Constructor
    *
-   * @param aSocket
-   *        Socket to read from. May not be <code>null</code>.
+   * @param aServletRequest
+   *        Servlet request to read from. May not be <code>null</code>.
    */
-  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket)
+  public AS2InputStreamProviderServletRequest (@Nonnull final ServletRequest aServletRequest)
   {
-    ValueEnforcer.notNull (aSocket, "Socket");
-    m_aSocket = aSocket;
+    ValueEnforcer.notNull (aServletRequest, "ServletRequest");
+    m_aServletRequest = aServletRequest;
   }
 
   /**
    * Will return a buffered, {@link NonClosingInputStream} that when closed,
-   * will not close in source stream. This is useful when working with
-   * <code>java.net.SocketInputStream</code> as close() on a socket stream
-   * closes the {@link Socket}
+   * will not close in source stream.
    *
    * @return {@link InputStream}
    * @throws IOException
@@ -81,6 +81,6 @@ public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
   {
     // Use "NonClosing" internally to that the returned stream is easily
     // discovered as "buffered"
-    return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocket.getInputStream ()));
+    return StreamHelper.getBuffered (new NonClosingInputStream (m_aServletRequest.getInputStream ()));
   }
 }

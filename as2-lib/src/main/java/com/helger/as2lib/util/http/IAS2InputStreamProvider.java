@@ -34,7 +34,6 @@ package com.helger.as2lib.util.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
 
 import javax.annotation.Nonnull;
 
@@ -46,23 +45,12 @@ import javax.annotation.Nonnull;
 public interface IAS2InputStreamProvider
 {
   /**
-   * @return Never <code>null</code>
-   * @throws IOException
-   *         In case of error
-   */
-  @Nonnull
-  InputStream getInputStream () throws IOException;
-
-  /**
-   * Returns an {@link InputStream}, that when closed, will not close in source
-   * stream. This is useful when working with
-   * <code>java.net.SocketInputStream</code>, as close() on a socket stream
-   * closes the {@link Socket}
+   * Get the input stream to read from. May not be <code>null</code>.
    *
    * @return Never <code>null</code>
    * @throws IOException
    *         In case of error
    */
   @Nonnull
-  InputStream getNonUpwardClosingInputStream () throws IOException;
+  InputStream getInputStream () throws IOException;
 }

@@ -114,22 +114,32 @@ public class AS2Exception extends Exception
     return this;
   }
 
+  public static final void log (final Class <?> aExceptionClass,
+                                final boolean bTerminated,
+                                final String sLogMessage,
+                                @Nullable final File aSrcFile,
+                                @Nullable final IMessage aSrcMsg,
+                                @Nullable final Throwable aCause)
+  {
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info (CAS2Info.NAME_VERSION +
+                   " " +
+                   ClassHelper.getClassLocalName (aExceptionClass) +
+                   " " +
+                   (bTerminated ? "terminated" : "caught") +
+                   ": " +
+                   sLogMessage +
+                   (aSrcFile == null ? "" : "; source file: " + aSrcFile.getAbsolutePath ()) +
+                   (aSrcMsg == null ? "" : "; source msg: " + aSrcMsg.getLoggingText ()),
+                   aCause);
+  }
+
   /**
    * @param bTerminated
    *        <code>true</code> if the exception was terminated
    */
   protected final void log (final boolean bTerminated)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info (CAS2Info.NAME_VERSION +
-                   " " +
-                   ClassHelper.getClassLocalName (getClass ()) +
-                   " " +
-                   (bTerminated ? "terminated" : "caught") +
-                   ": " +
-                   getMessage () +
-                   (m_aSrcFile == null ? "" : "; source file: " + m_aSrcFile.getAbsolutePath ()) +
-                   (m_aSrcMsg == null ? "" : "; source msg: " + m_aSrcMsg.getLoggingText ()),
-                   getCause ());
+    log (getClass (), bTerminated, getMessage (), m_aSrcFile, m_aSrcMsg, getCause ());
   }
 }

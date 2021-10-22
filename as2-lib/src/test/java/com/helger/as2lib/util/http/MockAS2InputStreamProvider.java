@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.commons.ValueEnforcer;
 
-class MockAS2InputStreamProvider implements IAS2InputStreamProvider
+final class MockAS2InputStreamProvider implements IAS2InputStreamProvider
 {
   private final InputStream m_aIS;
 
@@ -51,12 +51,6 @@ class MockAS2InputStreamProvider implements IAS2InputStreamProvider
 
   @Nonnull
   public InputStream getInputStream () throws IOException
-  {
-    return m_aIS;
-  }
-
-  @Nonnull
-  public InputStream getNonUpwardClosingInputStream () throws IOException
   {
     return m_aIS;
   }

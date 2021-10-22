@@ -20,8 +20,6 @@ import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +28,11 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
 import com.helger.as2lib.util.AS2HttpHelper;
-import com.helger.as2servlet.util.AS2OutputStreamCreatorHttpServletResponse;
+import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
-import com.helger.mail.datasource.ByteArrayDataSource;
-import com.helger.web.scope.IRequestWebScope;
 
 /**
  * This is the main XServlet handler that takes AS2 messages and processes them.
@@ -101,37 +97,14 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
     return m_aReceiver.isQuoteHeaderValues ();
   }
 
-  /**
-   * Main handling method
-   *
-   * @param aHttpRequest
-   *        HTTP request
-   * @param aHttpResponse
-   *        HTTP response
-   * @param aRequestScope
-   *        Current request scope
-   * @param aMsgData
-   *        Message content
-   * @param aMsg
-   *        AS2 message object
-   * @param aResponseHandler
-   *        The response handler for sending back the MDN
-   * @throws ServletException
-   *         In case of an error
-   */
   @Override
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
-  protected void handeIncomingMessage (@Nonnull final HttpServletRequest aHttpRequest,
-                                       @Nonnull final HttpServletResponse aHttpResponse,
-                                       @Nonnull final IRequestWebScope aRequestScope,
-                                       @Nonnull final byte [] aMsgData,
-                                       @Nonnull final AS2Message aMsg,
-                                       @Nonnull final AS2OutputStreamCreatorHttpServletResponse aResponseHandler) throws ServletException
+  protected void handleIncomingMessage (@Nonnull final String sClientInfo,
+                                        @Nonnull final DataSource aMsgData,
+                                        @Nonnull final AS2Message aMsg,
+                                        @Nonnull final IAS2HttpResponseHandler aResponseHandler) throws ServletException
   {
-    // Handle the incoming message, and return the MDN if necessary
-    final String sClientInfo = aHttpRequest.getRemoteAddr () + ":" + aHttpRequest.getRemotePort ();
-
     // for large file support, handleIncomingMessage takes DataSource
     final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
     if (sReceivedContentType == null)
@@ -139,11 +112,8 @@ public abstract class AbstractAS2ReceiveXServletHandler extends AbstractAS2Recei
                                   aMsg.getHeader (CHttpHeader.CONTENT_TYPE) +
                                   "'");
 
-    // Put received data in a MIME body part
-    final DataSource aPayload = new ByteArrayDataSource (aMsgData, sReceivedContentType, null);
-
     // This call internally invokes the AS2ServletSBDModule
     final AS2ReceiverHandler aReceiverHandler = getReceiverModule ().createHandler ();
-    aReceiverHandler.handleIncomingMessage (sClientInfo, aPayload, aMsg, aResponseHandler);
+    aReceiverHandler.handleIncomingMessage (sClientInfo, aMsgData, aMsg, aResponseHandler);
   }
 }
