@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -206,48 +207,52 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
     if (nContentLength > Integer.MAX_VALUE)
       throw new IllegalStateException ("Currently only payload with up to 2GB can be handled!");
 
-    // Time the transmission
-    final StopWatch aSW = StopWatch.createdStarted ();
+    // Open it once, and close it at the end
+    try (final ServletInputStream aRequestIS = aHttpRequest.getInputStream ())
+    {
+      // Time the transmission
+      final StopWatch aSW = StopWatch.createdStarted ();
 
-    DataSource aMsgDataSource = null;
-    try
-    {
-      // Read in the message request, headers, and data
-      final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-      aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2InputStreamProviderServletRequest (aHttpRequest),
-                                                            aResponseHandler,
-                                                            aMsg,
-                                                            aIncomingDumper);
-    }
-    catch (final Exception ex)
-    {
-      AS2Exception.log (ex.getClass (), true, "Failed to read Servlet Request: " + ex.getMessage (), null, null, ex.getCause ());
-    }
-
-    aSW.stop ();
-
-    if (aMsgDataSource == null)
-    {
-      LOGGER.error ("Not having a data source to operate on");
-    }
-    else
-    {
-      if (aMsgDataSource instanceof ByteArrayDataSource)
+      DataSource aMsgDataSource = null;
+      try
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("received " +
-                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length, aSW) +
-                       " from " +
-                       sClientInfo +
-                       aMsg.getLoggingText ());
+        // Read in the message request, headers, and data
+        final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
+        aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2InputStreamProviderServletRequest (aRequestIS),
+                                                              aResponseHandler,
+                                                              aMsg,
+                                                              aIncomingDumper);
+      }
+      catch (final Exception ex)
+      {
+        AS2Exception.log (ex.getClass (), true, "Failed to read Servlet Request: " + ex.getMessage (), null, null, ex.getCause ());
+      }
 
+      aSW.stop ();
+
+      if (aMsgDataSource == null)
+      {
+        LOGGER.error ("Not having a data source to operate on");
       }
       else
       {
-        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
-      }
+        if (aMsgDataSource instanceof ByteArrayDataSource)
+        {
+          if (LOGGER.isInfoEnabled ())
+            LOGGER.info ("received " +
+                         AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length, aSW) +
+                         " from " +
+                         sClientInfo +
+                         aMsg.getLoggingText ());
 
-      handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);
+        }
+        else
+        {
+          LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+        }
+
+        handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);
+      }
     }
   }
 }

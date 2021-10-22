@@ -32,11 +32,12 @@
  */
 package com.helger.as2servlet;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 
 import com.helger.as2lib.util.http.IAS2InputStreamProvider;
@@ -52,20 +53,21 @@ import com.helger.commons.io.stream.StreamHelper;
  * @since 4.8.0
  */
 @Immutable
-public class AS2InputStreamProviderServletRequest implements IAS2InputStreamProvider
+final class AS2InputStreamProviderServletRequest implements IAS2InputStreamProvider
 {
-  private final ServletRequest m_aServletRequest;
+  private final ServletInputStream m_aRequestIS;
 
   /**
    * Constructor
    *
-   * @param aServletRequest
-   *        Servlet request to read from. May not be <code>null</code>.
+   * @param aRequestIS
+   *        Servlet request InputStream to read from. Will not be closed. May
+   *        not be <code>null</code>.
    */
-  public AS2InputStreamProviderServletRequest (@Nonnull final ServletRequest aServletRequest)
+  public AS2InputStreamProviderServletRequest (@Nonnull @WillNotClose final ServletInputStream aRequestIS)
   {
-    ValueEnforcer.notNull (aServletRequest, "ServletRequest");
-    m_aServletRequest = aServletRequest;
+    ValueEnforcer.notNull (aRequestIS, "RequestIS");
+    m_aRequestIS = aRequestIS;
   }
 
   /**
@@ -73,14 +75,12 @@ public class AS2InputStreamProviderServletRequest implements IAS2InputStreamProv
    * will not close in source stream.
    *
    * @return {@link InputStream}
-   * @throws IOException
-   *         in case of error
    */
   @Nonnull
-  public InputStream getInputStream () throws IOException
+  public InputStream getInputStream ()
   {
     // Use "NonClosing" internally to that the returned stream is easily
     // discovered as "buffered"
-    return StreamHelper.getBuffered (new NonClosingInputStream (m_aServletRequest.getInputStream ()));
+    return StreamHelper.getBuffered (new NonClosingInputStream (m_aRequestIS));
   }
 }
