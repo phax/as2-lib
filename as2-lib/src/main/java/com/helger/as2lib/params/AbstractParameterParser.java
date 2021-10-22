@@ -112,7 +112,7 @@ public abstract class AbstractParameterParser implements Serializable
    * Fill in a format string with information from a ParameterParser
    *
    * @param sFormat
-   *        the format string to fill in
+   *        the format string to fill in. May be <code>null</code>.
    * @return the filled in format string.
    * @throws AS2InvalidParameterException
    *         In case the string is incorrect
