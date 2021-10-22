@@ -30,14 +30,12 @@ public class AS2ServletReceiverModule extends AS2ReceiverModule
   @Override
   public void doStart () throws AS2Exception
   {
-    // Would start a thread - so don't do it
-    throw new UnsupportedOperationException ("Never start this module!");
+    // Would start a thread - so don't do it in the servlet environment
   }
 
   @Override
   public void doStop () throws AS2Exception
   {
-    // Would stop a thread - so don't do it
-    throw new UnsupportedOperationException ("Never stop this module!");
+    // Would stop a thread - so don't do it in the servlet environment
   }
 }
