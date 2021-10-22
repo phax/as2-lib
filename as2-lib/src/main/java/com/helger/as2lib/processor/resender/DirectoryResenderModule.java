@@ -53,6 +53,8 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AS2InvalidParameterException;
+import com.helger.as2lib.params.CompositeParameters;
+import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2DateHelper;
@@ -64,6 +66,7 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.datetime.PDTFactory;
+import com.helger.commons.string.StringHelper;
 
 /**
  * An asynchronous, persisting, file based, polling resender module. Upon
@@ -73,11 +76,20 @@ import com.helger.commons.datetime.PDTFactory;
  * folder.
  *
  * @author OpenAS2
+ * @author Philip Helger
  */
 public class DirectoryResenderModule extends AbstractActiveResenderModule
 {
   public static final String ATTR_RESEND_DIRECTORY = "resenddir";
+  /** The error directory. May contain "date" parameters. */
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
+  /**
+   * Optional filename for storage in the error directory. May contain "date"
+   * parameters.
+   *
+   * @since 4.8.0
+   */
+  public static final String ATTR_STORED_ERROR_FILENAME = "stored_error_filename";
 
   private static final String FILENAME_DATE_FORMAT = "MM-dd-uu-HH-mm-ss";
 
@@ -95,6 +107,21 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
+  }
+
+  /**
+   * Build the filename for re-sending. The filename consists of the date and
+   * time when the document is to be re-send.
+   *
+   * @return The filename and never <code>null</code>.
+   * @throws AS2InvalidParameterException
+   *         Only theoretically
+   */
+  @Nonnull
+  protected String getFilename () throws AS2InvalidParameterException
+  {
+    final long nResendDelayMS = getResendDelayMS ();
+    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT, PDTFactory.getCurrentZonedDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
   }
 
   @Override
@@ -136,21 +163,6 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
   }
 
-  /**
-   * Build the filename for re-sending. The filename consists of the date and
-   * time when the document is to be re-send.
-   *
-   * @return The filename and never <code>null</code>.
-   * @throws AS2InvalidParameterException
-   *         Only theoretically
-   */
-  @Nonnull
-  protected String getFilename () throws AS2InvalidParameterException
-  {
-    final long nResendDelayMS = getResendDelayMS ();
-    return AS2DateHelper.formatDate (FILENAME_DATE_FORMAT, PDTFactory.getCurrentZonedDateTime ().plus (nResendDelayMS, ChronoUnit.MILLIS));
-  }
-
   protected boolean isTimeToSend (@Nonnull final File aCurrentFile)
   {
     try
@@ -170,6 +182,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("Processing " + aFile.getAbsolutePath ());
 
+    final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ());
     IMessage aMsg = null;
     try
     {
@@ -213,7 +226,11 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     catch (final AS2Exception ex)
     {
       ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
-      AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      // Use the source name as the default
+      final String sErrorFilename = StringHelper.getNotEmpty (aParams.format (attrs ().getAsString (ATTR_STORED_ERROR_FILENAME)),
+                                                              aFile.getName ());
+      AS2IOHelper.handleError (aFile, sErrorDirectory, sErrorFilename);
     }
   }
 

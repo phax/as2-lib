@@ -165,17 +165,21 @@ public final class AS2IOHelper
    *        Source file to move
    * @param sErrorDirectory
    *        Error directory path.
+   * @param sTargetFilename
+   *        The filename in the error directory.
    * @throws AS2Exception
    *         In case moving failed
    */
-  public static void handleError (@Nonnull final File aFile, @Nonnull final String sErrorDirectory) throws AS2Exception
+  public static void handleError (@Nonnull final File aFile,
+                                  @Nonnull final String sErrorDirectory,
+                                  @Nonnull @Nonempty final String sTargetFilename) throws AS2Exception
   {
     File aDestFile = null;
 
     try
     {
       final File aErrorDir = getDirectoryFile (sErrorDirectory);
-      aDestFile = new File (aErrorDir, aFile.getName ());
+      aDestFile = new File (aErrorDir, sTargetFilename);
 
       // move the file
       aDestFile = moveFile (aFile, aDestFile, false, true);

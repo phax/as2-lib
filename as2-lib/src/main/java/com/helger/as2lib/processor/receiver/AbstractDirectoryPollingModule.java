@@ -62,17 +62,36 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileIOError;
+import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
+import com.helger.commons.string.StringHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
 
 public abstract class AbstractDirectoryPollingModule extends AbstractActivePollingModule
 {
+  /** Path of the directory to poll from. */
   public static final String ATTR_OUTBOX_DIRECTORY = "outboxdir";
+  /** Path of the error directory. May contain "date" and "msg" parameters. */
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
+  /**
+   * Optional filename for storage in the error directory. May contain "date"
+   * and "msg" parameters.
+   *
+   * @since 4.8.0
+   */
+  public static final String ATTR_STORED_ERROR_FILENAME = "stored_error_filename";
+  /** Path of the error directory. May contain "date" and "msg" parameters. */
   public static final String ATTR_SENT_DIRECTORY = "sentdir";
+  /**
+   * Optional filename for storage in the sent directory. May contain "date" and
+   * "msg" parameters.
+   *
+   * @since 4.8.0
+   */
+  public static final String ATTR_STORED_SENT_FILENAME = "stored_sent_filename";
   public static final String ATTR_FORMAT = "format";
   public static final String ATTR_DELIMITERS = "delimiters";
   public static final String ATTR_DEFAULTS = "defaults";
@@ -207,8 +226,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.attrs ().getAsString (CFileAttribute.MA_STATUS)))
       {
         // Copy the file to the pending folder
-        final File aPendingFile = new File (aMsg.partnership ().getAttribute (CFileAttribute.MA_STATUS_PENDING),
-                                            aMsg.attrs ().getAsString (CFileAttribute.MA_PENDING_FILENAME));
+        final String sFolderName = AS2IOHelper.getSafeFileAndFolderName (aMsg.partnership ()
+                                                                             .getAttribute (CFileAttribute.MA_STATUS_PENDING));
+        final String sFilename = FilenameHelper.getAsSecureValidASCIIFilename (aMsg.attrs ()
+                                                                                   .getAsString (CFileAttribute.MA_PENDING_FILENAME));
+        final File aPendingFile = new File (sFolderName, sFilename);
         final FileIOError aIOErr = AS2IOHelper.getFileOperationManager ().copyFile (aFile, aPendingFile);
         if (aIOErr.isFailure ())
           throw new AS2Exception ("File was successfully sent but not copied to pending folder: " +
@@ -231,8 +253,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         File aSentFile = null;
         try
         {
-          aSentFile = new File (AS2IOHelper.getDirectoryFile (aParams.format (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY))),
-                                aFile.getName ());
+          final String sSentDirectory = AS2IOHelper.getSafeFileAndFolderName (aParams.format (attrs ().getAsString (ATTR_SENT_DIRECTORY)));
+          // Default to the original filename
+          final String sSentFilename = StringHelper.getNotEmpty (FilenameHelper.getAsSecureValidASCIIFilename (aParams.format (attrs ().getAsString (ATTR_STORED_SENT_FILENAME))),
+                                                                 aFile.getName ());
+          aSentFile = new File (AS2IOHelper.getDirectoryFile (sSentDirectory), sSentFilename);
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
           if (LOGGER.isInfoEnabled ())
@@ -262,7 +287,11 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     catch (final AS2Exception ex)
     {
       ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
-      AS2IOHelper.handleError (aFile, aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY)));
+      final String sErrorDirectory = AS2IOHelper.getSafeFileAndFolderName (aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY)));
+      // Use the source name as the default
+      final String sErrorFilename = StringHelper.getNotEmpty (FilenameHelper.getAsSecureValidASCIIFilename (aParams.format (attrs ().getAsString (ATTR_STORED_ERROR_FILENAME))),
+                                                              aFile.getName ());
+      AS2IOHelper.handleError (aFile, sErrorDirectory, sErrorFilename);
     }
   }
 
