@@ -49,6 +49,8 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AS2InvalidParameterException;
+import com.helger.as2lib.params.CompositeParameters;
+import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
@@ -180,6 +182,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     if (LOGGER.isDebugEnabled ())
       LOGGER.debug ("AS2Message was created");
 
+    final CompositeParameters aParams = new CompositeParameters (false).add ("date", new DateParameters ())
+                                                                       .add ("msg", new MessageParameters (aMsg));
+
     try
     {
       updateMessage (aMsg, aFile);
@@ -226,7 +231,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         File aSentFile = null;
         try
         {
-          aSentFile = new File (AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY)), aFile.getName ());
+          aSentFile = new File (AS2IOHelper.getDirectoryFile (aParams.format (getAttributeAsStringRequired (ATTR_SENT_DIRECTORY))),
+                                aFile.getName ());
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
           if (LOGGER.isInfoEnabled ())
@@ -256,7 +262,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     catch (final AS2Exception ex)
     {
       ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
-      AS2IOHelper.handleError (aFile, getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
+      AS2IOHelper.handleError (aFile, aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY)));
     }
   }
 
