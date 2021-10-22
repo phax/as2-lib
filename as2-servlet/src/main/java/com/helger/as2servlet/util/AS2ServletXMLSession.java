@@ -58,7 +58,7 @@ public class AS2ServletXMLSession extends AS2Session
   {
     ValueEnforcer.notNull (aFile, "File");
     if (!aFile.exists ())
-      throw new AS2Exception ("AS2ServletXMLSession configuration file " + aFile.getAbsolutePath () + " does not exist!");
+      throw new AS2Exception ("AS2ServletXMLSession configuration file '" + aFile.getAbsolutePath () + "' does not exist!");
     m_aConfigFile = aFile;
     m_sBaseDirectory = aFile.getParentFile ().getAbsolutePath ();
     LOGGER.info ("Loading AS2 configuration file '" + aFile.getAbsolutePath ());
