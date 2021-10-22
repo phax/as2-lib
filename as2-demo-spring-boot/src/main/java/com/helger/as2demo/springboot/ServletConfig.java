@@ -17,25 +17,80 @@
  */
 package com.helger.as2demo.springboot;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.helger.as2servlet.AS2ReceiveServlet;
+import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.session.AS2ComponentNotFoundException;
+import com.helger.as2servlet.AS2ReceiveXServletHandlerConstantSession;
 import com.helger.as2servlet.AS2WebAppListener;
-import com.helger.as2servlet.AbstractAS2ReceiveXServletHandler;
-import com.helger.as2servlet.mdn.AS2MDNReceiveServlet;
+import com.helger.as2servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
+import com.helger.as2servlet.util.AS2ServletXMLSession;
+import com.helger.commons.exception.InitializationException;
+import com.helger.commons.http.EHttpMethod;
 import com.helger.web.scope.mgr.WebScopeManager;
+import com.helger.xservlet.AbstractXServlet;
 
 @Configuration
 public class ServletConfig
 {
+  private static final AS2ServletXMLSession AS2_SESSION;
+  static
+  {
+    try
+    {
+      AS2_SESSION = new AS2ServletXMLSession (new File ("config/config.xml"));
+      // Start them once
+      AS2_SESSION.getMessageProcessor ().startActiveModules ();
+    }
+    catch (final AS2Exception ex)
+    {
+      throw new InitializationException (ex);
+    }
+  }
+
+  /**
+   * Special AS2 receive servlet, that use the global AS2 Session.
+   *
+   * @author Philip Helger
+   */
+  public static class MyAS2ReceiveServlet extends AbstractXServlet
+  {
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void init () throws ServletException
+    {
+      // Multipart is handled specifically inside
+      settings ().setMultipartEnabled (false);
+      handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandlerConstantSession (AS2_SESSION), false);
+    }
+  }
+
+  /**
+   * Special AS2 MDN receive servlet, that use the global AS2 Session.
+   *
+   * @author Philip Helger
+   */
+  public static class MyAS2MDNReceiveServlet extends AbstractXServlet
+  {
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void init () throws ServletException
+    {
+      // Multipart is handled specifically inside
+      settings ().setMultipartEnabled (false);
+      handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2MDNReceiveXServletHandlerConstantSession (AS2_SESSION), false);
+    }
+  }
+
   /** The ServletContext to be used */
   @Autowired
   private ServletContext m_aSC;
@@ -50,26 +105,34 @@ public class ServletConfig
   }
 
   @Bean
-  public ServletRegistrationBean <AS2ReceiveServlet> servletRegistrationBeanAS2 ()
+  public ServletRegistrationBean <MyAS2ReceiveServlet> servletRegistrationBeanAS2 ()
   {
     _initScope ();
 
-    final ServletRegistrationBean <AS2ReceiveServlet> bean = new ServletRegistrationBean <> (new AS2ReceiveServlet (), "/as2");
-    final Map <String, String> aInitParams = new HashMap <> ();
-    aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME, "config/config.xml");
-    bean.setInitParameters (aInitParams);
-    return bean;
+    return new ServletRegistrationBean <> (new MyAS2ReceiveServlet (), "/as2");
   }
 
   @Bean
-  public ServletRegistrationBean <AS2MDNReceiveServlet> servletRegistrationBeanMDN ()
+  public ServletRegistrationBean <MyAS2MDNReceiveServlet> servletRegistrationBeanMDN ()
   {
     _initScope ();
 
-    final ServletRegistrationBean <AS2MDNReceiveServlet> bean = new ServletRegistrationBean <> (new AS2MDNReceiveServlet (), "/as2mdn");
-    final Map <String, String> aInitParams = new HashMap <> ();
-    aInitParams.put (AbstractAS2ReceiveXServletHandler.SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME, "config/config.xml");
-    bean.setInitParameters (aInitParams);
-    return bean;
+    return new ServletRegistrationBean <> (new MyAS2MDNReceiveServlet (), "/as2mdn");
+  }
+
+  /**
+   * Call this method at the application end, to shutdown all active modules.
+   */
+  public static void shutDown ()
+  {
+    if (AS2_SESSION != null)
+      try
+      {
+        AS2_SESSION.getMessageProcessor ().stopActiveModules ();
+      }
+      catch (final AS2ComponentNotFoundException ex)
+      {
+        // we don't care on shut down
+      }
   }
 }

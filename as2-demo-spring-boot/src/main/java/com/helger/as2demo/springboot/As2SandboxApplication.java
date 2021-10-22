@@ -35,6 +35,7 @@ public class As2SandboxApplication implements ServletContextListener
 
   public void contextDestroyed (final ServletContextEvent sce)
   {
+    ServletConfig.shutDown ();
     AS2WebAppListener.staticDestroy ();
   }
 }
