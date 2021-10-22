@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.bson.Document;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 
+@Ignore ("Because the embedded MongoDB only supports v3, and we need v4")
 public class MongoDBPartnershipFactoryTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MongoDBPartnershipFactoryTest.class);
