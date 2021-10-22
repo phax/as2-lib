@@ -34,7 +34,9 @@ package com.helger.as2lib.processor.receiver;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.annotation.CheckForSigned;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -44,15 +46,34 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
+import com.helger.commons.CGlobal;
 import com.helger.commons.collection.attr.IStringMap;
 
 public abstract class AbstractActivePollingModule extends AbstractActiveReceiverModule
 {
+  private class PollTask extends TimerTask
+  {
+    @Override
+    public void run ()
+    {
+      if (setBusy ())
+      {
+        poll ();
+        setNotBusy ();
+      }
+      else
+      {
+        LOGGER.info ("Miss tick");
+      }
+    }
+  }
+
+  /** The interval in seconds */
   public static final String ATTR_POLLING_INTERVAL = "interval";
-  private static final Logger LOGGER = LoggerFactory.getLogger (PollTask.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (AbstractActivePollingModule.class);
 
   private Timer m_aTimer;
-  private boolean m_bBusy;
+  private final AtomicBoolean m_aBusy = new AtomicBoolean (false);
 
   @Override
   @OverridingMethodsMustInvokeSuper
@@ -62,23 +83,52 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
     getAttributeAsStringRequired (ATTR_POLLING_INTERVAL);
   }
 
+  /**
+   * Set the interval in seconds.
+   *
+   * @param nSeconds
+   *        Seconds to wait between polling.
+   */
   public void setInterval (final long nSeconds)
   {
     attrs ().putIn (ATTR_POLLING_INTERVAL, nSeconds);
   }
 
+  /**
+   * @return The seconds between polling operations.
+   */
+  @CheckForSigned
   public long getInterval ()
   {
     return attrs ().getAsLong (ATTR_POLLING_INTERVAL, 0L);
   }
 
+  public final boolean isBusy ()
+  {
+    return m_aBusy.get ();
+  }
+
+  final boolean setBusy ()
+  {
+    return m_aBusy.compareAndSet (false, true);
+  }
+
+  final void setNotBusy ()
+  {
+    m_aBusy.set (false);
+  }
+
+  /**
+   * The abstract message that is called in the defined interval and needs to be
+   * overridden by subclasses.
+   */
   public abstract void poll ();
 
   @Override
   public void doStart () throws AS2Exception
   {
     m_aTimer = new Timer (true);
-    m_aTimer.scheduleAtFixedRate (new PollTask (), 0, getInterval () * 1000);
+    m_aTimer.scheduleAtFixedRate (new PollTask (), 0, getInterval () * CGlobal.MILLISECONDS_PER_SECOND);
   }
 
   @Override
@@ -89,33 +139,5 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
       m_aTimer.cancel ();
       m_aTimer = null;
     }
-  }
-
-  private class PollTask extends TimerTask
-  {
-    @Override
-    public void run ()
-    {
-      if (!isBusy ())
-      {
-        setBusy (true);
-        poll ();
-        setBusy (false);
-      }
-      else
-      {
-        LOGGER.info ("Miss tick");
-      }
-    }
-  }
-
-  public boolean isBusy ()
-  {
-    return m_bBusy;
-  }
-
-  public void setBusy (final boolean bBusy)
-  {
-    m_bBusy = bBusy;
   }
 }

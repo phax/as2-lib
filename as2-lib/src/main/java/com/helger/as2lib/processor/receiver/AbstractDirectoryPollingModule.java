@@ -89,26 +89,55 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY);
   }
 
-  @Override
-  public void poll ()
+  protected boolean checkFile (@Nonnull final File aFile)
   {
-    try
+    if (aFile.exists () && aFile.isFile ())
     {
-      // scan the directory for new files
-      scanDirectory (getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY));
+      FileOutputStream aFOS = null;
+      try
+      {
+        // check for a write-lock on file, will skip file if it's write locked
+        aFOS = new FileOutputStream (aFile, true);
+        return true;
+      }
+      catch (final IOException ex)
+      {
+        // a sharing violation occurred, ignore the file for now
+      }
+      finally
+      {
+        StreamHelper.close (aFOS);
+      }
+    }
+    return false;
+  }
 
-      // update tracking info. if a file is ready, process it
-      updateTracking ();
-    }
-    catch (final Exception ex)
-    {
-      WrappedAS2Exception.wrap (ex).terminate ();
-      forceStop (ex);
-    }
+  /**
+   * @return A map from absolute file path to the size of the file. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  @ReturnsMutableObject
+  public final ICommonsMap <String, Long> trackedFiles ()
+  {
+    if (m_aTrackedFiles == null)
+      m_aTrackedFiles = new CommonsHashMap <> ();
+    return m_aTrackedFiles;
+  }
+
+  protected void trackFile (@Nonnull final File aFile)
+  {
+    final ICommonsMap <String, Long> aTrackedFiles = trackedFiles ();
+    final String sFilePath = aFile.getAbsolutePath ();
+    if (!aTrackedFiles.containsKey (sFilePath))
+      aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
   }
 
   protected void scanDirectory (final String sDirectory) throws AS2InvalidParameterException
   {
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Polling - scanning directory '" + sDirectory + "'");
+
     final File aDir = AS2IOHelper.getDirectoryFile (sDirectory);
 
     // get a list of entries in the directory
@@ -131,80 +160,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         }
   }
 
-  protected boolean checkFile (@Nonnull final File aFile)
-  {
-    if (aFile.exists () && aFile.isFile ())
-    {
-      FileOutputStream aFOS = null;
-      try
-      {
-        // check for a write-lock on file, will skip file if it's write locked
-        aFOS = new FileOutputStream (aFile, true);
-        return true;
-      }
-      catch (final IOException ioe)
-      {
-        // a sharing violation occurred, ignore the file for now
-      }
-      finally
-      {
-        StreamHelper.close (aFOS);
-      }
-    }
-    return false;
-  }
-
-  protected void trackFile (@Nonnull final File aFile)
-  {
-    final Map <String, Long> aTrackedFiles = trackedFiles ();
-    final String sFilePath = aFile.getAbsolutePath ();
-    if (!aTrackedFiles.containsKey (sFilePath))
-      aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
-  }
-
-  protected void updateTracking () throws AS2Exception
-  {
-    // clone the trackedFiles map, iterator through the clone and modify the
-    // original to avoid iterator exceptions
-    // is there a better way to do this?
-    final ICommonsMap <String, Long> aTrackedFiles = trackedFiles ();
-
-    // We need to operate on a copy
-    for (final Map.Entry <String, Long> aFileEntry : aTrackedFiles.getClone ().entrySet ())
-    {
-      // get the file and it's stored length
-      final File aFile = new File (aFileEntry.getKey ());
-      final long nFileLength = aFileEntry.getValue ().longValue ();
-
-      // if the file no longer exists, remove it from the tracker
-      if (!checkFile (aFile))
-      {
-        aTrackedFiles.remove (aFileEntry.getKey ());
-      }
-      else
-      {
-        // if the file length has changed, update the tracker
-        final long nNewLength = aFile.length ();
-        if (nNewLength != nFileLength)
-        {
-          aTrackedFiles.put (aFileEntry.getKey (), Long.valueOf (nNewLength));
-        }
-        else
-        {
-          // if the file length has stayed the same, process the file and stop
-          // tracking it
-          try
-          {
-            processFile (aFile);
-          }
-          finally
-          {
-            aTrackedFiles.remove (aFileEntry.getKey ());
-          }
-        }
-      }
-    }
-  }
+  @Nonnull
+  protected abstract IMessage createMessage ();
 
   protected void processFile (@Nonnull final File aFile) throws AS2Exception
   {
@@ -303,8 +260,49 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     }
   }
 
-  @Nonnull
-  protected abstract IMessage createMessage ();
+  protected void updateTracking () throws AS2Exception
+  {
+    // clone the trackedFiles map, iterator through the clone and modify the
+    // original to avoid iterator exceptions
+    // is there a better way to do this?
+    final ICommonsMap <String, Long> aTrackedFiles = trackedFiles ();
+
+    // We need to operate on a copy
+    for (final Map.Entry <String, Long> aFileEntry : aTrackedFiles.getClone ().entrySet ())
+    {
+      // get the file and it's stored length
+      final File aFile = new File (aFileEntry.getKey ());
+      final long nFileLength = aFileEntry.getValue ().longValue ();
+
+      if (!checkFile (aFile))
+      {
+        // if the file no longer exists, remove it from the tracker
+        aTrackedFiles.remove (aFileEntry.getKey ());
+      }
+      else
+      {
+        // if the file length has changed, update the tracker
+        final long nNewLength = aFile.length ();
+        if (nNewLength != nFileLength)
+        {
+          aTrackedFiles.put (aFileEntry.getKey (), Long.valueOf (nNewLength));
+        }
+        else
+        {
+          // if the file length has stayed the same, process the file and stop
+          // tracking it
+          try
+          {
+            processFile (aFile);
+          }
+          finally
+          {
+            aTrackedFiles.remove (aFileEntry.getKey ());
+          }
+        }
+      }
+    }
+  }
 
   public void updateMessage (@Nonnull final IMessage aMsg, @Nonnull final File aFile) throws AS2Exception
   {
@@ -391,12 +389,21 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       LOGGER.debug ("Updated message ID to " + aMsg.getMessageID ());
   }
 
-  @Nonnull
-  @ReturnsMutableObject
-  public ICommonsMap <String, Long> trackedFiles ()
+  @Override
+  public void poll ()
   {
-    if (m_aTrackedFiles == null)
-      m_aTrackedFiles = new CommonsHashMap <> ();
-    return m_aTrackedFiles;
+    try
+    {
+      // scan the directory for new files
+      scanDirectory (getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY));
+
+      // update tracking info. if a file is ready, process it
+      updateTracking ();
+    }
+    catch (final Exception ex)
+    {
+      WrappedAS2Exception.wrap (ex).terminate ();
+      forceStop (ex);
+    }
   }
 }
