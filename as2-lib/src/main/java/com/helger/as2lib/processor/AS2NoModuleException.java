@@ -46,7 +46,7 @@ import com.helger.commons.collection.impl.ICommonsMap;
 
 /**
  * AS2 exception that is thrown if no handling module was found.
- * 
+ *
  * @author Philip Helger
  */
 public class AS2NoModuleException extends AS2Exception
@@ -94,6 +94,6 @@ public class AS2NoModuleException extends AS2Exception
                                        @Nullable final IMessage aMsg,
                                        @Nullable final Map <String, Object> aOptions)
   {
-    return "NoModuleException: Requested action: " + sAction + "; Message: " + aMsg + "; Options: " + aOptions;
+    return "AS2NoModuleException: Requested action '" + sAction + "'; Message: " + aMsg + (aOptions != null ? "; Options " + aOptions : "");
   }
 }
