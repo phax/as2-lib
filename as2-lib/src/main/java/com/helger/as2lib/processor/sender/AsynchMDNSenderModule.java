@@ -78,9 +78,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   public AsynchMDNSenderModule ()
   {}
 
-  public boolean canHandle (@Nonnull final String sAction,
-                            @Nonnull final IMessage aMsg,
-                            @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorSenderModule.DO_SEND_ASYNC_MDN) && aMsg instanceof AS2Message;
   }
@@ -88,9 +86,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition,
                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
-                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception,
-                                                                          IOException,
-                                                                          MessagingException
+                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception, IOException, MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -155,22 +151,12 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       if (AS2HttpClient.isErrorResponseCode (nHttpResponseCode))
       {
         if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("sent AsyncMDN [" +
-                        aDisposition.getAsString () +
-                        "] Fail(" +
-                        nHttpResponseCode +
-                        ") " +
-                        aMsg.getLoggingText ());
+          LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail(" + nHttpResponseCode + ") " + aMsg.getLoggingText ());
         throw new AS2HttpResponseException (sUrl, nHttpResponseCode, aConn.getResponseMessage ());
       }
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("sent AsyncMDN [" +
-                     aDisposition.getAsString () +
-                     "] OK(" +
-                     nHttpResponseCode +
-                     ") " +
-                     aMsg.getLoggingText ());
+        LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK(" + nHttpResponseCode + ") " + aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try

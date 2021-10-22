@@ -190,9 +190,9 @@ public class AS2HttpClient
       {
         // Use MIME encoding here
         try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-            final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                    eCTE.getID ())
-                                                         : aDebugOS)
+             final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                                     eCTE.getID ())
+                                                          : aDebugOS)
         {
           super.writeTo (aEncodedOS);
         }
@@ -307,8 +307,7 @@ public class AS2HttpClient
    * @param aProxy
    *        My by <code>null</code>, in such case nothing is done.
    */
-  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
-                                                @Nullable final Proxy aProxy)
+  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder, @Nullable final Proxy aProxy)
   {
     try
     {
@@ -327,10 +326,7 @@ public class AS2HttpClient
           else
           {
             if (LOGGER.isDebugEnabled ())
-              LOGGER.debug ("No address in proxy:" +
-                            aProxy.address () +
-                            "-" +
-                            (null != aProxy.type () ? aProxy.type ().name () : "null"));
+              LOGGER.debug ("No address in proxy:" + aProxy.address () + "-" + (null != aProxy.type () ? aProxy.type ().name () : "null"));
           }
         }
       }

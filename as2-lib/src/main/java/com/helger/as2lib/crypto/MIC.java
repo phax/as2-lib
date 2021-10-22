@@ -145,8 +145,7 @@ public class MIC implements Serializable, ICloneable <MIC>
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final MIC rhs = (MIC) o;
-    return Arrays.equals (m_aMICBytes, rhs.m_aMICBytes) &&
-           _getUnified (m_eDigestAlgorithm).equals (_getUnified (rhs.m_eDigestAlgorithm));
+    return Arrays.equals (m_aMICBytes, rhs.m_aMICBytes) && _getUnified (m_eDigestAlgorithm).equals (_getUnified (rhs.m_eDigestAlgorithm));
   }
 
   @Override
@@ -158,9 +157,7 @@ public class MIC implements Serializable, ICloneable <MIC>
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("MICBytes", m_aMICBytes)
-                                       .append ("DigestAlgorithm", m_eDigestAlgorithm)
-                                       .getToString ();
+    return new ToStringGenerator (this).append ("MICBytes", m_aMICBytes).append ("DigestAlgorithm", m_eDigestAlgorithm).getToString ();
   }
 
   /**

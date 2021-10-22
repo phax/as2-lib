@@ -80,8 +80,7 @@ import com.helger.security.certificate.CertificateHelper;
 public class AS2Client
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2Client.class);
-  private Supplier <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class,
-                                                                                            true);
+  private Supplier <AS2SenderModule> m_aAS2SenderModuleFactory = FactoryNewInstance.create (AS2SenderModule.class, true);
   // proxy is not serializable
   private Proxy m_aHttpProxy;
 
@@ -251,8 +250,7 @@ public class AS2Client
    *         In case of error
    */
   @OverrideOnDemand
-  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
-                                         @Nonnull final AS2Session aSession) throws AS2Exception
+  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession) throws AS2Exception
   {
     final StringMap aParams = new StringMap ();
     // TYPE is the only parameter that must be present in initDynamicComponents
@@ -279,8 +277,7 @@ public class AS2Client
 
         aCertFactory.setPassword (aSettings.getKeyStorePassword ());
         aCertFactory.setSaveChangesToFile (false);
-        try (
-            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
         {
           aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
         }
@@ -385,9 +382,7 @@ public class AS2Client
    *        Current message. Never <code>null</code>.
    */
   @OverrideOnDemand
-  protected void beforeSend (@Nonnull final AS2ClientSettings aSettings,
-                             @Nonnull final AS2Session aSession,
-                             @Nonnull final IMessage aMsg)
+  protected void beforeSend (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession, @Nonnull final IMessage aMsg)
   {}
 
   /**
@@ -400,8 +395,7 @@ public class AS2Client
    * @return The response object. Never <code>null</code>.
    */
   @Nonnull
-  public AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings,
-                                            @Nonnull final AS2ClientRequest aRequest)
+  public AS2ClientResponse sendSynchronous (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2ClientRequest aRequest)
   {
     ValueEnforcer.notNull (aSettings, "ClientSettings");
     ValueEnforcer.notNull (aRequest, "ClientRequest");
