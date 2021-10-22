@@ -132,11 +132,24 @@ public interface IMessageProcessor extends IDynamicComponent
   @ReturnsMutableCopy
   <T extends IProcessorModule> ICommonsList <T> getAllModulesOfClass (@Nonnull Class <T> aClass);
 
+  /**
+   * @return A list of all modules, that implement the
+   *         <code>IProcessorActiveModule</code> interface. Never
+   *         <code>null</code> but maybe empty.
+   */
   @Nonnull
   @ReturnsMutableCopy
   ICommonsList <IProcessorActiveModule> getAllActiveModules ();
 
+  /**
+   * Call <code>start</code> on all modules that implement the
+   * <code>IProcessorActiveModule</code> interface.
+   */
   void startActiveModules ();
 
+  /**
+   * Call <code>stop</code> on all modules that implement the
+   * <code>IProcessorActiveModule</code> interface.
+   */
   void stopActiveModules ();
 }
