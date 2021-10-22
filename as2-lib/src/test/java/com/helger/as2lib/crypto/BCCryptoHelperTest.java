@@ -193,11 +193,11 @@ public final class BCCryptoHelperTest
                                   "Content-Disposition: attachment; filename=\"smime.p7s\"\r\n" +
                                   "Content-Description: S/MIME Cryptographic Signature\r\n" +
                                   "\r\n" +
-                                  "MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAADGCAqgw\r\n" +
-                                  "ggKkAgEBMIHDMIG6MSMwIQYJKoZIhvcNAQkBFhRzZXJ2aWNlQG1lbmRlbHNvbi5kZTELMAkGA1UE\r\n" +
-                                  "BhMCREUxDzANBgNVBAgMBkJlcmxpbjEPMA0GA1UEBwwGQmVybGluMSIwIAYDVQQKDBltZW5kZWxz\r\n" +
-                                  "b24tZS1jb21tZXJjZSBHbWJIMSEwHwYDVQQLDBhEbyBub3QgdXNlIGluIHByb2R1Y3Rpb24xHTAb\r\n" +
-                                  "BgNVBAMMFG1lbmRlbHNvbiB0ZXN0IGtleSAzAgRaKlscMA0GCWCGSAFlAwQCAQUAoIG2MBgGCSqG\r\n";
+                                  "MIAGCSqGSIb3DQEHAqCAMIACAQExDTALBglghkgBZQMEAgEwgAYJKoZIhvcNAQcBAAAxggKkMIIC\r\n" +
+                                  "oAIBATCBwzCBujEjMCEGCSqGSIb3DQEJARYUc2VydmljZUBtZW5kZWxzb24uZGUxCzAJBgNVBAYT\r\n" +
+                                  "AkRFMQ8wDQYDVQQIDAZCZXJsaW4xDzANBgNVBAcMBkJlcmxpbjEiMCAGA1UECgwZbWVuZGVsc29u\r\n" +
+                                  "LWUtY29tbWVyY2UgR21iSDEhMB8GA1UECwwYRG8gbm90IHVzZSBpbiBwcm9kdWN0aW9uMR0wGwYD\r\n" +
+                                  "VQQDDBRtZW5kZWxzb24gdGVzdCBrZXkgMwIEWipbHDALBglghkgBZQMEAgGggbQwGAYJKoZIhvcN\r\n";
     final String sExpectedEnd = "\r\n" + "--" + sBoundary + "--\r\n";
     final String sReal = aBAOS.getAsString (StandardCharsets.ISO_8859_1);
     assertTrue (sReal.startsWith (sExpectedStart));
@@ -295,16 +295,16 @@ public final class BCCryptoHelperTest
                                   "Content-Description: S/MIME Cryptographic Signature\r\n" +
                                   "\r\n" +
                                   "0=80=06=09*=86H=86=F7\r\n" +
-                                  "=01=07=02=A0=800=80=02=01=011=0F0\r\n" +
-                                  "=06=09`=86H=01e=03=04=02=01=05=000=80=06=09*=86H=86=F7\r\n" +
-                                  "=01=07=01=00=001=82=02=A80=82=02=A4=02=01=010=81=C30=81=BA1#0!=06=09*=86H=\r\n" +
+                                  "=01=07=02=A0=800=80=02=01=011\r\n" +
+                                  "0=0B=06=09`=86H=01e=03=04=02=010=80=06=09*=86H=86=F7\r\n" +
+                                  "=01=07=01=00=001=82=02=A40=82=02=A0=02=01=010=81=C30=81=BA1#0!=06=09*=86H=\r\n" +
                                   "=86=F7\r\n" +
                                   "=01=09=01=16=14service@mendelson.de1=0B0=09=06=03U=04=06=13=02DE1=0F0\r\n" +
                                   "=06=03U=04=08=0C=06Berlin1=0F0\r\n" +
                                   "=06=03U=04=07=0C=06Berlin1\"0 =06=03U=04\r\n" +
                                   "=0C=19mendelson-e-commerce GmbH1!0=1F=06=03U=04=0B=0C=18Do not use in produ=\r\n" +
-                                  "ction1=1D0=1B=06=03U=04=03=0C=14mendelson test key 3=02=04Z*[=1C0\r\n" +
-                                  "=06=09`=86H=01e=03=04=02=01=05=00=A0=81=B60=18=06=09*=86H=86=F7\r\n" +
+                                  "ction1=1D0=1B=06=03U=04=03=0C=14mendelson test key 3=02=04Z*[=1C0=0B=06=09`=\r\n" +
+                                  "=86H=01e=03=04=02=01=A0=81=B40=18=06=09*=86H=86=F7\r\n" +
                                   "=01=09=031=0B=06=09*=86H=86=F7\r\n" +
                                   "=01=07=010=1C=06=09*=86H=86=F7\r\n" +
                                   "=01=09=051=0F=17\r\n";
