@@ -39,6 +39,22 @@
     <!-- Only needed to receive asynchronous MDNs -->
     <module classname="com.helger.as2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
 
+<!-- Test for #129 -->
+<!-- 
+    <module enabled="true"
+            classname="com.helger.as2lib.processor.receiver.AS2DirectoryPollingModule"
+            outboxdir="C:\dev\git\as2-lib\as2-demo-webapp/data/toopenas2a/"
+            errordir="C:\dev\git\as2-lib\as2-demo-webapp/data/toopenas2a/errors/$date.YYYY$/$date.MM$"
+            stored_error_filename="$msg.attributes.filename$-$date.YYYY$-$date.MM$-$msg.headers.message-id$"
+            sentdir="C:\dev\git\as2-lib\as2-demo-webapp/data/$msg.sender.as2_id$-$msg.receiver.as2_id$/sent/$date.YYYY$/$date.MM$"
+            stored_sent_filename="$msg.attributes.filename$-$msg.headers.message-id$"
+            interval="5"
+            defaults="sender.as2_id=openas2b, receiver.as2_id=openas2a"
+            sendfilename="true"
+            mimetype="application/EDI-X12"/>
+    <module classname="com.helger.as2lib.processor.sender.AS2SenderModule" />
+ -->
+ 
     <!-- Custom handler for incoming AS2 messages -->
     <module classname="com.helger.as2.webapp.module.MyHandlerModule"/>        
   </processor>
