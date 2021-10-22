@@ -129,6 +129,7 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
   {
     m_aTimer = new Timer (true);
     m_aTimer.scheduleAtFixedRate (new PollTask (), 0, getInterval () * CGlobal.MILLISECONDS_PER_SECOND);
+    LOGGER.info ("Scheduled the polling task to run every " + getInterval () + " seconds");
   }
 
   @Override
@@ -136,6 +137,7 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
   {
     if (m_aTimer != null)
     {
+      LOGGER.info ("Now stopping the scheduled polling task");
       m_aTimer.cancel ();
       m_aTimer = null;
     }
