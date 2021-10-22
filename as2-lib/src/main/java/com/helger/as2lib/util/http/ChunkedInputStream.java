@@ -32,36 +32,36 @@
  */
 package com.helger.as2lib.util.http;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.WillCloseWhenClosed;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.io.stream.WrappedInputStream;
+
 /**
  * Stream to read a chunked body stream. Input stream should be at the beginning
- * of a chunk, i.e. at the body beginning (after the end of headers marker). THe
+ * of a chunk, i.e. at the body beginning (after the end of headers marker). The
  * resulting stream reads the data through the chunks.
  *
  * @author Ziv Harpaz
  */
-public class ChunkedInputStream extends FilterInputStream
+public class ChunkedInputStream extends WrappedInputStream
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (ChunkedInputStream.class);
-  /*
+  /**
    * Number of bytes left in current chunk
    */
   private int m_nLeft = 0;
-  private final InputStream m_aIS;
   private boolean m_bAfterFirstChunk = false;
 
-  public ChunkedInputStream (@Nonnull final InputStream aIS)
+  public ChunkedInputStream (@Nonnull @WillCloseWhenClosed final InputStream aIS)
   {
     super (aIS);
-    m_aIS = aIS;
   }
 
   @Override
@@ -72,17 +72,18 @@ public class ChunkedInputStream extends FilterInputStream
 
     if (m_nLeft == 0)
     {
+      final InputStream aIS = getWrappedInputStream ();
       if (m_bAfterFirstChunk)
       {
         // read the CRLF after chunk data
-        HTTPHelper.readTillNexLine (m_aIS);
+        HTTPHelper.readTillNexLine (aIS);
       }
       else
       {
         m_bAfterFirstChunk = true;
       }
 
-      m_nLeft = HTTPHelper.readChunkLen (m_aIS);
+      m_nLeft = HTTPHelper.readChunkLen (aIS);
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Read chunk size: " + m_nLeft);
 
@@ -104,23 +105,25 @@ public class ChunkedInputStream extends FilterInputStream
   {
     if (m_nLeft < 0)
       return -1;
+
     int nReadCount = 0;
     int nRealOffset = nOffset;
     while (nLength > nReadCount)
     {
       if (m_nLeft == 0)
       {
+        final InputStream aIS = getWrappedInputStream ();
         if (m_bAfterFirstChunk)
         {
           // read the CRLF after chunk data
-          HTTPHelper.readTillNexLine (m_aIS);
+          HTTPHelper.readTillNexLine (aIS);
         }
         else
         {
           m_bAfterFirstChunk = true;
         }
 
-        m_nLeft = HTTPHelper.readChunkLen (m_aIS);
+        m_nLeft = HTTPHelper.readChunkLen (aIS);
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Read chunk size: " + m_nLeft);
 

@@ -287,7 +287,7 @@ public final class HTTPHelper
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
     if (sContentLength == null)
     {
-      // Large file support on,AND No "Content-Length" header present
+      // No "Content-Length" header present
       final InputStream aRealIS;
       final String sTransferEncoding = aMsg.getHeader (CHttpHeader.TRANSFER_ENCODING);
       if (sTransferEncoding != null)
@@ -348,10 +348,12 @@ public final class HTTPHelper
 
     // Dump on demand
     if (aIncomingDumper != null)
+    {
       aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
                                            aBytePayLoad != null ? aBytePayLoad
                                                                 : "Payload body was not read yet, and therefore it cannot be dumped (yet) - sorry".getBytes (StandardCharsets.ISO_8859_1),
                                            aMsg);
+    }
 
     return aPayload;
 
