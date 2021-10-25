@@ -46,7 +46,7 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 
-@Ignore ("Because the embedded MongoDB only supports v3, and we need v4")
+@Ignore ("Because the embedded MongoDB only supports v3, and we need v4.3")
 public class MongoDBPartnershipFactoryTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MongoDBPartnershipFactoryTest.class);
@@ -63,7 +63,7 @@ public class MongoDBPartnershipFactoryTest
     final MongodStarter starter = MongodStarter.getDefaultInstance ();
     final int port = 12345;
     final MongodConfig mongodConfig = ImmutableMongodConfig.builder ()
-                                                           .version (Version.Main.PRODUCTION)
+                                                           .version (Version.Main.V4_0)
                                                            .net (new Net (port, Network.localhostIsIPv6 ()))
                                                            .build ();
     mongodExecutable = starter.prepare (mongodConfig);
