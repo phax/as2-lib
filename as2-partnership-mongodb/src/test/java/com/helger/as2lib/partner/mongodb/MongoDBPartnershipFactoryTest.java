@@ -24,7 +24,6 @@ import java.io.IOException;
 import org.bson.Document;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,52 +45,51 @@ import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.runtime.Network;
 
-@Ignore ("Because the embedded MongoDB only supports v3, and we need v4.3")
 public class MongoDBPartnershipFactoryTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MongoDBPartnershipFactoryTest.class);
 
-  private static MongodExecutable mongodExecutable;
-  private static MongoClient mongo;
-  private static MongoDBPartnershipFactory mongoDBPartnershipFactory;
-  private static MongoDatabase database;
-  private static MongoCollection <Document> collection;
+  private static MongodExecutable s_aMongodExecutable;
+  private static MongoClient s_aMongoClient;
+  private static MongoDatabase s_aDatabase;
+  private static MongoCollection <Document> s_aCollection;
+  private static MongoDBPartnershipFactory s_aPartnershipFactory;
 
   @BeforeClass
   public static void setupSpec () throws IOException
   {
     final MongodStarter starter = MongodStarter.getDefaultInstance ();
-    final int port = 12345;
+    final int nPort = 12345;
     final MongodConfig mongodConfig = ImmutableMongodConfig.builder ()
-                                                           .version (Version.Main.V4_0)
-                                                           .net (new Net (port, Network.localhostIsIPv6 ()))
+                                                           .version (Version.Main.V4_4)
+                                                           .net (new Net (nPort, Network.localhostIsIPv6 ()))
                                                            .build ();
-    mongodExecutable = starter.prepare (mongodConfig);
-    mongodExecutable.start ();
-    mongo = MongoClients.create (MongoClientSettings.builder ()
-                                                    .applyConnectionString (new ConnectionString ("mongodb://localhost:" + port))
-                                                    .build ());
-    database = mongo.getDatabase ("as2-lib-test");
-    collection = database.getCollection ("partnerships");
-    mongoDBPartnershipFactory = new MongoDBPartnershipFactory (collection, LOGGER);
-    database.drop ();
+    s_aMongodExecutable = starter.prepare (mongodConfig);
+    s_aMongodExecutable.start ();
+    s_aMongoClient = MongoClients.create (MongoClientSettings.builder ()
+                                                             .applyConnectionString (new ConnectionString ("mongodb://localhost:" + nPort))
+                                                             .build ());
+    s_aDatabase = s_aMongoClient.getDatabase ("as2-lib-test");
+    s_aCollection = s_aDatabase.getCollection ("partnerships");
+    s_aPartnershipFactory = new MongoDBPartnershipFactory (s_aCollection, LOGGER);
+    s_aDatabase.drop ();
   }
 
   @AfterClass
   public static void cleanupSpec ()
   {
-    if (mongo != null)
-      mongo.close ();
-    if (mongodExecutable != null)
-      mongodExecutable.stop ();
+    if (s_aMongoClient != null)
+      s_aMongoClient.close ();
+    if (s_aMongodExecutable != null)
+      s_aMongodExecutable.stop ();
   }
 
   @Test
   public void testAddPartnership () throws AS2Exception
   {
     final Partnership partnership = new Partnership ("Test partnership");
-    assertTrue (mongoDBPartnershipFactory.addPartnership (partnership).isChanged ());
-    assertEquals (1, collection.countDocuments ());
-    assertNotNull (mongoDBPartnershipFactory.getPartnershipByName ("Test partnership"));
+    assertTrue (s_aPartnershipFactory.addPartnership (partnership).isChanged ());
+    assertEquals (1, s_aCollection.countDocuments ());
+    assertNotNull (s_aPartnershipFactory.getPartnershipByName ("Test partnership"));
   }
 }
