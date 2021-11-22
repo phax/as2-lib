@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.disposition;
 
-import java.io.Serializable;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -49,12 +48,12 @@ import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Contains the disposition type for creating the MDN. That one determines if a
- * message processed sucessful or not.
+ * message processed successfully or not.
  *
  * @author Philip Helger
  */
 @Immutable
-public class DispositionType implements Serializable
+public class DispositionType
 {
   public static final String ACTION_AUTOMATIC_ACTION = "automatic-action";
   public static final String MDNACTION_MDN_SENT_AUTOMATICALLY = "MDN-sent-automatically";

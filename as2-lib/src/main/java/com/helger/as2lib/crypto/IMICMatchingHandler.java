@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.crypto;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -46,7 +44,7 @@ import com.helger.as2lib.message.IMessage;
  * @author Philip Helger
  * @since 4.4.0
  */
-public interface IMICMatchingHandler extends Serializable
+public interface IMICMatchingHandler
 {
   /**
    * Invoked upon MIC match

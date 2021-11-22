@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib.params;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -42,12 +40,12 @@ import com.helger.commons.annotation.Nonempty;
 
 public class AS2InvalidParameterException extends AS2Exception
 {
-  private final Serializable m_aTarget;
+  private final Object m_aTarget;
   private final String m_sKey;
   private final String m_sValue;
 
   public AS2InvalidParameterException (@Nullable final String sMsg,
-                                       @Nullable final Serializable aTarget,
+                                       @Nullable final Object aTarget,
                                        @Nullable final String sKey,
                                        @Nullable final String sValue)
   {
@@ -72,7 +70,7 @@ public class AS2InvalidParameterException extends AS2Exception
   }
 
   @Nullable
-  public Serializable getTarget ()
+  public Object getTarget ()
   {
     return m_aTarget;
   }
@@ -83,7 +81,7 @@ public class AS2InvalidParameterException extends AS2Exception
     return m_sValue;
   }
 
-  public static void checkValue (@Nonnull final Serializable aTarget,
+  public static void checkValue (@Nonnull final Object aTarget,
                                  @Nonnull final String sValueName,
                                  @Nullable final Object aValue) throws AS2InvalidParameterException
   {

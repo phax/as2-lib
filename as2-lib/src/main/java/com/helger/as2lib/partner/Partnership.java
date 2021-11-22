@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.partner;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -59,7 +58,7 @@ import com.helger.mail.cte.EContentTransferEncoding;
  *
  * @author Philip Helger
  */
-public class Partnership implements Serializable
+public class Partnership
 {
   public static final String DEFAULT_NAME = "auto-created-dummy";
 

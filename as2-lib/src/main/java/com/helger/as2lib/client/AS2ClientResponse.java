@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.client;
 
-import java.io.Serializable;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 
@@ -51,7 +50,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author oleo Date: May 12, 2010 Time: 5:53:45 PM
  * @author Philip Helger
  */
-public class AS2ClientResponse implements Serializable
+public class AS2ClientResponse
 {
   private String m_sOriginalMessageID;
   private Throwable m_aThrowable;

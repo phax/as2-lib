@@ -32,8 +32,6 @@
  */
 package com.helger.as2lib;
 
-import java.io.Serializable;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -54,7 +52,7 @@ import com.helger.commons.collection.attr.IStringMap;
  * @see AbstractDynamicComponent
  * @see IAS2Session
  */
-public interface IDynamicComponent extends Serializable
+public interface IDynamicComponent
 {
   /**
    * @return The attributes of this component.

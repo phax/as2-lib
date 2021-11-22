@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.crypto;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.StringTokenizer;
 
@@ -56,7 +55,7 @@ import com.helger.commons.string.ToStringGenerator;
  * @author Philip Helger
  * @since 4.4.0
  */
-public class MIC implements Serializable, ICloneable <MIC>
+public class MIC implements ICloneable <MIC>
 {
   private final byte [] m_aMICBytes;
   private final ECryptoAlgorithmSign m_eDigestAlgorithm;

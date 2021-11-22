@@ -33,7 +33,6 @@
 package com.helger.as2lib.client;
 
 import java.io.File;
-import java.io.Serializable;
 import java.security.cert.X509Certificate;
 import java.util.function.Consumer;
 
@@ -64,7 +63,7 @@ import com.helger.security.keystore.IKeyStoreType;
  * @author oleo Date: May 12, 2010 Time: 5:16:57 PM
  * @author Philip Helger
  */
-public class AS2ClientSettings implements Serializable
+public class AS2ClientSettings
 {
   /**
    * If compression and signing are enabled, compression happens before singing

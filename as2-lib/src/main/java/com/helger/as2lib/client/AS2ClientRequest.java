@@ -70,7 +70,6 @@ public class AS2ClientRequest
   private byte [] m_aDataByteArray;
   private String m_sDataText;
   private Charset m_aDataCharset;
-  // DataHandler is not Serializable
   private DataHandler m_aDataHandler;
   private String m_sFilename;
   private EContentTransferEncoding m_eCTE;

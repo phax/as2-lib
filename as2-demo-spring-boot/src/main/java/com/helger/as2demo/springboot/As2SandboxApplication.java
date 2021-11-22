@@ -33,6 +33,7 @@ public class As2SandboxApplication implements ServletContextListener
     SpringApplication.run (As2SandboxApplication.class, args);
   }
 
+  @Override
   public void contextDestroyed (final ServletContextEvent sce)
   {
     ServletConfig.shutDown ();

@@ -32,7 +32,6 @@
  */
 package com.helger.as2lib.session;
 
-import java.io.Serializable;
 import java.net.Proxy;
 
 import javax.annotation.Nonnull;
@@ -56,7 +55,7 @@ import com.helger.commons.collection.impl.ICommonsMap;
  * @see com.helger.as2lib.partner.IPartnershipFactory
  * @see com.helger.as2lib.processor.IMessageProcessor
  */
-public interface IAS2Session extends Serializable
+public interface IAS2Session
 {
   /**
    * Registers a component to a specified ID.
