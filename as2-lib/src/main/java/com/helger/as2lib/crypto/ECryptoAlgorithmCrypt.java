@@ -65,7 +65,7 @@ public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
 
-  private ECryptoAlgorithmCrypt (@Nonnull @Nonempty final String sID, @Nonnull final ASN1ObjectIdentifier aOID)
+  ECryptoAlgorithmCrypt (@Nonnull @Nonempty final String sID, @Nonnull final ASN1ObjectIdentifier aOID)
   {
     m_sID = sID;
     m_aOID = aOID;

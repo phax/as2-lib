@@ -51,7 +51,7 @@ import com.helger.commons.collection.impl.ICommonsMap;
  */
 public class AS2NoModuleException extends AS2Exception
 {
-  private final ICommonsMap <String, Object> m_aOptions;
+  private final transient ICommonsMap <String, Object> m_aOptions;
   private final IMessage m_aMsg;
   private final String m_sAction;
 

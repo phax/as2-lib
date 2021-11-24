@@ -67,7 +67,7 @@ public abstract class AbstractDynamicComponent implements IDynamicComponent
     return m_aAttrs;
   }
 
-  @Nonnull
+  @Nullable
   public String getName ()
   {
     return ClassHelper.getClassLocalName (this);

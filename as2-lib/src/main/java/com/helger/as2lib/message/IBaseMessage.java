@@ -32,6 +32,8 @@
  */
 package com.helger.as2lib.message;
 
+import java.io.Serializable;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -43,11 +45,12 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 
 /**
- * Base interface for {@link IMessage} and {@link IMessageMDN}.
+ * Base interface for {@link IMessage} and {@link IMessageMDN}. Must be
+ * Serializable, so that writing to disk for re-sending works.
  *
  * @author Philip Helger
  */
-public interface IBaseMessage
+public interface IBaseMessage extends Serializable
 {
   /**
    * @return Mutable custom attribute map. Never <code>null</code>.

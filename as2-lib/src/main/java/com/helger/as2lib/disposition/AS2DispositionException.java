@@ -46,7 +46,7 @@ import com.helger.as2lib.exception.AS2Exception;
  */
 public class AS2DispositionException extends AS2Exception
 {
-  private final DispositionType m_aDisposition;
+  private final transient DispositionType m_aDisposition;
   private String m_sText;
 
   public AS2DispositionException (@Nonnull final DispositionType aDisposition)

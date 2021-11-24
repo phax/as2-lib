@@ -53,7 +53,7 @@ public class AS2Exception extends Exception
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2Exception.class);
 
-  private IMessage m_aSrcMsg;
+  private transient IMessage m_aSrcMsg;
   private File m_aSrcFile;
 
   public AS2Exception ()

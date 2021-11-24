@@ -474,8 +474,9 @@ public final class BCCryptoHelper implements ICryptoHelper
     aGen.setContentTransferEncoding (eCTE.getID ());
 
     final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (m_sSecurityProviderName).build ();
-    final MimeBodyPart aEncryptedPart = aGen.generate (aPart, aEncryptor);
-    return aEncryptedPart;
+
+    // Return the encrypted Mime Body Part
+    return aGen.generate (aPart, aEncryptor);
   }
 
   @Nonnull

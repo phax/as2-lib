@@ -117,9 +117,9 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   private final ASN1ObjectIdentifier m_aOID;
   private final String m_sBCAlgorithmName;
 
-  private ECryptoAlgorithmSign (@Nonnull @Nonempty final String sID,
-                                @Nonnull final ASN1ObjectIdentifier aOID,
-                                @Nonnull @Nonempty final String sBCAlgorithmName)
+  ECryptoAlgorithmSign (@Nonnull @Nonempty final String sID,
+                        @Nonnull final ASN1ObjectIdentifier aOID,
+                        @Nonnull @Nonempty final String sBCAlgorithmName)
   {
     m_sID = sID;
     m_aOID = aOID;

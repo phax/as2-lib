@@ -425,13 +425,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     aMDN.headers ().addAllHeaders (aHttpClient.getResponseHeaderFields ());
 
     // Receive the MDN data
-    NonBlockingByteArrayOutputStream aMDNStream = null;
-    try
+    byte [] aMDNBytes = null;
+    try (final NonBlockingByteArrayOutputStream aMDNStream = new NonBlockingByteArrayOutputStream ())
     {
       final InputStream aIS = aHttpClient.getInputStream ();
-
-      // Don't instantiate if no HttpClient can be opened
-      aMDNStream = new NonBlockingByteArrayOutputStream ();
 
       final CopyByteStreamBuilder aBuilder = StreamHelper.copyByteStream ().from (aIS).closeFrom (true).to (aMDNStream).closeTo (false);
       // Retrieve the message content
@@ -439,30 +436,28 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       if (nContentLength >= 0)
         aBuilder.limit (nContentLength);
       aBuilder.build ();
+
+      aMDNBytes = aMDNStream.toByteArray ();
     }
     catch (final IOException ex)
     {
       LOGGER.error ("Error reparsing", ex);
     }
-    finally
-    {
-      StreamHelper.close (aMDNStream);
-    }
 
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
-                                           aMDNStream != null ? aMDNStream.toByteArray () : ArrayHelper.EMPTY_BYTE_ARRAY,
+                                           aMDNBytes != null ? aMDNBytes : ArrayHelper.EMPTY_BYTE_ARRAY,
                                            aMDN);
 
     MimeBodyPart aPart = null;
-    if (aMDNStream != null)
+    if (aMDNBytes != null)
       try
       {
-        aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()), aMDNStream.toByteArray ());
+        aPart = new MimeBodyPart (AS2HttpHelper.getAsInternetHeaders (aMDN.headers ()), aMDNBytes);
       }
       catch (final MessagingException ex)
       {
-        LOGGER.error ("Error creating MimeBodyPart", ex);
+        LOGGER.error ("Error creating MimeBodyPart for received MDN", ex);
       }
     aMDN.setData (aPart);
 

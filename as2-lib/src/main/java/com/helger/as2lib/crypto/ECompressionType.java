@@ -62,7 +62,7 @@ public enum ECompressionType implements IHasID <String>
 
   private final String m_sID;
 
-  private ECompressionType (@Nonnull @Nonempty final String sID)
+  ECompressionType (@Nonnull @Nonempty final String sID)
   {
     m_sID = sID;
   }

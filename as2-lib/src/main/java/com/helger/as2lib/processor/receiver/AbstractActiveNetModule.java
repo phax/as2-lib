@@ -56,10 +56,8 @@ import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.processor.receiver.net.INetModuleHandler;
-import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.concurrent.BasicThreadFactory;
 import com.helger.commons.io.file.FileHelper;
 import com.helger.commons.io.file.FilenameHelper;
@@ -226,14 +224,6 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       m_aMainThread.terminate ();
       m_aMainThread = null;
     }
-  }
-
-  @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
-  {
-    super.initDynamicComponent (aSession, aOptions);
-
-    // In versions < 4.4.0 the port parameter was mandatory
   }
 
   @Nonnull

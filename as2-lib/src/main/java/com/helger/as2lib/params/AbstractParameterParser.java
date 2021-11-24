@@ -124,40 +124,45 @@ public abstract class AbstractParameterParser
 
     final StringBuilder aSB = new StringBuilder ();
     if (sFormat != null)
-      for (int nNext = 0; nNext < sFormat.length (); ++nNext)
+    {
+      int nNextIndex = 0;
+      while (nNextIndex < sFormat.length ())
       {
-        int nPrev = nNext;
+        int nPrevIndex = nNextIndex;
 
         // Find start of $xxx$ sequence.
-        nNext = sFormat.indexOf ('$', nPrev);
-        if (nNext == -1)
+        nNextIndex = sFormat.indexOf ('$', nPrevIndex);
+        if (nNextIndex < 0)
         {
           // Append the rest - we're done
-          aSB.append (sFormat.substring (nPrev, sFormat.length ()));
+          aSB.append (sFormat.substring (nPrevIndex, sFormat.length ()));
           break;
         }
 
-        if (nNext > nPrev)
+        if (nNextIndex > nPrevIndex)
         {
           // Save text before $xxx$ sequence, if there is any
-          aSB.append (sFormat.substring (nPrev, nNext));
+          aSB.append (sFormat.substring (nPrevIndex, nNextIndex));
         }
 
         // Find end of $xxx$ sequence
-        nPrev = nNext + 1;
-        nNext = sFormat.indexOf ('$', nPrev);
-        if (nNext == -1)
+        nPrevIndex = nNextIndex + 1;
+        nNextIndex = sFormat.indexOf ('$', nPrevIndex);
+        if (nNextIndex < 0)
           throw new AS2InvalidParameterException ("Invalid key (missing closing $)");
 
         // If we have just $$ then output $, else we have $xxx$, lookup xxx
-        if (nNext == nPrev)
+        if (nNextIndex == nPrevIndex)
           aSB.append ('$');
         else
         {
-          final String sParameterName = sFormat.substring (nPrev, nNext);
+          final String sParameterName = sFormat.substring (nPrevIndex, nNextIndex);
           aSB.append (getParameter (sParameterName));
         }
+
+        ++nNextIndex;
       }
+    }
 
     if (LOGGER.isTraceEnabled ())
       LOGGER.trace ("Formatted value is now '" + aSB.toString () + "'");

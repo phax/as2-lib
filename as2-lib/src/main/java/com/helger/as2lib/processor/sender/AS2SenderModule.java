@@ -388,9 +388,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     // This call might modify the original mime part and add "Content-Type" and
     // "Content-Transfer-Encoding" header
-    final MimeBodyPart aCompressedBodyPart = aCompressedGenerator.generate (aData, eCompressionType.createOutputCompressor ());
-
-    return aCompressedBodyPart;
+    return aCompressedGenerator.generate (aData, eCompressionType.createOutputCompressor ());
   }
 
   private static void _logMimeBodyPart (@Nonnull final MimeBodyPart aMimePart, @Nonnull final String sContext) throws IOException,

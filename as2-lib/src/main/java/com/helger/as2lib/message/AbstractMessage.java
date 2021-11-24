@@ -66,88 +66,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   public AbstractMessage ()
   {}
 
-  public void setData (@Nullable final MimeBodyPart aData)
-  {
-    // Remember data
-    m_aData = aData;
-
-    if (aData != null)
-    {
-      // Set content type from data
-      try
-      {
-        setContentType (aData.getContentType ());
-      }
-      catch (final MessagingException ex)
-      {
-        LOGGER.warn ("Failed to set the Content-Type from the MimeBodyPart. Defaulting to null.");
-        setContentType (null);
-      }
-
-      // Set content disposition from data
-      try
-      {
-        setContentDisposition (aData.getHeader (CHttpHeader.CONTENT_DISPOSITION, null));
-      }
-      catch (final MessagingException ex)
-      {
-        LOGGER.warn ("Failed to set the Content-Disposition from the MimeBodyPart. Defaulting to null.");
-        setContentDisposition (null);
-      }
-    }
-  }
-
-  @Nullable
-  public MimeBodyPart getData ()
-  {
-    return m_aData;
-  }
-
-  public void setMDN (@Nullable final IMessageMDN aMDN)
-  {
-    m_aMDN = aMDN;
-  }
-
-  @Nullable
-  public IMessageMDN getMDN ()
-  {
-    return m_aMDN;
-  }
-
-  @Nonnull
-  @Nonempty
-  public String getLoggingText ()
-  {
-    final String sMsgID = getMessageID ();
-    return " [" + (sMsgID == null ? "no message ID set" : sMsgID) + "]";
-  }
-
-  @Nonnull
-  @Nonempty
-  public String getAsString ()
-  {
-    // For debug logging it's okay to use '\n' only
-    final char cNewLine = '\n';
-
-    final StringBuilder aSB = new StringBuilder ();
-    aSB.append ("Message From:").append (partnership ().getAllSenderIDs ());
-    aSB.append (cNewLine).append ("To:").append (partnership ().getAllReceiverIDs ());
-
-    aSB.append (cNewLine).append ("Headers:").append (headers ().toString ());
-    aSB.append (cNewLine).append ("Attributes:").append (attrs ().toString ());
-
-    final IMessageMDN aMDN = getMDN ();
-    if (aMDN != null)
-      aSB.append (cNewLine).append ("MDN:").append (aMDN.getAsString ());
-    return aSB.toString ();
-  }
-
-  @Override
-  public String toString ()
-  {
-    return new ToStringGenerator (this).append ("data", m_aData).append ("MDN", m_aMDN).getToString ();
-  }
-
   private void readObject (@Nonnull final ObjectInputStream aOIS) throws IOException, ClassNotFoundException
   {
     try
@@ -198,13 +116,95 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
   }
 
   @Nullable
-  public TempSharedFileInputStream getTempSharedFileInputStream ()
+  public final MimeBodyPart getData ()
+  {
+    return m_aData;
+  }
+
+  public final void setData (@Nullable final MimeBodyPart aData)
+  {
+    // Remember data
+    m_aData = aData;
+
+    if (aData != null)
+    {
+      // Set content type from data
+      try
+      {
+        setContentType (aData.getContentType ());
+      }
+      catch (final MessagingException ex)
+      {
+        LOGGER.warn ("Failed to set the Content-Type from the MimeBodyPart. Defaulting to null.");
+        setContentType (null);
+      }
+
+      // Set content disposition from data
+      try
+      {
+        setContentDisposition (aData.getHeader (CHttpHeader.CONTENT_DISPOSITION, null));
+      }
+      catch (final MessagingException ex)
+      {
+        LOGGER.warn ("Failed to set the Content-Disposition from the MimeBodyPart. Defaulting to null.");
+        setContentDisposition (null);
+      }
+    }
+  }
+
+  @Nullable
+  public final IMessageMDN getMDN ()
+  {
+    return m_aMDN;
+  }
+
+  public final void setMDN (@Nullable final IMessageMDN aMDN)
+  {
+    m_aMDN = aMDN;
+  }
+
+  @Nullable
+  public final TempSharedFileInputStream getTempSharedFileInputStream ()
   {
     return m_aTempSharedFileInputStream;
   }
 
-  public void setTempSharedFileInputStream (@Nullable final TempSharedFileInputStream aTempSharedFileInputStream)
+  public final void setTempSharedFileInputStream (@Nullable final TempSharedFileInputStream aTempSharedFileInputStream)
   {
     m_aTempSharedFileInputStream = aTempSharedFileInputStream;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getLoggingText ()
+  {
+    final String sMsgID = getMessageID ();
+    return " [" + (sMsgID == null ? "no message ID set" : sMsgID) + "]";
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getAsString ()
+  {
+    // For debug logging it's okay to use '\n' only
+    final char cNewLine = '\n';
+
+    final StringBuilder aSB = new StringBuilder ();
+    aSB.append ("Message From:").append (partnership ().getAllSenderIDs ());
+    aSB.append (cNewLine).append ("To:").append (partnership ().getAllReceiverIDs ());
+
+    aSB.append (cNewLine).append ("Headers:").append (headers ().toString ());
+    aSB.append (cNewLine).append ("Attributes:").append (attrs ().toString ());
+
+    final IMessageMDN aMDN = getMDN ();
+    if (aMDN != null)
+      aSB.append (cNewLine).append ("MDN:").append (aMDN.getAsString ());
+    return aSB.toString ();
+  }
+
+  @Override
+  public String toString ()
+  {
+    return new ToStringGenerator (this).append ("data", m_aData).append ("MDN", m_aMDN).getToString ();
   }
 }

@@ -122,7 +122,8 @@ public class ReadMDNFuncTest
     {
       // Expired 11.02.2021
       // expected to fail
-      ex.printStackTrace ();
+      if (false)
+        ex.printStackTrace ();
     }
   }
 

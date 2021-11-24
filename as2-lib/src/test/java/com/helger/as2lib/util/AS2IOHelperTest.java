@@ -56,7 +56,7 @@ public final class AS2IOHelperTest
   }
 
   @Test
-  public void testgetSafeFileAndFolderName ()
+  public void testGetSafeFileAndFolderName ()
   {
     assertNull (AS2IOHelper.getSafeFileAndFolderName (null));
     assertEquals ("", AS2IOHelper.getSafeFileAndFolderName (""));

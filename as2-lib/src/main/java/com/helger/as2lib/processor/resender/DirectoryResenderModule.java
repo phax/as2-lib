@@ -220,6 +220,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       }
       catch (final IOException | ClassNotFoundException ex)
       {
+        // caught 3 lines below
         throw WrappedAS2Exception.wrap (ex);
       }
     }

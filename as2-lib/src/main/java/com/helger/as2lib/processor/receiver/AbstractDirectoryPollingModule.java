@@ -64,7 +64,6 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
-import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.string.StringHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
@@ -114,20 +113,14 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   {
     if (aFile.exists () && aFile.isFile ())
     {
-      FileOutputStream aFOS = null;
-      try
+      try (final FileOutputStream aFOS = new FileOutputStream (aFile, true))
       {
         // check for a write-lock on file, will skip file if it's write locked
-        aFOS = new FileOutputStream (aFile, true);
         return true;
       }
       catch (final IOException ex)
       {
         // a sharing violation occurred, ignore the file for now
-      }
-      finally
-      {
-        StreamHelper.close (aFOS);
       }
     }
     return false;
@@ -149,9 +142,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   protected void trackFile (@Nonnull final File aFile)
   {
     final ICommonsMap <String, Long> aTrackedFiles = trackedFiles ();
-    final String sFilePath = aFile.getAbsolutePath ();
-    if (!aTrackedFiles.containsKey (sFilePath))
-      aTrackedFiles.put (sFilePath, Long.valueOf (aFile.length ()));
+    aTrackedFiles.computeIfAbsent (aFile.getAbsolutePath (), k -> Long.valueOf (aFile.length ()));
   }
 
   protected void scanDirectory (final String sDirectory) throws AS2InvalidParameterException

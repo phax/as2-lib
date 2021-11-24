@@ -53,7 +53,7 @@ import com.helger.commons.lang.StackTraceHelper;
  */
 public class AS2ProcessorException extends AS2Exception
 {
-  private final IMessageProcessor m_aProcessor;
+  private final transient IMessageProcessor m_aProcessor;
   private final ICommonsList <Throwable> m_aCauses;
 
   @Nonnull

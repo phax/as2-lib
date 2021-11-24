@@ -40,7 +40,7 @@ import com.helger.commons.annotation.Nonempty;
 
 public class AS2InvalidParameterException extends AS2Exception
 {
-  private final Object m_aTarget;
+  private final transient Object m_aTarget;
   private final String m_sKey;
   private final String m_sValue;
 
