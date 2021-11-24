@@ -17,6 +17,8 @@ package com.helger.as2lib.partner.mongodb;
 
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.bson.Document;
 import org.slf4j.Logger;
 
@@ -25,10 +27,10 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.params.MessageParameters;
+import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.as2lib.partner.CPartnershipIDs;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.commons.annotation.CodingStyleguideUnaware;
 import com.helger.commons.collection.attr.IStringMap;
 import com.helger.commons.collection.impl.CommonsArrayList;
@@ -50,7 +52,6 @@ import com.mongodb.client.result.DeleteResult;
 @CodingStyleguideUnaware
 public class MongoDBPartnershipFactory extends AbstractDynamicComponent implements IPartnershipFactory
 {
-  private static final long serialVersionUID = -2282798646250446937L;
   private static final String NAME_KEY = "name";
   private static final String RECEIVER_IDS = "receiver-ids";
   private static final String SENDER_IDS = "sender-ids";
@@ -59,7 +60,7 @@ public class MongoDBPartnershipFactory extends AbstractDynamicComponent implemen
   private final MongoCollection <Document> m_aPartnerships;
   private final Logger m_aLogger;
 
-  public MongoDBPartnershipFactory (final MongoCollection <Document> aPartnerships, final Logger aLogger)
+  public MongoDBPartnershipFactory (final MongoCollection <Document> aPartnerships, @Nonnull final Logger aLogger)
   {
     m_aLogger = aLogger;
     aPartnerships.createIndex (new Document (NAME_KEY, Integer.valueOf (1)), new IndexOptions ().unique (true));

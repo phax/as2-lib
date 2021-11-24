@@ -37,6 +37,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2.util.ByteCoder;
@@ -83,9 +85,10 @@ public class ImportCertInEncodedStreamCommand extends AbstractAliasedCertCommand
     }
   }
 
-  private CommandResult _importCert (final IAliasedCertificateFactory certFx,
-                                     final String alias,
-                                     final String encodedCert) throws CertificateException, AS2Exception
+  @Nonnull
+  private static CommandResult _importCert (final IAliasedCertificateFactory certFx,
+                                            final String alias,
+                                            final String encodedCert) throws CertificateException, AS2Exception
   {
     final byte [] aBytes = ByteCoder.decode (encodedCert).getBytes ();
     try (final NonBlockingByteArrayInputStream bais = new NonBlockingByteArrayInputStream (aBytes))

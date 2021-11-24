@@ -33,6 +33,7 @@
 package com.helger.as2.app;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nullable;
 
@@ -107,21 +108,34 @@ public class MainOpenAS2Server
       LOGGER.info (SERVER_NAME + " Started");
 
       // Start waiting for termination
-      outer: while (true)
+      final AtomicBoolean aRunning = new AtomicBoolean (true);
+      while (aRunning.get ())
       {
         for (final AbstractCommandProcessor cmd : aCommandProcessors)
         {
           if (cmd.isTerminated ())
-            break outer;
+          {
+            aRunning.set (false);
+            break;
+          }
         }
-        // Wait outside loop in case no command processor is present
-        Thread.sleep (100);
+
+        if (aRunning.get ())
+        {
+          // Wait outside loop in case no command processor is present
+          Thread.sleep (100);
+        }
       }
       LOGGER.info ("- " + SERVER_NAME + " Stopped -");
     }
-    catch (final Throwable t)
+    catch (final InterruptedException ex)
     {
-      LOGGER.error ("Error running " + SERVER_NAME, t);
+      LOGGER.error ("Error running " + SERVER_NAME, ex);
+      Thread.currentThread ().interrupt ();
+    }
+    catch (final Exception ex)
+    {
+      LOGGER.error ("Error running " + SERVER_NAME, ex);
     }
     finally
     {

@@ -47,9 +47,9 @@ public abstract class AbstractCommand extends AbstractDynamicComponent implement
   public static final String ATTR_USAGE = "usage";
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session session, @Nullable final IStringMap parameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParameters) throws AS2Exception
   {
-    super.initDynamicComponent (session, parameters);
+    super.initDynamicComponent (aSession, aParameters);
     if (getName () == null)
       setName (getDefaultName ());
     if (getDescription () == null)
@@ -64,9 +64,9 @@ public abstract class AbstractCommand extends AbstractDynamicComponent implement
     return attrs ().getAsString (ATTR_DESCRIPTION);
   }
 
-  public void setDescription (final String desc)
+  public void setDescription (@Nullable final String sDesc)
   {
-    attrs ().putIn (ATTR_DESCRIPTION, desc);
+    attrs ().putIn (ATTR_DESCRIPTION, sDesc);
   }
 
   @Override
@@ -76,9 +76,9 @@ public abstract class AbstractCommand extends AbstractDynamicComponent implement
     return attrs ().getAsString (ATTR_NAME);
   }
 
-  public void setName (final String name)
+  public void setName (@Nullable final String sName)
   {
-    attrs ().putIn (ATTR_NAME, name);
+    attrs ().putIn (ATTR_NAME, sName);
   }
 
   @Nullable
@@ -87,9 +87,9 @@ public abstract class AbstractCommand extends AbstractDynamicComponent implement
     return attrs ().getAsString (ATTR_USAGE);
   }
 
-  public void setUsage (final String usage)
+  public void setUsage (@Nullable final String sUsage)
   {
-    attrs ().putIn (ATTR_USAGE, usage);
+    attrs ().putIn (ATTR_USAGE, sUsage);
   }
 
   public abstract String getDefaultName ();

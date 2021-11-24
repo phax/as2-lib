@@ -48,7 +48,7 @@ public enum ECommandResultType implements ISuccessIndicator
 
   private final String m_sText;
 
-  private ECommandResultType (@Nonnull @Nonempty final String sText)
+  ECommandResultType (@Nonnull @Nonempty final String sText)
   {
     m_sText = sText;
   }
@@ -56,11 +56,6 @@ public enum ECommandResultType implements ISuccessIndicator
   public boolean isSuccess ()
   {
     return this == TYPE_OK;
-  }
-
-  public boolean isFailure ()
-  {
-    return !isSuccess ();
   }
 
   @Nonnull

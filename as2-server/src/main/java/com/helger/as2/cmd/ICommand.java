@@ -32,24 +32,31 @@
  */
 package com.helger.as2.cmd;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.session.IAS2Session;
 
 public interface ICommand extends IDynamicComponent
 {
-  void setDescription (String desc);
-
+  @Nullable
   String getDescription ();
 
-  void setName (String name);
+  void setDescription (@Nullable String desc);
 
+  @Nullable
   String getName ();
 
+  void setName (@Nullable String name);
+
+  @Nonnull
   IAS2Session getSession ();
 
-  void setUsage (String usage);
-
+  @Nullable
   String getUsage ();
+
+  void setUsage (@Nullable String usage);
 
   CommandResult execute (Object [] params);
 }
