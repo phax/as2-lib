@@ -68,7 +68,7 @@
   </developers>
   
   <properties>
-    <log4j.version>2.14.1</log4j.version>
+    <log4j.version>2.15.0</log4j.version>
     <spring-boot.version>2.6.1</spring-boot.version>
   </properties>
   
