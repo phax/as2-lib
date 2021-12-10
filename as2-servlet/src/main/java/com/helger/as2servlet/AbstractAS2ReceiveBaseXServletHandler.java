@@ -181,6 +181,8 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
     // Handle the incoming message, and return the MDN if necessary
     final String sClientInfo = aHttpRequest.getRemoteAddr () + ":" + aHttpRequest.getRemotePort ();
 
+    LOGGER.info ("Starting to handle incoming AS2 request - " + sClientInfo);
+
     // Create empty message
     final AS2Message aMsg = new AS2Message ();
     aMsg.attrs ().putIn (CNetAttribute.MA_SOURCE_IP, aHttpRequest.getRemoteAddr ());
@@ -205,7 +207,9 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
     // Chunked encoding was already handled, so read "as-is"
     final long nContentLength = aHttpRequest.getContentLengthLong ();
     if (nContentLength > Integer.MAX_VALUE)
-      throw new IllegalStateException ("Currently only payload with up to 2GB can be handled!");
+      throw new IllegalStateException ("Currently only payload with up to 2GB can be handled! This request has " +
+                                       nContentLength +
+                                       " bytes.");
 
     // Open it once, and close it at the end
     try (final ServletInputStream aRequestIS = aHttpRequest.getInputStream ())
