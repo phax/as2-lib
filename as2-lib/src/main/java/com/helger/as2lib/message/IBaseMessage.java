@@ -129,5 +129,9 @@ public interface IBaseMessage extends Serializable
 
   @Nonnull
   @Nonempty
+  String getLoggingText ();
+
+  @Nonnull
+  @Nonempty
   String getAsString ();
 }

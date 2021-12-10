@@ -193,6 +193,9 @@ public final class AS2Helper
                                                                     bUseOldRFC3851MicAlgs,
                                                                     EContentTransferEncoding.BASE64);
         aMdn.setData (aSignedReport);
+
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
       }
       catch (final AS2CertificateNotFoundException | AS2KeyNotFoundException ex)
       {
@@ -414,7 +417,8 @@ public final class AS2Helper
           aMsg.attrs ()
               .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE, CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
-        LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
+        if (LOGGER.isInfoEnabled ())
+          LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());

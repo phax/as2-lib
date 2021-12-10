@@ -394,7 +394,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   private static void _logMimeBodyPart (@Nonnull final MimeBodyPart aMimePart, @Nonnull final String sContext) throws IOException,
                                                                                                                MessagingException
   {
-    // Should always false in production
+    // Should always be false in production
     if (false)
     {
       if (LOGGER.isInfoEnabled ())
@@ -422,7 +422,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                  final boolean bIncludeCertificateInSignedContent,
                                                  final boolean bUseRFC3851MICAlg,
                                                  @Nullable final ECryptoAlgorithmCrypt eCryptAlgorithm,
-                                                 @Nullable final X509Certificate aReceiverCert) throws Exception
+                                                 @Nullable final X509Certificate aReceiverCert,
+                                                 @Nonnull final String sLoggingText) throws Exception
   {
     ValueEnforcer.notNull (aSrcPart, "SrcPart");
     ValueEnforcer.notNull (eCTE, "ContentTransferEncoding");
@@ -456,6 +457,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // This is usually "IAS2Message.setData (aDataBP)"
       // The MIC is always about the content that is signed
       aCompressBeforeSignCallback.accept (aDataBP);
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Successfully compressed outgoing AS2 message" + sLoggingText);
     }
 
     if (eSignAlgorithm != null)
@@ -472,6 +476,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                 bUseRFC3851MICAlg,
                                 eCTE);
       _logMimeBodyPart (aDataBP, "signed");
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Successfully signed outgoing AS2 message" + sLoggingText);
     }
 
     if (eCompressionType != null && !bCompressBeforeSign)
@@ -481,6 +488,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Compressing outbound message after signing...");
       aDataBP = compressMimeBodyPart (aDataBP, eCompressionType, eCTE);
       _logMimeBodyPart (aDataBP, "compressAfterSign");
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Successfully compressed outgoing AS2 message" + sLoggingText);
     }
 
     if (eCryptAlgorithm != null)
@@ -489,6 +499,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.debug ("Encrypting outbound message...");
       aDataBP = AS2Helper.getCryptoHelper ().encrypt (aDataBP, aReceiverCert, eCryptAlgorithm, eCTE);
       _logMimeBodyPart (aDataBP, "encrypted");
+
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Successfully encrypted outgoing AS2 message" + sLoggingText);
     }
 
     return aDataBP;
@@ -596,7 +609,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                bIncludeCertificateInSignedContent,
                                bUseRFC3851MICAlg,
                                eCryptAlgorithm,
-                               aReceiverCert);
+                               aReceiverCert,
+                               aMsg.getLoggingText ());
   }
 
   /**

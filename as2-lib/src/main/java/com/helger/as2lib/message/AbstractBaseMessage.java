@@ -40,6 +40,7 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.partner.Partnership;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableObject;
 import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.http.HttpHeaderMap;
@@ -107,6 +108,14 @@ public abstract class AbstractBaseMessage implements IBaseMessage
   public final Partnership partnership ()
   {
     return m_aPartnership;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getLoggingText ()
+  {
+    final String sMsgID = getMessageID ();
+    return " [" + (sMsgID == null ? "no message ID set" : sMsgID) + "]";
   }
 
   @Override

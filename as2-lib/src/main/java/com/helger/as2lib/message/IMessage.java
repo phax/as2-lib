@@ -37,7 +37,6 @@ import javax.annotation.Nullable;
 import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.util.http.TempSharedFileInputStream;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.CHttpHeader;
 
 /**
@@ -111,10 +110,6 @@ public interface IMessage extends IBaseMessage
   IMessageMDN getMDN ();
 
   void setMDN (@Nullable IMessageMDN aMDN);
-
-  @Nonnull
-  @Nonempty
-  String getLoggingText ();
 
   String getProtocol ();
 

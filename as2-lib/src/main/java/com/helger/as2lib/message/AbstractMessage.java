@@ -176,14 +176,6 @@ public abstract class AbstractMessage extends AbstractBaseMessage implements IMe
 
   @Nonnull
   @Nonempty
-  public String getLoggingText ()
-  {
-    final String sMsgID = getMessageID ();
-    return " [" + (sMsgID == null ? "no message ID set" : sMsgID) + "]";
-  }
-
-  @Nonnull
-  @Nonempty
   public String getAsString ()
   {
     // For debug logging it's okay to use '\n' only
