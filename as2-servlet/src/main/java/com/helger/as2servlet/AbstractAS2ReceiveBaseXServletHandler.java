@@ -222,7 +222,7 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
       {
         // Read in the message request, headers, and data
         final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-        aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2InputStreamProviderServletRequest (aRequestIS),
+        aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2HttpRequestDataProviderServletRequest (aRequestScope, aRequestIS),
                                                               aResponseHandler,
                                                               aMsg,
                                                               aIncomingDumper);

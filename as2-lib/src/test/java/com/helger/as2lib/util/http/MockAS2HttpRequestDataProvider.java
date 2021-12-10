@@ -34,53 +34,54 @@ package com.helger.as2lib.util.http;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Socket;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.stream.NonClosingInputStream;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.http.EHttpMethod;
+import com.helger.commons.http.HttpHeaderMap;
 
-/**
- * Implementation of {@link IAS2InputStreamProvider} based on a {@link Socket}
- * {@link InputStream}.
- *
- * @author Philip Helger
- */
-@Immutable
-public class AS2InputStreamProviderSocket implements IAS2InputStreamProvider
+final class MockAS2HttpRequestDataProvider implements IAS2HttpRequestDataProvider
 {
-  private final Socket m_aSocket;
+  private final InputStream m_aIS;
 
-  /**
-   * Constructor
-   *
-   * @param aSocket
-   *        Socket to read from. May not be <code>null</code>.
-   */
-  public AS2InputStreamProviderSocket (@Nonnull final Socket aSocket)
+  public MockAS2HttpRequestDataProvider (@Nonnull final InputStream aIS)
   {
-    ValueEnforcer.notNull (aSocket, "Socket");
-    m_aSocket = aSocket;
+    ValueEnforcer.notNull (aIS, "IS");
+    m_aIS = aIS;
   }
 
-  /**
-   * Will return a buffered, {@link NonClosingInputStream} that when closed,
-   * will not close in source stream. This is useful when working with
-   * <code>java.net.SocketInputStream</code> as close() on a socket stream
-   * closes the {@link Socket}
-   *
-   * @return {@link InputStream}
-   * @throws IOException
-   *         in case of error
-   */
   @Nonnull
-  public InputStream getInputStream () throws IOException
+  public InputStream getHttpInputStream () throws IOException
   {
-    // Use "NonClosing" internally to that the returned stream is easily
-    // discovered as "buffered"
-    return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocket.getInputStream ()));
+    return m_aIS;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getHttpRequestMethod ()
+  {
+    return EHttpMethod.POST.getName ();
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getHttpRequestUrl ()
+  {
+    return "/";
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getHttpRequestVersion ()
+  {
+    return "HTTP/1.1";
+  }
+
+  @Nonnull
+  public HttpHeaderMap getHttpHeaderMap ()
+  {
+    return new HttpHeaderMap ();
   }
 }

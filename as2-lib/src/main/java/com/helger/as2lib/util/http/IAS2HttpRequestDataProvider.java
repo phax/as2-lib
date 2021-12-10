@@ -36,13 +36,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.commons.http.HttpHeaderMap;
 
 /**
  * Provider interface to retrieve an AS2 {@link InputStream}.
  *
  * @author Philip Helger
  */
-public interface IAS2InputStreamProvider
+public interface IAS2HttpRequestDataProvider
 {
   /**
    * Get the input stream to read from. May not be <code>null</code>.
@@ -52,5 +55,32 @@ public interface IAS2InputStreamProvider
    *         In case of error
    */
   @Nonnull
-  InputStream getInputStream () throws IOException;
+  InputStream getHttpInputStream () throws IOException;
+
+  /**
+   * @return The HTTP request method used. Usually this should be
+   *         <code>POST</code>.
+   */
+  @Nullable
+  String getHttpRequestMethod ();
+
+  /**
+   * @return The HTTP request URL used. Something like <code>/as2</code>.
+   */
+  @Nullable
+  String getHttpRequestUrl ();
+
+  /**
+   * @return The HTTP request version used. Something like
+   *         <code>HTTP/1.1</code>.
+   */
+  @Nonnull
+  String getHttpRequestVersion ();
+
+  /**
+   * @return The provided HTTP header map. Mutable map is returned. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  HttpHeaderMap getHttpHeaderMap ();
 }

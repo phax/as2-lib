@@ -38,8 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.StringTokenizer;
 import java.util.function.Supplier;
 
 import javax.activation.DataSource;
@@ -49,9 +47,7 @@ import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.mail.Header;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +59,6 @@ import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.codec.IByteArrayCodec;
 import com.helger.commons.codec.IdentityCodec;
@@ -136,64 +131,11 @@ public final class HTTPHelper
 
   @Nonnull
   @ReturnsMutableCopy
-  public static ICommonsList <String> getAllHTTPHeaderLines (@Nonnull final InternetHeaders aHeaders)
+  public static ICommonsList <String> getAllHTTPHeaderLines (@Nonnull final HttpHeaderMap aHeaders)
   {
     final ICommonsList <String> ret = new CommonsArrayList <> ();
-    final Enumeration <?> aEnum = aHeaders.getAllHeaderLines ();
-    while (aEnum.hasMoreElements ())
-      ret.add ((String) aEnum.nextElement ());
+    aHeaders.forEachHeaderLine (ret::add, true);
     return ret;
-  }
-
-  /**
-   * Read the first line of the HTTP request InputStream and parse out HTTP
-   * method (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version
-   * (e.g. "HTTP/1.1")
-   *
-   * @param aIS
-   *        Stream to read the first line from
-   * @return An array with 3 elements, containing method, URL and HTTP version
-   * @throws IOException
-   *         In case of IO error
-   */
-  @Nonnull
-  @Nonempty
-  private static String [] _readRequestInfo (@Nonnull final InputStream aIS) throws IOException
-  {
-    int nByteBuf = aIS.read ();
-    final StringBuilder aSB = new StringBuilder ();
-    while (nByteBuf != -1 && nByteBuf != '\r')
-    {
-      aSB.append ((char) nByteBuf);
-      nByteBuf = aIS.read ();
-    }
-    if (nByteBuf != -1)
-    {
-      // read in the \n following the "\r"
-      aIS.read ();
-    }
-
-    final StringTokenizer aTokens = new StringTokenizer (aSB.toString (), " ");
-    final int nTokenCount = aTokens.countTokens ();
-    if (nTokenCount >= 3)
-    {
-      // Return all tokens
-      final String [] aRequestParts = new String [nTokenCount];
-      for (int i = 0; i < nTokenCount; i++)
-        aRequestParts[i] = aTokens.nextToken ();
-      return aRequestParts;
-    }
-
-    if (nTokenCount == 2)
-    {
-      // Default the request URL to "/"
-      final String [] aRequestParts = new String [3];
-      aRequestParts[0] = aTokens.nextToken ();
-      aRequestParts[1] = "/";
-      aRequestParts[2] = aTokens.nextToken ();
-      return aRequestParts;
-    }
-    throw new IOException ("Invalid HTTP Request (" + aSB.toString () + ")");
   }
 
   /**
@@ -235,7 +177,7 @@ public final class HTTPHelper
    * Read headers and payload from the passed input stream provider. For large
    * file support, return {@link DataSource}. If is on, data is not read.
    *
-   * @param aISP
+   * @param aRDP
    *        The abstract input stream provider to use. May not be
    *        <code>null</code>.
    * @param aResponseHandler
@@ -251,38 +193,29 @@ public final class HTTPHelper
    *         In case header line parsing fails
    */
   @Nonnull
-  public static DataSource readHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
+  public static DataSource readHttpRequest (@Nonnull final IAS2HttpRequestDataProvider aRDP,
                                             @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                             @Nonnull final IMessage aMsg,
                                             @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException, MessagingException
   {
-    // Get the stream to read from
-    final InputStream aIS = aISP.getInputStream ();
-
-    // Read the HTTP meta data
-    final String [] aRequest = _readRequestInfo (aIS);
     // Request method (e.g. "POST")
-    aMsg.attrs ().putIn (MA_HTTP_REQ_TYPE, aRequest[0]);
+    aMsg.attrs ().putIn (MA_HTTP_REQ_TYPE, aRDP.getHttpRequestMethod ());
     // Request URL (e.g. "/as2")
-    aMsg.attrs ().putIn (MA_HTTP_REQ_URL, aRequest[1]);
+    aMsg.attrs ().putIn (MA_HTTP_REQ_URL, aRDP.getHttpRequestUrl ());
     // HTTP version (e.g. "HTTP/1.1")
-    aMsg.attrs ().putIn (MA_HTTP_REQ_VERSION, aRequest[2]);
+    aMsg.attrs ().putIn (MA_HTTP_REQ_VERSION, aRDP.getHttpRequestVersion ());
+
+    // Get the stream to read from
+    final InputStream aIS = aRDP.getHttpInputStream ();
 
     // Parse all HTTP headers from stream
-    final InternetHeaders aHeaders = new InternetHeaders (aIS);
-    // Convert to header map
-    final Enumeration <Header> aEnum = aHeaders.getAllHeaders ();
-    while (aEnum.hasMoreElements ())
-    {
-      final Header aHeader = aEnum.nextElement ();
-      aMsg.headers ().addHeader (aHeader.getName (), aHeader.getValue ());
-    }
+    aMsg.headers ().setAllHeaders (aRDP.getHttpHeaderMap ());
 
     // Generate DataSource
     // Put received data in a MIME body part
     final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
 
-    byte [] aBytePayLoad = null;
+    final byte [] aBytePayload;
     final DataSource aPayload;
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
     if (sContentLength == null)
@@ -318,6 +251,7 @@ public final class HTTPHelper
       }
 
       // Content-length present, or chunked encoding
+      aBytePayload = null;
       aPayload = new InputStreamDataSource (aRealIS, aMsg.getAS2From () == null ? "" : aMsg.getAS2From (), sReceivedContentType, true);
     }
     else
@@ -337,20 +271,20 @@ public final class HTTPHelper
                                Integer.MAX_VALUE +
                                " are allowed.");
       }
-      aBytePayLoad = new byte [(int) nContentLength];
+      aBytePayload = new byte [(int) nContentLength];
 
       try (final DataInputStream aDataIS = new DataInputStream (aIS))
       {
-        aDataIS.readFully (aBytePayLoad);
+        aDataIS.readFully (aBytePayload);
       }
-      aPayload = new ByteArrayDataSource (aBytePayLoad, sReceivedContentType, null);
+      aPayload = new ByteArrayDataSource (aBytePayload, sReceivedContentType, null);
     }
 
     // Dump on demand
     if (aIncomingDumper != null)
     {
-      aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aHeaders),
-                                           aBytePayLoad != null ? aBytePayLoad
+      aIncomingDumper.dumpIncomingRequest (getAllHTTPHeaderLines (aRDP.getHttpHeaderMap ()),
+                                           aBytePayload != null ? aBytePayload
                                                                 : "Payload body was not read yet, and therefore it cannot be dumped (yet) - sorry".getBytes (StandardCharsets.ISO_8859_1),
                                            aMsg);
     }
@@ -361,14 +295,14 @@ public final class HTTPHelper
   }
 
   @Nonnull
-  public static DataSource readAndDecodeHttpRequest (@Nonnull final IAS2InputStreamProvider aISP,
+  public static DataSource readAndDecodeHttpRequest (@Nonnull final IAS2HttpRequestDataProvider aRDP,
                                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                                                      @Nonnull final IMessage aMsg,
                                                      @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
                                                                                                           MessagingException
   {
     // Main read
-    DataSource aPayload = HTTPHelper.readHttpRequest (aISP, aResponseHandler, aMsg, aIncomingDumper);
+    DataSource aPayload = HTTPHelper.readHttpRequest (aRDP, aResponseHandler, aMsg, aIncomingDumper);
 
     // Check the transfer encoding of the request. If none is provided, check
     // the partnership for a default one. If none is in the partnership used the

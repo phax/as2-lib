@@ -40,33 +40,42 @@ import javax.annotation.concurrent.Immutable;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 
-import com.helger.as2lib.util.http.IAS2InputStreamProvider;
+import com.helger.as2lib.util.http.IAS2HttpRequestDataProvider;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
+import com.helger.web.scope.IRequestWebScope;
 
 /**
- * Implementation of {@link IAS2InputStreamProvider} based on a
+ * Implementation of {@link IAS2HttpRequestDataProvider} based on a
  * {@link ServletRequest} {@link InputStream}.
  *
  * @author Philip Helger
  * @since 4.8.0
  */
 @Immutable
-final class AS2InputStreamProviderServletRequest implements IAS2InputStreamProvider
+final class AS2HttpRequestDataProviderServletRequest implements IAS2HttpRequestDataProvider
 {
+  private final IRequestWebScope m_aRequestScope;
   private final ServletInputStream m_aRequestIS;
 
   /**
    * Constructor
    *
+   * @param aRequestScope
+   *        HTTP Servlet Request. May not be <code>null</code>.
    * @param aRequestIS
    *        Servlet request InputStream to read from. Will not be closed. May
    *        not be <code>null</code>.
    */
-  public AS2InputStreamProviderServletRequest (@Nonnull @WillNotClose final ServletInputStream aRequestIS)
+  public AS2HttpRequestDataProviderServletRequest (@Nonnull final IRequestWebScope aRequestScope,
+                                                   @Nonnull @WillNotClose final ServletInputStream aRequestIS)
   {
+    ValueEnforcer.notNull (aRequestScope, "RequestScope");
     ValueEnforcer.notNull (aRequestIS, "RequestIS");
+    m_aRequestScope = aRequestScope;
     m_aRequestIS = aRequestIS;
   }
 
@@ -77,10 +86,37 @@ final class AS2InputStreamProviderServletRequest implements IAS2InputStreamProvi
    * @return {@link InputStream}
    */
   @Nonnull
-  public InputStream getInputStream ()
+  public InputStream getHttpInputStream ()
   {
     // Use "NonClosing" internally to that the returned stream is easily
     // discovered as "buffered"
     return StreamHelper.getBuffered (new NonClosingInputStream (m_aRequestIS));
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getHttpRequestMethod ()
+  {
+    return m_aRequestScope.getHttpMethod ().getName ();
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getHttpRequestUrl ()
+  {
+    return m_aRequestScope.getRequestURIDecoded ();
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getHttpRequestVersion ()
+  {
+    return m_aRequestScope.getHttpVersion ().getName ();
+  }
+
+  @Nonnull
+  public HttpHeaderMap getHttpHeaderMap ()
+  {
+    return m_aRequestScope.headers ();
   }
 }

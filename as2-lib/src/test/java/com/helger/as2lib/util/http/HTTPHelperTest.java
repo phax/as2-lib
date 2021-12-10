@@ -249,14 +249,14 @@ public final class HTTPHelperTest
     // non stream
     NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
     AS2Message aMsg = new AS2Message ();
-    IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
-    final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    final DataSource resRegular = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
 
     // stream
     is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
     aMsg = new AS2Message ();
-    mockStreamProvider = new MockAS2InputStreamProvider (is);
-    final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    final DataSource resStream = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
     assertTrue ("Compare regular and stream read", _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
   }
 
@@ -266,14 +266,14 @@ public final class HTTPHelperTest
     // non stream
     NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
     AS2Message aMsg = new AS2Message ();
-    IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
-    final DataSource resRegular = HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    final DataSource resRegular = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
 
     // stream
     is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
     aMsg = new AS2Message ();
-    mockStreamProvider = new MockAS2InputStreamProvider (is);
-    final DataSource resStream = HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    final DataSource resStream = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
 
     assertTrue ("Compare regular and stream read", _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
   }
@@ -284,8 +284,8 @@ public final class HTTPHelperTest
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // non stream
     final AS2Message aMsg = new AS2Message ();
-    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
-    HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
   }
 
   @Test (expected = IOException.class)
@@ -294,8 +294,8 @@ public final class HTTPHelperTest
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
-    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
-    HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
   }
 
   @Test (expected = IOException.class)
@@ -304,8 +304,8 @@ public final class HTTPHelperTest
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
-    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
-    HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
   }
 
   @Test (expected = IOException.class)
@@ -314,8 +314,8 @@ public final class HTTPHelperTest
     final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
     // stream
     final AS2Message aMsg = new AS2Message ();
-    final IAS2InputStreamProvider mockStreamProvider = new MockAS2InputStreamProvider (is);
-    HTTPHelper.readHttpRequest (mockStreamProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
+    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
   }
 
   private static boolean _compareLineByLine (@Nonnull @WillClose final InputStream is1, @Nonnull @WillClose final InputStream is2)

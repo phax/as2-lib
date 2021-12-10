@@ -92,7 +92,7 @@ public final class MainSendToLocalhost8080
     aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "openas2a_alias");
 
     // Fixed receiver - key alias must be "openas2b_alias"
-    aSettings.setReceiverData ("as2-lib-receiver", "openas2b_alias", "http://localhost:8080/as2");
+    aSettings.setReceiverData ("openas2b_alias", "openas2b_alias", "http://localhost:8080/as2");
     final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
