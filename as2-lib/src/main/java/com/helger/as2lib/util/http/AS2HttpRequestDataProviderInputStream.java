@@ -35,6 +35,7 @@ package com.helger.as2lib.util.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
@@ -48,6 +49,7 @@ import javax.mail.internet.InternetHeaders;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.http.HttpHeaderMap;
+import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 
@@ -58,10 +60,10 @@ import com.helger.commons.io.stream.StreamHelper;
  * @author Philip Helger
  */
 @Immutable
-public class AS2HttpRequestDataProviderSocket implements IAS2HttpRequestDataProvider
+public class AS2HttpRequestDataProviderInputStream implements IAS2HttpRequestDataProvider
 {
   @WillNotClose
-  private final InputStream m_aSocketIS;
+  private final InputStream m_aIS;
   private final String m_sHttpRequestMethod;
   private final String m_sHttpRequestUrl;
   private final String m_sHttpRequestVersion;
@@ -121,28 +123,28 @@ public class AS2HttpRequestDataProviderSocket implements IAS2HttpRequestDataProv
   /**
    * Constructor
    *
-   * @param aSocket
-   *        Socket to read from. May not be <code>null</code>.
+   * @param aIS
+   *        InputStream to read from. May not be <code>null</code>.
    * @throws IOException
    *         If reading from the Socket fails
    * @throws MessagingException
    *         If reading the HTTP headers failed
    */
-  public AS2HttpRequestDataProviderSocket (@Nonnull final Socket aSocket) throws IOException, MessagingException
+  public AS2HttpRequestDataProviderInputStream (@Nonnull @WillNotClose final InputStream aIS) throws IOException, MessagingException
   {
-    ValueEnforcer.notNull (aSocket, "Socket");
+    ValueEnforcer.notNull (aIS, "InputStream");
 
-    m_aSocketIS = aSocket.getInputStream ();
+    m_aIS = aIS;
 
     // Read the HTTP meta data first line
-    final String [] aRequest = _readRequestInfo (m_aSocketIS);
+    final String [] aRequest = _readRequestInfo (m_aIS);
     m_sHttpRequestMethod = aRequest[0];
     m_sHttpRequestUrl = aRequest[1];
     m_sHttpRequestVersion = aRequest[2];
 
     // Read the HTTP headers next
     // Parse all HTTP headers from stream
-    final InternetHeaders aHeaders = new InternetHeaders (m_aSocketIS);
+    final InternetHeaders aHeaders = new InternetHeaders (m_aIS);
     // Convert to header map
     final Enumeration <Header> aEnum = aHeaders.getAllHeaders ();
     while (aEnum.hasMoreElements ())
@@ -150,7 +152,6 @@ public class AS2HttpRequestDataProviderSocket implements IAS2HttpRequestDataProv
       final Header aHeader = aEnum.nextElement ();
       m_aHttpHeaders.addHeader (aHeader.getName (), aHeader.getValue ());
     }
-
   }
 
   /**
@@ -168,7 +169,7 @@ public class AS2HttpRequestDataProviderSocket implements IAS2HttpRequestDataProv
   {
     // Use "NonClosing" internally to that the returned stream is easily
     // discovered as "buffered"
-    return StreamHelper.getBuffered (new NonClosingInputStream (m_aSocketIS));
+    return StreamHelper.getBuffered (new NonClosingInputStream (m_aIS));
   }
 
   @Nonnull
@@ -193,5 +194,12 @@ public class AS2HttpRequestDataProviderSocket implements IAS2HttpRequestDataProv
   public HttpHeaderMap getHttpHeaderMap ()
   {
     return m_aHttpHeaders;
+  }
+
+  @Nonnull
+  public static AS2HttpRequestDataProviderInputStream createForUtf8 (@Nonnull final String s) throws IOException, MessagingException
+  {
+    final byte [] b = s.getBytes (StandardCharsets.UTF_8);
+    return new AS2HttpRequestDataProviderInputStream (new NonBlockingByteArrayInputStream (b));
   }
 }

@@ -75,6 +75,7 @@ import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.cte.IContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
+import com.helger.mail.datasource.IExtendedDataSource;
 import com.helger.mail.datasource.InputStreamDataSource;
 
 /**
@@ -186,17 +187,18 @@ public final class HTTPHelper
    *        The Message to be filled. May not be <code>null</code>.
    * @param aIncomingDumper
    *        Optional incoming HTTP dumper. May be <code>null</code>.
-   * @return A {@link DataSource} that holds/refers to the body.
+   * @return A {@link IExtendedDataSource} that holds/refers to the body.
    * @throws IOException
    *         In case of error reading from the InputStream
    * @throws MessagingException
    *         In case header line parsing fails
    */
   @Nonnull
-  public static DataSource readHttpRequest (@Nonnull final IAS2HttpRequestDataProvider aRDP,
-                                            @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                                            @Nonnull final IMessage aMsg,
-                                            @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException, MessagingException
+  public static IExtendedDataSource readHttpRequest (@Nonnull final IAS2HttpRequestDataProvider aRDP,
+                                                     @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                                                     @Nonnull final IMessage aMsg,
+                                                     @Nullable final IHTTPIncomingDumper aIncomingDumper) throws IOException,
+                                                                                                          MessagingException
   {
     // Request method (e.g. "POST")
     aMsg.attrs ().putIn (MA_HTTP_REQ_TYPE, aRDP.getHttpRequestMethod ());
@@ -216,7 +218,7 @@ public final class HTTPHelper
     final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
 
     final byte [] aBytePayload;
-    final DataSource aPayload;
+    final IExtendedDataSource aPayload;
     final String sContentLength = aMsg.getHeader (CHttpHeader.CONTENT_LENGTH);
     if (sContentLength == null)
     {
@@ -273,6 +275,7 @@ public final class HTTPHelper
       }
       aBytePayload = new byte [(int) nContentLength];
 
+      // Keeps the original InputStream open and that is okay
       try (final DataInputStream aDataIS = new DataInputStream (aIS))
       {
         aDataIS.readFully (aBytePayload);

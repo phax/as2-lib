@@ -71,8 +71,8 @@ import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.http.AS2HttpClient;
+import com.helger.as2lib.util.http.AS2HttpRequestDataProviderInputStream;
 import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
-import com.helger.as2lib.util.http.AS2HttpRequestDataProviderSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2IncomingMDNCallback;
@@ -523,7 +523,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     {
       // Read in the message request, headers, and data
       final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-      aMdnDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2HttpRequestDataProviderSocket (aSocket),
+      aMdnDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2HttpRequestDataProviderInputStream (aSocket.getInputStream ()),
                                                             aResponseHandler,
                                                             aMsg,
                                                             aIncomingDumper);

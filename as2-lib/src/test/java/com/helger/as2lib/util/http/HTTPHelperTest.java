@@ -33,36 +33,31 @@
 package com.helger.as2lib.util.http;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
-import javax.activation.DataSource;
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
-import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StringInputStream;
+import com.helger.mail.datasource.IExtendedDataSource;
 
 public final class HTTPHelperTest
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (HTTPHelperTest.class);
-  private String m_sRegularMessage;
-  private String m_sChunkedMessage;
   private String m_sRegularMessageBody;
+  private String m_sRegularMessage;
+  private String m_sChunkedMessageBody;
+  private String m_sChunkedMessage;
   private String m_sNoLengthMessage;
   private String m_sBadTransferEncodingMessage;
 
@@ -135,6 +130,8 @@ public final class HTTPHelperTest
                         "\r\n" +
                         m_sRegularMessageBody;
 
+    m_sChunkedMessageBody = "123456" + ThreadLocalRandom.current ().nextInt ();
+    final String sChunkedLength = Integer.toHexString (m_sChunkedMessageBody.length ());
     m_sChunkedMessage = "POST /HttpReceiver HTTP/1.1\r\n" +
                         "Content-Type: multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=sha-512;    boundary=\"----=_Part_1_1029148906.1531651777438\"\r\n" +
                         "Subject: [-Dlog4j2.debug, --stream, --sign]\r\n" +
@@ -155,8 +152,9 @@ public final class HTTPHelperTest
                         "Host: localhost:10080\r\n" +
                         "Accept-Encoding: gzip,deflate\r\n" +
                         "\r\n" +
-                        "4\r\n" +
-                        "1234" +
+                        sChunkedLength +
+                        "\r\n" +
+                        m_sChunkedMessageBody +
                         "\r\n" +
                         "0\r\n";
     m_sNoLengthMessage = "POST /HttpReceiver HTTP/1.1\r\n" +
@@ -178,8 +176,9 @@ public final class HTTPHelperTest
                          "Host: localhost:10080\r\n" +
                          "Accept-Encoding: gzip,deflate\r\n" +
                          "\r\n" +
-                         "4\r\n" +
-                         "1234" +
+                         sChunkedLength +
+                         "\r\n" +
+                         m_sChunkedMessageBody +
                          "\r\n" +
                          "0\r\n";
     m_sBadTransferEncodingMessage = "POST /HttpReceiver HTTP/1.1\r\n" +
@@ -202,8 +201,9 @@ public final class HTTPHelperTest
                                     "Host: localhost:10080\r\n" +
                                     "Accept-Encoding: gzip,deflate\r\n" +
                                     "\r\n" +
-                                    "4\r\n" +
-                                    "1234" +
+                                    sChunkedLength +
+                                    "\r\n" +
+                                    m_sChunkedMessageBody +
                                     "\r\n" +
                                     "0\r\n";
   }
@@ -246,107 +246,60 @@ public final class HTTPHelperTest
   @Test
   public void testReadHttpRequestRegularMessage () throws Exception
   {
-    // non stream
-    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
-    AS2Message aMsg = new AS2Message ();
-    IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    final DataSource resRegular = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    final AS2Message aMsg = new AS2Message ();
+    final IAS2HttpRequestDataProvider aMockProvider = AS2HttpRequestDataProviderInputStream.createForUtf8 (m_sRegularMessage);
+    final IExtendedDataSource aDS = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    assertNotNull (aDS);
 
-    // stream
-    is = new NonBlockingByteArrayInputStream (m_sRegularMessage.getBytes (StandardCharsets.UTF_8));
-    aMsg = new AS2Message ();
-    aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    final DataSource resStream = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-    assertTrue ("Compare regular and stream read", _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
+    assertEquals ("<ph-OpenAS2-15072018135504+0300-0583@testsender_testreceiver>", aMsg.getMessageID ());
+    final String sReadPayload = StreamHelper.getAllBytesAsString (aDS.getInputStream (), StandardCharsets.US_ASCII);
+    assertEquals (m_sRegularMessageBody, sReadPayload);
   }
 
   @Test
   public void testReadHttpRequestStreamMessage () throws Exception
   {
-    // non stream
-    NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
-    AS2Message aMsg = new AS2Message ();
-    IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    final DataSource resRegular = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    final AS2Message aMsg = new AS2Message ();
+    final IAS2HttpRequestDataProvider aMockProvider = AS2HttpRequestDataProviderInputStream.createForUtf8 (m_sChunkedMessage);
+    final IExtendedDataSource aDS = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+    assertNotNull (aDS);
 
-    // stream
-    is = new NonBlockingByteArrayInputStream (m_sChunkedMessage.getBytes (StandardCharsets.UTF_8));
-    aMsg = new AS2Message ();
-    aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    final DataSource resStream = HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-
-    assertTrue ("Compare regular and stream read", _compareLineByLine (resRegular.getInputStream (), resStream.getInputStream ()));
+    assertEquals ("<ph-OpenAS2-15072018134936+0300-1718@testsender_testreceiver>", aMsg.getMessageID ());
+    final String sReadPayload = StreamHelper.getAllBytesAsString (aDS.getInputStream (), StandardCharsets.US_ASCII);
+    assertEquals (m_sChunkedMessageBody, sReadPayload);
   }
 
-  @Test (expected = IOException.class)
+  @Test
   public void testNoLengthMessageRegular () throws Exception
   {
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
     // non stream
     final AS2Message aMsg = new AS2Message ();
-    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-  }
-
-  @Test (expected = IOException.class)
-  public void testNoLengthMessageStream () throws Exception
-  {
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sNoLengthMessage.getBytes (StandardCharsets.UTF_8));
-    // stream
-    final AS2Message aMsg = new AS2Message ();
-    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-  }
-
-  @Test (expected = IOException.class)
-  public void testBadTRansferEncodingMessageRegular () throws Exception
-  {
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
-    // stream
-    final AS2Message aMsg = new AS2Message ();
-    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-  }
-
-  @Test (expected = IOException.class)
-  public void testBadTRansferEncodingMessageStream () throws Exception
-  {
-    final NonBlockingByteArrayInputStream is = new NonBlockingByteArrayInputStream (m_sBadTransferEncodingMessage.getBytes (StandardCharsets.UTF_8));
-    // stream
-    final AS2Message aMsg = new AS2Message ();
-    final IAS2HttpRequestDataProvider aMockProvider = new MockAS2HttpRequestDataProvider (is);
-    HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
-  }
-
-  private static boolean _compareLineByLine (@Nonnull @WillClose final InputStream is1, @Nonnull @WillClose final InputStream is2)
-  {
+    final IAS2HttpRequestDataProvider aMockProvider = AS2HttpRequestDataProviderInputStream.createForUtf8 (m_sNoLengthMessage);
     try
     {
-      final ICommonsList <String> aLines1 = StreamHelper.readStreamLines (is1, StandardCharsets.ISO_8859_1);
-      final ICommonsList <String> aLines2 = StreamHelper.readStreamLines (is2, StandardCharsets.ISO_8859_1);
-      if (aLines1.size () != aLines2.size ())
-      {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("input streams has different No of lines: " + aLines1.size () + " and " + aLines2.size ());
-        return false;
-      }
-      for (int i = 0; i < aLines1.size (); i++)
-      {
-        final String sLine1 = aLines1.get (i);
-        final String sLine2 = aLines2.get (i);
-        if (!sLine1.equals (sLine2))
-        {
-          if (LOGGER.isErrorEnabled ())
-            LOGGER.error ("Input streams differ on line " + i + ":\n1:" + sLine1 + "\n2:" + sLine2 + "\n");
-          return false;
-        }
-      }
-      return true;
+      HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+      fail ();
     }
-    finally
+    catch (final IOException ex)
     {
-      StreamHelper.close (is1);
-      StreamHelper.close (is2);
+      assertEquals ("Content-Length missing", ex.getMessage ());
+    }
+  }
+
+  @Test
+  public void testBadTRansferEncodingMessageRegular () throws Exception
+  {
+    // stream
+    final AS2Message aMsg = new AS2Message ();
+    final IAS2HttpRequestDataProvider aMockProvider = AS2HttpRequestDataProviderInputStream.createForUtf8 (m_sBadTransferEncodingMessage);
+    try
+    {
+      HTTPHelper.readHttpRequest (aMockProvider, MOCK_RH, aMsg, INCOMING_DUMPER);
+      fail ();
+    }
+    catch (final IOException ex)
+    {
+      assertEquals ("Transfer-Encoding unimplemented: cXXhunked", ex.getMessage ());
     }
   }
 }
