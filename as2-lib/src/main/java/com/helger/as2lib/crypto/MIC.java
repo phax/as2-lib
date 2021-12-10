@@ -181,7 +181,7 @@ public class MIC implements ICloneable <MIC>
     final String sMICBytes = st.nextToken ();
     final byte [] aMICBytes = Base64.safeDecode (sMICBytes);
     if (aMICBytes == null)
-      throw new IllegalArgumentException ("Failed to base64 decode '" + sMICBytes + "'");
+      throw new IllegalArgumentException ("Failed to base64 decode MIC '" + sMICBytes + "'");
 
     if (!st.hasMoreTokens ())
       throw new IllegalArgumentException ("Separator after Base64 bytes is missing");

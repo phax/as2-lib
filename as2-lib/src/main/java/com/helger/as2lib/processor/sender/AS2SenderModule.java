@@ -769,7 +769,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       final String sDisposition = aMDN.attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+        LOGGER.info ("Received synchronous AS2 MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       // Asynch MDN 2007-03-12
       // Verify if the original mic is equal to the mic in returned MDN

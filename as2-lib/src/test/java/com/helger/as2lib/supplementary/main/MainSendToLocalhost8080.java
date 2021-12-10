@@ -101,7 +101,6 @@ public final class MainSendToLocalhost8080
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
     final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA_256;
-    // CBC works, GCM is not supported
     final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_AES128_GCM;
     final ECompressionType eCompress = ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
