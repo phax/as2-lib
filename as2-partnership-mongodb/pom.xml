@@ -51,6 +51,22 @@
     </developer>
   </developers>
   
+  <!-- Include here to not bloat the global scope -->  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-sync</artifactId>
+        <version>4.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>de.flapdoodle.embed</groupId>
+        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        <version>3.2.2</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
   <dependencies>
     <dependency>
       <groupId>com.helger.as2</groupId>
