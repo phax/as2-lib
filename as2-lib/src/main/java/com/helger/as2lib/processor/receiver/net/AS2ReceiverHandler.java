@@ -251,6 +251,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             LOGGER.info ("Successfully decrypted incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
+    catch (final AS2DispositionException ex)
+    {
+      // Re-throw "as is"
+      throw ex;
+    }
     catch (final Exception ex)
     {
       if (LOGGER.isErrorEnabled ())
@@ -325,6 +330,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
         }
+    }
+    catch (final AS2DispositionException ex)
+    {
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
+
+      // Re-throw "as is"
+      throw ex;
     }
     catch (final Exception ex)
     {
@@ -548,6 +561,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Fill all partnership attributes etc.
         aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
       }
+      catch (final AS2DispositionException ex)
+      {
+        // Re-throw "as is"
+        throw ex;
+      }
       catch (final AS2Exception ex)
       {
         throw new AS2DispositionException (DispositionType.createError ("authentication-failed"),
@@ -621,6 +639,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
+      catch (final AS2DispositionException ex)
+      {
+        // Re-throw "as is"
+        throw ex;
+      }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
@@ -640,6 +663,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
+      catch (final AS2DispositionException ex)
+      {
+        // Re-throw "as is"
+        throw ex;
+      }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
@@ -658,6 +686,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       catch (final AS2NoModuleException ex)
       {
         // No module installed - ignore
+      }
+      catch (final AS2DispositionException ex)
+      {
+        // Re-throw "as is"
+        throw ex;
       }
       catch (final AS2Exception ex)
       {

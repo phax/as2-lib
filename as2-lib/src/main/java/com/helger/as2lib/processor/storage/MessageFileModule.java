@@ -102,6 +102,11 @@ public class MessageFileModule extends AbstractStorageModule
       aMsg.attrs ().put (MessageParameters.ATTR_STORED_FILE_NAME, aMsgFile.getAbsolutePath ());
       LOGGER.info ("stored message to " + aMsgFile.getAbsolutePath () + aMsg.getLoggingText ());
     }
+    catch (final AS2DispositionException ex)
+    {
+      // Re-throw "as is"
+      throw ex;
+    }
     catch (final Exception ex)
     {
       throw new AS2DispositionException (DispositionType.createError ("Error storing transaction"),
