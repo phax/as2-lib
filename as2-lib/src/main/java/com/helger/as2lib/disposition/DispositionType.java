@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.message.IMessage;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.equals.EqualsHelper;
 import com.helger.commons.string.StringHelper;
@@ -85,31 +86,31 @@ public class DispositionType
   }
 
   @Nonnull
-  public String getAction ()
+  public final String getAction ()
   {
     return m_sAction;
   }
 
   @Nonnull
-  public String getMDNAction ()
+  public final String getMDNAction ()
   {
     return m_sMDNAction;
   }
 
   @Nonnull
-  public String getStatus ()
+  public final String getStatus ()
   {
     return m_sStatus;
   }
 
   @Nullable
-  public String getStatusDescription ()
+  public final String getStatusDescription ()
   {
     return m_sStatusDescription;
   }
 
   @Nullable
-  public String getStatusModifier ()
+  public final String getStatusModifier ()
   {
     return m_sStatusModifier;
   }
@@ -136,16 +137,30 @@ public class DispositionType
    * Throws a {@link AS2DispositionException} if the message is a warning or an
    * error. If the disposition is fine this method simply returns.
    *
+   * @param aSrcMsg
+   *        The source message. May not be <code>null</code>.
+   * @param sText
+   *        The disposition text to use. May not be <code>null</code>.
    * @throws AS2DispositionException
    *         The checked exception.
+   * @since 4.10.0 this method has parameters
    */
-  public void validate () throws AS2DispositionException
+  public void validate (@Nonnull final IMessage aSrcMsg, @Nonnull final String sText) throws AS2DispositionException
   {
-    if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
-      throw new AS2DispositionException (this);
+    if (isWarning ())
+    {
+      final AS2DispositionException ex = new AS2DispositionException (this, sText, null);
+      ex.setSourceMsg (aSrcMsg).terminate ();
+    }
+    else
+    {
+      // Errors are thrown
+      if (!m_sStatus.equalsIgnoreCase (STATUS_PROCESSED))
+        throw new AS2DispositionException (this, sText, null);
 
-    if (isError () || isWarning ())
-      throw new AS2DispositionException (this);
+      if (isError ())
+        throw new AS2DispositionException (this, sText, null);
+    }
   }
 
   @Nonnull

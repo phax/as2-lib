@@ -54,7 +54,23 @@ import com.helger.commons.lang.StackTraceHelper;
 public class AS2ProcessorException extends AS2Exception
 {
   private final transient IMessageProcessor m_aProcessor;
-  private final ICommonsList <Throwable> m_aCauses;
+  private final ICommonsList <AS2Exception> m_aCauses;
+
+  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <? extends AS2Exception> aCauses)
+  {
+    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + "' threw " + (aCauses.size () == 1 ? "exception:" : "exceptions:"));
+    ValueEnforcer.notNull (aProcessor, "Processor");
+    ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
+
+    m_aProcessor = aProcessor;
+    m_aCauses = new CommonsArrayList <> (aCauses);
+  }
+
+  @Nonnull
+  public final IMessageProcessor getProcessor ()
+  {
+    return m_aProcessor;
+  }
 
   @Nonnull
   private static String _getMessage (@Nonnull @Nonempty final Iterable <? extends Throwable> aCauses, final boolean bAddStackTrace)
@@ -75,22 +91,6 @@ public class AS2ProcessorException extends AS2Exception
     return aSB.toString ();
   }
 
-  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <? extends Throwable> aCauses)
-  {
-    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + "' threw " + (aCauses.size () == 1 ? "exception:" : "exceptions:"));
-    ValueEnforcer.notNull (aProcessor, "Processor");
-    ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
-
-    m_aProcessor = aProcessor;
-    m_aCauses = new CommonsArrayList <> (aCauses);
-  }
-
-  @Nonnull
-  public final IMessageProcessor getProcessor ()
-  {
-    return m_aProcessor;
-  }
-
   @Override
   public String getMessage ()
   {
@@ -104,13 +104,16 @@ public class AS2ProcessorException extends AS2Exception
   }
 
   /**
+   * Get all causes.<br>
+   * Note: before v4.10.0 this was a list of Throwable
+   *
    * @return A list of all causing exceptions. Never <code>null</code> nor
    *         empty.
    */
   @Nonnull
   @Nonempty
   @ReturnsMutableCopy
-  public final ICommonsList <Throwable> getAllCauses ()
+  public final ICommonsList <AS2Exception> getAllCauses ()
   {
     return m_aCauses.getClone ();
   }

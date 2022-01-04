@@ -159,7 +159,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
                                       @Nonnull final IMessage aMsg,
                                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
-    final ICommonsList <Throwable> aCauses = new CommonsArrayList <> ();
+    final ICommonsList <AS2Exception> aCauses = new CommonsArrayList <> ();
     final ICommonsList <IProcessorModule> aModulesFound = new CommonsArrayList <> ();
 
     if (LOGGER.isDebugEnabled ())
@@ -188,8 +188,15 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
           LOGGER.trace ("  Not handling action '" + sAction + "' with module " + aModule);
       }
 
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("  action '" + sAction + "' was handled by modules: " + aModulesFound);
+
     if (aCauses.isNotEmpty ())
+    {
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("  action '" + sAction + "' was handled but failed: " + aCauses);
       throw new AS2ProcessorException (this, aCauses);
+    }
 
     if (aModulesFound.isEmpty ())
     {
@@ -197,9 +204,6 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
         LOGGER.debug ("  no modules found for '" + sAction + "'; modules are: " + aAllModules);
       throw new AS2NoModuleException (sAction, aMsg, aOptions);
     }
-
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("  action '" + sAction + "' was handled by modules " + aModulesFound);
   }
 
   @Override

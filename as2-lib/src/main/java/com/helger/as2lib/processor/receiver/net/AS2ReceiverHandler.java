@@ -331,22 +331,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             LOGGER.info ("Successfully verified signature of incoming AS2 message" + aMsg.getLoggingText ());
         }
     }
-    catch (final AS2DispositionException ex)
-    {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
-
-      // Re-throw "as is"
-      throw ex;
-    }
     catch (final Exception ex)
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Error verifying signature " + aMsg.getLoggingText () + ": " + ex.getMessage ());
 
-      throw new AS2DispositionException (DispositionType.createError ("integrity-check-failed"),
-                                         AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED,
-                                         ex);
+      throw AS2DispositionException.wrap (ex,
+                                          () -> DispositionType.createError ("integrity-check-failed"),
+                                          () -> AbstractActiveNetModule.DISP_VERIFY_SIGNATURE_FAILED);
     }
   }
 
@@ -561,16 +553,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Fill all partnership attributes etc.
         aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
       }
-      catch (final AS2DispositionException ex)
-      {
-        // Re-throw "as is"
-        throw ex;
-      }
       catch (final AS2Exception ex)
       {
-        throw new AS2DispositionException (DispositionType.createError ("authentication-failed"),
-                                           AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND,
-                                           ex);
+        throw AS2DispositionException.wrap (ex,
+                                            () -> DispositionType.createError ("authentication-failed"),
+                                            () -> AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND);
       }
 
       // Per RFC5402 compression is always before encryption but can be before
@@ -639,19 +626,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
-      catch (final AS2DispositionException ex)
-      {
-        // Re-throw "as is"
-        throw ex;
-      }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
-        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                           StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
-                                                                                 CHttp.EOL,
-                                                                                 _getDispositionText (ex)),
-                                           ex);
+        throw AS2DispositionException.wrap (ex,
+                                            () -> DispositionType.createError ("unexpected-processing-error"),
+                                            () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                                        CHttp.EOL,
+                                                                                        _getDispositionText (ex)));
       }
 
       // Store the received message
@@ -663,19 +645,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
-      catch (final AS2DispositionException ex)
-      {
-        // Re-throw "as is"
-        throw ex;
-      }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
-        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                           StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
-                                                                                 CHttp.EOL,
-                                                                                 _getDispositionText (ex)),
-                                           ex);
+        throw AS2DispositionException.wrap (ex,
+                                            () -> DispositionType.createError ("unexpected-processing-error"),
+                                            () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
+                                                                                        CHttp.EOL,
+                                                                                        _getDispositionText (ex)));
       }
 
       // Validate the received message after storing
@@ -687,19 +664,14 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // No module installed - ignore
       }
-      catch (final AS2DispositionException ex)
-      {
-        // Re-throw "as is"
-        throw ex;
-      }
       catch (final AS2Exception ex)
       {
         // Issue 90 - use CRLF as separator
-        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                           StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
-                                                                                 CHttp.EOL,
-                                                                                 _getDispositionText (ex)),
-                                           ex);
+        throw AS2DispositionException.wrap (ex,
+                                            () -> DispositionType.createError ("unexpected-processing-error"),
+                                            () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                                        CHttp.EOL,
+                                                                                        _getDispositionText (ex)));
       }
 
       try

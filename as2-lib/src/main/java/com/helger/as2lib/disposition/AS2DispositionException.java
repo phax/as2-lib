@@ -32,10 +32,15 @@
  */
 package com.helger.as2lib.disposition;
 
+import java.util.function.Supplier;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.as2lib.exception.AS2Exception;
+import com.helger.as2lib.processor.AS2ProcessorException;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.collection.impl.ICommonsList;
 
 /**
  * Exception thrown in case a message disposition contains an error or a
@@ -47,12 +52,7 @@ import com.helger.as2lib.exception.AS2Exception;
 public class AS2DispositionException extends AS2Exception
 {
   private final transient DispositionType m_aDisposition;
-  private String m_sText;
-
-  public AS2DispositionException (@Nonnull final DispositionType aDisposition)
-  {
-    this (aDisposition, null, null);
-  }
+  private final String m_sText;
 
   public AS2DispositionException (@Nonnull final DispositionType aDisposition,
                                   @Nullable final String sText,
@@ -63,6 +63,10 @@ public class AS2DispositionException extends AS2Exception
     m_sText = sText;
   }
 
+  /**
+   * @return The disposition as provided in the constructor. Never
+   *         <code>null</code>.
+   */
   @Nonnull
   public final DispositionType getDisposition ()
   {
@@ -76,9 +80,29 @@ public class AS2DispositionException extends AS2Exception
   }
 
   @Nonnull
-  public final AS2DispositionException setText (@Nullable final String sText)
+  public static AS2DispositionException wrap (@Nonnull final Exception ex,
+                                              @Nonnull final Supplier <DispositionType> aDispositionTypeSupplier,
+                                              @Nonnull final Supplier <String> aTextSupplier)
   {
-    m_sText = sText;
-    return this;
+    ValueEnforcer.notNull (ex, "Exception");
+    ValueEnforcer.notNull (aDispositionTypeSupplier, "DispositionTypeSupplier");
+    ValueEnforcer.notNull (aTextSupplier, "TextSupplier");
+
+    if (ex instanceof AS2DispositionException)
+      return (AS2DispositionException) ex;
+
+    if (ex instanceof AS2ProcessorException)
+    {
+      // Special handling for #130
+      final ICommonsList <AS2Exception> aCauses = ((AS2ProcessorException) ex).getAllCauses ();
+      if (aCauses.size () == 1)
+      {
+        final AS2Exception aFirst = aCauses.getFirst ();
+        if (aFirst instanceof AS2DispositionException)
+          return (AS2DispositionException) aFirst;
+      }
+    }
+
+    return new AS2DispositionException (aDispositionTypeSupplier.get (), aTextSupplier.get (), ex);
   }
 }

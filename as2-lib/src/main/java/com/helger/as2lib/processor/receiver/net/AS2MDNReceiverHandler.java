@@ -53,7 +53,6 @@ import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.IMICMatchingHandler;
 import com.helger.as2lib.crypto.LoggingMICMatchingHandler;
 import com.helger.as2lib.crypto.MIC;
-import com.helger.as2lib.disposition.AS2DispositionException;
 import com.helger.as2lib.disposition.DispositionType;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
@@ -384,24 +383,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
                                               aMDN.attrs ().getAsBoolean (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, false),
                                               bMICMatch);
 
-      try
-      {
-        DispositionType.createFromString (sDisposition).validate ();
-      }
-      catch (final AS2DispositionException ex)
-      {
-        ex.setText (aMDN.getText ());
-        if (ex.getDisposition ().isWarning ())
-        {
-          // Warning
-          ex.setSourceMsg (aMsg).terminate ();
-        }
-        else
-        {
-          // Error
-          throw ex;
-        }
-      }
+      DispositionType.createFromString (sDisposition).validate (aMsg, aMDN.getText ());
     }
     catch (final IOException ex)
     {

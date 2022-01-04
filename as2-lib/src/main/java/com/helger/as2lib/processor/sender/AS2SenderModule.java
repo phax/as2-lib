@@ -800,24 +800,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                               aMDN.attrs ().getAsBoolean (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, false),
                                               bMICMatch);
 
-      try
-      {
-        DispositionType.createFromString (sDisposition).validate ();
-      }
-      catch (final AS2DispositionException ex)
-      {
-        ex.setText (aMDN.getText ());
-        if (ex.getDisposition ().isWarning ())
-        {
-          // Warning
-          ex.setSourceMsg (aMsg).terminate ();
-        }
-        else
-        {
-          // Error
-          throw ex;
-        }
-      }
+      DispositionType.createFromString (sDisposition).validate (aMsg, aMDN.getText ());
     }
     catch (final IOException ex)
     {
