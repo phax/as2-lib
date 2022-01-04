@@ -262,7 +262,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
           final String sMsgText = aMsg.getAsString ();
           aFOS.write (sMsgText.getBytes ());
 
-          // Enable this line, to also store the body of the source message
+          // Also store the body of the source message?
           if (bStoreBody)
             StreamHelper.copyInputStreamToOutputStream (aMsg.getData ().getInputStream (), aFOS);
         }

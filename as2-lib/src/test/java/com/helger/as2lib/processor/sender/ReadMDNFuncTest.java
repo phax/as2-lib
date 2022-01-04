@@ -128,7 +128,7 @@ public class ReadMDNFuncTest
   }
 
   @Test
-  @Ignore
+  @Ignore ("Part does not contain MimeMultipart")
   public void testReadMDNIssue97 () throws Exception
   {
     final String sPrefix = "mdn/issue97";
@@ -176,7 +176,7 @@ public class ReadMDNFuncTest
     aMsg.getMDN ().setData (aPart);
 
     final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
-    assertFalse (aCryptoHelper.isSigned (aPart));
+    assertTrue (aCryptoHelper.isSigned (aPart));
     assertFalse (aCryptoHelper.isEncrypted (aPart));
     assertFalse (aCryptoHelper.isCompressed (aPart.getContentType ()));
 
