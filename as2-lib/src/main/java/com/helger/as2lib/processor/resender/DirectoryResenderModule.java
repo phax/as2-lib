@@ -226,7 +226,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
     }
     catch (final AS2Exception ex)
     {
-      ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
+      ex.terminate (aFile, aMsg);
+
       final String sErrorDirectory = aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY));
       // Use the source name as the default
       final String sErrorFilename = StringHelper.getNotEmpty (aParams.format (attrs ().getAsString (ATTR_STORED_ERROR_FILENAME)),

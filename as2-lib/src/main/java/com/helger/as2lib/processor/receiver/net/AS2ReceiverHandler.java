@@ -466,7 +466,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final Exception ex)
       {
-        WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
+        WrappedAS2Exception.wrap (ex).terminate (aMsg);
       }
     }
   }
@@ -702,7 +702,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final Exception ex)
       {
-        throw new WrappedAS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
+        throw new AS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
       }
     }
     catch (final AS2DispositionException ex)

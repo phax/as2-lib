@@ -278,7 +278,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     }
     catch (final AS2Exception ex)
     {
-      ex.setSourceMsg (aMsg).setSourceFile (aFile).terminate ();
+      ex.terminate (aFile, aMsg);
       final String sErrorDirectory = AS2IOHelper.getSafeFileAndFolderName (aParams.format (getAttributeAsStringRequired (ATTR_ERROR_DIRECTORY)));
       // Use the source name as the default
       final String sErrorFilename = StringHelper.getNotEmpty (FilenameHelper.getAsSecureValidASCIIFilename (aParams.format (attrs ().getAsString (ATTR_STORED_ERROR_FILENAME))),

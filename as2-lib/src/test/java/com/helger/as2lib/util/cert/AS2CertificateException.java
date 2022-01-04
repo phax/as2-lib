@@ -36,26 +36,13 @@ import com.helger.as2lib.exception.AS2Exception;
 
 /**
  * Exceptions for certificate handling
- * 
+ *
  * @author Philip Helger
  */
 public class AS2CertificateException extends AS2Exception
 {
-  public AS2CertificateException ()
-  {}
-
-  public AS2CertificateException (final String sMsg)
-  {
-    super (sMsg);
-  }
-
   public AS2CertificateException (final String sMsg, final Throwable aCause)
   {
     super (sMsg, aCause);
-  }
-
-  public AS2CertificateException (final Throwable aCause)
-  {
-    super (aCause);
   }
 }

@@ -32,14 +32,13 @@
  */
 package com.helger.as2lib.processor.receiver;
 
+import javax.annotation.Nonnull;
+
 import com.helger.as2lib.exception.AS2Exception;
 
 public class AS2InvalidMessageException extends AS2Exception
 {
-  public AS2InvalidMessageException ()
-  {}
-
-  public AS2InvalidMessageException (final String sMsg)
+  public AS2InvalidMessageException (@Nonnull final String sMsg)
   {
     super (sMsg);
   }

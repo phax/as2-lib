@@ -33,6 +33,7 @@
 package com.helger.as2lib.exception;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An {@link AS2Exception} that wraps an existing exception easily.
@@ -41,14 +42,9 @@ import javax.annotation.Nonnull;
  */
 public final class WrappedAS2Exception extends AS2Exception
 {
-  private WrappedAS2Exception (final Throwable aCause)
+  private WrappedAS2Exception (@Nullable final Throwable aCause)
   {
     super (aCause);
-  }
-
-  public WrappedAS2Exception (final String sMsg, final Throwable aCause)
-  {
-    super (sMsg, aCause);
   }
 
   /**

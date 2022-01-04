@@ -478,10 +478,6 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       if (LOGGER.isInfoEnabled ())
         LOGGER.info ("Received async MDN " + sClientInfo + aMsg.getLoggingText ());
     }
-    catch (final AS2Exception ex)
-    {
-      m_aReceiverModule.handleError (aMsg, ex);
-    }
     catch (final Exception ex)
     {
       m_aReceiverModule.handleError (aMsg, WrappedAS2Exception.wrap (ex));

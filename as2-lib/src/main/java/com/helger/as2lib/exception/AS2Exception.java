@@ -54,12 +54,6 @@ public class AS2Exception extends Exception
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2Exception.class);
 
   private transient IMessage m_aSrcMsg;
-  private File m_aSrcFile;
-
-  public AS2Exception ()
-  {
-    log (false);
-  }
 
   public AS2Exception (@Nullable final String sMsg)
   {
@@ -89,31 +83,6 @@ public class AS2Exception extends Exception
     return this;
   }
 
-  @Nullable
-  public final File getSourceFile ()
-  {
-    return m_aSrcFile;
-  }
-
-  @Nonnull
-  public final AS2Exception setSourceFile (@Nullable final File aSrcFile)
-  {
-    m_aSrcFile = aSrcFile;
-    return this;
-  }
-
-  /**
-   * Log the exception but don't throw it.
-   *
-   * @return this for chaining
-   */
-  @Nonnull
-  public final AS2Exception terminate ()
-  {
-    log (true);
-    return this;
-  }
-
   public static final void log (final Class <?> aExceptionClass,
                                 final boolean bTerminated,
                                 final String sLogMessage,
@@ -137,9 +106,35 @@ public class AS2Exception extends Exception
   /**
    * @param bTerminated
    *        <code>true</code> if the exception was terminated
+   * @param aSrcFile
+   *        Source file. May be <code>null</code>.
+   * @param aSrcMsg
+   *        Source message. May be <code>null</code>.
    */
-  protected final void log (final boolean bTerminated)
+  protected final void log (final boolean bTerminated, @Nullable final File aSrcFile, @Nullable final IMessage aSrcMsg)
   {
-    log (getClass (), bTerminated, getMessage (), m_aSrcFile, m_aSrcMsg, getCause ());
+    log (getClass (), bTerminated, getMessage (), aSrcFile, aSrcMsg, getCause ());
+  }
+
+  /**
+   * Log the exception but don't throw it.
+   *
+   * @return this for chaining
+   */
+  @Nonnull
+  public final AS2Exception terminate ()
+  {
+    log (true, null, m_aSrcMsg);
+    return this;
+  }
+
+  public final void terminate (@Nullable final IMessage aMsg)
+  {
+    log (true, null, aMsg);
+  }
+
+  public final void terminate (@Nullable final File aFile, @Nullable final IMessage aMsg)
+  {
+    log (true, aFile, aMsg);
   }
 }

@@ -825,7 +825,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   @OverrideOnDemand
   protected void onReceivedMDNError (@Nonnull final AS2Message aMsg, @Nonnull final AS2Exception ex) throws AS2Exception
   {
-    new AS2Exception ("Message was sent but an error occured while receiving the MDN", ex).setSourceMsg (aMsg).terminate ();
+    new AS2Exception ("Message was sent but an error occured while receiving the MDN", ex).terminate (aMsg);
   }
 
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
@@ -990,7 +990,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     {
       if (LOGGER.isErrorEnabled ())
         LOGGER.error ("Http Response Error " + ex.getMessage ());
-      ex.terminate ();
+      ex.terminate (aMsg);
 
       if (!doResend (IProcessorSenderModule.DO_SEND, aMsg, ex, nRetries))
         throw ex;

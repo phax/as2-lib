@@ -110,7 +110,7 @@ public class MessageFileModule extends AbstractStorageModule
     catch (final Exception ex)
     {
       throw AS2DispositionException.wrap (ex,
-                                          () -> DispositionType.createError ("Error storing transaction"),
+                                          () -> DispositionType.createError ("error-storing-transaction"),
                                           () -> AbstractActiveNetModule.DISP_STORAGE_FAILED);
     }
 

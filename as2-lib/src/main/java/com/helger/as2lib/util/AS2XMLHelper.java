@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.ReturnsMutableCopy;
@@ -199,7 +198,7 @@ public final class AS2XMLHelper
     }
     catch (final Exception ex)
     {
-      throw new WrappedAS2Exception ("Error creating component: " + sClassName, ex);
+      throw new AS2Exception ("Error creating component: " + sClassName, ex);
     }
   }
 }

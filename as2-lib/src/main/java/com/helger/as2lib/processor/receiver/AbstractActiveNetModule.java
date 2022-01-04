@@ -241,7 +241,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                     " with error " +
                     aSrcEx.getMessage ());
 
-    aSrcEx.setSourceMsg (aMsg).terminate ();
+    aSrcEx.terminate (aMsg);
 
     try
     {
@@ -277,7 +277,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
     }
     catch (final Exception ex)
     {
-      WrappedAS2Exception.wrap (ex).setSourceMsg (aMsg).terminate ();
+      WrappedAS2Exception.wrap (ex).terminate (aMsg);
     }
   }
 

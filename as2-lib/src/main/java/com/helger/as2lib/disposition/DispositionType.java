@@ -150,7 +150,7 @@ public class DispositionType
     if (isWarning ())
     {
       final AS2DispositionException ex = new AS2DispositionException (this, sText, null);
-      ex.setSourceMsg (aSrcMsg).terminate ();
+      AS2Exception.log (ex.getClass (), true, ex.getMessage (), null, aSrcMsg, null);
     }
     else
     {

@@ -32,12 +32,11 @@
  */
 package com.helger.as2lib.exception;
 
+import javax.annotation.Nonnull;
+
 public class AS2UnsupportedException extends AS2Exception
 {
-  public AS2UnsupportedException ()
-  {}
-
-  public AS2UnsupportedException (final String sMsg)
+  public AS2UnsupportedException (@Nonnull final String sMsg)
   {
     super (sMsg);
   }
