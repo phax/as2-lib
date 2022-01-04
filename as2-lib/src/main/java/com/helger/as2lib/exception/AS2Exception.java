@@ -130,7 +130,7 @@ public class AS2Exception extends Exception
 
   public final void terminate (@Nullable final IMessage aMsg)
   {
-    log (true, null, aMsg);
+    log (true, (File) null, aMsg);
   }
 
   public final void terminate (@Nullable final File aFile, @Nullable final IMessage aMsg)
