@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.as2</groupId>
     <artifactId>as2-lib-parent-pom</artifactId>
-    <version>4.10.0-SNAPSHOT</version>
+    <version>4.10.0</version>
   </parent>
   <artifactId>as2-demo-webapp</artifactId>
   <packaging>war</packaging>
