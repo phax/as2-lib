@@ -517,216 +517,222 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                      @Nonnull final AS2Message aMsg,
                                      @Nonnull final IAS2HttpResponseHandler aResponseHandler)
   {
+    // Must be outer try-catch to make sure it is usable in the exception
+    // handler, to avoid the decrypted content gets removed (see issue #135)
     try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
-      final IAS2Session aSession = m_aReceiverModule.getSession ();
-
       try
       {
-        // Put received data in a MIME body part
-        final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
+        final IAS2Session aSession = m_aReceiverModule.getSession ();
 
-        final MimeBodyPart aReceivedPart = new MimeBodyPart ();
-        aReceivedPart.setDataHandler (new DataHandler (aMsgData));
+        try
+        {
+          // Put received data in a MIME body part
+          final String sReceivedContentType = AS2HttpHelper.getCleanContentType (aMsg.getHeader (CHttpHeader.CONTENT_TYPE));
 
-        // Header must be set AFTER the DataHandler!
-        aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
-        aMsg.setData (aReceivedPart);
-      }
-      catch (final Exception ex)
-      {
-        throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
-                                           AbstractActiveNetModule.DISP_PARSING_MIME_FAILED,
-                                           ex);
-      }
+          final MimeBodyPart aReceivedPart = new MimeBodyPart ();
+          aReceivedPart.setDataHandler (new DataHandler (aMsgData));
 
-      // Extract AS2 ID's from header, find the message's partnership and
-      // update the message
-      try
-      {
-        final String sAS2From = aMsg.getAS2From ();
-        aMsg.partnership ().setSenderAS2ID (sAS2From);
+          // Header must be set AFTER the DataHandler!
+          aReceivedPart.setHeader (CHttpHeader.CONTENT_TYPE, sReceivedContentType);
+          aMsg.setData (aReceivedPart);
+        }
+        catch (final Exception ex)
+        {
+          throw new AS2DispositionException (DispositionType.createError ("unexpected-processing-error"),
+                                             AbstractActiveNetModule.DISP_PARSING_MIME_FAILED,
+                                             ex);
+        }
 
-        final String sAS2To = aMsg.getAS2To ();
-        aMsg.partnership ().setReceiverAS2ID (sAS2To);
+        // Extract AS2 ID's from header, find the message's partnership and
+        // update the message
+        try
+        {
+          final String sAS2From = aMsg.getAS2From ();
+          aMsg.partnership ().setSenderAS2ID (sAS2From);
 
-        // Fill all partnership attributes etc.
-        aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
-      }
-      catch (final AS2Exception ex)
-      {
-        throw AS2DispositionException.wrap (ex,
-                                            () -> DispositionType.createError ("authentication-failed"),
-                                            () -> AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND);
-      }
+          final String sAS2To = aMsg.getAS2To ();
+          aMsg.partnership ().setReceiverAS2ID (sAS2To);
 
-      // Per RFC5402 compression is always before encryption but can be before
-      // or after signing of message but only in one place
-      final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
-      boolean bIsDecompressed = false;
+          // Fill all partnership attributes etc.
+          aSession.getPartnershipFactory ().updatePartnership (aMsg, false);
+        }
+        catch (final AS2Exception ex)
+        {
+          throw AS2DispositionException.wrap (ex,
+                                              () -> DispositionType.createError ("authentication-failed"),
+                                              () -> AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND);
+        }
 
-      // Decrypt and verify signature of the data, and attach data to the
-      // message
-      decrypt (aMsg, aResHelper);
-
-      if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
-      {
-        if (LOGGER.isTraceEnabled ())
-          LOGGER.trace ("Decompressing received message before checking signature...");
-        decompress (aMsg);
-        bIsDecompressed = true;
-      }
-
-      verify (aMsg, aResHelper);
-
-      if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
-      {
         // Per RFC5402 compression is always before encryption but can be before
         // or after signing of message but only in one place
-        if (bIsDecompressed)
+        final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
+        boolean bIsDecompressed = false;
+
+        // Decrypt and verify signature of the data, and attach data to the
+        // message
+        decrypt (aMsg, aResHelper);
+
+        if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
         {
-          throw new AS2DispositionException (DispositionType.createError ("decompression-failed"),
-                                             AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
-                                             new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
+          if (LOGGER.isTraceEnabled ())
+            LOGGER.trace ("Decompressing received message before checking signature...");
+          decompress (aMsg);
+          bIsDecompressed = true;
+        }
+
+        verify (aMsg, aResHelper);
+
+        if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
+        {
+          // Per RFC5402 compression is always before encryption but can be
+          // before
+          // or after signing of message but only in one place
+          if (bIsDecompressed)
+          {
+            throw new AS2DispositionException (DispositionType.createError ("decompression-failed"),
+                                               AbstractActiveNetModule.DISP_DECOMPRESSION_ERROR,
+                                               new Exception ("Message has already been decompressed. Per RFC5402 it cannot occur twice."));
+          }
+
+          if (LOGGER.isTraceEnabled ())
+            if (aMsg.attrs ().containsKey (AS2Message.ATTRIBUTE_RECEIVED_SIGNED))
+              LOGGER.trace ("Decompressing received message after verifying signature...");
+            else
+              LOGGER.trace ("Decompressing received message after decryption...");
+          decompress (aMsg);
+          bIsDecompressed = true;
         }
 
         if (LOGGER.isTraceEnabled ())
-          if (aMsg.attrs ().containsKey (AS2Message.ATTRIBUTE_RECEIVED_SIGNED))
-            LOGGER.trace ("Decompressing received message after verifying signature...");
+          try
+          {
+            LOGGER.trace ("SMIME Decrypted Content-Disposition: " +
+                          aMsg.getContentDisposition () +
+                          "\n      Content-Type received: " +
+                          aMsg.getContentType () +
+                          "\n      HEADERS after decryption: " +
+                          aMsg.getData ().getAllHeaders () +
+                          "\n      Content-Disposition in MSG detData() MIMEPART after decryption: " +
+                          aMsg.getData ().getContentType ());
+          }
+          catch (final MessagingException ex)
+          {
+            if (LOGGER.isErrorEnabled ())
+              LOGGER.error ("Failed to trace message: " + aMsg, ex);
+          }
+
+        // Validate the received message before storing
+        try
+        {
+          aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_BEFORE_STORE, aMsg, null);
+        }
+        catch (final AS2NoModuleException ex)
+        {
+          // No module installed - ignore
+        }
+        catch (final AS2Exception ex)
+        {
+          // Issue 90 - use CRLF as separator
+          throw AS2DispositionException.wrap (ex,
+                                              () -> DispositionType.createError ("unexpected-processing-error"),
+                                              () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                                          CHttp.EOL,
+                                                                                          _getDispositionText (ex)));
+        }
+
+        // Store the received message
+        try
+        {
+          aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
+        }
+        catch (final AS2NoModuleException ex)
+        {
+          // No module installed - ignore
+        }
+        catch (final AS2Exception ex)
+        {
+          // Issue 90 - use CRLF as separator
+          throw AS2DispositionException.wrap (ex,
+                                              () -> DispositionType.createError ("unexpected-processing-error"),
+                                              () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
+                                                                                          CHttp.EOL,
+                                                                                          _getDispositionText (ex)));
+        }
+
+        // Validate the received message after storing
+        try
+        {
+          aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_AFTER_STORE, aMsg, null);
+        }
+        catch (final AS2NoModuleException ex)
+        {
+          // No module installed - ignore
+        }
+        catch (final AS2Exception ex)
+        {
+          // Issue 90 - use CRLF as separator
+          throw AS2DispositionException.wrap (ex,
+                                              () -> DispositionType.createError ("unexpected-processing-error"),
+                                              () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
+                                                                                          CHttp.EOL,
+                                                                                          _getDispositionText (ex)));
+        }
+
+        try
+        {
+          if (aMsg.isRequestingMDN ())
+          {
+            if (LOGGER.isTraceEnabled ())
+              LOGGER.trace ("AS2 message is requesting an MDN");
+
+            // Transmit a success MDN if requested
+            sendMDN (sClientInfo,
+                     aResponseHandler,
+                     aMsg,
+                     DispositionType.createSuccess (),
+                     AbstractActiveNetModule.DISP_SUCCESS,
+                     ESuccess.SUCCESS);
+          }
           else
-            LOGGER.trace ("Decompressing received message after decryption...");
-        decompress (aMsg);
-        bIsDecompressed = true;
-      }
+          {
+            if (LOGGER.isTraceEnabled ())
+              LOGGER.trace ("AS2 message is not requesting an MDN - just sending HTTP 200 (OK)");
 
-      if (LOGGER.isTraceEnabled ())
-        try
-        {
-          LOGGER.trace ("SMIME Decrypted Content-Disposition: " +
-                        aMsg.getContentDisposition () +
-                        "\n      Content-Type received: " +
-                        aMsg.getContentType () +
-                        "\n      HEADERS after decryption: " +
-                        aMsg.getData ().getAllHeaders () +
-                        "\n      Content-Disposition in MSG detData() MIMEPART after decryption: " +
-                        aMsg.getData ().getContentType ());
+            // Just send a HTTP OK
+            HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_OK);
+            if (LOGGER.isInfoEnabled ())
+              LOGGER.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
+          }
         }
-        catch (final MessagingException ex)
+        catch (final Exception ex)
         {
-          if (LOGGER.isErrorEnabled ())
-            LOGGER.error ("Failed to trace message: " + aMsg, ex);
+          throw new AS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
         }
-
-      // Validate the received message before storing
-      try
-      {
-        aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_BEFORE_STORE, aMsg, null);
       }
-      catch (final AS2NoModuleException ex)
+      catch (final AS2DispositionException ex)
       {
-        // No module installed - ignore
+        sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
+        m_aReceiverModule.handleError (aMsg, ex);
       }
       catch (final AS2Exception ex)
       {
-        // Issue 90 - use CRLF as separator
-        throw AS2DispositionException.wrap (ex,
-                                            () -> DispositionType.createError ("unexpected-processing-error"),
-                                            () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
-                                                                                        CHttp.EOL,
-                                                                                        _getDispositionText (ex)));
+        m_aReceiverModule.handleError (aMsg, ex);
       }
-
-      // Store the received message
-      try
+      finally
       {
-        aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_STORE, aMsg, null);
-      }
-      catch (final AS2NoModuleException ex)
-      {
-        // No module installed - ignore
-      }
-      catch (final AS2Exception ex)
-      {
-        // Issue 90 - use CRLF as separator
-        throw AS2DispositionException.wrap (ex,
-                                            () -> DispositionType.createError ("unexpected-processing-error"),
-                                            () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_STORAGE_FAILED,
-                                                                                        CHttp.EOL,
-                                                                                        _getDispositionText (ex)));
-      }
-
-      // Validate the received message after storing
-      try
-      {
-        aSession.getMessageProcessor ().handle (IProcessorStorageModule.DO_VALIDATE_AFTER_STORE, aMsg, null);
-      }
-      catch (final AS2NoModuleException ex)
-      {
-        // No module installed - ignore
-      }
-      catch (final AS2Exception ex)
-      {
-        // Issue 90 - use CRLF as separator
-        throw AS2DispositionException.wrap (ex,
-                                            () -> DispositionType.createError ("unexpected-processing-error"),
-                                            () -> StringHelper.getConcatenatedOnDemand (AbstractActiveNetModule.DISP_VALIDATION_FAILED,
-                                                                                        CHttp.EOL,
-                                                                                        _getDispositionText (ex)));
-      }
-
-      try
-      {
-        if (aMsg.isRequestingMDN ())
+        // close the temporary shared stream if it exists
+        final TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
+        if (null != sis)
         {
-          if (LOGGER.isTraceEnabled ())
-            LOGGER.trace ("AS2 message is requesting an MDN");
-
-          // Transmit a success MDN if requested
-          sendMDN (sClientInfo,
-                   aResponseHandler,
-                   aMsg,
-                   DispositionType.createSuccess (),
-                   AbstractActiveNetModule.DISP_SUCCESS,
-                   ESuccess.SUCCESS);
-        }
-        else
-        {
-          if (LOGGER.isTraceEnabled ())
-            LOGGER.trace ("AS2 message is not requesting an MDN - just sending HTTP 200 (OK)");
-
-          // Just send a HTTP OK
-          HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_OK);
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
-        }
-      }
-      catch (final Exception ex)
-      {
-        throw new AS2Exception ("Error creating and returning MDN, message was stilled processed", ex);
-      }
-    }
-    catch (final AS2DispositionException ex)
-    {
-      sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
-      m_aReceiverModule.handleError (aMsg, ex);
-    }
-    catch (final AS2Exception ex)
-    {
-      m_aReceiverModule.handleError (aMsg, ex);
-    }
-    finally
-    {
-      // close the temporary shared stream if it exists
-      final TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
-      if (null != sis)
-      {
-        try
-        {
-          sis.closeAll ();
-        }
-        catch (final IOException e)
-        {
-          LOGGER.error ("Exception while closing TempSharedFileInputStream", e);
+          try
+          {
+            sis.closeAll ();
+          }
+          catch (final IOException e)
+          {
+            LOGGER.error ("Exception while closing TempSharedFileInputStream", e);
+          }
         }
       }
     }
