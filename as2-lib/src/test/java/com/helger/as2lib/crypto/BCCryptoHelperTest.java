@@ -110,6 +110,7 @@ public final class BCCryptoHelperTest
                                                        eAlgo,
                                                        nIncludeCert == 1,
                                                        eAlgo.isRFC3851Algorithm (),
+                                                       false,
                                                        EContentTransferEncoding.BASE64);
           assertNotNull (aSigned);
 
@@ -139,6 +140,7 @@ public final class BCCryptoHelperTest
                                                    ECryptoAlgorithmSign.DIGEST_SHA_512,
                                                    true,
                                                    false,
+                                                   false,
                                                    eCTE);
       assertNotNull (aSigned);
 
@@ -162,6 +164,7 @@ public final class BCCryptoHelperTest
                                                  (X509Certificate) PKE.getCertificate (),
                                                  PKE.getPrivateKey (),
                                                  ECryptoAlgorithmSign.DIGEST_SHA_256,
+                                                 false,
                                                  false,
                                                  false,
                                                  EContentTransferEncoding.BASE64);
@@ -217,6 +220,7 @@ public final class BCCryptoHelperTest
                                                  ECryptoAlgorithmSign.DIGEST_SHA_256,
                                                  false,
                                                  false,
+                                                 false,
                                                  EContentTransferEncoding.BINARY);
     assertNotNull (aSigned);
 
@@ -263,6 +267,7 @@ public final class BCCryptoHelperTest
                                                  (X509Certificate) PKE.getCertificate (),
                                                  PKE.getPrivateKey (),
                                                  ECryptoAlgorithmSign.DIGEST_SHA_256,
+                                                 false,
                                                  false,
                                                  false,
                                                  EContentTransferEncoding.QUOTED_PRINTABLE);

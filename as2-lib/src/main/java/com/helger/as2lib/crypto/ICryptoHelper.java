@@ -174,6 +174,11 @@ public interface ICryptoHelper
    *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
    *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
    *        algorithm names (e.g. <code>sha-1</code>).
+   * @param bRemoveCmsAlgorithmProtect
+   *        if <code>true</code>, the CMS attribute "AlgorithmProtect" will be
+   *        removed. This is needed in compatibility with e.g. IBM Sterling.
+   *        Default value should be <code>false</code>. Since 4.10.1. See Issue
+   *        #137.
    * @param eCTE
    *        The Content-Transfer-Encoding to be used. May not be
    *        <code>null</code>.
@@ -188,6 +193,7 @@ public interface ICryptoHelper
                      @Nonnull ECryptoAlgorithmSign eAlgorithm,
                      boolean bIncludeCertificateInSignedContent,
                      boolean bUseOldRFC3851MicAlgs,
+                     boolean bRemoveCmsAlgorithmProtect,
                      @Nonnull EContentTransferEncoding eCTE) throws Exception;
 
   /**

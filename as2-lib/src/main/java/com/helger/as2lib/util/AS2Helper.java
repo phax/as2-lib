@@ -124,6 +124,11 @@ public final class AS2Helper
    *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
    *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
    *        algorithm names (e.g. <code>sha-1</code>).
+   * @param bRemoveCmsAlgorithmProtect
+   *        if <code>true</code>, the CMS attribute "AlgorithmProtect" will be
+   *        removed. This is needed in compatibility with e.g. IBM Sterling.
+   *        Default value should be <code>false</code>. Since 4.10.1. See Issue
+   *        #137.
    * @throws Exception
    *         In case something internally goes wrong
    */
@@ -132,7 +137,8 @@ public final class AS2Helper
                                     final boolean bSignMDN,
                                     final boolean bIncludeCertificateInSignedContent,
                                     @Nullable final ECryptoAlgorithmSign eMICAlg,
-                                    final boolean bUseOldRFC3851MicAlgs) throws Exception
+                                    final boolean bUseOldRFC3851MicAlgs,
+                                    final boolean bRemoveCmsAlgorithmProtect) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMdn, "MDN");
@@ -191,6 +197,7 @@ public final class AS2Helper
                                                                     eMICAlg,
                                                                     bIncludeCertificateInSignedContent,
                                                                     bUseOldRFC3851MicAlgs,
+                                                                    bRemoveCmsAlgorithmProtect,
                                                                     EContentTransferEncoding.BASE64);
         aMdn.setData (aSignedReport);
 
@@ -358,13 +365,15 @@ public final class AS2Helper
     }
 
     final boolean bUseOldRFC3851MicAlgs = aPartnership.isRFC3851MICAlgs ();
+    final boolean bRemoveCmsAlgorithmProtect = aPartnership.isRemoveCmsAlgorithmProtect ();
 
     createMDNData (aSession,
                    aMDN,
                    bSignMDN,
                    bIncludeCertificateInSignedContent,
                    aDispositionOptions.getFirstMICAlg (),
-                   bUseOldRFC3851MicAlgs);
+                   bUseOldRFC3851MicAlgs,
+                   bRemoveCmsAlgorithmProtect);
 
     aMDN.updateMessageID ();
 

@@ -923,6 +923,34 @@ public class Partnership implements Serializable
   }
 
   /**
+   * @return if <code>true</code>, the CMS attribute "AlgorithmProtect" will be
+   *         removed. This is needed in compatibility with e.g. IBM Sterling.
+   *         Default value is <code>false</code>. See Issue #137.
+   * @since 4.10.1
+   */
+  public boolean isRemoveCmsAlgorithmProtect ()
+  {
+    return m_aAttributes.getAsBoolean (CPartnershipIDs.PA_REMOVE_CMS_ALOGIRTHM_PROTECT, false);
+  }
+
+  /**
+   * Enable or disable the removal of the CMS attribute "AlgorithmProtect". By
+   * default this is <code>false</code>. This is needed in compatibility with
+   * e.g. IBM Sterling. Default value is <code>false</code>. See Issue #137.
+   *
+   * @param bValue
+   *        <code>true</code> to remove the attribute, <code>false</code> to
+   *        keep it.
+   * @return {@link EChange}.
+   * @since 4.10.1
+   */
+  @Nonnull
+  public EChange setRemoveCmsAlgorithmProtect (final boolean bValue)
+  {
+    return setAttribute (CPartnershipIDs.PA_REMOVE_CMS_ALOGIRTHM_PROTECT, Boolean.toString (bValue));
+  }
+
+  /**
    * @return A copy of all contained attributes. Never <code>null</code>.
    */
   @Nonnull

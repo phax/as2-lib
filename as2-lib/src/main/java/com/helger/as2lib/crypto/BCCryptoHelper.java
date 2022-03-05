@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.activation.CommandMap;
@@ -64,15 +65,19 @@ import javax.mail.internet.MimeMultipart;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.RecipientId;
 import org.bouncycastle.cms.RecipientInformation;
 import org.bouncycastle.cms.SignerId;
+import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
@@ -160,6 +165,8 @@ public final class BCCryptoHelper implements ICryptoHelper
       }
     }
     DEFAULT_SECURITY_PROVIDER_NAME = sProvName;
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Using security provider '" + DEFAULT_SECURITY_PROVIDER_NAME + "'.");
 
     final String sDumpDecryptedDirectory = SystemProperties.getPropertyValueOrNull ("AS2.dumpDecryptedDirectory");
     if (StringHelper.hasText (sDumpDecryptedDirectory))
@@ -486,6 +493,7 @@ public final class BCCryptoHelper implements ICryptoHelper
                             @Nonnull final ECryptoAlgorithmSign eAlgorithm,
                             final boolean bIncludeCertificateInSignedContent,
                             final boolean bUseOldRFC3851MicAlgs,
+                            final boolean bRemoveCmsAlgorithmProtect,
                             @Nonnull final EContentTransferEncoding eCTE) throws GeneralSecurityException,
                                                                           SMIMEException,
                                                                           MessagingException,
@@ -541,11 +549,30 @@ public final class BCCryptoHelper implements ICryptoHelper
     // adding the smime attributes above to the signed attributes that
     // will be generated as part of the signature. The encryption algorithm
     // used is taken from the key
-    aSGen.addSignerInfoGenerator (new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (m_sSecurityProviderName)
-                                                                            .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
-                                                                            .build (eAlgorithm.getSignAlgorithmName (),
-                                                                                    aPrivateKey,
-                                                                                    aX509Cert));
+    {
+      SignerInfoGenerator aSigInfoGen = new JcaSimpleSignerInfoGeneratorBuilder ().setProvider (m_sSecurityProviderName)
+                                                                                  .setSignedAttributeGenerator (new AttributeTable (aSignedAttrs))
+                                                                                  .build (eAlgorithm.getSignAlgorithmName (),
+                                                                                          aPrivateKey,
+                                                                                          aX509Cert);
+      if (bRemoveCmsAlgorithmProtect)
+      {
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Removing CMS AlgorithmProtect attribute, if it is present");
+
+        final CMSAttributeTableGenerator sAttrGen = aSigInfoGen.getSignedAttributeTableGenerator ();
+        aSigInfoGen = new SignerInfoGenerator (aSigInfoGen, new DefaultSignedAttributeTableGenerator ()
+        {
+          @Override
+          public AttributeTable getAttributes (final Map parameters)
+          {
+            final AttributeTable ret = sAttrGen.getAttributes (parameters);
+            return ret.remove (CMSAttributes.cmsAlgorithmProtect);
+          }
+        }, aSigInfoGen.getUnsignedAttributeTableGenerator ());
+      }
+      aSGen.addSignerInfoGenerator (aSigInfoGen);
+    }
 
     if (bIncludeCertificateInSignedContent)
     {

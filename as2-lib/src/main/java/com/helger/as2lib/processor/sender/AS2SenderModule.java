@@ -421,6 +421,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                  @Nullable final PrivateKey aSenderKey,
                                                  final boolean bIncludeCertificateInSignedContent,
                                                  final boolean bUseRFC3851MICAlg,
+                                                 final boolean bRemoveCmsAlgorithmProtect,
                                                  @Nullable final ECryptoAlgorithmCrypt eCryptAlgorithm,
                                                  @Nullable final X509Certificate aReceiverCert,
                                                  @Nonnull final String sLoggingText) throws Exception
@@ -474,6 +475,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                 eSignAlgorithm,
                                 bIncludeCertificateInSignedContent,
                                 bUseRFC3851MICAlg,
+                                bRemoveCmsAlgorithmProtect,
                                 eCTE);
       _logMimeBodyPart (aDataBP, "signed");
 
@@ -542,6 +544,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     PrivateKey aSenderKey = null;
     boolean bIncludeCertificateInSignedContent = false;
     boolean bUseRFC3851MICAlg = false;
+    boolean bRemoveCmsAlgorithmProtect = false;
     {
       final String sSignAlgorithm = aPartnership.getSigningAlgorithm ();
       if (sSignAlgorithm != null)
@@ -567,6 +570,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
         // Use old MIC algorithms?
         bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
+
+        // Remove CMS attributes?
+        bRemoveCmsAlgorithmProtect = aPartnership.isRemoveCmsAlgorithmProtect ();
       }
     }
 
@@ -608,6 +614,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                aSenderKey,
                                bIncludeCertificateInSignedContent,
                                bUseRFC3851MICAlg,
+                               bRemoveCmsAlgorithmProtect,
                                eCryptAlgorithm,
                                aReceiverCert,
                                aMsg.getLoggingText ());

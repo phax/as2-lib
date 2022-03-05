@@ -203,6 +203,15 @@ public final class CPartnershipIDs
    */
   public static final String PA_RFC3851_MICALGS = "rfc3851_micalgs";
 
+  /**
+   * Special attribute indicating that the CMS attribute "AlgorithmProtect" will
+   * be removed. This is needed in compatibility with e.g. IBM Sterling. Default
+   * value is <code>false</code>. See Issue #137.
+   *
+   * @since 4.10.1
+   */
+  public static final String PA_REMOVE_CMS_ALOGIRTHM_PROTECT = "remove_cms_algorithm_protection_attrib";
+
   private CPartnershipIDs ()
   {}
 }
