@@ -92,7 +92,7 @@ public final class AS2Helper
 
   private static final class SingletonHolder
   {
-    static final BCCryptoHelper s_aInstance = new BCCryptoHelper ();
+    static final BCCryptoHelper INSTANCE = new BCCryptoHelper ();
   }
 
   private AS2Helper ()
@@ -101,7 +101,7 @@ public final class AS2Helper
   @Nonnull
   public static ICryptoHelper getCryptoHelper ()
   {
-    return SingletonHolder.s_aInstance;
+    return SingletonHolder.INSTANCE;
   }
 
   /**
