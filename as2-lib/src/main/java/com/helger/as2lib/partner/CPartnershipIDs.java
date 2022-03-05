@@ -210,7 +210,7 @@ public final class CPartnershipIDs
    *
    * @since 4.10.1
    */
-  public static final String PA_REMOVE_CMS_ALOGIRTHM_PROTECT = "remove_cms_algorithm_protection_attrib";
+  public static final String PA_REMOVE_CMS_ALOGIRTHM_PROTECT = "remove_cms_algorithm_protect_attr";
 
   private CPartnershipIDs ()
   {}
