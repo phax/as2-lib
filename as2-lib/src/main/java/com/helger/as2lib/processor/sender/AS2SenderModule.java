@@ -35,6 +35,7 @@ package com.helger.as2lib.processor.sender;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -88,6 +89,7 @@ import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.AS2HttpHeaderSetter;
 import com.helger.as2lib.util.http.IAS2IncomingMDNCallback;
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.EHttpMethod;
@@ -222,6 +224,46 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   /**
+   * Override this method to store pending MDN messages somewhere else than on
+   * disc.
+   *
+   * @param aMsg
+   *        The message for which an async MDN is requested. Never
+   *        <code>null</code>.
+   * @param sMsgFilename
+   *        The filename (without the path), derived from the Message ID, in
+   *        which the data should be stored.
+   * @return <code>null</code> if the configuration is not correct.
+   * @throws AS2Exception
+   *         In case of an error
+   * @since 4.10.2
+   */
+  @Nullable
+  @OverrideOnDemand
+  protected OutputStream openPendingInfoStreamForWriting (@Nonnull final AS2Message aMsg,
+                                                @Nonnull @Nonempty final String sMsgFilename) throws AS2Exception
+  {
+    // The file that is written
+    final String sPendingMDNInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
+                                                                                            .getPendingMDNInfoFolder ());
+    if (StringHelper.hasNoText (sPendingMDNInfoFolder))
+    {
+      LOGGER.error ("The pending MDN info folder is not properly configured. Cannot store async MDN data.");
+      return null;
+    }
+
+    final File aPendingInfoFile = new File (sPendingMDNInfoFolder + FilenameHelper.UNIX_SEPARATOR_STR + sMsgFilename);
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Saving original MIC and message id information into file '" +
+                   aPendingInfoFile.getAbsolutePath () +
+                   "'" +
+                   aMsg.getLoggingText ());
+
+    return FileHelper.getOutputStream (aPendingInfoFile);
+  }
+
+  /**
    * For storing original MIC and outgoing file into pending information file.
    * Override this method if you want to store the pending MDN information in a
    * separate data storage like a DB etc.
@@ -243,8 +285,6 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Original MIC is '" + aMIC.getAsAS2String () + "'" + aMsg.getLoggingText ());
 
-      final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
-
       // The filename is created here, but the file content is placed there
       // from somewhere else
       final String sPendingMDNFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ().getPendingMDNFolder ());
@@ -253,35 +293,30 @@ public class AS2SenderModule extends AbstractHttpSenderModule
         LOGGER.error ("The pending MDN folder is not properly configured. Cannot store async MDN data.");
         return;
       }
+
+      final String sMsgFilename = AS2IOHelper.getFilenameFromMessageID (aMsg.getMessageID ());
       final String sPendingFilename = sPendingMDNFolder + FilenameHelper.UNIX_SEPARATOR_STR + sMsgFilename;
 
-      // The file that is written
-      final String sPendingMDNInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
-                                                                                              .getPendingMDNInfoFolder ());
-      if (StringHelper.hasNoText (sPendingMDNInfoFolder))
+      try (final OutputStream aOS = openPendingInfoStreamForWriting (aMsg, sMsgFilename))
       {
-        LOGGER.error ("The pending MDN info folder is not properly configured. Cannot store async MDN data.");
-        return;
+        if (aOS == null)
+        {
+          // Happens on misconfiguration
+          return;
+        }
+
+        // input pending folder & original outgoing file name to get and
+        // unique file name in order to avoid file overwriting.
+        try (final Writer aWriter = StreamHelper.createWriter (aOS, StandardCharsets.ISO_8859_1))
+        {
+          // Write in 2 lines
+          aWriter.write (aMIC.getAsAS2String () + ENewLineMode.DEFAULT.getText () + sPendingFilename);
+        }
+
+        // remember that MDN is pending
+        aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
+        aMsg.attrs ().putIn (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
       }
-      final File aPendingInfoFile = new File (sPendingMDNInfoFolder + FilenameHelper.UNIX_SEPARATOR_STR + sMsgFilename);
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Saving original MIC and message id information into file '" +
-                     aPendingInfoFile.getAbsolutePath () +
-                     "'" +
-                     aMsg.getLoggingText ());
-
-      // input pending folder & original outgoing file name to get and
-      // unique file name in order to avoid file overwriting.
-      try (final Writer aWriter = FileHelper.getWriter (aPendingInfoFile, StandardCharsets.ISO_8859_1))
-      {
-        // Write in 2 lines
-        aWriter.write (aMIC.getAsAS2String () + ENewLineMode.DEFAULT.getText () + sPendingFilename);
-      }
-
-      // remember that MDN is pending
-      aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, sPendingFilename);
-      aMsg.attrs ().putIn (CFileAttribute.MA_STATUS, CFileAttribute.MA_STATUS_PENDING);
     }
     catch (final IOException ex)
     {

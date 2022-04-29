@@ -77,6 +77,7 @@ import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2IncomingMDNCallback;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
+import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.http.CHttp;
 import com.helger.commons.http.CHttpHeader;
@@ -86,6 +87,7 @@ import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StreamHelper.CopyByteStreamBuilder;
+import com.helger.commons.state.ESuccess;
 import com.helger.commons.state.ETriState;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
@@ -171,6 +173,126 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
+   * Get the pending info file itself.
+   *
+   * @param aMsg
+   *        Source message. Never <code>null</code>.
+   * @return The file.
+   * @throws AS2Exception
+   *         In case of error
+   * @since 4.10.2
+   */
+  @Nullable
+  protected File getPendingInfoFile (@Nonnull final AS2Message aMsg) throws AS2Exception
+  {
+    // use original message id. to open the pending information file
+    // from pendinginfo folder.
+    final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
+
+    final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
+                                                                                        .getMessageProcessor ()
+                                                                                        .getPendingMDNInfoFolder ());
+    if (StringHelper.hasNoText (sPendingInfoFolder))
+    {
+      LOGGER.error ("The pending MDN info folder is not properly configured. Cannot check for async MDNs.");
+      return null;
+    }
+
+    return new File (sPendingInfoFolder + FilenameHelper.UNIX_SEPARATOR_STR + AS2IOHelper.getFilenameFromMessageID (sOrigMessageID));
+  }
+
+  /**
+   * Delete the pending info file for reading.
+   *
+   * @param aMsg
+   *        Source message. Never <code>null</code>.
+   * @return <code>null</code> if open failed.
+   * @throws AS2Exception
+   *         In case of error
+   * @since 4.10.2
+   */
+  @Nullable
+  @OverrideOnDemand
+  protected InputStream openPendingInfoStreamForReading (@Nonnull final AS2Message aMsg) throws AS2Exception
+  {
+    final File aPendingInfoFile = getPendingInfoFile (aMsg);
+    if (aPendingInfoFile == null)
+      return null;
+
+    if (LOGGER.isInfoEnabled ())
+    {
+      LOGGER.info ("Trying to read original MIC and message ID information from file '" +
+                   aPendingInfoFile.getAbsolutePath () +
+                   "'" +
+                   aMsg.getLoggingText ());
+    }
+
+    final InputStream ret = FileHelper.getInputStream (aPendingInfoFile);
+    if (ret == null)
+    {
+      LOGGER.error ("The pending info file '" +
+                    aPendingInfoFile.getAbsolutePath () +
+                    "' with the original MIC could not be opened for reading");
+    }
+    return ret;
+  }
+
+  /**
+   * Delete the pending info file.
+   *
+   * @param aMsg
+   *        Source message. Never <code>null</code>.
+   * @return {@link ESuccess}
+   * @throws AS2Exception
+   *         In case of error
+   * @since 4.10.2
+   */
+  @OverrideOnDemand
+  protected ESuccess deletePendingInfoStream (@Nonnull final AS2Message aMsg) throws AS2Exception
+  {
+    final File aPendingInfoFile = getPendingInfoFile (aMsg);
+
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Delete pendinginfo file '" + aPendingInfoFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
+
+    if (!aPendingInfoFile.delete ())
+    {
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Error delete pendinginfo file '" + aPendingInfoFile.getAbsolutePath () + "'");
+      return ESuccess.FAILURE;
+    }
+    return ESuccess.SUCCESS;
+  }
+
+  /**
+   * Delete the pending file itself.
+   *
+   * @param aMsg
+   *        Source message. Never <code>null</code>.
+   * @param sPendingFilename
+   *        Pending filename
+   * @return {@link ESuccess}
+   * @throws AS2Exception
+   *         In case of error
+   * @since 4.10.2
+   */
+  @OverrideOnDemand
+  protected ESuccess deletePendingFile (@Nonnull final AS2Message aMsg, @Nonnull final String sPendingFilename) throws AS2Exception
+  {
+    final File aPendingFile = new File (sPendingFilename);
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Delete pending file '" + aPendingFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
+
+    if (!aPendingFile.delete ())
+    {
+      if (LOGGER.isErrorEnabled ())
+        LOGGER.error ("Error delete pending file '" + aPendingFile.getAbsolutePath () + "'");
+      return ESuccess.FAILURE;
+    }
+    return ESuccess.SUCCESS;
+  }
+
+  /**
    * verify if the mic is matched.
    *
    * @param aMsg
@@ -188,50 +310,29 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       final String sReturnMIC = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_MIC);
       final MIC aReturnMIC = MIC.parse (sReturnMIC);
 
-      // use original message id. to open the pending information file
-      // from pendinginfo folder.
-      final String sOrigMessageID = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_ORIG_MESSAGEID);
-
-      final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
-                                                                                          .getMessageProcessor ()
-                                                                                          .getPendingMDNInfoFolder ());
-      if (StringHelper.hasNoText (sPendingInfoFolder))
-      {
-        LOGGER.error ("The pending MDN info folder is not properly configured. Cannot check for async MDNs.");
-        return false;
-      }
-
-      final File aPendingInfoFile = new File (sPendingInfoFolder +
-                                              FilenameHelper.UNIX_SEPARATOR_STR +
-                                              AS2IOHelper.getFilenameFromMessageID (sOrigMessageID));
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Trying to read original MIC and message id information from file '" +
-                     aPendingInfoFile.getAbsolutePath () +
-                     "'" +
-                     aMsg.getLoggingText ());
-
       final String sOriginalMIC;
       final MIC aOriginalMIC;
-      final File aPendingFile;
-      try (final NonBlockingBufferedReader aPendingInfoReader = FileHelper.getBufferedReader (aPendingInfoFile,
-                                                                                              StandardCharsets.ISO_8859_1))
+      final String sPendingFilename;
+      try (final InputStream aIS = openPendingInfoStreamForReading (aMsg))
       {
-        if (aPendingInfoReader == null)
+        if (aIS == null)
         {
-          LOGGER.error ("The pending info file '" +
-                        aPendingInfoFile.getAbsolutePath () +
-                        "' with the original MIC could not be opened for reading");
           return false;
         }
 
-        // Get the original mic from the first line of pending information
-        // file
-        sOriginalMIC = aPendingInfoReader.readLine ();
-        aOriginalMIC = MIC.parse (sOriginalMIC);
+        // Cherset must be aligned with AS2SenderModule
+        try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (StreamHelper.createReader (aIS,
+                                                                                                                            StandardCharsets.ISO_8859_1)))
+        {
+          // Get the original mic from the first line of pending information
+          // file
+          sOriginalMIC = aPendingInfoReader.readLine ();
+          aOriginalMIC = MIC.parse (sOriginalMIC);
 
-        // Get the original pending file from the second line of pending
-        // information file
-        aPendingFile = new File (aPendingInfoReader.readLine ());
+          // Get the original pending file from the second line of pending
+          // information file
+          sPendingFilename = aPendingInfoReader.readLine ();
+        }
       }
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
@@ -244,7 +345,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       if (!bMICMatch)
       {
         if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("MIC was not matched, so the pending file '" + aPendingFile.getAbsolutePath () + "' will NOT be deleted.");
+          LOGGER.info ("MIC was not matched, so the pending file '" + sPendingFilename + "' will NOT be deleted.");
 
         // MIC was not matched
         m_aMICMatchingHandler.onMICMismatch (aMsg, sOriginalMIC, sReturnMIC);
@@ -255,32 +356,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
 
       // delete the pendinginfo & pending file if mic is matched
+      deletePendingInfoStream (aMsg);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Delete pendinginfo file '" +
-                     aPendingInfoFile.getName () +
-                     "' from pending folder '" +
-                     sPendingInfoFolder +
-                     "'" +
-                     aMsg.getLoggingText ());
-      if (!aPendingInfoFile.delete ())
-      {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error delete pendinginfo file '" + aPendingFile.getAbsolutePath () + "'");
-      }
-
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Delete pending file '" +
-                     aPendingFile.getName () +
-                     "' from pending folder '" +
-                     aPendingFile.getParent () +
-                     "'" +
-                     aMsg.getLoggingText ());
-      if (!aPendingFile.delete ())
-      {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Error delete pending file '" + aPendingFile.getAbsolutePath () + "'");
-      }
+      deletePendingFile (aMsg, sPendingFilename);
     }
     catch (final IOException | AS2ComponentNotFoundException ex)
     {
