@@ -63,7 +63,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements IS
   public void setFilename (@Nullable final String sFilename)
   {
     debugLog ( () -> "setFilename (" + sFilename + ")");
-    m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_FILENAME, sFilename));
   }
 
   @Nullable
@@ -78,7 +78,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements IS
   public void setSaveChangesToFile (final boolean bSaveChangesToFile)
   {
     debugLog ( () -> "setSaveChangesToFile (" + bSaveChangesToFile + ")");
-    m_aRWLock.writeLockedGet ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
+    m_aRWLock.writeLocked ( () -> attrs ().putIn (ATTR_SAVE_CHANGES_TO_FILE, bSaveChangesToFile));
   }
 
   public boolean isSaveChangesToFile ()
