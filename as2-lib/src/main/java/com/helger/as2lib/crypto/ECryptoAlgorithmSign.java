@@ -108,7 +108,11 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   /**
    * New version as of RFC 5751.
    */
-  DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA");
+  DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+
+  // id_rsassa_pkcs1_v1_5_with_sha3_256
+  RSASSA_PKCS1_V1_5_WITH_SHA3_256 ("rsassa_pkcs1_v1_5_with_sha3_256", NISTObjectIdentifiers.id_rsassa_pkcs1_v1_5_with_sha3_256, "RSASSAPSS");
+
 
   public static final ECryptoAlgorithmSign DEFAULT_RFC_3851 = DIGEST_SHA1;
   public static final ECryptoAlgorithmSign DEFAULT_RFC_5751 = DIGEST_SHA_256;
@@ -175,7 +179,7 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   public boolean isRFC5751Algorithm ()
   {
-    return this == DIGEST_MD5 || this == DIGEST_SHA_1 || this == DIGEST_SHA_256 || this == DIGEST_SHA_384 || this == DIGEST_SHA_512;
+    return this == DIGEST_MD5 || this == DIGEST_SHA_1 || this == DIGEST_SHA_256 || this == DIGEST_SHA_384 || this == DIGEST_SHA_512 || this == RSASSA_PKCS1_V1_5_WITH_SHA3_256;
   }
 
   @Nullable

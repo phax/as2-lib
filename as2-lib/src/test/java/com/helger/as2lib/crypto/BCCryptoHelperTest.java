@@ -101,7 +101,7 @@ public final class BCCryptoHelperTest
 
     for (int nIncludeCert = 0; nIncludeCert < 2; ++nIncludeCert)
       for (final ECryptoAlgorithmSign eAlgo : ECryptoAlgorithmSign.values ())
-        if (eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_MD5 && eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_SHA1)
+        if (eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_MD5 && eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_SHA1 && eAlgo != ECryptoAlgorithmSign.RSASSA_PKCS1_V1_5_WITH_SHA3_256)
         {
           final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
                                                 .sign (aPart,
