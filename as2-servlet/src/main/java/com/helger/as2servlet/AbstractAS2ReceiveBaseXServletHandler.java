@@ -75,7 +75,8 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
    */
   @Nonnull
   @OverrideOnDemand
-  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws AS2Exception, ServletException;
+  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws AS2Exception,
+                                                                                                     ServletException;
 
   @Override
   @OverridingMethodsMustInvokeSuper
@@ -222,14 +223,22 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
       {
         // Read in the message request, headers, and data
         final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
-        aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2HttpRequestDataProviderServletRequest (aRequestScope, aRequestIS),
+        aMsgDataSource = HTTPHelper.readAndDecodeHttpRequest (new AS2HttpRequestDataProviderServletRequest (aRequestScope,
+                                                                                                            aRequestIS),
                                                               aResponseHandler,
                                                               aMsg,
                                                               aIncomingDumper);
       }
       catch (final Exception ex)
       {
-        AS2Exception.log (ex.getClass (), true, "Failed to read Servlet Request: " + ex.getMessage (), null, null, ex.getCause ());
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("Failed to read Servlet Request", ex);
+        AS2Exception.log (ex.getClass (),
+                          true,
+                          "Failed to read Servlet Request: " + ex.getMessage (),
+                          null,
+                          null,
+                          ex.getCause ());
       }
 
       aSW.stop ();
@@ -244,7 +253,8 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
         {
           if (LOGGER.isInfoEnabled ())
             LOGGER.info ("received " +
-                         AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length, aSW) +
+                         AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length,
+                                                      aSW) +
                          " from " +
                          sClientInfo +
                          aMsg.getLoggingText ());
@@ -252,7 +262,13 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
         }
         else
         {
-          LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+          if (LOGGER.isInfoEnabled ())
+            LOGGER.info ("received message from " +
+                         sClientInfo +
+                         aMsg.getLoggingText () +
+                         " in " +
+                         aSW.getMillis () +
+                         " ms");
         }
 
         handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);
