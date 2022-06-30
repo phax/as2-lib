@@ -254,7 +254,10 @@ public final class HTTPHelper
 
       // Content-length present, or chunked encoding
       aBytePayload = null;
-      aPayload = new InputStreamDataSource (aRealIS, aMsg.getAS2From () == null ? "" : aMsg.getAS2From (), sReceivedContentType, true);
+      aPayload = new InputStreamDataSource (aRealIS,
+                                            aMsg.getAS2From () == null ? "" : aMsg.getAS2From (),
+                                            sReceivedContentType,
+                                            true);
     }
     else
     {
@@ -310,7 +313,8 @@ public final class HTTPHelper
     // Check the transfer encoding of the request. If none is provided, check
     // the partnership for a default one. If none is in the partnership used the
     // default one
-    final String sCTE = aMsg.partnership ().getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
+    final String sCTE = aMsg.partnership ()
+                            .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
     final String sContentTransferEncoding = aMsg.getHeaderOrDefault (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
     if (StringHelper.hasText (sContentTransferEncoding))
     {
@@ -333,7 +337,9 @@ public final class HTTPHelper
           final int nOriginalContentLength = aActualBytes.length;
 
           if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
+            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
+                         sContentTransferEncoding +
+                         "' - decoding");
           aActualBytes = aCodec.getDecoded (aActualBytes);
           aPayload = new ByteArrayDataSource (aActualBytes, aPayload.getContentType (), aPayload.getName ());
 
@@ -363,11 +369,21 @@ public final class HTTPHelper
   {
     try (final NonBlockingByteArrayOutputStream aData = new NonBlockingByteArrayOutputStream ())
     {
-      final String sHTTPLine = Integer.toString (nResponseCode) + " " + CHttp.getHttpResponseMessage (nResponseCode) + CHttp.EOL;
+      final String sHTTPLine = Integer.toString (nResponseCode) +
+                               " " +
+                               CHttp.getHttpResponseMessage (nResponseCode) +
+                               CHttp.EOL;
       aData.write (sHTTPLine.getBytes (CHttp.HTTP_CHARSET));
 
       aResponseHandler.sendHttpResponse (nResponseCode, new HttpHeaderMap (), aData);
     }
+  }
+
+  @Nonnull
+  private static String _debugChar (final int n)
+  {
+    return n >= 0x20 && n <= 0x7e ? "'" + Character.toString ((char) n) + "'"
+                                  : "0x" + StringHelper.getHexStringLeadingZero (n, 2);
   }
 
   /**
@@ -403,7 +419,13 @@ public final class HTTPHelper
             if (ch == ';')
               bHeadersStarted = true;
             else
+            {
+              if (LOGGER.isWarnEnabled ())
+                LOGGER.warn ("Found unsupported character " +
+                             _debugChar (ch) +
+                             " when trying to read HTTP chunk length");
               continue;
+            }
       if (!bHeadersStarted)
         nRes = (nRes * 16) + ch;
     }
