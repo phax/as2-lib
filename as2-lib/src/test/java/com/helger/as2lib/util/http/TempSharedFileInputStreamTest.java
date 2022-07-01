@@ -95,7 +95,7 @@ public final class TempSharedFileInputStreamTest
       {
         final int t = aSharedIS.read ();
         assertEquals (t, sSrcData.charAt (0));
-        aSharedIS.closeAll ();
+        aSharedIS.closeAndDelete ();
       }
     }
   }

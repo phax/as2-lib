@@ -721,13 +721,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       finally
       {
-        // close the temporary shared stream if it exists
+        // close and delete the temporary shared stream if it exists
         final TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
         if (null != sis)
         {
           try
           {
-            sis.closeAll ();
+            sis.closeAndDelete ();
           }
           catch (final IOException e)
           {
