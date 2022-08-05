@@ -59,6 +59,7 @@ public abstract class AbstractAS2MDNReceiveXServletHandler extends AbstractAS2Re
    * Create the AS2 session to be used based on the provided configuration file.
    *
    * @param aInitParams
+   *        The init params of the servlet to use. Never <code>null</code>.
    * @return The created session. May not be <code>null</code>.
    * @throws AS2Exception
    *         In case something goes wrong when initializing the session

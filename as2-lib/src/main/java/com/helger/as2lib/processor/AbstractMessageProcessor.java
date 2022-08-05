@@ -152,7 +152,7 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
    *        Message it is about. Never <code>null</code>.
    * @param aOptions
    *        Optional options map to be used. May be <code>null</code>.
-   * @throws AS2ProcessorException
+   * @throws AS2Exception
    *         In case of error
    */
   protected final void executeAction (@Nonnull final String sAction,
