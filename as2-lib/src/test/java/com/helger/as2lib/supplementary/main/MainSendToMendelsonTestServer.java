@@ -40,6 +40,7 @@ import java.security.cert.X509Certificate;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,8 +117,8 @@ public final class MainSendToMendelsonTestServer
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
-    aSettings.setConnectTimeoutMS (10_000);
-    aSettings.setReadTimeoutMS (10_000);
+    aSettings.setConnectTimeout (Timeout.ofSeconds (10));
+    aSettings.setResponseTimeout (Timeout.ofSeconds (10));
     aSettings.setHttpOutgoingDumperFactory (aOutgoingDumperFactory);
 
     // Build client request
@@ -129,7 +130,8 @@ public final class MainSendToMendelsonTestServer
       aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
-    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
+                                                        .sendSynchronous (aSettings, aRequest);
     if (aResponse.hasException ())
       LOGGER.info (aResponse.getAsString ());
 

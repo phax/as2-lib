@@ -41,6 +41,7 @@ import java.security.cert.X509Certificate;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +111,9 @@ public final class MainSendToMendelsonTestServerPlayground
     aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key3");
 
     // Fixed receiver - key alias must be "mendelsontestAS2"
-    aSettings.setReceiverData ("mendelsontestAS2", "mendelsontestAS2", "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
+    aSettings.setReceiverData ("mendelsontestAS2",
+                               "mendelsontestAS2",
+                               "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
     final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
@@ -147,8 +150,8 @@ public final class MainSendToMendelsonTestServerPlayground
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
     aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
-    aSettings.setConnectTimeoutMS (10_000);
-    aSettings.setReadTimeoutMS (10_000);
+    aSettings.setConnectTimeout (Timeout.ofSeconds (10));
+    aSettings.setResponseTimeout (Timeout.ofSeconds (10));
     aSettings.setHttpOutgoingDumperFactory (aOutgoingDumperFactory);
 
     // Build client request
@@ -168,7 +171,8 @@ public final class MainSendToMendelsonTestServerPlayground
     aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
-    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy).sendSynchronous (aSettings, aRequest);
+    final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)
+                                                        .sendSynchronous (aSettings, aRequest);
     if (aResponse.hasException ())
       LOGGER.info (aResponse.getAsString ());
 

@@ -42,8 +42,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.FileEntity;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.FileEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +96,9 @@ public class AS2ResourceHelper implements Closeable
   {
     if (aTempDir != null)
       if (!aTempDir.isDirectory ())
-        throw new IllegalArgumentException ("Temporary directory '" + aTempDir.getAbsolutePath () + "' is not a directory");
+        throw new IllegalArgumentException ("Temporary directory '" +
+                                            aTempDir.getAbsolutePath () +
+                                            "' is not a directory");
     s_aTempDir = aTempDir;
   }
 
@@ -246,7 +249,11 @@ public class AS2ResourceHelper implements Closeable
     // can be created
     final File aTempFile = createTempFile ();
 
-    LOGGER.info ("Converting " + aSrcEntity + " to a repeatable HTTP entity using file " + aTempFile.getAbsolutePath ());
+    if (LOGGER.isInfoEnabled ())
+      LOGGER.info ("Converting " +
+                   aSrcEntity +
+                   " to a repeatable HTTP entity using file " +
+                   aTempFile.getAbsolutePath ());
 
     try (final OutputStream aOS = FileHelper.getBufferedOutputStream (aTempFile))
     {
@@ -254,10 +261,8 @@ public class AS2ResourceHelper implements Closeable
     }
 
     // Than use the FileEntity as the basis
-    final FileEntity aRepeatableEntity = new FileEntity (aTempFile);
-    aRepeatableEntity.setContentType (aSrcEntity.getContentType ());
-    aRepeatableEntity.setContentEncoding (aSrcEntity.getContentEncoding ());
-    aRepeatableEntity.setChunked (aSrcEntity.isChunked ());
-    return aRepeatableEntity;
+    return new FileEntity (aTempFile,
+                           ContentType.parse (aSrcEntity.getContentType ()),
+                           aSrcEntity.getContentEncoding ());
   }
 }

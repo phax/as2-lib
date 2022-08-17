@@ -37,13 +37,13 @@ import java.net.Proxy;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,14 +77,14 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   /** Attribute name for connection timeout in milliseconds */
   public static final String ATTR_CONNECT_TIMEOUT = "connecttimeout";
   /** Attribute name for read timeout in milliseconds */
-  public static final String ATTR_READ_TIMEOUT = "readtimeout";
+  public static final String ATTR_RESPONSE_TIMEOUT = "responsetimeout";
   /** Attribute name for quoting header values (boolean) */
   public static final String ATTR_QUOTE_HEADER_VALUES = "quoteheadervalues";
 
   /** Default connection timeout: 60 seconds */
-  public static final int DEFAULT_CONNECT_TIMEOUT_MS = 60_000;
+  public static final Timeout DEFAULT_CONNECT_TIMEOUT = Timeout.ofSeconds (60);
   /** Default read timeout: 60 seconds */
-  public static final int DEFAULT_READ_TIMEOUT_MS = 60_000;
+  public static final Timeout DEFAULT_RESPONSE_TIMEOUT = Timeout.ofSeconds (60);
   /** Default quote header values: false */
   public static final boolean DEFAULT_QUOTE_HEADER_VALUES = false;
 
@@ -98,9 +98,10 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     final String sHttpDumpOutgoingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryOutgoing");
     if (StringHelper.hasText (sHttpDumpOutgoingDirectory))
     {
-      LOGGER.info ("Using '" +
-                   sHttpDumpOutgoingDirectory +
-                   "' as the global directory to dump outgoing messages (source: system property)");
+      if (LOGGER.isInfoEnabled ())
+        LOGGER.info ("Using '" +
+                     sHttpDumpOutgoingDirectory +
+                     "' as the global directory to dump outgoing messages (source: system property)");
       final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
       DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = new DefaultHTTPOutgoingDumperFactory (aDumpDirectory);
@@ -113,7 +114,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
   private IAS2OutgoingHttpCallback m_aOugoingHttpCallback;
 
-  public AbstractHttpSenderModule ()
+  protected AbstractHttpSenderModule ()
   {}
 
   @Nullable
@@ -200,13 +201,16 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     m_aOugoingHttpCallback = aRCC;
   }
 
-  @Nonnegative
-  public final int getConnectionTimeoutMilliseconds ()
+  @Nonnull
+  public final Timeout getConnectTimeout ()
   {
-    return attrs ().getAsInt (ATTR_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MS);
+    final long nMS = attrs ().getAsLong (ATTR_CONNECT_TIMEOUT, -1);
+    if (nMS >= 0)
+      return Timeout.ofMilliseconds (nMS);
+    return DEFAULT_CONNECT_TIMEOUT;
   }
 
-  public final void setConnectionTimeoutMilliseconds (final int nMS)
+  public final void setConnectTimeoutMilliseconds (final long nMS)
   {
     if (nMS < 0)
       attrs ().remove (ATTR_CONNECT_TIMEOUT);
@@ -214,18 +218,21 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       attrs ().putIn (ATTR_CONNECT_TIMEOUT, nMS);
   }
 
-  @Nonnegative
-  public final int getReadTimeoutMilliseconds ()
+  @Nonnull
+  public final Timeout getResponseTimeout ()
   {
-    return attrs ().getAsInt (ATTR_READ_TIMEOUT, DEFAULT_READ_TIMEOUT_MS);
+    final long nMS = attrs ().getAsLong (ATTR_RESPONSE_TIMEOUT, -1);
+    if (nMS >= 0)
+      return Timeout.ofMilliseconds (nMS);
+    return DEFAULT_RESPONSE_TIMEOUT;
   }
 
-  public final void setReadTimeoutMilliseconds (final int nMS)
+  public final void setResponseTimeoutMilliseconds (final long nMS)
   {
     if (nMS < 0)
-      attrs ().remove (ATTR_READ_TIMEOUT);
+      attrs ().remove (ATTR_RESPONSE_TIMEOUT);
     else
-      attrs ().putIn (ATTR_READ_TIMEOUT, nMS);
+      attrs ().putIn (ATTR_RESPONSE_TIMEOUT, nMS);
   }
 
   public final boolean isQuoteHeaderValues ()
@@ -327,8 +334,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
       aSSLCtx = null;
       aHV = null;
     }
-    final int nConnectTimeoutMS = getConnectionTimeoutMilliseconds ();
-    final int nReadTimeoutMS = getReadTimeoutMilliseconds ();
-    return new AS2HttpClient (sUrl, nConnectTimeoutMS, nReadTimeoutMS, eRequestMethod, aProxy, aSSLCtx, aHV);
+    final Timeout aConnectTimeout = getConnectTimeout ();
+    final Timeout aResponseTimeout = getResponseTimeout ();
+    return new AS2HttpClient (sUrl, aConnectTimeout, aResponseTimeout, eRequestMethod, aProxy, aSSLCtx, aHV);
   }
 }

@@ -39,6 +39,8 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.hc.core5.util.Timeout;
+
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.cert.IStorableCertificateFactory;
 import com.helger.as2lib.crypto.ECompressionType;
@@ -92,9 +94,9 @@ public class AS2ClientSettings
   /** By default no retry happens. */
   public static final int DEFAULT_RETRY_COUNT = IProcessorResenderModule.DEFAULT_RETRIES;
   /** Default connection timeout: 60 seconds */
-  public static final int DEFAULT_CONNECT_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_CONNECT_TIMEOUT_MS;
+  public static final Timeout DEFAULT_CONNECT_TIMEOUT = AbstractHttpSenderModule.DEFAULT_CONNECT_TIMEOUT;
   /** Default read timeout: 60 seconds */
-  public static final int DEFAULT_READ_TIMEOUT_MS = AbstractHttpSenderModule.DEFAULT_READ_TIMEOUT_MS;
+  public static final Timeout DEFAULT_RESPONSE_TIMEOUT = AbstractHttpSenderModule.DEFAULT_RESPONSE_TIMEOUT;
   /** Default quote header values: false */
   public static final boolean DEFAULT_QUOTE_HEADER_VALUES = AbstractHttpSenderModule.DEFAULT_QUOTE_HEADER_VALUES;
 
@@ -124,8 +126,8 @@ public class AS2ClientSettings
   private String m_sMessageIDFormat = DEFAULT_MESSAGE_ID_FORMAT;
 
   private int m_nRetryCount = DEFAULT_RETRY_COUNT;
-  private int m_nConnectTimeoutMS = DEFAULT_CONNECT_TIMEOUT_MS;
-  private int m_nReadTimeoutMS = DEFAULT_READ_TIMEOUT_MS;
+  private Timeout m_aConnectTimeout = DEFAULT_CONNECT_TIMEOUT;
+  private Timeout m_aResponseTimeout = DEFAULT_RESPONSE_TIMEOUT;
   private boolean m_bQuoteHeaderValues = DEFAULT_QUOTE_HEADER_VALUES;
 
   private final HttpHeaderMap m_aCustomHeaders = new HttpHeaderMap ();
@@ -505,7 +507,8 @@ public class AS2ClientSettings
    * @return this for chaining
    */
   @Nonnull
-  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType, final boolean bCompressBeforeSigning)
+  public final AS2ClientSettings setCompress (@Nullable final ECompressionType eCompressionType,
+                                              final boolean bCompressBeforeSigning)
   {
     m_eCompressionType = eCompressionType;
     m_bCompressBeforeSigning = bCompressBeforeSigning;
@@ -715,54 +718,57 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The connection timeout in milliseconds. The default value is
-   *         {@link #DEFAULT_CONNECT_TIMEOUT_MS}.
+   * @return The connection timeout. The default value is
+   *         {@link #DEFAULT_CONNECT_TIMEOUT}.
    * @since 3.0.2
    */
-  public final int getConnectTimeoutMS ()
+  public final Timeout getConnectTimeout ()
   {
-    return m_nConnectTimeoutMS;
+    return m_aConnectTimeout;
   }
 
   /**
-   * Set the connection timeout in milliseconds.
+   * Set the connect timeout.
    *
-   * @param nConnectTimeoutMS
-   *        Connect timeout milliseconds.
+   * @param aConnectTimeout
+   *        Connect timeout. May not be <code>null</code>.
    * @return this for chaining
-   * @see #getConnectTimeoutMS()
+   * @see #getConnectTimeout()
    * @since 3.0.2
    */
   @Nonnull
-  public final AS2ClientSettings setConnectTimeoutMS (final int nConnectTimeoutMS)
+  public final AS2ClientSettings setConnectTimeout (@Nonnull final Timeout aConnectTimeout)
   {
-    m_nConnectTimeoutMS = nConnectTimeoutMS;
+    ValueEnforcer.notNull (aConnectTimeout, "ConnectTimeout");
+    m_aConnectTimeout = aConnectTimeout;
     return this;
   }
 
   /**
-   * @return The read timeout in milliseconds. The default value is
-   *         {@link #DEFAULT_READ_TIMEOUT_MS}.
-   * @since 3.0.2
-   */
-  public final int getReadTimeoutMS ()
-  {
-    return m_nReadTimeoutMS;
-  }
-
-  /**
-   * Set the read timeout in milliseconds.
-   *
-   * @param nReadTimeoutMS
-   *        Read timeout milliseconds.
-   * @return this for chaining
-   * @see #getReadTimeoutMS()
+   * @return The response/read timeout. The default value is
+   *         {@link #DEFAULT_RESPONSE_TIMEOUT}.
    * @since 3.0.2
    */
   @Nonnull
-  public final AS2ClientSettings setReadTimeoutMS (final int nReadTimeoutMS)
+  public final Timeout getResponseTimeout ()
   {
-    m_nReadTimeoutMS = nReadTimeoutMS;
+    return m_aResponseTimeout;
+  }
+
+  /**
+   * Set the response/read timeout.
+   *
+   * @param aResponseTimeout
+   *        Response timeout. May not be <code>null</code>.
+   * @return this for chaining
+   * @see #getResponseTimeout()
+   * @since 3.0.2
+   */
+  @Nonnull
+  public final AS2ClientSettings setResponseTimeout (@Nonnull final Timeout aResponseTimeout)
+  {
+    ValueEnforcer.notNull (aResponseTimeout, "ResponseTimeout");
+    m_aResponseTimeout = aResponseTimeout;
     return this;
   }
 

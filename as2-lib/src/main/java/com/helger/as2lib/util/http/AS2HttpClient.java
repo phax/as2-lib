@@ -50,17 +50,22 @@ import javax.mail.MessagingException;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.StatusLine;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
+import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,34 +92,40 @@ public class AS2HttpClient
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2HttpClient.class);
 
-  private final RequestBuilder m_aRequestBuilder;
+  private final ClassicRequestBuilder m_aRequestBuilder;
   private final CloseableHttpClient m_aCloseableHttpClient;
   private CloseableHttpResponse m_aCloseableHttpResponse;
 
   public AS2HttpClient (@Nonnull @Nonempty final String sUrl,
-                        final int nConnectTimeout,
-                        final int nReadTimeout,
+                        @Nonnull final Timeout aConnectTimeout,
+                        @Nonnull final Timeout aResponseTimeout,
                         @Nonnull final EHttpMethod eRequestMethod,
                         @Nullable final Proxy aProxy,
                         @Nullable final SSLContext aSSLContext,
                         @Nullable final HostnameVerifier aHV)
   {
     // set configuration
-    final RequestConfig.Builder aConfBuilder = RequestConfig.custom ()
-                                                            .setConnectionRequestTimeout (nConnectTimeout)
-                                                            .setConnectTimeout (nConnectTimeout)
-                                                            .setSocketTimeout (nReadTimeout);
+    final RequestConfig.Builder aRequestConfBuilder = RequestConfig.custom ()
+                                                                   .setCookieSpec (StandardCookieSpec.STRICT)
+                                                                   .setConnectTimeout (aConnectTimeout)
+                                                                   .setResponseTimeout (aResponseTimeout)
+                                                                   .setCircularRedirectsAllowed (false);
     // add proxy if exists
-    _setProxyToRequestConfig (aConfBuilder, aProxy);
-    final RequestConfig aConf = aConfBuilder.build ();
-    final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ();
+    _setProxyToRequestConfig (aRequestConfBuilder, aProxy);
+    final RequestConfig aRequestConf = aRequestConfBuilder.build ();
+
+    final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ().setDefaultRequestConfig (aRequestConf);
     if (aSSLContext != null)
-      aClientBuilder.setSSLContext (aSSLContext);
-    if (aHV != null)
-      aClientBuilder.setSSLHostnameVerifier (aHV);
+    {
+      final SSLConnectionSocketFactory aSSLFactory = new SSLConnectionSocketFactory (aSSLContext, aHV);
+      final PoolingHttpClientConnectionManager aConnMgr = PoolingHttpClientConnectionManagerBuilder.create ()
+                                                                                                   .setSSLSocketFactory (aSSLFactory)
+                                                                                                   .build ();
+      aClientBuilder.setConnectionManager (aConnMgr);
+    }
 
     m_aCloseableHttpClient = aClientBuilder.build ();
-    m_aRequestBuilder = RequestBuilder.create (eRequestMethod.getName ()).setUri (sUrl).setConfig (aConf);
+    m_aRequestBuilder = ClassicRequestBuilder.create (eRequestMethod.getName ()).setUri (sUrl);
   }
 
   /**
@@ -176,13 +187,28 @@ public class AS2HttpClient
                     @Nonnull final AS2ResourceHelper aResHelper) throws IOException
   {
     final CountingInputStream aCIS = new CountingInputStream (aISToSend);
-    final InputStreamEntity aISE = new InputStreamEntity (aCIS)
+    final AbstractHttpEntity aISE = new AbstractHttpEntity ((ContentType) null, eCTE != null ? eCTE.getID () : null)
     {
+      public void close ()
+      {
+        // empty
+      }
+
       @Override
       public InputStream getContent () throws IOException
       {
-        // Only writeTo should be used
-        throw new UnsupportedOperationException ();
+        // Only writeTo should be used from the outside
+        return aISToSend;
+      }
+
+      public long getContentLength ()
+      {
+        return -1L;
+      }
+
+      public boolean isStreaming ()
+      {
+        return true;
       }
 
       @Override
@@ -190,11 +216,11 @@ public class AS2HttpClient
       {
         // Use MIME encoding here
         try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-             final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                     eCTE.getID ())
-                                                          : aDebugOS)
+            final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                                    eCTE.getID ())
+                                                         : aDebugOS)
         {
-          super.writeTo (aEncodedOS);
+          writeTo (this, aEncodedOS);
         }
         catch (final MessagingException ex)
         {
@@ -205,7 +231,11 @@ public class AS2HttpClient
     // Use a temporary file to get the Content length
     final HttpEntity aEntity = aResHelper.createRepeatableHttpEntity (aISE);
     m_aRequestBuilder.setEntity (aEntity);
-    final HttpUriRequest aHttpUriRequest = m_aRequestBuilder.build ();
+    final ClassicHttpRequest aHttpUriRequest = m_aRequestBuilder.build ();
+
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Performing HttpRequest to '" + aHttpUriRequest.getRequestUri () + "'");
+
     m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
     return aCIS.getBytesRead ();
   }
@@ -239,15 +269,7 @@ public class AS2HttpClient
     if (m_aCloseableHttpResponse == null)
       throw new AS2Exception ("No response as message was yet sent");
 
-    try
-    {
-      final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
-      return aStatusLine.getStatusCode ();
-    }
-    catch (final Exception ex)
-    {
-      throw new AS2Exception (ex);
-    }
+    return m_aCloseableHttpResponse.getCode ();
   }
 
   /**
@@ -261,8 +283,7 @@ public class AS2HttpClient
     if (m_aCloseableHttpResponse == null)
       throw new AS2Exception ("No response as message was yet sent");
 
-    final StatusLine aStatusLine = m_aCloseableHttpResponse.getStatusLine ();
-    return aStatusLine.getReasonPhrase ();
+    return m_aCloseableHttpResponse.getReasonPhrase ();
   }
 
   @Nonnull
@@ -273,10 +294,11 @@ public class AS2HttpClient
     if (m_aCloseableHttpResponse == null)
       throw new AS2Exception ("No response as message was yet sent");
 
-    final Header [] aHeaders = m_aCloseableHttpResponse.getAllHeaders ();
     final HttpHeaderMap ret = new HttpHeaderMap ();
-    for (final Header aHeader : aHeaders)
-      ret.addHeader (aHeader.getName (), aHeader.getValue ());
+    final Header [] aHeaders = m_aCloseableHttpResponse.getHeaders ();
+    if (aHeaders != null)
+      for (final Header aHeader : aHeaders)
+        ret.addHeader (aHeader.getName (), aHeader.getValue ());
     return ret;
   }
 
@@ -307,7 +329,8 @@ public class AS2HttpClient
    * @param aProxy
    *        My by <code>null</code>, in such case nothing is done.
    */
-  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder, @Nullable final Proxy aProxy)
+  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
+                                                @Nullable final Proxy aProxy)
   {
     try
     {
@@ -326,7 +349,10 @@ public class AS2HttpClient
           else
           {
             if (LOGGER.isDebugEnabled ())
-              LOGGER.debug ("No address in proxy:" + aProxy.address () + "-" + (null != aProxy.type () ? aProxy.type ().name () : "null"));
+              LOGGER.debug ("No address in proxy:" +
+                            aProxy.address () +
+                            "-" +
+                            (null != aProxy.type () ? aProxy.type ().name () : "null"));
           }
         }
       }
