@@ -129,7 +129,7 @@ public class AS2ResourceHelper implements Closeable
     // Create
     final File ret = File.createTempFile ("as2-lib-res-", ".tmp", s_aTempDir);
     // And remember
-    m_aRWLock.writeLockedBoolean ( () -> m_aTempFiles.add (ret));
+    m_aRWLock.writeLocked ( () -> m_aTempFiles.add (ret));
     return ret;
   }
 
@@ -213,12 +213,13 @@ public class AS2ResourceHelper implements Closeable
 
           final FileIOError aError = AS2IOHelper.getFileOperationManager ().deleteFileIfExisting (aFile);
           if (aError.isFailure ())
-            LOGGER.warn ("  Failed to delete temporary " +
-                         CAS2Info.NAME_VERSION +
-                         " file " +
-                         aFile.getAbsolutePath () +
-                         ": " +
-                         aError.toString ());
+            if (LOGGER.isWarnEnabled ())
+              LOGGER.warn ("  Failed to delete temporary " +
+                           CAS2Info.NAME_VERSION +
+                           " file " +
+                           aFile.getAbsolutePath () +
+                           ": " +
+                           aError.toString ());
         }
       }
     }

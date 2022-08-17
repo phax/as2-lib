@@ -122,7 +122,7 @@ public final class MainSendToMendelsonTestServerPlayground
 
     // When a signed message is used, the algorithm for MIC and message must be
     // identical
-    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_SHA1;
+    final ECryptoAlgorithmSign eSignAlgo = ECryptoAlgorithmSign.DIGEST_MD5;
 
     // Encryption is required for Mendelson
     // CRYPT_AES256_GCM is not supported
@@ -134,7 +134,7 @@ public final class MainSendToMendelsonTestServerPlayground
     // CRYPT_3DES is supported
     final ECryptoAlgorithmCrypt eCryptAlgo = ECryptoAlgorithmCrypt.CRYPT_3DES;
 
-    final ECompressionType eCompress = ECompressionType.ZLIB;
+    final ECompressionType eCompress = true ? null : ECompressionType.ZLIB;
     final boolean bCompressBeforeSigning = true;
 
     if (eSignAlgo != null)
@@ -168,7 +168,8 @@ public final class MainSendToMendelsonTestServerPlayground
     // EContentTransferEncoding.BINARY MIC is matched
     // EContentTransferEncoding.QUOTED_PRINTABLE - not supported by Mendelson
     // EContentTransferEncoding.BASE64 MIC is matched
-    aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
+    if (false)
+      aRequest.setContentTransferEncoding (EContentTransferEncoding.BASE64);
 
     // Send message
     final AS2ClientResponse aResponse = new AS2Client ().setHttpProxy (aHttpProxy)

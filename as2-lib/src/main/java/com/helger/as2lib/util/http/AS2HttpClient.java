@@ -80,6 +80,7 @@ import com.helger.commons.http.CHttp;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.CountingInputStream;
+import com.helger.commons.io.stream.StreamHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
@@ -198,7 +199,7 @@ public class AS2HttpClient
       public InputStream getContent () throws IOException
       {
         // Only writeTo should be used from the outside
-        return aISToSend;
+        throw new UnsupportedOperationException ();
       }
 
       public long getContentLength ()
@@ -220,7 +221,7 @@ public class AS2HttpClient
                                                                                                                     eCTE.getID ())
                                                          : aDebugOS)
         {
-          writeTo (this, aEncodedOS);
+          StreamHelper.copyByteStream ().from (aISToSend).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
         }
         catch (final MessagingException ex)
         {
