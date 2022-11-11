@@ -235,7 +235,7 @@ public class AS2HttpClient
     final ClassicHttpRequest aHttpUriRequest = m_aRequestBuilder.build ();
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Performing HttpRequest to '" + aHttpUriRequest.getRequestUri () + "'");
+      LOGGER.debug ("Performing HttpRequest to '" + aHttpUriRequest.toString () + "'");
 
     m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
     return aCIS.getBytesRead ();
