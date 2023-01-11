@@ -110,7 +110,10 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
 
-  // id_rsassa_pkcs1_v1_5_with_sha3_256
+  /**
+   * id_rsassa_pkcs1_v1_5_with_sha3_256<br>
+   * This identifier only works with the "SunRsaSign" provider
+   */
   RSASSA_PKCS1_V1_5_WITH_SHA3_256 ("rsassa_pkcs1_v1_5_with_sha3_256",
                                    NISTObjectIdentifiers.id_rsassa_pkcs1_v1_5_with_sha3_256,
                                    "RSASSAPSS");
