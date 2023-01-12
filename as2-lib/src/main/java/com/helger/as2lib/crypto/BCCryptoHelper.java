@@ -128,11 +128,11 @@ import com.helger.security.keystore.IKeyStoreType;
  *
  * @author Philip Helger
  */
-public final class BCCryptoHelper implements ICryptoHelper
+public class BCCryptoHelper implements ICryptoHelper
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File DUMP_DECRYPTED_DIR_PATH;
-  private static final String DEFAULT_SECURITY_PROVIDER_NAME;
+  protected static final String DEFAULT_SECURITY_PROVIDER_NAME;
   private static final byte [] EOL_BYTES = AS2IOHelper.getAllAsciiBytes (CHttp.EOL);
 
   static
@@ -161,7 +161,8 @@ public final class BCCryptoHelper implements ICryptoHelper
       }
       catch (final Exception ex2)
       {
-        throw new IllegalStateException ("Neither regular BouncyCastle nor BouncyCastle FIPS are in the classpath", ex2);
+        throw new IllegalStateException ("Neither regular BouncyCastle nor BouncyCastle FIPS are in the classpath",
+                                         ex2);
       }
     }
     DEFAULT_SECURITY_PROVIDER_NAME = sProvName;
@@ -175,7 +176,9 @@ public final class BCCryptoHelper implements ICryptoHelper
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (DUMP_DECRYPTED_DIR_PATH);
 
       if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Using directory " + DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () + " to dump all decrypted AS2 body parts to.");
+        LOGGER.info ("Using directory " +
+                     DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () +
+                     " to dump all decrypted AS2 body parts to.");
     }
     else
       DUMP_DECRYPTED_DIR_PATH = null;
@@ -303,7 +306,9 @@ public final class BCCryptoHelper implements ICryptoHelper
   @Nonnull
   public MIC calculateMIC (@Nonnull final MimeBodyPart aPart,
                            @Nonnull final ECryptoAlgorithmSign eDigestAlgorithm,
-                           final boolean bIncludeHeaders) throws GeneralSecurityException, MessagingException, IOException
+                           final boolean bIncludeHeaders) throws GeneralSecurityException,
+                                                          MessagingException,
+                                                          IOException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (eDigestAlgorithm, "DigestAlgorithm");
@@ -348,7 +353,8 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-         final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS, sMICEncoding))
+        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
+                                                                                                 sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }
@@ -373,7 +379,11 @@ public final class BCCryptoHelper implements ICryptoHelper
     do
     {
       aDestinationFile = new File (DUMP_DECRYPTED_DIR_PATH,
-                                   "as2-decrypted-" + Long.toString (PDTFactory.getCurrentMillis ()) + "-" + nIndex + ".part");
+                                   "as2-decrypted-" +
+                                                            Long.toString (PDTFactory.getCurrentMillis ()) +
+                                                            "-" +
+                                                            nIndex +
+                                                            ".part");
       nIndex++;
     } while (aDestinationFile.exists ());
 
@@ -414,7 +424,9 @@ public final class BCCryptoHelper implements ICryptoHelper
 
     // Make sure the data is encrypted
     if (!bForceDecrypt && !isEncrypted (aPart))
-      throw new GeneralSecurityException ("Content-Type '" + aPart.getContentType () + "' indicates data isn't encrypted");
+      throw new GeneralSecurityException ("Content-Type '" +
+                                          aPart.getContentType () +
+                                          "' indicates data isn't encrypted");
 
     // Get the recipient object for decryption
     final RecipientId aRecipientID = new JceKeyTransRecipientId (aX509Cert);
@@ -442,7 +454,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     if (DUMP_DECRYPTED_DIR_PATH != null)
     {
       // dump decrypted
-      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
+      try (
+          final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
       {
         aDecryptedDataBodyPart.writeTo (aBAOS);
         _dumpDecrypted (aBAOS.toByteArray ());
@@ -456,7 +469,9 @@ public final class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart encrypt (@Nonnull final MimeBodyPart aPart,
                                @Nonnull final X509Certificate aX509Cert,
                                @Nonnull final ECryptoAlgorithmCrypt eAlgorithm,
-                               @Nonnull final EContentTransferEncoding eCTE) throws GeneralSecurityException, SMIMEException, CMSException
+                               @Nonnull final EContentTransferEncoding eCTE) throws GeneralSecurityException,
+                                                                             SMIMEException,
+                                                                             CMSException
   {
     ValueEnforcer.notNull (aPart, "MimeBodyPart");
     ValueEnforcer.notNull (aX509Cert, "X509Cert");
@@ -480,7 +495,8 @@ public final class BCCryptoHelper implements ICryptoHelper
     aGen.addRecipientInfoGenerator (new JceKeyTransRecipientInfoGenerator (aX509Cert).setProvider (m_sSecurityProviderName));
     aGen.setContentTransferEncoding (eCTE.getID ());
 
-    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (m_sSecurityProviderName).build ();
+    final OutputEncryptor aEncryptor = new JceCMSContentEncryptorBuilder (aEncAlg).setProvider (m_sSecurityProviderName)
+                                                                                  .build ();
 
     // Return the encrypted Mime Body Part
     return aGen.generate (aPart, aEncryptor);
@@ -621,7 +637,8 @@ public final class BCCryptoHelper implements ICryptoHelper
             LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
-        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName).getCertificate (aCertHolder);
+        final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName)
+                                                                        .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
           if (LOGGER.isWarnEnabled ())
             LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
