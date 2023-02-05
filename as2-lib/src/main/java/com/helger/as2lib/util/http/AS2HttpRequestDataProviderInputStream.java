@@ -42,9 +42,6 @@ import java.util.StringTokenizer;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
-import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -52,6 +49,10 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
+
+import jakarta.mail.Header;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetHeaders;
 
 /**
  * Implementation of {@link IAS2HttpRequestDataProvider} based on a
@@ -130,7 +131,8 @@ public class AS2HttpRequestDataProviderInputStream implements IAS2HttpRequestDat
    * @throws MessagingException
    *         If reading the HTTP headers failed
    */
-  public AS2HttpRequestDataProviderInputStream (@Nonnull @WillNotClose final InputStream aIS) throws IOException, MessagingException
+  public AS2HttpRequestDataProviderInputStream (@Nonnull @WillNotClose final InputStream aIS) throws IOException,
+                                                                                              MessagingException
   {
     ValueEnforcer.notNull (aIS, "InputStream");
 
@@ -197,7 +199,8 @@ public class AS2HttpRequestDataProviderInputStream implements IAS2HttpRequestDat
   }
 
   @Nonnull
-  public static AS2HttpRequestDataProviderInputStream createForUtf8 (@Nonnull final String s) throws IOException, MessagingException
+  public static AS2HttpRequestDataProviderInputStream createForUtf8 (@Nonnull final String s) throws IOException,
+                                                                                              MessagingException
   {
     final byte [] b = s.getBytes (StandardCharsets.UTF_8);
     return new AS2HttpRequestDataProviderInputStream (new NonBlockingByteArrayInputStream (b));

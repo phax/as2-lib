@@ -42,12 +42,13 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
-import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
+
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * Base interface for all crypto related methods in this project.
@@ -139,7 +140,9 @@ public interface ICryptoHelper
    *         In case something goes wrong.
    */
   @Nonnull
-  MIC calculateMIC (@Nonnull MimeBodyPart aPart, @Nonnull ECryptoAlgorithmSign eDigestAlgorithm, boolean bIncludeHeaders) throws Exception;
+  MIC calculateMIC (@Nonnull MimeBodyPart aPart,
+                    @Nonnull ECryptoAlgorithmSign eDigestAlgorithm,
+                    boolean bIncludeHeaders) throws Exception;
 
   @Nonnull
   MimeBodyPart encrypt (@Nonnull MimeBodyPart aPart,

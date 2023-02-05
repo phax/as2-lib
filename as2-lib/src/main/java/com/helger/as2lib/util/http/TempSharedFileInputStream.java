@@ -39,7 +39,6 @@ import java.io.InputStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
-import javax.mail.util.SharedFileInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +48,8 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mutable.MutableLong;
 import com.helger.commons.string.StringHelper;
+
+import jakarta.mail.util.SharedFileInputStream;
 
 /**
  * Stores the content of the input {@link InputStream} in a temporary file, and
@@ -144,7 +145,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *         in case of IO error
    */
   @Nonnull
-  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS, @Nonnull final String sName) throws IOException
+  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS,
+                                                @Nonnull final String sName) throws IOException
   {
     // create temp file and write steam content to it
     // name may contain ":" on Windows and that would fail the tests!
@@ -154,7 +156,13 @@ public class TempSharedFileInputStream extends SharedFileInputStream
     try (final FileOutputStream aOS = new FileOutputStream (aDestFile))
     {
       final MutableLong aCount = new MutableLong (0);
-      StreamHelper.copyByteStream ().from (aIS).closeFrom (true).to (aOS).closeTo (false).copyByteCount (aCount).build ();
+      StreamHelper.copyByteStream ()
+                  .from (aIS)
+                  .closeFrom (true)
+                  .to (aOS)
+                  .closeTo (false)
+                  .copyByteCount (aCount)
+                  .build ();
       if (LOGGER.isInfoEnabled ())
       {
         // Avoid logging in tests

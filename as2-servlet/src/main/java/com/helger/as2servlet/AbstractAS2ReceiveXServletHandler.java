@@ -16,7 +16,6 @@
  */
 package com.helger.as2servlet;
 
-import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
@@ -33,6 +32,8 @@ import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
+
+import jakarta.activation.DataSource;
 
 /**
  * This is the main XServlet handler that takes AS2 messages and processes them.

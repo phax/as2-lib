@@ -39,11 +39,8 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
-import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +90,10 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.StringParser;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.datasource.ByteArrayDataSource;
+
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * The main handler for receiving AS2 async MDN messages.
@@ -198,7 +199,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       return null;
     }
 
-    return new File (sPendingInfoFolder + FilenameHelper.UNIX_SEPARATOR_STR + AS2IOHelper.getFilenameFromMessageID (sOrigMessageID));
+    return new File (sPendingInfoFolder +
+                     FilenameHelper.UNIX_SEPARATOR_STR +
+                     AS2IOHelper.getFilenameFromMessageID (sOrigMessageID));
   }
 
   /**
@@ -277,7 +280,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    * @since 4.10.2
    */
   @OverrideOnDemand
-  protected ESuccess deletePendingFile (@Nonnull final AS2Message aMsg, @Nonnull final String sPendingFilename) throws AS2Exception
+  protected ESuccess deletePendingFile (@Nonnull final AS2Message aMsg,
+                                        @Nonnull final String sPendingFilename) throws AS2Exception
   {
     final File aPendingFile = new File (sPendingFilename);
     if (LOGGER.isInfoEnabled ())
@@ -321,8 +325,9 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         }
 
         // Cherset must be aligned with AS2SenderModule
-        try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (StreamHelper.createReader (aIS,
-                                                                                                                            StandardCharsets.ISO_8859_1)))
+        try (
+            final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (StreamHelper.createReader (aIS,
+                                                                                                                           StandardCharsets.ISO_8859_1)))
         {
           // Get the original mic from the first line of pending information
           // file
@@ -425,7 +430,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
         bUseCertificateInBodyPart = getModule ().getSession ().isCryptoVerifyUseCertificateInBodyPart ();
       }
 
-      AS2Helper.parseMDN (aMsg, aSenderCert, bUseCertificateInBodyPart, getVerificationCertificateConsumer (), aResHelper);
+      AS2Helper.parseMDN (aMsg,
+                          aSenderCert,
+                          bUseCertificateInBodyPart,
+                          getVerificationCertificateConsumer (),
+                          aResHelper);
 
       // in order to name & save the mdn with the original AS2-From + AS2-To +
       // Message id.,
@@ -490,7 +499,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     {
       final InputStream aIS = aHttpClient.getInputStream ();
 
-      final CopyByteStreamBuilder aBuilder = StreamHelper.copyByteStream ().from (aIS).closeFrom (true).to (aMDNStream).closeTo (false);
+      final CopyByteStreamBuilder aBuilder = StreamHelper.copyByteStream ()
+                                                         .from (aIS)
+                                                         .closeFrom (true)
+                                                         .to (aMDNStream)
+                                                         .closeTo (false);
       // Retrieve the message content
       final long nContentLength = StringParser.parseLong (aMDN.getHeader (CHttpHeader.CONTENT_LENGTH), -1);
       if (nContentLength >= 0)
@@ -601,7 +614,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       {
         if (LOGGER.isInfoEnabled ())
           LOGGER.info ("received " +
-                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length, aSW) +
+                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length,
+                                                    aSW) +
                        " from " +
                        sClientInfo +
                        aMsg.getLoggingText ());
@@ -609,7 +623,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       }
       else
       {
-        LOGGER.info ("received message from " + sClientInfo + aMsg.getLoggingText () + " in " + aSW.getMillis () + " ms");
+        LOGGER.info ("received message from " +
+                     sClientInfo +
+                     aMsg.getLoggingText () +
+                     " in " +
+                     aSW.getMillis () +
+                     " ms");
       }
 
       handleIncomingMessage (sClientInfo, aMdnDataSource, aMsg, aResponseHandler);

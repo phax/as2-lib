@@ -43,8 +43,6 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
 import java.util.function.Consumer;
 
-import javax.mail.internet.MimeBodyPart;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -61,6 +59,8 @@ import com.helger.commons.io.resource.IReadableResource;
 import com.helger.commons.io.stream.NonBlockingBufferedReader;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.security.certificate.CertificateHelper;
+
+import jakarta.mail.internet.MimeBodyPart;
 
 public class ReadMDNFuncTest
 {

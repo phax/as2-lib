@@ -34,8 +34,6 @@ package com.helger.as2lib.session;
 
 import java.net.Proxy;
 
-import javax.activation.CommandMap;
-import javax.activation.MailcapCommandMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
@@ -55,6 +53,9 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.lang.priviledged.AccessControllerHelper;
 import com.helger.commons.string.ToStringGenerator;
+
+import jakarta.activation.CommandMap;
+import jakarta.activation.MailcapCommandMap;
 
 /**
  * Default implementation of {@link IAS2Session}

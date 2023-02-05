@@ -78,7 +78,8 @@
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcmail-jdk15on</artifactId>
+      <artifactId>bcjmail-jdk18on</artifactId>
+      <version>1.72</version>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>

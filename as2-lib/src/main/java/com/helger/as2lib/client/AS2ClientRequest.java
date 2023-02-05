@@ -36,12 +36,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import javax.activation.DataHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillClose;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
@@ -51,6 +48,10 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.mime.CMimeType;
 import com.helger.commons.string.StringHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
+
+import jakarta.activation.DataHandler;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * This class represents the content of an AS2 client request.

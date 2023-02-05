@@ -45,8 +45,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
 
 import org.bouncycastle.mail.smime.SMIMECompressedGenerator;
 import org.bouncycastle.mail.smime.SMIMEException;
@@ -105,6 +103,9 @@ import com.helger.commons.string.StringParser;
 import com.helger.commons.system.ENewLineMode;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.cte.EContentTransferEncoding;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * AS2 sender module to send AS2 messages out.

@@ -34,10 +34,11 @@ package com.helger.as2lib.message;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.internet.MimeBodyPart;
 
 import com.helger.as2lib.util.http.TempSharedFileInputStream;
 import com.helger.commons.http.CHttpHeader;
+
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * Base interface for an AS2 Message

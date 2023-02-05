@@ -37,9 +37,6 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.cert.X509Certificate;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
 import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +58,9 @@ import com.helger.commons.io.stream.NonClosingOutputStream;
 import com.helger.commons.mime.CMimeType;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
+
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
 
 /**
  * Test class to send an AS2 messages to the Mendelson test server.

@@ -46,7 +46,6 @@ import java.net.URL;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.MessagingException;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
@@ -82,6 +81,8 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.CountingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
+
+import jakarta.mail.MessagingException;
 
 /**
  * Http connection, Implemented as HttpClient.

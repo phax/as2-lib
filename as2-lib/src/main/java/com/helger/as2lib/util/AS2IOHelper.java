@@ -40,8 +40,6 @@ import java.io.OutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.receiver.AS2InvalidMessageException;
@@ -60,6 +58,9 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
 import com.sun.mail.util.QPDecoderStream;
 import com.sun.mail.util.QPEncoderStream;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeUtility;
 
 @Immutable
 public final class AS2IOHelper

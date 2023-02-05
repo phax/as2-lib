@@ -32,15 +32,15 @@
  */
 package com.helger.as2lib.supplementary.main;
 
-import javax.activation.CommandInfo;
-import javax.activation.CommandMap;
-import javax.activation.MailcapCommandMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.crypto.BCCryptoHelper;
 import com.helger.commons.collection.CollectionHelper;
+
+import jakarta.activation.CommandInfo;
+import jakarta.activation.CommandMap;
+import jakarta.activation.MailcapCommandMap;
 
 public final class MainListCommandMap
 {

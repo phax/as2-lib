@@ -16,7 +16,6 @@
  */
 package com.helger.as2servlet.mdn;
 
-import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.servlet.ServletException;
@@ -35,6 +34,8 @@ import com.helger.as2servlet.util.AS2ServletMDNReceiverModule;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
+
+import jakarta.activation.DataSource;
 
 /**
  * This is the main XServlet handler that takes async MDNs messages and
@@ -69,7 +70,8 @@ public abstract class AbstractAS2MDNReceiveXServletHandler extends AbstractAS2Re
   @Override
   @Nonnull
   @OverrideOnDemand
-  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws AS2Exception, ServletException;
+  protected abstract AS2Session createAS2Session (@Nonnull ICommonsMap <String, String> aInitParams) throws AS2Exception,
+                                                                                                     ServletException;
 
   @Override
   public void onServletInit (@Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException

@@ -32,19 +32,12 @@
  */
 package com.helger.as2lib.util.javamail;
 
-import java.awt.datatransfer.DataFlavor;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import javax.activation.ActivationDataFlavor;
-import javax.activation.DataContentHandler;
-import javax.activation.DataSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
 
 import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.ArrayHelper;
@@ -53,15 +46,24 @@ import com.helger.commons.mime.CMimeType;
 import com.helger.commons.mime.IMimeType;
 import com.helger.commons.mime.MimeTypeParser;
 
+import jakarta.activation.ActivationDataFlavor;
+import jakarta.activation.DataContentHandler;
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+
 public class DispositionDataContentHandler implements DataContentHandler
 {
   private static final ActivationDataFlavor ADF1;
-  private static final DataFlavor [] ADFS;
+  private static final ActivationDataFlavor [] ADFS;
 
   static
   {
-    ADF1 = new ActivationDataFlavor (MimeBodyPart.class, "message/disposition-notification", "Disposition Notification");
-    ADFS = new DataFlavor [] { ADF1 };
+    ADF1 = new ActivationDataFlavor (MimeBodyPart.class,
+                                     "message/disposition-notification",
+                                     "Disposition Notification");
+    ADFS = new ActivationDataFlavor [] { ADF1 };
   }
 
   public DispositionDataContentHandler ()
@@ -74,7 +76,7 @@ public class DispositionDataContentHandler implements DataContentHandler
   }
 
   @Nullable
-  public byte [] getTransferData (final DataFlavor df, @Nonnull final DataSource ds) throws IOException
+  public byte [] getTransferData (final ActivationDataFlavor df, @Nonnull final DataSource ds) throws IOException
   {
     if (ADF1.equals (df))
       return getContent (ds);
@@ -83,7 +85,7 @@ public class DispositionDataContentHandler implements DataContentHandler
 
   @Nonnull
   @ReturnsMutableCopy
-  public DataFlavor [] getTransferDataFlavors ()
+  public ActivationDataFlavor [] getTransferDataFlavors ()
   {
     return ArrayHelper.getCopy (ADFS);
   }

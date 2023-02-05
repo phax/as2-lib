@@ -38,9 +38,6 @@ import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-
 import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +61,9 @@ import com.helger.commons.mime.CMimeType;
 import com.helger.commons.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
+
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
 
 /**
  * Philip's internal playground to send to Mendelson test server - don't rely on

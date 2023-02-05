@@ -35,9 +35,6 @@ package com.helger.as2lib.util;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.ParseException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +42,10 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.codec.RFC2616Codec;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.StringHelper;
+
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.ParseException;
 
 @Immutable
 public final class AS2HttpHelper

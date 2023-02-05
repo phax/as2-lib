@@ -44,8 +44,6 @@ import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import javax.mail.internet.MimeBodyPart;
-
 import org.junit.Test;
 
 import com.helger.as2lib.util.AS2Helper;
@@ -57,6 +55,8 @@ import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.KeyStoreHelper;
+
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * Unit test class for class {@link BCCryptoHelper}.

@@ -38,7 +38,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +64,8 @@ import com.helger.commons.http.EHttpMethod;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.timing.StopWatch;
 import com.helger.mail.cte.EContentTransferEncoding;
+
+import jakarta.mail.MessagingException;
 
 /**
  * A module to send an asynchronous MDN.

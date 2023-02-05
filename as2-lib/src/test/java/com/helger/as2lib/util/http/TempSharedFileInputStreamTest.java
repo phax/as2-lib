@@ -39,14 +39,14 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import javax.mail.util.SharedFileInputStream;
-
 import org.junit.Test;
 
 import com.helger.commons.io.file.FileOperations;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.stream.StreamHelper;
+
+import jakarta.mail.util.SharedFileInputStream;
 
 /**
  * Test class of class {@link TempSharedFileInputStream}.
@@ -60,8 +60,8 @@ public final class TempSharedFileInputStreamTest
   {
     final String inData = "123456";
     try (final InputStream is = new NonBlockingByteArrayInputStream (inData.getBytes ());
-         final SharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName");
-         final NonBlockingByteArrayOutputStream baos = new NonBlockingByteArrayOutputStream ())
+        final SharedFileInputStream sis = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName");
+        final NonBlockingByteArrayOutputStream baos = new NonBlockingByteArrayOutputStream ())
     {
       StreamHelper.copyInputStreamToOutputStream (sis, baos);
       final String res = baos.getAsString (StandardCharsets.ISO_8859_1);
@@ -91,7 +91,8 @@ public final class TempSharedFileInputStreamTest
     {
       final String sSrcData = "123456";
       try (final InputStream is = new NonBlockingByteArrayInputStream (sSrcData.getBytes (StandardCharsets.ISO_8859_1));
-           final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (is, "myName"))
+          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (is,
+                                                                                                              "myName"))
       {
         final int t = aSharedIS.read ();
         assertEquals (t, sSrcData.charAt (0));

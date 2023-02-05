@@ -34,12 +34,13 @@ package com.helger.as2lib.params;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.internet.ContentDisposition;
 
 import com.helger.as2lib.message.IMessage;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.string.StringHelper;
+
+import jakarta.mail.internet.ContentDisposition;
 
 public class MessageParameters extends AbstractParameterParser
 {

@@ -34,7 +34,8 @@ package com.helger.as2lib.message;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.mail.internet.MimeBodyPart;
+
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * Base interface for an AS2 MDN

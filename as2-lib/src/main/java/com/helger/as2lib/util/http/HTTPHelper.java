@@ -40,14 +40,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
-import javax.activation.DataSource;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,6 +75,9 @@ import com.helger.mail.cte.IContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.mail.datasource.IExtendedDataSource;
 import com.helger.mail.datasource.InputStreamDataSource;
+
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
 
 /**
  * HTTP utility methods.
