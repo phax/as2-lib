@@ -70,7 +70,9 @@ public class ServletConfig
     {
       // Multipart is handled specifically inside
       settings ().setMultipartEnabled (false);
-      handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandlerConstantSession (AS2_SESSION), false);
+      handlerRegistry ().registerHandler (EHttpMethod.POST,
+                                          new AS2ReceiveXServletHandlerConstantSession (AS2_SESSION),
+                                          false);
     }
   }
 
@@ -87,7 +89,9 @@ public class ServletConfig
     {
       // Multipart is handled specifically inside
       settings ().setMultipartEnabled (false);
-      handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2MDNReceiveXServletHandlerConstantSession (AS2_SESSION), false);
+      handlerRegistry ().registerHandler (EHttpMethod.POST,
+                                          new AS2MDNReceiveXServletHandlerConstantSession (AS2_SESSION),
+                                          false);
     }
   }
 
