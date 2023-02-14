@@ -57,58 +57,58 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   /** See compatibility note in RFC 5751, section 3.4.3.1 */
   @Deprecated
   @DevelopersNote ("Use DIGEST_MD5 instead")
-  DIGEST_RSA_MD5("rsa-md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
+  DIGEST_RSA_MD5("rsa-md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA", "md5"),
 
   /** See compatibility note in RFC 5751, section 3.4.3.1 */
   @Deprecated
   @DevelopersNote ("Use DIGEST_SHA1 or DIGEST_SHA_1 instead")
-  DIGEST_RSA_SHA1("rsa-sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+  DIGEST_RSA_SHA1("rsa-sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA", "sha1"),
 
   /** Same for RFC 3851 and RFC 5751 */
-  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
+  DIGEST_MD5 ("md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA", "md5"),
 
   /**
    * Old version as of RFC 3851.
    */
   @DevelopersNote ("Use DIGEST_SHA_1 instead")
-  DIGEST_SHA1("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+  DIGEST_SHA1("sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA", "sha1"),
 
   /**
    * Old version as of RFC 3851.
    */
   @DevelopersNote ("Use DIGEST_SHA_256 instead")
-  DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  DIGEST_SHA256("sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA", "sha256"),
 
   /**
    * Old version as of RFC 3851.
    */
   @DevelopersNote ("Use DIGEST_SHA_384 instead")
-  DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  DIGEST_SHA384("sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA", "sha384"),
   /**
    * Old version as of RFC 3851.
    */
   @DevelopersNote ("Use DIGEST_SHA_512 instead")
-  DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+  DIGEST_SHA512("sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA", "sha512"),
   /**
    * New version as of RFC 5751.
    */
-  DIGEST_SHA_1 ("sha-1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+  DIGEST_SHA_1 ("sha-1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA", "sha-1"),
   /**
    * New version as of RFC 5751.
    */
-  DIGEST_SHA_224 ("sha-224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA"),
+  DIGEST_SHA_224 ("sha-224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA", "sha-224"),
   /**
    * New version as of RFC 5751.
    */
-  DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  DIGEST_SHA_256 ("sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA", "sha-256"),
   /**
    * New version as of RFC 5751.
    */
-  DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  DIGEST_SHA_384 ("sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA", "sha-384"),
   /**
    * New version as of RFC 5751.
    */
-  DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+  DIGEST_SHA_512 ("sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA", "sha-512"),
 
   /**
    * id_rsassa_pkcs1_v1_5_with_sha3_256<br>
@@ -116,7 +116,22 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    */
   RSASSA_PKCS1_V1_5_WITH_SHA3_256 ("rsassa_pkcs1_v1_5_with_sha3_256",
                                    NISTObjectIdentifiers.id_rsassa_pkcs1_v1_5_with_sha3_256,
-                                   "RSASSAPSS");
+                                   "RSASSAPSS",
+                                   "sha-256"),
+
+  /**
+   * RSASSA-PSS with SHA256
+   *
+   * @since 5.0.0
+   */
+  RSASSA_PSS_WITH_SHA256 ("rsassa-pss-sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSAANDMGF1", "sha-256"),
+
+  /**
+   * RSASSA-PSS with SHA512
+   *
+   * @since 5.0.0
+   */
+  RSASSA_PSS_WITH_SHA512 ("rsassa-pss-sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSAANDMGF1", "sha-512");
 
   public static final ECryptoAlgorithmSign DEFAULT_RFC_3851 = DIGEST_SHA1;
   public static final ECryptoAlgorithmSign DEFAULT_RFC_5751 = DIGEST_SHA_256;
@@ -124,14 +139,17 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   private final String m_sID;
   private final ASN1ObjectIdentifier m_aOID;
   private final String m_sBCAlgorithmName;
+  private final String m_sSignAlgorithmID;
 
   ECryptoAlgorithmSign (@Nonnull @Nonempty final String sID,
                         @Nonnull final ASN1ObjectIdentifier aOID,
-                        @Nonnull @Nonempty final String sBCAlgorithmName)
+                        @Nonnull @Nonempty final String sBCAlgorithmName,
+                        @Nullable final String sSignAlgorithmID)
   {
     m_sID = sID;
     m_aOID = aOID;
     m_sBCAlgorithmName = sBCAlgorithmName;
+    m_sSignAlgorithmID = sSignAlgorithmID;
   }
 
   @Nonnull
@@ -156,6 +174,13 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   public String getSignAlgorithmName ()
   {
     return m_sBCAlgorithmName;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getSignAlgorithmID ()
+  {
+    return m_sSignAlgorithmID;
   }
 
   /**
@@ -187,8 +212,7 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
            this == DIGEST_SHA_1 ||
            this == DIGEST_SHA_256 ||
            this == DIGEST_SHA_384 ||
-           this == DIGEST_SHA_512 ||
-           this == RSASSA_PKCS1_V1_5_WITH_SHA3_256;
+           this == DIGEST_SHA_512;
   }
 
   @Nullable

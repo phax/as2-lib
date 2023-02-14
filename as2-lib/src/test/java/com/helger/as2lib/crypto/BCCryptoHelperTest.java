@@ -45,6 +45,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
@@ -67,7 +69,10 @@ public final class BCCryptoHelperTest
 {
   private static final String PATH = "src/test/resources/mendelson/key3.pfx";
   private static final KeyStore KS = KeyStoreHelper.loadKeyStore (EKeyStoreType.PKCS12, PATH, "test").getKeyStore ();
-  private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key3", "test".toCharArray ()).getKeyEntry ();
+  private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key3", "test".toCharArray ())
+                                                           .getKeyEntry ();
+  private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelperTest.class);
+
   private static final X509Certificate CERT_ENCRYPT;
   static
   {
@@ -92,37 +97,44 @@ public final class BCCryptoHelperTest
     }
   }
 
-  @SuppressWarnings ("deprecation")
   @Test
   public void testSignWithAllAlgorithms () throws Exception
   {
     final MimeBodyPart aPart = new MimeBodyPart ();
     aPart.setText ("Hello world");
 
+    final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
     for (int nIncludeCert = 0; nIncludeCert < 2; ++nIncludeCert)
       for (final ECryptoAlgorithmSign eAlgo : ECryptoAlgorithmSign.values ())
-        if (eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_MD5 && eAlgo != ECryptoAlgorithmSign.DIGEST_RSA_SHA1 && eAlgo != ECryptoAlgorithmSign.RSASSA_PKCS1_V1_5_WITH_SHA3_256)
+      {
+        LOGGER.info ("Trying signing algo " + eAlgo);
+        if (eAlgo == ECryptoAlgorithmSign.RSASSA_PKCS1_V1_5_WITH_SHA3_256)
         {
-          final MimeBodyPart aSigned = AS2Helper.getCryptoHelper ()
-                                                .sign (aPart,
-                                                       (X509Certificate) PKE.getCertificate (),
-                                                       PKE.getPrivateKey (),
-                                                       eAlgo,
-                                                       nIncludeCert == 1,
-                                                       eAlgo.isRFC3851Algorithm (),
-                                                       false,
-                                                       EContentTransferEncoding.BASE64);
-          assertNotNull (aSigned);
-
-          final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
-          assertNotNull (aContentTypes);
-          assertEquals (1, aContentTypes.length);
-          final String sContentType = aContentTypes[0];
-          final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
-                                        eAlgo.getID () +
-                                        "; \r\n\tboundary=\"----=_Part";
-          assertTrue (sContentType + " does not start with " + sExpectedStart, sContentType.startsWith (sExpectedStart));
+          // Can't get it to work
+          continue;
         }
+        ((BCCryptoHelper) aCryptoHelper).setSecurityProviderName (eAlgo == ECryptoAlgorithmSign.RSASSA_PKCS1_V1_5_WITH_SHA3_256 ? "SunRsaSign"
+                                                                                                                                : BCCryptoHelper.DEFAULT_SECURITY_PROVIDER_NAME);
+        final MimeBodyPart aSigned = aCryptoHelper.sign (aPart,
+                                                         (X509Certificate) PKE.getCertificate (),
+                                                         PKE.getPrivateKey (),
+                                                         eAlgo,
+                                                         nIncludeCert == 1,
+                                                         eAlgo.isRFC3851Algorithm (),
+                                                         false,
+                                                         EContentTransferEncoding.BASE64);
+        assertNotNull (aSigned);
+
+        final String [] aContentTypes = aSigned.getHeader (CHttpHeader.CONTENT_TYPE);
+        assertNotNull (aContentTypes);
+        assertEquals (1, aContentTypes.length);
+        final String sContentType = aContentTypes[0];
+        final String sExpectedStart = "multipart/signed; protocol=\"application/pkcs7-signature\"; micalg=" +
+                                      eAlgo.getSignAlgorithmID () +
+                                      "; \r\n\tboundary=\"----=_Part";
+        assertTrue ("[" + eAlgo + "] " + sContentType + " does not start with " + sExpectedStart,
+                    sContentType.startsWith (sExpectedStart));
+      }
   }
 
   @Test
@@ -328,12 +340,14 @@ public final class BCCryptoHelperTest
 
     for (final ECryptoAlgorithmCrypt eAlgo : ECryptoAlgorithmCrypt.values ())
     {
-      final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ().encrypt (aPart, CERT_ENCRYPT, eAlgo, EContentTransferEncoding.BASE64);
+      final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ()
+                                               .encrypt (aPart, CERT_ENCRYPT, eAlgo, EContentTransferEncoding.BASE64);
       assertNotNull (aEncrypted);
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
                          aEncrypted.getHeader (CHttpHeader.CONTENT_TYPE));
-      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" }, aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
+      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" },
+                         aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
     }
   }
 
@@ -346,12 +360,16 @@ public final class BCCryptoHelperTest
     for (final EContentTransferEncoding eCTE : EContentTransferEncoding.values ())
     {
       final MimeBodyPart aEncrypted = AS2Helper.getCryptoHelper ()
-                                               .encrypt (aPart, CERT_ENCRYPT, ECryptoAlgorithmCrypt.CRYPT_AES256_GCM, eCTE);
+                                               .encrypt (aPart,
+                                                         CERT_ENCRYPT,
+                                                         ECryptoAlgorithmCrypt.CRYPT_AES256_GCM,
+                                                         eCTE);
       assertNotNull (aEncrypted);
 
       assertArrayEquals (new String [] { "application/pkcs7-mime; name=\"smime.p7m\"; smime-type=enveloped-data" },
                          aEncrypted.getHeader (CHttpHeader.CONTENT_TYPE));
-      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" }, aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
+      assertArrayEquals (new String [] { "attachment; filename=\"smime.p7m\"" },
+                         aEncrypted.getHeader (CHttpHeader.CONTENT_DISPOSITION));
     }
   }
 

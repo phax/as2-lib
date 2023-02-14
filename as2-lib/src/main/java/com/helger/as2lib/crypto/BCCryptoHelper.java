@@ -131,9 +131,9 @@ import jakarta.mail.internet.MimeMultipart;
  */
 public class BCCryptoHelper implements ICryptoHelper
 {
+  public static final String DEFAULT_SECURITY_PROVIDER_NAME;
   private static final Logger LOGGER = LoggerFactory.getLogger (BCCryptoHelper.class);
   private static final File DUMP_DECRYPTED_DIR_PATH;
-  protected static final String DEFAULT_SECURITY_PROVIDER_NAME;
   private static final byte [] EOL_BYTES = AS2IOHelper.getAllAsciiBytes (CHttp.EOL);
 
   static
