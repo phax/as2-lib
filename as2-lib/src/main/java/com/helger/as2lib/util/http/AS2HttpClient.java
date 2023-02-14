@@ -46,6 +46,7 @@ import java.net.URL;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.WillClose;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
@@ -183,63 +184,65 @@ public class AS2HttpClient
    *         In case of error
    */
   @Nonnegative
-  public long send (@Nonnull final InputStream aISToSend,
+  public long send (@Nonnull @WillClose final InputStream aISToSend,
                     @Nullable final EContentTransferEncoding eCTE,
                     @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
                     @Nonnull final AS2ResourceHelper aResHelper) throws IOException
   {
-    final CountingInputStream aCIS = new CountingInputStream (aISToSend);
-    final AbstractHttpEntity aISE = new AbstractHttpEntity ((ContentType) null, eCTE != null ? eCTE.getID () : null)
+    try (final CountingInputStream aCIS = new CountingInputStream (aISToSend))
     {
-      public void close ()
+      final AbstractHttpEntity aISE = new AbstractHttpEntity ((ContentType) null, eCTE != null ? eCTE.getID () : null)
       {
-        // empty
-      }
-
-      @Override
-      public InputStream getContent () throws IOException
-      {
-        // Only writeTo should be used from the outside
-        throw new UnsupportedOperationException ();
-      }
-
-      public long getContentLength ()
-      {
-        return -1L;
-      }
-
-      public boolean isStreaming ()
-      {
-        return true;
-      }
-
-      @Override
-      public void writeTo (@Nonnull final OutputStream aOS) throws IOException
-      {
-        // Use MIME encoding here
-        try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-            final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                    eCTE.getID ())
-                                                         : aDebugOS)
+        public void close ()
         {
-          StreamHelper.copyByteStream ().from (aISToSend).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
+          // empty
         }
-        catch (final MessagingException ex)
+
+        @Override
+        public InputStream getContent () throws IOException
         {
-          throw new IllegalStateException ("Failed to encode OutputStream with CTE '" + eCTE + "'", ex);
+          // Only writeTo should be used from the outside
+          throw new UnsupportedOperationException ();
         }
-      }
-    };
-    // Use a temporary file to get the Content length
-    final HttpEntity aEntity = aResHelper.createRepeatableHttpEntity (aISE);
-    m_aRequestBuilder.setEntity (aEntity);
-    final ClassicHttpRequest aHttpUriRequest = m_aRequestBuilder.build ();
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Performing HttpRequest to '" + aHttpUriRequest.toString () + "'");
+        public long getContentLength ()
+        {
+          return -1L;
+        }
 
-    m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
-    return aCIS.getBytesRead ();
+        public boolean isStreaming ()
+        {
+          return true;
+        }
+
+        @Override
+        public void writeTo (@Nonnull final OutputStream aOS) throws IOException
+        {
+          // Use MIME encoding here
+          try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
+              final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                                      eCTE.getID ())
+                                                           : aDebugOS)
+          {
+            StreamHelper.copyByteStream ().from (aCIS).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
+          }
+          catch (final MessagingException ex)
+          {
+            throw new IllegalStateException ("Failed to encode OutputStream with CTE '" + eCTE + "'", ex);
+          }
+        }
+      };
+      // Use a temporary file to get the Content length
+      final HttpEntity aEntity = aResHelper.createRepeatableHttpEntity (aISE);
+      m_aRequestBuilder.setEntity (aEntity);
+      final ClassicHttpRequest aHttpUriRequest = m_aRequestBuilder.build ();
+
+      if (LOGGER.isDebugEnabled ())
+        LOGGER.debug ("Performing HttpRequest to '" + aHttpUriRequest.toString () + "'");
+
+      m_aCloseableHttpResponse = m_aCloseableHttpClient.execute (aHttpUriRequest);
+      return aCIS.getBytesRead ();
+    }
   }
 
   /**
