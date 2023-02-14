@@ -46,7 +46,7 @@ import com.helger.commons.id.IHasID;
 public interface ICryptoAlgorithm extends IHasID <String>
 {
   /**
-   * @return The ASN.1 object identifier of the crypto algorithm. Never
+   * @return The ASN.1 object identifier of the crypto/sign algorithm. Never
    *         <code>null</code>.
    */
   @Nonnull
