@@ -743,7 +743,7 @@ public class BCCryptoHelper implements ICryptoHelper
     for (final SignerInformation aSignerInfo : aSignedParser.getSignerInfos ().getSigners ())
     {
       if (!aSignerInfo.verify (aSIV))
-        throw new SignatureException ("Verification failed for SignerInfo " + aSignerInfo);
+        throw new SignatureException ("Verification failed for SignerInfo "+ aSignerInfo);
     }
 
     return aSignedParser.getContent ();

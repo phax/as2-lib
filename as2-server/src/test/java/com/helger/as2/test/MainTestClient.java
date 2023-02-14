@@ -36,8 +36,6 @@ import java.io.File;
 import java.util.Enumeration;
 
 import javax.annotation.Nonnull;
-import javax.mail.Header;
-import javax.mail.internet.MimeBodyPart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +62,9 @@ import com.helger.commons.collection.attr.StringMap;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.system.SystemHelper;
 import com.helger.security.keystore.EKeyStoreType;
+
+import jakarta.mail.Header;
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * <pre>
@@ -114,7 +115,8 @@ public class MainTestClient
     aSettings.setSenderData ("OpenAS2A", "email@example.org", "OpenAS2A_alias");
     aSettings.setReceiverData ("OpenAS2B", "OpenAS2B_alias", "http://localhost:10080/HttpReceiver");
     aSettings.setPartnershipName ("Partnership name");
-    aSettings.setEncryptAndSign (DO_ENCRYPT ? ECryptoAlgorithmCrypt.CRYPT_3DES : null, DO_SIGN ? ECryptoAlgorithmSign.DIGEST_SHA_1 : null);
+    aSettings.setEncryptAndSign (DO_ENCRYPT ? ECryptoAlgorithmCrypt.CRYPT_3DES : null,
+                                 DO_SIGN ? ECryptoAlgorithmSign.DIGEST_SHA_1 : null);
     // Use the default MDN options
     // Use the default message ID format
 
@@ -257,11 +259,19 @@ public class MainTestClient
     try
     {
       AS2InvalidParameterException.checkValue (aMsg, "ContentType", aMsg.getContentType ());
-      AS2InvalidParameterException.checkValue (aMsg, "Attribute: " + CPartnershipIDs.PA_AS2_URL, aPartnership.getAS2URL ());
-      AS2InvalidParameterException.checkValue (aMsg, "Receiver: " + CPartnershipIDs.PID_AS2, aPartnership.getReceiverAS2ID ());
-      AS2InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_AS2, aPartnership.getSenderAS2ID ());
+      AS2InvalidParameterException.checkValue (aMsg,
+                                               "Attribute: " + CPartnershipIDs.PA_AS2_URL,
+                                               aPartnership.getAS2URL ());
+      AS2InvalidParameterException.checkValue (aMsg,
+                                               "Receiver: " + CPartnershipIDs.PID_AS2,
+                                               aPartnership.getReceiverAS2ID ());
+      AS2InvalidParameterException.checkValue (aMsg,
+                                               "Sender: " + CPartnershipIDs.PID_AS2,
+                                               aPartnership.getSenderAS2ID ());
       AS2InvalidParameterException.checkValue (aMsg, "Subject", aMsg.getSubject ());
-      AS2InvalidParameterException.checkValue (aMsg, "Sender: " + CPartnershipIDs.PID_EMAIL, aPartnership.getSenderEmail ());
+      AS2InvalidParameterException.checkValue (aMsg,
+                                               "Sender: " + CPartnershipIDs.PID_EMAIL,
+                                               aPartnership.getSenderEmail ());
       AS2InvalidParameterException.checkValue (aMsg, "Message Data", aMsg.getData ());
     }
     catch (final AS2InvalidParameterException ex)
