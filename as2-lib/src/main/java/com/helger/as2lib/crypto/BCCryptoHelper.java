@@ -46,8 +46,10 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -484,7 +486,9 @@ public class BCCryptoHelper implements ICryptoHelper
                     aX509Cert.getSubjectX500Principal ().getName () +
                     "; algorithm=" +
                     eAlgorithm +
-                    "; CTE=" +
+                    " [" +
+                    eAlgorithm.getOID ().getId () +
+                    "], CTE=" +
                     eCTE);
 
     // Check if the certificate is expired or active.
@@ -501,6 +505,25 @@ public class BCCryptoHelper implements ICryptoHelper
 
     // Return the encrypted Mime Body Part
     return aGen.generate (aPart, aEncryptor);
+  }
+
+  private static Map <ASN1ObjectIdentifier, String> NEW_SIGN_ALGOS;
+
+  static
+  {
+    @SuppressWarnings ("unchecked")
+    // Start with existing RFC-5751 algorithms
+    final Map <ASN1ObjectIdentifier, String> stdMicAlgs = new LinkedHashMap <> (SMIMESignedGenerator.RFC5751_MICALGS);
+
+    // add all remaining algorithms
+    for (final ECryptoAlgorithmSign e : ECryptoAlgorithmSign.values ())
+      if (!e.isRFC3851Algorithm ())
+      {
+        // It's not an old value
+        stdMicAlgs.computeIfAbsent (e.getOID (), k -> e.getMICAlgorithmID ());
+      }
+    NEW_SIGN_ALGOS = Collections.unmodifiableMap (stdMicAlgs);
+    LOGGER.info ("The current algorithms are " + NEW_SIGN_ALGOS);
   }
 
   @Nonnull
@@ -555,7 +578,8 @@ public class BCCryptoHelper implements ICryptoHelper
 
     // create the generator for creating an smime/signed message
     final SMIMESignedGenerator aSGen = new SMIMESignedGenerator (bUseOldRFC3851MicAlgs ? SMIMESignedGenerator.RFC3851_MICALGS
-                                                                                       : SMIMESignedGenerator.RFC5751_MICALGS);
+                                                                                       : NEW_SIGN_ALGOS);
+
     // set the content-transfer-encoding for the CMS block (enveloped data,
     // signature, etc...) in the message.
     aSGen.setContentTransferEncoding (eCTE.getID ());
@@ -577,13 +601,13 @@ public class BCCryptoHelper implements ICryptoHelper
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Removing CMS AlgorithmProtect attribute, if it is present");
 
-        final CMSAttributeTableGenerator sAttrGen = aSigInfoGen.getSignedAttributeTableGenerator ();
+        final CMSAttributeTableGenerator aAttrGen = aSigInfoGen.getSignedAttributeTableGenerator ();
         aSigInfoGen = new SignerInfoGenerator (aSigInfoGen, new DefaultSignedAttributeTableGenerator ()
         {
           @Override
           public AttributeTable getAttributes (final Map parameters)
           {
-            final AttributeTable ret = sAttrGen.getAttributes (parameters);
+            final AttributeTable ret = aAttrGen.getAttributes (parameters);
             return ret.remove (CMSAttributes.cmsAlgorithmProtect);
           }
         }, aSigInfoGen.getUnsignedAttributeTableGenerator ());
@@ -593,7 +617,7 @@ public class BCCryptoHelper implements ICryptoHelper
 
     if (bIncludeCertificateInSignedContent)
     {
-      // add our pool of certs and cerls (if any) to go with the signature
+      // add our pool of certs and crls (if any) to go with the signature
       aSGen.addCertificates (aCertStore);
     }
 
@@ -719,7 +743,7 @@ public class BCCryptoHelper implements ICryptoHelper
     for (final SignerInformation aSignerInfo : aSignedParser.getSignerInfos ().getSigners ())
     {
       if (!aSignerInfo.verify (aSIV))
-        throw new SignatureException ("Verification failed");
+        throw new SignatureException ("Verification failed for SignerInfo " + aSignerInfo);
     }
 
     return aSignedParser.getContent ();
