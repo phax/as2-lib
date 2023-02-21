@@ -68,7 +68,9 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
   private final ICommonsList <ResendItem> m_aItems = new CommonsArrayList <> ();
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
@@ -79,7 +81,8 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     // Get the action to be used
-    String sResendAction = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null
+                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");
@@ -94,8 +97,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     else
     {
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
-      if (LOGGER.isWarnEnabled ())
-        LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
+      LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
     }
 
     // Build the item and add it to the vector
@@ -118,8 +120,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       aMsg = aItem.getMessage ();
 
       // Transmit the message
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Loaded message for resend" + aMsg.getLoggingText ());
+      LOGGER.info ("Loaded message for resend" + aMsg.getLoggingText ());
 
       final ICommonsMap <String, Object> aOptions = new CommonsHashMap <> ();
       aOptions.put (IProcessorResenderModule.OPTION_RETRIES, sRemainingRetries);
@@ -169,8 +170,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     if (nItems > 0)
     {
       m_aRWLock.writeLocked (m_aItems::clear);
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Removed " + nItems + " items from InMemoryResenderModule");
+      LOGGER.info ("Removed " + nItems + " items from InMemoryResenderModule");
     }
   }
 
@@ -187,10 +187,9 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
     final int nRemainingItems = getResendItemCount ();
     if (nRemainingItems > 0)
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("InMemoryResenderModule is stopped but " +
-                      nRemainingItems +
-                      " items are still contained. They are discarded and will be lost!");
+      LOGGER.error ("InMemoryResenderModule is stopped but " +
+                    nRemainingItems +
+                    " items are still contained. They are discarded and will be lost!");
     }
 
     super.doStop ();

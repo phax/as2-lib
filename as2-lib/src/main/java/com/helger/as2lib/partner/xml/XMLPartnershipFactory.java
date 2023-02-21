@@ -71,7 +71,8 @@ import com.helger.xml.microdom.serialize.MicroWriter;
  *
  * @author joseph mcverry
  */
-public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartners implements IRefreshablePartnershipFactory
+public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartners implements
+                                   IRefreshablePartnershipFactory
 {
   public static final String ATTR_FILENAME = "filename";
   public static final String ATTR_DISABLE_BACKUP = "disablebackup";
@@ -105,7 +106,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session session, @Nullable final IStringMap parameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session session,
+                                    @Nullable final IStringMap parameters) throws AS2Exception
   {
     super.initDynamicComponent (session, parameters);
 
@@ -152,13 +154,14 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
           {
             final Partnership aNewPartnership = loadPartnership (eRootNode, aNewPartners);
             if (aNewPartnerships.getPartnershipByName (aNewPartnership.getName ()) != null)
-              throw new AS2Exception ("Partnership with name '" + aNewPartnership.getName () + "' is defined more than once");
+              throw new AS2Exception ("Partnership with name '" +
+                                      aNewPartnership.getName () +
+                                      "' is defined more than once");
             aNewPartnerships.addPartnership (aNewPartnership);
           }
           else
           {
-            if (LOGGER.isWarnEnabled ())
-              LOGGER.warn ("Invalid element '" + sNodeName + "' in XML partnership file");
+            LOGGER.warn ("Invalid element '" + sNodeName + "' in XML partnership file");
           }
       }
     }
@@ -167,12 +170,16 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     setPartnerships (aNewPartnerships);
   }
 
-  protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode, @Nonnull final Partnership aPartnership) throws AS2Exception
+  protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode,
+                                            @Nonnull final Partnership aPartnership) throws AS2Exception
   {
     final String sNodeName = "attribute";
     final String sNodeKeyName = "name";
     final String sNodeValueName = "value";
-    final ICommonsOrderedMap <String, String> aAttributes = AS2XMLHelper.mapAttributeNodes (aNode, sNodeName, sNodeKeyName, sNodeValueName);
+    final ICommonsOrderedMap <String, String> aAttributes = AS2XMLHelper.mapAttributeNodes (aNode,
+                                                                                            sNodeName,
+                                                                                            sNodeKeyName,
+                                                                                            sNodeValueName);
     aPartnership.addAllAttributes (aAttributes);
   }
 
@@ -192,7 +199,11 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     final String sPartnerType = bIsSender ? "sender" : "receiver";
     final IMicroElement ePartner = ePartnership.getFirstChildElement (sPartnerType);
     if (ePartner == null)
-      throw new AS2Exception ("Partnership '" + aPartnership.getName () + "' is missing '" + sPartnerType + "' child element");
+      throw new AS2Exception ("Partnership '" +
+                              aPartnership.getName () +
+                              "' is missing '" +
+                              sPartnerType +
+                              "' child element");
 
     final IStringMap aPartnerAttrs = AS2XMLHelper.getAllAttrsWithLowercaseName (ePartner);
 
@@ -233,7 +244,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
                                       @Nonnull final IPartnerMap aAllPartners) throws AS2Exception
   {
     // Name attribute is required
-    final IStringMap aPartnershipAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership, ATTR_PARTNERSHIP_NAME);
+    final IStringMap aPartnershipAttrs = AS2XMLHelper.getAllAttrsWithLowercaseNameWithRequired (ePartnership,
+                                                                                                ATTR_PARTNERSHIP_NAME);
 
     final Partnership aPartnership = new Partnership (aPartnershipAttrs.getAsString (ATTR_PARTNERSHIP_NAME));
 
@@ -273,9 +285,7 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     if (!isDisableBackup ())
     {
       final File aBackupFile = _getUniqueBackupFile (sFilename);
-
-      if (LOGGER.isWarnEnabled ())
-        LOGGER.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
+      LOGGER.info ("backing up " + sFilename + " to " + aBackupFile.getName ());
 
       final File aSourceFile = new File (sFilename);
       try
@@ -311,7 +321,9 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
         eReceiver.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllAttributes ().entrySet ())
-        ePartnership.appendElement ("attribute").setAttribute ("name", aAttr.getKey ()).setAttribute ("value", aAttr.getValue ());
+        ePartnership.appendElement ("attribute")
+                    .setAttribute ("name", aAttr.getKey ())
+                    .setAttribute ("value", aAttr.getValue ());
     }
     if (MicroWriter.writeToFile (aDoc, new File (sFilename)).isFailure ())
       throw new AS2Exception ("Failed to write to file " + sFilename);

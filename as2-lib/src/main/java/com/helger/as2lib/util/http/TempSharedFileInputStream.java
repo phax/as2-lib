@@ -163,12 +163,9 @@ public class TempSharedFileInputStream extends SharedFileInputStream
                   .closeTo (false)
                   .copyByteCount (aCount)
                   .build ();
-      if (LOGGER.isInfoEnabled ())
-      {
-        // Avoid logging in tests
-        if (aCount.longValue () > 1024L)
-          LOGGER.info (aCount.longValue () + " bytes copied to " + aDestFile.getAbsolutePath ());
-      }
+      // Avoid logging in tests
+      if (aCount.longValue () > 1024L)
+        LOGGER.info (aCount.longValue () + " bytes copied to " + aDestFile.getAbsolutePath ());
     }
     return aDestFile;
   }

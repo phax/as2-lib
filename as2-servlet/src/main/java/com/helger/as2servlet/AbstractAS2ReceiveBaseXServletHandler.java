@@ -253,24 +253,21 @@ public abstract class AbstractAS2ReceiveBaseXServletHandler implements IXServlet
       {
         if (aMsgDataSource instanceof ByteArrayDataSource)
         {
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("received " +
-                         AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length,
-                                                      aSW) +
-                         " from " +
-                         sClientInfo +
-                         aMsg.getLoggingText ());
-
+          final ByteArrayDataSource aBADS = (ByteArrayDataSource) aMsgDataSource;
+          LOGGER.info ("received " +
+                       AS2IOHelper.getTransferRate (aBADS.directGetBytes ().length, aSW) +
+                       " from " +
+                       sClientInfo +
+                       aMsg.getLoggingText ());
         }
         else
         {
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("received message from " +
-                         sClientInfo +
-                         aMsg.getLoggingText () +
-                         " in " +
-                         aSW.getMillis () +
-                         " ms");
+          LOGGER.info ("received message from " +
+                       sClientInfo +
+                       aMsg.getLoggingText () +
+                       " in " +
+                       aSW.getMillis () +
+                       " ms");
         }
 
         handleIncomingMessage (sClientInfo, aMsgDataSource, aMsg, aResponseHandler);

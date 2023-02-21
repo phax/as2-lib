@@ -51,13 +51,15 @@ public class LoggingMICMatchingHandler implements IMICMatchingHandler
 
   public void onMICMatch (@Nonnull final IMessage aMsg, @Nonnull final String sMIC)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("MIC is matched, MIC: " + sMIC + aMsg.getLoggingText ());
+    LOGGER.info ("MIC is matched, MIC: " + sMIC + aMsg.getLoggingText ());
   }
 
   public void onMICMismatch (final IMessage aMsg, final String sOriginalMIC, final String sReceivedMIC)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("MIC IS NOT MATCHED; original MIC: " + sOriginalMIC + " received MIC: " + sReceivedMIC + aMsg.getLoggingText ());
+    LOGGER.info ("MIC IS NOT MATCHED; original MIC: " +
+                 sOriginalMIC +
+                 " received MIC: " +
+                 sReceivedMIC +
+                 aMsg.getLoggingText ());
   }
 }

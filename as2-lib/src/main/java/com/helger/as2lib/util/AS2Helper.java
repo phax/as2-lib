@@ -204,8 +204,7 @@ public final class AS2Helper
                                                                     EContentTransferEncoding.BASE64);
         aMdn.setData (aSignedReport);
 
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
+        LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
       }
       catch (final AS2CertificateNotFoundException | AS2KeyNotFoundException ex)
       {
@@ -324,8 +323,7 @@ public final class AS2Helper
       eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSigningAlgorithm);
       if (eSigningAlgorithm == null)
       {
-        if (LOGGER.isWarnEnabled ())
-          LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
+        LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
       }
     }
 
@@ -435,8 +433,7 @@ public final class AS2Helper
               .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
                       CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
+        LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());

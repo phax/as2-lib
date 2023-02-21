@@ -35,6 +35,8 @@ package com.helger.as2.app.cert;
 import java.io.File;
 import java.io.InputStream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.WillClose;
 
 import org.slf4j.Logger;
@@ -55,15 +57,10 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
   private FileMonitor m_aFileMonitor;
 
   @Override
-  public void load (@WillClose final InputStream in, final char [] password) throws AS2Exception
+  public void load (@Nonnull @WillClose final InputStream aIS, @Nonnull final char [] password) throws AS2Exception
   {
-    super.load (in, password);
+    super.load (aIS, password);
     getFileMonitor ();
-  }
-
-  public void setFileMonitor (final FileMonitor fileMonitor)
-  {
-    m_aFileMonitor = fileMonitor;
   }
 
   public FileMonitor getFileMonitor () throws AS2InvalidParameterException
@@ -71,8 +68,9 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
     boolean bCreateMonitor = m_aFileMonitor == null && attrs ().getAsString (ATTR_INTERVAL) != null;
     if (!bCreateMonitor && m_aFileMonitor != null)
     {
-      final String filename = m_aFileMonitor.getFilename ();
-      bCreateMonitor = filename != null && !filename.equals (getFilename ());
+      // Create a new monitor if the filename changed
+      final String sFilename = m_aFileMonitor.getFilename ();
+      bCreateMonitor = sFilename != null && !sFilename.equals (getFilename ());
     }
 
     if (bCreateMonitor)
@@ -89,6 +87,17 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
     return m_aFileMonitor;
   }
 
+  /**
+   * Overwrite the File Monitor to be used.
+   *
+   * @param aFileMonitor
+   *        The file monitor to use. May be <code>null</code>.
+   */
+  public void setFileMonitor (@Nullable final FileMonitor aFileMonitor)
+  {
+    m_aFileMonitor = aFileMonitor;
+  }
+
   public void onFileMonitorEvent (final FileMonitor monitor, final File file, final EFileMonitorEvent eEvent)
   {
     switch (eEvent)
@@ -97,8 +106,7 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
         try
         {
           load ();
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("- Certificates Reloaded -");
+          LOGGER.info ("- Certificates Reloaded -");
         }
         catch (final AS2Exception oae)
         {
@@ -111,14 +119,14 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
   @Override
   public boolean equals (final Object o)
   {
-    // No field added
+    // No relevant field added
     return super.equals (o);
   }
 
   @Override
   public int hashCode ()
   {
-    // No field added
+    // No relevant field added
     return super.hashCode ();
   }
 }

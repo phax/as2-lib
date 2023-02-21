@@ -322,8 +322,7 @@ public final class HTTPHelper
       final IContentTransferEncoding aCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
       if (aCTE == null)
       {
-        if (LOGGER.isWarnEnabled ())
-          LOGGER.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
+        LOGGER.warn ("Unsupported Content-Transfer-Encoding '" + sContentTransferEncoding + "' is used - ignoring!");
       }
       else
       {
@@ -337,10 +336,7 @@ public final class HTTPHelper
           // Remember original length before continuing
           final int nOriginalContentLength = aActualBytes.length;
 
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" +
-                         sContentTransferEncoding +
-                         "' - decoding");
+          LOGGER.info ("Incoming message uses Content-Transfer-Encoding '" + sContentTransferEncoding + "' - decoding");
           aActualBytes = aCodec.getDecoded (aActualBytes);
           aPayload = new ByteArrayDataSource (aActualBytes, aPayload.getContentType (), aPayload.getName ());
 
@@ -421,10 +417,7 @@ public final class HTTPHelper
               bHeadersStarted = true;
             else
             {
-              if (LOGGER.isWarnEnabled ())
-                LOGGER.warn ("Found unsupported character " +
-                             _debugChar (ch) +
-                             " when trying to read HTTP chunk length");
+              LOGGER.warn ("Found unsupported character " + _debugChar (ch) + " when trying to read HTTP chunk length");
               continue;
             }
       if (!bHeadersStarted)

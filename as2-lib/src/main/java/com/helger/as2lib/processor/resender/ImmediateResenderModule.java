@@ -55,7 +55,9 @@ public class ImmediateResenderModule extends AbstractResenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (ImmediateResenderModule.class);
 
   @Override
-  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorResenderModule.DO_RESEND);
   }
@@ -65,10 +67,10 @@ public class ImmediateResenderModule extends AbstractResenderModule
                       @Nonnull final IMessage aMsg,
                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
+    LOGGER.info ("Immediately resending message" + aMsg.getLoggingText ());
 
-    String sResendAction = aOptions == null ? null : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null
+                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");
@@ -82,8 +84,7 @@ public class ImmediateResenderModule extends AbstractResenderModule
     else
     {
       nRetries = IProcessorResenderModule.DEFAULT_RETRIES;
-      if (LOGGER.isWarnEnabled ())
-        LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
+      LOGGER.warn ("The resending retry count is missing - default to " + nRetries + "!");
     }
 
     // Update the retries - decrement here

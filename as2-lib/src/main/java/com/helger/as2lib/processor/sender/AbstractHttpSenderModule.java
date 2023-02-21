@@ -98,10 +98,9 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     final String sHttpDumpOutgoingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryOutgoing");
     if (StringHelper.hasText (sHttpDumpOutgoingDirectory))
     {
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Using '" +
-                     sHttpDumpOutgoingDirectory +
-                     "' as the global directory to dump outgoing messages (source: system property)");
+      LOGGER.info ("Using '" +
+                   sHttpDumpOutgoingDirectory +
+                   "' as the global directory to dump outgoing messages (source: system property)");
       final File aDumpDirectory = new File (sHttpDumpOutgoingDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
       DEFAULT_HTTP_OUTGOING_DUMPER_FACTORY = new DefaultHTTPOutgoingDumperFactory (aDumpDirectory);

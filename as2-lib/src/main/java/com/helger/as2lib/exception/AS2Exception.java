@@ -90,17 +90,16 @@ public class AS2Exception extends Exception
                                 @Nullable final IMessage aSrcMsg,
                                 @Nullable final Throwable aCause)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info (CAS2Info.NAME_VERSION +
-                   " " +
-                   ClassHelper.getClassLocalName (aExceptionClass) +
-                   " " +
-                   (bTerminated ? "terminated" : "caught") +
-                   ": " +
-                   sLogMessage +
-                   (aSrcFile == null ? "" : "; source file: " + aSrcFile.getAbsolutePath ()) +
-                   (aSrcMsg == null ? "" : "; source msg: " + aSrcMsg.getLoggingText ()),
-                   aCause);
+    LOGGER.info (CAS2Info.NAME_VERSION +
+                 " " +
+                 ClassHelper.getClassLocalName (aExceptionClass) +
+                 " " +
+                 (bTerminated ? "terminated" : "caught") +
+                 ": " +
+                 sLogMessage +
+                 (aSrcFile == null ? "" : "; source file: " + aSrcFile.getAbsolutePath ()) +
+                 (aSrcMsg == null ? "" : "; source msg: " + aSrcMsg.getLoggingText ()),
+                 aCause);
   }
 
   /**

@@ -45,6 +45,10 @@ import com.helger.as2lib.exception.AS2Exception;
  */
 public interface IKeyStoreCertificateFactory extends ICertificateFactory
 {
+  /**
+   * @return The key store this certificate factory deals with. May not be
+   *         <code>null</code>.
+   */
   @Nonnull
   KeyStore getKeyStore ();
 

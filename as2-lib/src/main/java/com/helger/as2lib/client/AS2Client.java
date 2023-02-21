@@ -264,8 +264,7 @@ public class AS2Client
 
     if (aSettings.getKeyStoreFile () != null)
     {
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Loading AS2 client keystore from file " + aSettings.getKeyStoreFile ());
+      LOGGER.info ("Loading AS2 client keystore from file " + aSettings.getKeyStoreFile ());
 
       aCertFactory.setFilename (aSettings.getKeyStoreFile ().getAbsolutePath ());
       aCertFactory.setPassword (aSettings.getKeyStorePassword ());
@@ -275,8 +274,7 @@ public class AS2Client
     else
       if (aSettings.getKeyStoreBytes () != null && aSettings.getKeyStorePassword () != null)
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Loading AS2 client keystore from byte array. No changes will be saved.");
+        LOGGER.info ("Loading AS2 client keystore from byte array. No changes will be saved.");
 
         aCertFactory.setPassword (aSettings.getKeyStorePassword ());
         aCertFactory.setSaveChangesToFile (false);
@@ -288,8 +286,7 @@ public class AS2Client
       }
       else
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.warn ("No AS2 client keystore data was provided. Signing and encryption/decryption will most likely fail.");
+        LOGGER.warn ("No AS2 client keystore data was provided. Signing and encryption/decryption will most likely fail.");
 
         // No file provided - no storage
         aCertFactory.setSaveChangesToFile (false);

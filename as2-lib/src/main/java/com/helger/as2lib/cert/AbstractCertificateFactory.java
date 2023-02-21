@@ -168,7 +168,8 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   @Nonempty
   private static String _debug (@Nullable final X509Certificate aCert)
   {
-    return aCert == null ? "null" : aCert.getSubjectX500Principal ().getName () + "/" + aCert.getSerialNumber ().toString ();
+    return aCert == null ? "null"
+                         : aCert.getSubjectX500Principal ().getName () + "/" + aCert.getSerialNumber ().toString ();
   }
 
   @Nonnull
@@ -190,7 +191,8 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     debugLog ( () -> "initDynamicComponent (" + aSession + ", " + aOptions + ")");
 
@@ -240,10 +242,10 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
     try
     {
       final String sKeyStoreType = getKeyStoreType ();
-      final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType, DEFAULT_KEY_STORE_TYPE);
+      final EKeyStoreType eKeyStoreType = EKeyStoreType.getFromIDCaseInsensitiveOrDefault (sKeyStoreType,
+                                                                                           DEFAULT_KEY_STORE_TYPE);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Using internal keystore of type " + eKeyStoreType);
+      LOGGER.info ("Using internal keystore of type " + eKeyStoreType);
 
       final KeyStore aKeyStore = createNewKeyStore (eKeyStoreType);
       if (aKeyStore == null)
@@ -383,7 +385,8 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
     {
       m_aRWLock.readLock ().unlock ();
     }
-    debugLog ( () -> "getCertificates -> " + new CommonsLinkedHashMap <> (ret, x -> x, AbstractCertificateFactory::_debug).toString ());
+    debugLog ( () -> "getCertificates -> " +
+                     new CommonsLinkedHashMap <> (ret, x -> x, AbstractCertificateFactory::_debug).toString ());
     return ret;
   }
 
@@ -496,8 +499,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
     onChange ();
 
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + _debug (aCert) + "'");
+    LOGGER.info ("Added certificate alias '" + sRealAlias + "' of certificate '" + _debug (aCert) + "'");
     debugLog ( () -> "addCertificate -> done");
   }
 
@@ -534,8 +536,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
     onChange ();
 
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Added private key alias '" + sRealAlias + "'");
+    LOGGER.info ("Added private key alias '" + sRealAlias + "'");
     debugLog ( () -> "addPrivateKey -> done");
   }
 
@@ -570,8 +571,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
       // Only if something changed
       onChange ();
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Remove all aliases (" + nDeleted + ") in key store");
+      LOGGER.info ("Remove all aliases (" + nDeleted + ") in key store");
     }
 
     final int nFinalDeleted = nDeleted;
@@ -635,8 +635,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
     onChange ();
 
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Removed certificate alias '" + sRealAlias + "' of certificate " + _debug (aCert));
+    LOGGER.info ("Removed certificate alias '" + sRealAlias + "' of certificate " + _debug (aCert));
     debugLog ( () -> "removeCertificate -> done");
   }
 

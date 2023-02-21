@@ -222,13 +222,10 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     if (aPendingInfoFile == null)
       return null;
 
-    if (LOGGER.isInfoEnabled ())
-    {
-      LOGGER.info ("Trying to read original MIC and message ID information from file '" +
-                   aPendingInfoFile.getAbsolutePath () +
-                   "'" +
-                   aMsg.getLoggingText ());
-    }
+    LOGGER.info ("Trying to read original MIC and message ID information from file '" +
+                 aPendingInfoFile.getAbsolutePath () +
+                 "'" +
+                 aMsg.getLoggingText ());
 
     final InputStream ret = FileHelper.getInputStream (aPendingInfoFile);
     if (ret == null)
@@ -255,13 +252,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   {
     final File aPendingInfoFile = getPendingInfoFile (aMsg);
 
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Delete pendinginfo file '" + aPendingInfoFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
+    LOGGER.info ("Delete pendinginfo file '" + aPendingInfoFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
 
     if (!aPendingInfoFile.delete ())
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Error delete pendinginfo file '" + aPendingInfoFile.getAbsolutePath () + "'");
+      LOGGER.error ("Error delete pendinginfo file '" + aPendingInfoFile.getAbsolutePath () + "'");
       return ESuccess.FAILURE;
     }
     return ESuccess.SUCCESS;
@@ -284,13 +279,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
                                         @Nonnull final String sPendingFilename) throws AS2Exception
   {
     final File aPendingFile = new File (sPendingFilename);
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("Delete pending file '" + aPendingFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
+    LOGGER.info ("Delete pending file '" + aPendingFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
 
     if (!aPendingFile.delete ())
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Error delete pending file '" + aPendingFile.getAbsolutePath () + "'");
+      LOGGER.error ("Error delete pending file '" + aPendingFile.getAbsolutePath () + "'");
       return ESuccess.FAILURE;
     }
     return ESuccess.SUCCESS;
@@ -342,15 +335,13 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       final String sDisposition = aMsg.getMDN ().attrs ().getAsString (AS2MessageMDN.MDNA_DISPOSITION);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
+      LOGGER.info ("received MDN [" + sDisposition + "]" + aMsg.getLoggingText ());
 
       final boolean bMICMatch = aOriginalMIC != null && aReturnMIC != null && aReturnMIC.equals (aOriginalMIC);
 
       if (!bMICMatch)
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("MIC was not matched, so the pending file '" + sPendingFilename + "' will NOT be deleted.");
+        LOGGER.info ("MIC was not matched, so the pending file '" + sPendingFilename + "' will NOT be deleted.");
 
         // MIC was not matched
         m_aMICMatchingHandler.onMICMismatch (aMsg, sOriginalMIC, sReturnMIC);
@@ -566,8 +557,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
       receiveMDN (aMsg, aData, aResponseHandler, aResHelper);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Received async MDN " + sClientInfo + aMsg.getLoggingText ());
+      LOGGER.info ("Received async MDN " + sClientInfo + aMsg.getLoggingText ());
     }
     catch (final Exception ex)
     {
@@ -578,8 +568,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   public void handle (@Nonnull final AbstractActiveNetModule aOwner, @Nonnull final Socket aSocket)
   {
     final String sClientInfo = getClientInfo (aSocket);
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("incoming connection for receiving AsyncMDN [" + sClientInfo + "]");
+    LOGGER.info ("incoming connection for receiving AsyncMDN [" + sClientInfo + "]");
 
     final AS2Message aMsg = new AS2Message ();
     final boolean bQuoteHeaderValues = m_aReceiverModule.isQuoteHeaderValues ();
@@ -612,13 +601,12 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     {
       if (aMdnDataSource instanceof ByteArrayDataSource)
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("received " +
-                       AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length,
-                                                    aSW) +
-                       " from " +
-                       sClientInfo +
-                       aMsg.getLoggingText ());
+        LOGGER.info ("received " +
+                     AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMdnDataSource).directGetBytes ().length,
+                                                  aSW) +
+                     " from " +
+                     sClientInfo +
+                     aMsg.getLoggingText ());
 
       }
       else

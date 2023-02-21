@@ -178,10 +178,9 @@ public class BCCryptoHelper implements ICryptoHelper
       DUMP_DECRYPTED_DIR_PATH = new File (sDumpDecryptedDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (DUMP_DECRYPTED_DIR_PATH);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Using directory " +
-                     DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () +
-                     " to dump all decrypted AS2 body parts to.");
+      LOGGER.info ("Using directory " +
+                   DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () +
+                   " to dump all decrypted AS2 body parts to.");
     }
     else
       DUMP_DECRYPTED_DIR_PATH = null;
@@ -398,8 +397,7 @@ public class BCCryptoHelper implements ICryptoHelper
     }
     catch (final IOException ex)
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
+      LOGGER.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
     }
   }
 
@@ -658,18 +656,16 @@ public class BCCryptoHelper implements ICryptoHelper
       {
         // For PEPPOL the certificate is passed in
         if (aContainedCerts.size () > 1)
-          if (LOGGER.isWarnEnabled ())
-            LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
+          LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
         final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName)
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
-          if (LOGGER.isWarnEnabled ())
-            LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
-                         aX509Cert +
-                         " differs from certficate contained in message\n" +
-                         aCert);
+          LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
+                       aX509Cert +
+                       " differs from certficate contained in message\n" +
+                       aCert);
 
         aRealX509Cert = aCert;
       }
@@ -743,7 +739,7 @@ public class BCCryptoHelper implements ICryptoHelper
     for (final SignerInformation aSignerInfo : aSignedParser.getSignerInfos ().getSigners ())
     {
       if (!aSignerInfo.verify (aSIV))
-        throw new SignatureException ("Verification failed for SignerInfo "+ aSignerInfo);
+        throw new SignatureException ("Verification failed for SignerInfo " + aSignerInfo);
     }
 
     return aSignedParser.getContent ();
