@@ -63,6 +63,9 @@ public class Partnership implements Serializable
 {
   public static final String DEFAULT_NAME = "auto-created-dummy";
 
+  private static final String STRING_TRUE = "true";
+  private static final String STRING_FALSE = "false";
+
   private String m_sName;
   private final StringMap m_aSenderAttrs = new StringMap ();
   private final StringMap m_aReceiverAttrs = new StringMap ();
@@ -597,7 +600,7 @@ public class Partnership implements Serializable
   @Nonnull
   public EChange setBlockErrorMDN (final boolean bBlock)
   {
-    return setAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN, bBlock ? "true" : null);
+    return setAttribute (CPartnershipIDs.PA_BLOCK_ERROR_MDN, bBlock ? STRING_TRUE : null);
   }
 
   @Nullable
@@ -801,7 +804,7 @@ public class Partnership implements Serializable
 
   public boolean isForceDecrypt ()
   {
-    return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
+    return STRING_TRUE.equals (getAttribute (CPartnershipIDs.PA_FORCE_DECRYPT));
   }
 
   @Nonnull
@@ -812,7 +815,7 @@ public class Partnership implements Serializable
 
   public boolean isDisableDecrypt ()
   {
-    return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECRYPT));
+    return STRING_TRUE.equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECRYPT));
   }
 
   @Nonnull
@@ -823,7 +826,7 @@ public class Partnership implements Serializable
 
   public boolean isForceVerify ()
   {
-    return "true".equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
+    return STRING_TRUE.equals (getAttribute (CPartnershipIDs.PA_FORCE_VERIFY));
   }
 
   @Nonnull
@@ -834,7 +837,7 @@ public class Partnership implements Serializable
 
   public boolean isDisableVerify ()
   {
-    return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_VERIFY));
+    return STRING_TRUE.equals (getAttribute (CPartnershipIDs.PA_DISABLE_VERIFY));
   }
 
   @Nonnull
@@ -846,9 +849,9 @@ public class Partnership implements Serializable
   @Nonnull
   private static ETriState _getAsTriState (@Nullable final String sValue)
   {
-    if ("true".equals (sValue))
+    if (STRING_TRUE.equals (sValue))
       return ETriState.TRUE;
-    if ("false".equals (sValue))
+    if (STRING_FALSE.equals (sValue))
       return ETriState.FALSE;
     return ETriState.UNDEFINED;
   }
@@ -883,7 +886,7 @@ public class Partnership implements Serializable
 
   public boolean isDisableDecompress ()
   {
-    return "true".equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECOMPRESS));
+    return STRING_TRUE.equals (getAttribute (CPartnershipIDs.PA_DISABLE_DECOMPRESS));
   }
 
   @Nonnull
@@ -986,7 +989,8 @@ public class Partnership implements Serializable
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
     ValueEnforcer.notNull (aPartnership, "Partnership");
-    return compareIDs (m_aSenderAttrs, aPartnership.m_aSenderAttrs) && compareIDs (m_aReceiverAttrs, aPartnership.m_aReceiverAttrs);
+    return compareIDs (m_aSenderAttrs, aPartnership.m_aSenderAttrs) &&
+           compareIDs (m_aReceiverAttrs, aPartnership.m_aReceiverAttrs);
   }
 
   /**
