@@ -58,8 +58,15 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
     {
       if (setBusy ())
       {
-        poll ();
-        setNotBusy ();
+        try
+        {
+          poll ();
+        }
+        finally
+        {
+          // Also in case of exception
+          setNotBusy ();
+        }
       }
       else
       {
@@ -77,7 +84,8 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
 
   @Override
   @OverridingMethodsMustInvokeSuper
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
+                                    @Nullable final IStringMap aOptions) throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_POLLING_INTERVAL);
@@ -127,6 +135,7 @@ public abstract class AbstractActivePollingModule extends AbstractActiveReceiver
   @Override
   public void doStart () throws AS2Exception
   {
+    // Schedule an asynchronous task that does the polling
     m_aTimer = new Timer (true);
     m_aTimer.scheduleAtFixedRate (new PollTask (), 0, getInterval () * CGlobal.MILLISECONDS_PER_SECOND);
     LOGGER.info ("Scheduled the polling task to run every " + getInterval () + " seconds");
