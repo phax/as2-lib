@@ -136,7 +136,8 @@ public class MessageFileModule extends AbstractStorageModule
 
   @Override
   @Nonnull
-  protected String getFilename (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws AS2InvalidParameterException
+  protected String getFilename (@Nonnull final IMessage aMsg,
+                                @Nullable final String sFileParam) throws AS2InvalidParameterException
   {
     final CompositeParameters aCompParams = new CompositeParameters (false).add ("date", new DateParameters ())
                                                                            .add ("msg", new MessageParameters (aMsg));
@@ -148,11 +149,9 @@ public class MessageFileModule extends AbstractStorageModule
   {
     final StringBuilder aSB = new StringBuilder ();
 
-    // write headers to the string buffer
+    // write headers and a trailing EOL to the string builder
     aSB.append ("Message Headers:").append (CHttp.EOL);
-
     aMsg.headers ().forEachHeaderLine (sHeaderLine -> aSB.append (sHeaderLine).append (CHttp.EOL), true);
-
     aSB.append (CHttp.EOL);
 
     // write attributes to the string buffer

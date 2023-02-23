@@ -50,6 +50,12 @@ import com.helger.commons.collection.impl.CommonsHashMap;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.StringParser;
 
+/**
+ * An abstract sender module that allows for retry. It allows to configure the
+ * maximum number of retries.
+ *
+ * @author Philip Helger
+ */
 public abstract class AbstractSenderModule extends AbstractProcessorModule implements IProcessorSenderModule
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (AbstractSenderModule.class);
@@ -64,7 +70,8 @@ public abstract class AbstractSenderModule extends AbstractProcessorModule imple
    * @return 0 to indicate no retry.
    */
   @Nonnegative
-  protected final int getRetryCount (@Nullable final Partnership aPartnerhsip, @Nullable final Map <String, Object> aOptions)
+  protected final int getRetryCount (@Nullable final Partnership aPartnerhsip,
+                                     @Nullable final Map <String, Object> aOptions)
   {
     int nRetries = -1;
 
