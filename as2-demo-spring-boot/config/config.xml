@@ -36,6 +36,14 @@
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
 
+    <!-- Example module for storing incoming messages -->
+    <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
+            filename="data/inbox/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
+            header="data/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
+            protocol="as2"
+            tempdir="data/temp"
+            charset="utf-8" />    
+
     <!-- Only needed to receive asynchronous MDNs -->
     <module classname="com.helger.as2servlet.util.AS2ServletMDNReceiverModule" />        
   </processor>
