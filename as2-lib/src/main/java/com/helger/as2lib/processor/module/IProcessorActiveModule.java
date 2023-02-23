@@ -37,14 +37,30 @@ import com.helger.as2lib.exception.AS2Exception;
 /**
  * A special processor module that supports a special start/stop cycle (e.g.
  * polling tasks).
- * 
+ *
  * @author OpenAS2
  */
 public interface IProcessorActiveModule extends IProcessorModule
 {
+  /**
+   * @return <code>true</code> of the module is running, <code>false</code> if
+   *         not.
+   */
   boolean isRunning ();
 
+  /**
+   * Start the module
+   *
+   * @throws AS2Exception
+   *         in case starting failed
+   */
   void start () throws AS2Exception;
 
+  /**
+   * Stop the module
+   *
+   * @throws AS2Exception
+   *         in case stopping failed
+   */
   void stop () throws AS2Exception;
 }

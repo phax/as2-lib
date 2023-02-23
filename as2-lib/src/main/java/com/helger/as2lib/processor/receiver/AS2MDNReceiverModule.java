@@ -36,6 +36,11 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
 
+/**
+ * A modules for receiving AS2 async MDN messages.
+ *
+ * @author Philip Helger
+ */
 public class AS2MDNReceiverModule extends AbstractActiveNetModule
 {
   public AS2MDNReceiverModule ()

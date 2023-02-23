@@ -45,12 +45,42 @@ import com.helger.as2lib.processor.IMessageProcessor;
 /**
  * A processor module is a module that is to be used within an
  * {@link IMessageProcessor} instance.
- * 
+ *
  * @author OpenAS2
  */
 public interface IProcessorModule extends IDynamicComponent
 {
+  /**
+   * Check if this processor module can handle a certain action on the provided
+   * message
+   *
+   * @param sAction
+   *        The action to be executed. Never <code>null</code>.
+   * @param aMsg
+   *        The message in question. May be an AS2 message or an MDN message.
+   *        Never <code>null</code>.
+   * @param aOptions
+   *        The options to be considered. May be <code>null</code>.
+   * @return <code>true</code> of this module can handle the respective message,
+   *         <code>false</code> if not.
+   */
   boolean canHandle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions);
 
-  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws AS2Exception;
+  /**
+   * Main handling of the message. Only called, if
+   * {@link #canHandle(String, IMessage, Map)} returned <code>true</code>.
+   *
+   * @param sAction
+   *        The action to be executed. Never <code>null</code>.
+   * @param aMsg
+   *        The message in question. May be an AS2 message or an MDN message.
+   *        Never <code>null</code>.
+   * @param aOptions
+   *        The options to be considered. May be <code>null</code>.
+   * @throws AS2Exception
+   *         in case something goes wrong
+   */
+  void handle (@Nonnull String sAction,
+               @Nonnull IMessage aMsg,
+               @Nullable Map <String, Object> aOptions) throws AS2Exception;
 }

@@ -37,6 +37,11 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
 
+/**
+ * The module for sending AS2 messages by polling a file system directory.
+ *
+ * @author Philip Helger
+ */
 public class AS2DirectoryPollingModule extends AbstractDirectoryPollingModule
 {
   @Override

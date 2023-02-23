@@ -36,6 +36,11 @@ import javax.annotation.Nonnull;
 
 import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
 
+/**
+ * The module for receiving AS2 messages.
+ *
+ * @author Philip Helger
+ */
 public class AS2ReceiverModule extends AbstractActiveNetModule
 {
   public AS2ReceiverModule ()
