@@ -102,7 +102,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
 
     // Build the item and add it to the vector
     final ResendItem aItem = new ResendItem (sResendAction, nRetries, aMsg, getResendDelayMS ());
-    m_aRWLock.writeLockedBoolean ( () -> m_aItems.add (aItem));
+    m_aRWLock.writeLocked ( () -> m_aItems.add (aItem));
 
     LOGGER.info ("Message put in resend queue" + aMsg.getLoggingText ());
   }
@@ -127,7 +127,7 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
       getSession ().getMessageProcessor ().handle (sResendAction, aMsg, aOptions);
 
       // Finally remove from list
-      m_aRWLock.writeLockedBoolean ( () -> m_aItems.remove (aItem));
+      m_aRWLock.writeLocked ( () -> m_aItems.remove (aItem));
     }
     catch (final AS2Exception ex)
     {
