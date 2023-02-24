@@ -79,6 +79,12 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcjmail-jdk18on</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.mail</groupId>
+          <artifactId>jakarta.mail</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
