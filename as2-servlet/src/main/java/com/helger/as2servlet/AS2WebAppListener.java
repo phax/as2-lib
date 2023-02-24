@@ -17,11 +17,12 @@
 package com.helger.as2servlet;
 
 import javax.annotation.Nonnull;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 import com.helger.web.scope.mgr.WebScopeManager;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * A very simple listener, that setups the framework for running the AS2

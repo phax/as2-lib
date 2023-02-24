@@ -41,6 +41,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.eclipse.angus.mail.util.QPDecoderStream;
+import org.eclipse.angus.mail.util.QPEncoderStream;
+
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.receiver.AS2InvalidMessageException;
 import com.helger.commons.CGlobal;
@@ -56,8 +59,6 @@ import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.LoggingFileOperationCallback;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.timing.StopWatch;
-import com.sun.mail.util.QPDecoderStream;
-import com.sun.mail.util.QPEncoderStream;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeUtility;
@@ -130,7 +131,10 @@ public final class AS2IOHelper
       if (nKBytesPerSecond < CGlobal.BYTES_PER_KILOBYTE)
       {
         // < 1048576
-        aSB.append (nKBytesPerSecond).append ('.').append (nBytesPerSecond % CGlobal.BYTES_PER_KILOBYTE).append (" KBps");
+        aSB.append (nKBytesPerSecond)
+           .append ('.')
+           .append (nBytesPerSecond % CGlobal.BYTES_PER_KILOBYTE)
+           .append (" KBps");
       }
       else
       {
@@ -151,7 +155,8 @@ public final class AS2IOHelper
     int nCounter = -1;
     while (true)
     {
-      final File aTest = new File (aDir, nCounter == -1 ? sBaseFilename : sBaseFilename + "." + Integer.toString (nCounter));
+      final File aTest = new File (aDir,
+                                   nCounter == -1 ? sBaseFilename : sBaseFilename + "." + Integer.toString (nCounter));
       if (!aTest.exists ())
         return aTest;
 
@@ -312,7 +317,9 @@ public final class AS2IOHelper
     if (sEncoding.equalsIgnoreCase ("quoted-printable"))
       return new QPEncoderStream (aOS);
 
-    if (sEncoding.equalsIgnoreCase ("binary") || sEncoding.equalsIgnoreCase ("7bit") || sEncoding.equalsIgnoreCase ("8bit"))
+    if (sEncoding.equalsIgnoreCase ("binary") ||
+        sEncoding.equalsIgnoreCase ("7bit") ||
+        sEncoding.equalsIgnoreCase ("8bit"))
     {
       // Return as-is
       return aOS;
@@ -343,7 +350,9 @@ public final class AS2IOHelper
     if (sEncoding.equalsIgnoreCase ("quoted-printable"))
       return new QPDecoderStream (aIS);
 
-    if (sEncoding.equalsIgnoreCase ("binary") || sEncoding.equalsIgnoreCase ("7bit") || sEncoding.equalsIgnoreCase ("8bit"))
+    if (sEncoding.equalsIgnoreCase ("binary") ||
+        sEncoding.equalsIgnoreCase ("7bit") ||
+        sEncoding.equalsIgnoreCase ("8bit"))
     {
       // Return as-is
       return aIS;

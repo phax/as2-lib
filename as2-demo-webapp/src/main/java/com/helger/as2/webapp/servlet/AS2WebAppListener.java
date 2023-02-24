@@ -17,11 +17,12 @@
 package com.helger.as2.webapp.servlet;
 
 import javax.annotation.Nonnull;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 import com.helger.web.scope.mgr.WebScopeManager;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 
 /**
  * A very simple listener, specifically modified for this demo application. Use

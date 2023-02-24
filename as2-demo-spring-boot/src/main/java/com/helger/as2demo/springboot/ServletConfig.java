@@ -20,13 +20,12 @@ package com.helger.as2demo.springboot;
 import java.io.File;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.AS2ComponentNotFoundException;
@@ -38,6 +37,10 @@ import com.helger.commons.exception.InitializationException;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.web.scope.mgr.WebScopeManager;
 import com.helger.xservlet.AbstractXServlet;
+
+import jakarta.annotation.PreDestroy;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 @Configuration
 public class ServletConfig
@@ -138,5 +141,22 @@ public class ServletConfig
       {
         // we don't care on shut down
       }
+  }
+
+  @Component
+  public static class As2Cleanup
+  {
+    @PreDestroy
+    public void onShutdown ()
+    {
+      ServletConfig.shutDown ();
+      AS2WebAppListener.staticDestroy ();
+    }
+  }
+
+  @Bean
+  public As2Cleanup cleanUpBean ()
+  {
+    return new As2Cleanup ();
   }
 }

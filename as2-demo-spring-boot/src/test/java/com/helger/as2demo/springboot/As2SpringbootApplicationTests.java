@@ -17,16 +17,13 @@
  */
 package com.helger.as2demo.springboot;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootApplication
-@ComponentScan
-public class As2SandboxApplication
+@SpringBootTest
+class As2SpringbootApplicationTests
 {
-  public static void main (final String [] args)
-  {
-    SpringApplication.run (As2SandboxApplication.class, args);
-  }
+  @Test
+  void testContextLoads ()
+  {}
 }

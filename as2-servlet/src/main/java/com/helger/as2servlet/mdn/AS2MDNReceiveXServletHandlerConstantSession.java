@@ -17,12 +17,13 @@
 package com.helger.as2servlet.mdn;
 
 import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.ICommonsMap;
+
+import jakarta.servlet.ServletException;
 
 /**
  * A special {@link AbstractAS2MDNReceiveXServletHandler} with an external

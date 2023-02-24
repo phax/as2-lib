@@ -18,7 +18,6 @@ package com.helger.as2servlet.mdn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.servlet.ServletException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,7 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.http.CHttpHeader;
 
 import jakarta.activation.DataSource;
+import jakarta.servlet.ServletException;
 
 /**
  * This is the main XServlet handler that takes async MDNs messages and

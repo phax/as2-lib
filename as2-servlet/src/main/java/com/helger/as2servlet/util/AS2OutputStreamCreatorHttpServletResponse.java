@@ -22,13 +22,14 @@ import java.io.OutputStream;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
-import javax.servlet.http.HttpServletResponse;
 
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.IWriteToStream;
 import com.helger.commons.io.stream.StreamHelper;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * An implementation of {@link IAS2HttpResponseHandler} that works upon a

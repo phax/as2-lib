@@ -21,8 +21,6 @@ import java.io.InputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.WillNotClose;
 import javax.annotation.concurrent.Immutable;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
 
 import com.helger.as2lib.util.http.IAS2HttpRequestDataProvider;
 import com.helger.commons.ValueEnforcer;
@@ -31,6 +29,9 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.stream.NonClosingInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.web.scope.IRequestWebScope;
+
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
 
 /**
  * Implementation of {@link IAS2HttpRequestDataProvider} based on a

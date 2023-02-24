@@ -17,11 +17,12 @@
 package com.helger.as2.webapp.servlet;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.servlet.ServletException;
 
 import com.helger.as2servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.xservlet.AbstractXServlet;
+
+import jakarta.servlet.ServletException;
 
 /**
  * This is the main servlet that takes async AS2 MDN messages and processes

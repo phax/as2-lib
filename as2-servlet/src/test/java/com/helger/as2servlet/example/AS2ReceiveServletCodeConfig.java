@@ -17,11 +17,12 @@
 package com.helger.as2servlet.example;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.servlet.ServletException;
 
 import com.helger.as2servlet.AS2ReceiveServlet;
 import com.helger.commons.http.EHttpMethod;
 import com.helger.xservlet.AbstractXServlet;
+
+import jakarta.servlet.ServletException;
 
 /**
  * This is the main servlet that takes AS2 messages and processes them. This

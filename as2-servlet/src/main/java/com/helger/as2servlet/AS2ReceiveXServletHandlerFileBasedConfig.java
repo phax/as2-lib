@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.AS2Session;
@@ -28,6 +27,8 @@ import com.helger.as2servlet.util.AS2ServletXMLSession;
 import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.StringHelper;
+
+import jakarta.servlet.ServletException;
 
 /**
  * A special {@link AbstractAS2ReceiveXServletHandler} with a file based

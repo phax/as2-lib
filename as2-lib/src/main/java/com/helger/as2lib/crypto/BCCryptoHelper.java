@@ -521,7 +521,8 @@ public class BCCryptoHelper implements ICryptoHelper
         stdMicAlgs.computeIfAbsent (e.getOID (), k -> e.getMICAlgorithmID ());
       }
     NEW_SIGN_ALGOS = Collections.unmodifiableMap (stdMicAlgs);
-    LOGGER.info ("The current algorithms are " + NEW_SIGN_ALGOS);
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("The current algorithms for RFC 5751 mode are " + NEW_SIGN_ALGOS);
   }
 
   @Nonnull

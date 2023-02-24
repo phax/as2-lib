@@ -17,16 +17,20 @@
  */
 package com.helger.as2demo.springboot;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.junit.jupiter.api.Test;
 
-@SpringBootApplication
-@ComponentScan
-public class As2SandboxApplication
+import com.helger.commons.mock.SPITestHelper;
+
+/**
+ * Test SPI definitions
+ *
+ * @author Philip Helger
+ */
+public final class SPITest
 {
-  public static void main (final String [] args)
+  @Test
+  public void testBasic () throws Exception
   {
-    SpringApplication.run (As2SandboxApplication.class, args);
+    SPITestHelper.testIfAllSPIImplementationsAreValid ();
   }
 }
