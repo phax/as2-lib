@@ -85,7 +85,7 @@ public final class MainSendToMendelsonTestServer
 
     // Start client configuration
     final AS2ClientSettings aSettings = new AS2ClientSettings ();
-    aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/mendelson/key3.pfx"), "test");
+    aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/external/mendelson/key3.pfx"), "test");
 
     // Fixed sender
     aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key3");
@@ -95,7 +95,7 @@ public final class MainSendToMendelsonTestServer
                                "mendelsontestAS2",
                                true ? "https://testas2.mendelson-e-c.com:8444/as2/HttpReceiver"
                                     : "http://testas2.mendelson-e-c.com:8080/as2/HttpReceiver");
-    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
+    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/external/mendelson/key4.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
     // AS2 stuff

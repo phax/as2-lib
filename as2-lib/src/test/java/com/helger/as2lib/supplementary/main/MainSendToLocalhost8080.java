@@ -94,7 +94,7 @@ public final class MainSendToLocalhost8080
 
     // Fixed receiver - key alias must be "openas2b_alias"
     aSettings.setReceiverData ("openas2b_alias", "openas2b_alias", "http://localhost:8080/as2");
-    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
+    final X509Certificate aReceiverCertificate = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/external/mendelson/key4.cer");
     aSettings.setReceiverCertificate (aReceiverCertificate);
 
     // AS2 stuff
@@ -121,7 +121,7 @@ public final class MainSendToLocalhost8080
 
     // Build client request
     final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
-    aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/mendelson/testcontent.attachment"))));
+    aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/external/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 
     if (false)

@@ -69,7 +69,7 @@ import jakarta.mail.internet.MimeBodyPart;
  */
 public final class BCCryptoHelperTest
 {
-  private static final String PATH = "src/test/resources/mendelson/key3.pfx";
+  private static final String PATH = "src/test/resources/external/mendelson/key3.pfx";
   private static final KeyStore KS = KeyStoreHelper.loadKeyStore (EKeyStoreType.PKCS12, PATH, "test").getKeyStore ();
   private static final PrivateKeyEntry PKE = KeyStoreHelper.loadPrivateKey (KS, PATH, "key3", "test".toCharArray ())
                                                            .getKeyEntry ();
@@ -80,7 +80,7 @@ public final class BCCryptoHelperTest
   {
     try
     {
-      CERT_ENCRYPT = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/mendelson/key4.cer");
+      CERT_ENCRYPT = AS2KeyStoreHelper.readX509Certificate ("src/test/resources/external/mendelson/key4.cer");
     }
     catch (final CertificateException ex)
     {
