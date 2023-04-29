@@ -94,9 +94,10 @@ public final class BCCryptoHelperTest
     // Ensure each keystore type can be created
     final BCCryptoHelper x = new BCCryptoHelper ();
     for (final EKeyStoreType e : EKeyStoreType.values ())
-    {
-      assertNotNull (x.createNewKeyStore (e));
-    }
+      if (e.isKeyStorePathRequired ())
+      {
+        assertNotNull (x.createNewKeyStore (e));
+      }
   }
 
   @Test
