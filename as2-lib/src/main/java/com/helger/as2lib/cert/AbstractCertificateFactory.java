@@ -119,7 +119,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
 
   protected final void debugLog (@Nonnull final Supplier <String> aSupplier)
   {
-    if (isDebugLogEnabled () && LOGGER.isInfoEnabled ())
+    if (isDebugLogEnabled ())
       LOGGER.info (aSupplier.get ());
   }
 
