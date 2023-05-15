@@ -112,6 +112,23 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   DIGEST_SHA_512 ("sha-512", "sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
 
   /**
+   * Non-compliant version of SHA-224 algorithm
+   */
+  DIGEST_SHA2_224 ("sha2_224", "sha-224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA"),
+  /**
+   * Non-compliant version of SHA-256 algorithm
+   */
+  DIGEST_SHA2_256 ("sha2_256", "sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+  /**
+   * Non-compliant version of SHA-384 algorithm
+   */
+  DIGEST_SHA2_384 ("sha2_384", "sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+  /**
+   * Non-compliant version of SHA-512 algorithm
+   */
+  DIGEST_SHA2_512 ("sha2_512", "sha-512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+
+  /**
    * RSASSA-PSS with digest algorithm SHA224.
    *
    * @since 5.0.0
