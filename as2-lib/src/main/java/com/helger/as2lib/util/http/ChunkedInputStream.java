@@ -76,7 +76,7 @@ public class ChunkedInputStream extends WrappedInputStream
       if (m_bAfterFirstChunk)
       {
         // read the CRLF after chunk data
-        HTTPHelper.readTillNexLine (aIS);
+        HTTPHelper.readTillNextLine (aIS);
       }
       else
       {
@@ -116,7 +116,7 @@ public class ChunkedInputStream extends WrappedInputStream
         if (m_bAfterFirstChunk)
         {
           // read the CRLF after chunk data
-          HTTPHelper.readTillNexLine (aIS);
+          HTTPHelper.readTillNextLine (aIS);
         }
         else
         {

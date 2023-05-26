@@ -383,8 +383,9 @@ public final class HTTPHelper
   @Nonnull
   private static String _debugChar (final int n)
   {
-    return n >= 0x20 && n <= 0x7e ? "'" + Character.toString ((char) n) + "'"
-                                  : "0x" + StringHelper.getHexStringLeadingZero (n, 2);
+    return n >= 0x20 && n <= 0x7e ? "'" + Character.toString ((char) n) + "'" : "0x" +
+                                                                                StringHelper.getHexStringLeadingZero (n,
+                                                                                                                      2);
   }
 
   /**
@@ -408,6 +409,7 @@ public final class HTTPHelper
         throw new EOFException ();
       if (ch == '\n')
         break;
+
       if (ch >= 'a' && ch <= 'f')
         ch -= ('a' - 10);
       else
@@ -420,13 +422,19 @@ public final class HTTPHelper
             if (ch == ';')
               bHeadersStarted = true;
             else
-            {
-              if (LOGGER.isWarnEnabled ())
-                LOGGER.warn ("Found unsupported character " +
-                             _debugChar (ch) +
-                             " when trying to read HTTP chunk length");
-              continue;
-            }
+              if (ch == '\r')
+              {
+                // Just ignore without warning. Usually before \n
+                continue;
+              }
+              else
+              {
+                if (LOGGER.isWarnEnabled ())
+                  LOGGER.warn ("Found unsupported character " +
+                               _debugChar (ch) +
+                               " when trying to read HTTP chunk length");
+                continue;
+              }
       if (!bHeadersStarted)
         nRes = (nRes * 16) + ch;
     }
@@ -440,8 +448,23 @@ public final class HTTPHelper
    *        - input stream to read from
    * @throws IOException
    *         if stream ends during chunk length read
+   * @deprecated Since 5.0.2. Use {@link #readTillNextLine(InputStream)} instead
    */
+  @Deprecated
   public static void readTillNexLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
+  {
+    readTillNextLine (aIS);
+  }
+
+  /**
+   * Read up to (and including )CRLF.
+   *
+   * @param aIS
+   *        - input stream to read from
+   * @throws IOException
+   *         if stream ends during chunk length read
+   */
+  public static void readTillNextLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {
     while (true)
     {
