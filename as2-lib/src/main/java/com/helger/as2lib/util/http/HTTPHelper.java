@@ -403,6 +403,7 @@ public final class HTTPHelper
       int ch = aIS.read ();
       if (ch < 0)
         throw new EOFException ("EOF while reading HTTP chunk length");
+
       if (ch == '\n')
         break;
 
@@ -425,6 +426,7 @@ public final class HTTPHelper
                              " when trying to read HTTP chunk length");
               continue;
             }
+
       if (!bHeadersStarted)
         nRes = (nRes * 16) + ch;
     }
