@@ -418,18 +418,13 @@ public final class HTTPHelper
             if (ch == ';')
               bHeadersStarted = true;
             else
-              if (ch == '\r')
-              {
-                // Just ignore without warning. Usually before \n
-                continue;
-              }
-              else
-              {
+            {
+              if (ch != '\r' && !bHeadersStarted)
                 LOGGER.warn ("Found unsupported character " +
                              _debugChar (ch) +
                              " when trying to read HTTP chunk length");
-                continue;
-              }
+              continue;
+            }
       if (!bHeadersStarted)
         nRes = (nRes * 16) + ch;
     }

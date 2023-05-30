@@ -214,32 +214,32 @@ public final class HTTPHelperTest
   @Test (expected = EOFException.class)
   public void testReadChunkLenEOS () throws Exception
   {
-    final InputStream noNewLine = new StringInputStream ("1", StandardCharsets.UTF_8);
-    HTTPHelper.readChunkLen (noNewLine);
+    final InputStream aIS = new StringInputStream ("1", StandardCharsets.UTF_8);
+    HTTPHelper.readChunkLen (aIS);
     fail ("An EOFException should have been thrown");
   }
 
   @Test
   public void testReadChunkLenWithHeader () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1A;name=value\r\n".getBytes (StandardCharsets.UTF_8));
-    final int res = HTTPHelper.readChunkLen (noNewLine);
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream ("1A;name=value\r\n".getBytes (StandardCharsets.UTF_8));
+    final int res = HTTPHelper.readChunkLen (aIS);
     assertEquals ("Chunk size with header", 26, res);
   }
 
   @Test
   public void testReadChunkLenNoHeader () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("1f\n".getBytes (StandardCharsets.UTF_8));
-    final int res = HTTPHelper.readChunkLen (noNewLine);
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream ("1f\n".getBytes (StandardCharsets.UTF_8));
+    final int res = HTTPHelper.readChunkLen (aIS);
     assertEquals ("Chunk size with header", 31, res);
   }
 
   @Test
   public void testReadChunkLenEmpty () throws Exception
   {
-    final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("\n".getBytes (StandardCharsets.UTF_8));
-    final int res = HTTPHelper.readChunkLen (noNewLine);
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream ("\n".getBytes (StandardCharsets.UTF_8));
+    final int res = HTTPHelper.readChunkLen (aIS);
     assertEquals ("Chunk size with header", 0, res);
   }
 
