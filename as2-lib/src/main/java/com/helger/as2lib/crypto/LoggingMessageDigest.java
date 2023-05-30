@@ -62,16 +62,14 @@ final class LoggingMessageDigest extends MessageDigest
   @Override
   protected void engineUpdate (final byte nInput)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("update(1): " + nInput);
+    LOGGER.info ("update(1): " + nInput);
     m_aMD.update (nInput);
   }
 
   @Override
   protected void engineUpdate (final byte [] aInput, final int nOffset, final int nLen)
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("update(" + nLen + "): " + Arrays.toString (ArrayHelper.getCopy (aInput, nOffset, nLen)));
+    LOGGER.info ("update(" + nLen + "): " + Arrays.toString (ArrayHelper.getCopy (aInput, nOffset, nLen)));
     m_aMD.update (aInput, nOffset, nLen);
   }
 
@@ -79,16 +77,14 @@ final class LoggingMessageDigest extends MessageDigest
   protected byte [] engineDigest ()
   {
     final byte [] ret = m_aMD.digest ();
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("digest=" + Arrays.toString (ret));
+    LOGGER.info ("digest=" + Arrays.toString (ret));
     return ret;
   }
 
   @Override
   protected void engineReset ()
   {
-    if (LOGGER.isInfoEnabled ())
-      LOGGER.info ("reset");
+    LOGGER.info ("reset");
     m_aMD.reset ();
   }
 }

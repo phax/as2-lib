@@ -178,10 +178,9 @@ public class BCCryptoHelper implements ICryptoHelper
       DUMP_DECRYPTED_DIR_PATH = new File (sDumpDecryptedDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (DUMP_DECRYPTED_DIR_PATH);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Using directory " +
-                     DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () +
-                     " to dump all decrypted AS2 body parts to.");
+      LOGGER.info ("Using directory " +
+                   DUMP_DECRYPTED_DIR_PATH.getAbsolutePath () +
+                   " to dump all decrypted AS2 body parts to.");
     }
     else
       DUMP_DECRYPTED_DIR_PATH = null;
@@ -356,8 +355,8 @@ public class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
-                                                                                                 sMICEncoding))
+         final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
+                                                                                                  sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }
@@ -398,8 +397,7 @@ public class BCCryptoHelper implements ICryptoHelper
     }
     catch (final IOException ex)
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
+      LOGGER.error ("Failed to dump decrypted MIME part to file " + aDestinationFile.getAbsolutePath (), ex);
     }
   }
 
@@ -457,8 +455,7 @@ public class BCCryptoHelper implements ICryptoHelper
     if (DUMP_DECRYPTED_DIR_PATH != null)
     {
       // dump decrypted
-      try (
-          final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
       {
         aDecryptedDataBodyPart.writeTo (aBAOS);
         _dumpDecrypted (aBAOS.toByteArray ());
@@ -656,20 +653,18 @@ public class BCCryptoHelper implements ICryptoHelper
       final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (aSignerID);
       if (!aContainedCerts.isEmpty ())
       {
-        // For PEPPOL the certificate is passed in
+        // For Peppol the certificate is passed in
         if (aContainedCerts.size () > 1)
-          if (LOGGER.isWarnEnabled ())
-            LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
+          LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
         final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
         final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName)
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
-          if (LOGGER.isWarnEnabled ())
-            LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
-                         aX509Cert +
-                         " differs from certficate contained in message\n" +
-                         aCert);
+          LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
+                       aX509Cert +
+                       " differs from certficate contained in message\n" +
+                       aCert);
 
         aRealX509Cert = aCert;
       }
@@ -723,9 +718,9 @@ public class BCCryptoHelper implements ICryptoHelper
     final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug (EqualsHelper.identityEqual (aRealX509Cert,
-                                                aX509Cert) ? "Verifying signature using the provided certificate (partnership)"
-                                                           : "Verifying signature using the certificate contained in the MIME body part");
+      LOGGER.debug (EqualsHelper.identityEqual (aRealX509Cert, aX509Cert)
+                                                                          ? "Verifying signature using the provided certificate (partnership)"
+                                                                          : "Verifying signature using the certificate contained in the MIME body part");
 
     // Call before validity check to retrieve the information about the
     // details
@@ -743,7 +738,7 @@ public class BCCryptoHelper implements ICryptoHelper
     for (final SignerInformation aSignerInfo : aSignedParser.getSignerInfos ().getSigners ())
     {
       if (!aSignerInfo.verify (aSIV))
-        throw new SignatureException ("Verification failed for SignerInfo "+ aSignerInfo);
+        throw new SignatureException ("Verification failed for SignerInfo " + aSignerInfo);
     }
 
     return aSignedParser.getContent ();

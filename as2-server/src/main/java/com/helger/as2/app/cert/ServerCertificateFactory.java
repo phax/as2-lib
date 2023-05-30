@@ -97,8 +97,7 @@ public class ServerCertificateFactory extends CertificateFactory implements IFil
         try
         {
           load ();
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("- Certificates Reloaded -");
+          LOGGER.info ("- Certificates Reloaded -");
         }
         catch (final AS2Exception oae)
         {

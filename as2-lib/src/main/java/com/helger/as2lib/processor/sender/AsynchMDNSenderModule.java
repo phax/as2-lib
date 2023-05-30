@@ -79,7 +79,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   public AsynchMDNSenderModule ()
   {}
 
-  public boolean canHandle (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public boolean canHandle (@Nonnull final String sAction,
+                            @Nonnull final IMessage aMsg,
+                            @Nullable final Map <String, Object> aOptions)
   {
     return sAction.equals (IProcessorSenderModule.DO_SEND_ASYNC_MDN) && aMsg instanceof AS2Message;
   }
@@ -87,7 +89,9 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
   private void _sendViaHTTP (@Nonnull final AS2Message aMsg,
                              @Nonnull final DispositionType aDisposition,
                              @Nullable final IHTTPOutgoingDumper aOutgoingDumper,
-                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception, IOException, MessagingException
+                             @Nonnull final AS2ResourceHelper aResHelper) throws AS2Exception,
+                                                                          IOException,
+                                                                          MessagingException
   {
     final IMessageMDN aMdn = aMsg.getMDN ();
 
@@ -102,8 +106,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       if (aOutgoingDumper != null)
         aOutgoingDumper.start (sUrl, aMsg);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
+      LOGGER.info ("Connecting to " + sUrl + aMsg.getLoggingText ());
 
       // Set all custom headers first (so that they are overridden with the
       // mandatory ones in here)
@@ -131,8 +134,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       final long nBytes = aConn.send (aMsgIS, (EContentTransferEncoding) null, aOutgoingDumper, aResHelper);
       aSW.stop ();
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("AS2 MDN transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
+      LOGGER.info ("AS2 MDN transferred " + AS2IOHelper.getTransferRate (nBytes, aSW) + aMsg.getLoggingText ());
 
       if (aOutgoingDumper != null)
         aOutgoingDumper.finishedPayload ();
@@ -151,13 +153,21 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       // Check the HTTP Response code
       if (AS2HttpClient.isErrorResponseCode (nHttpResponseCode))
       {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("sent AsyncMDN [" + aDisposition.getAsString () + "] Fail(" + nHttpResponseCode + ") " + aMsg.getLoggingText ());
+        LOGGER.error ("sent AsyncMDN [" +
+                      aDisposition.getAsString () +
+                      "] Fail(" +
+                      nHttpResponseCode +
+                      ") " +
+                      aMsg.getLoggingText ());
         throw new AS2HttpResponseException (sUrl, nHttpResponseCode, aConn.getResponseMessage ());
       }
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("sent AsyncMDN [" + aDisposition.getAsString () + "] OK(" + nHttpResponseCode + ") " + aMsg.getLoggingText ());
+      LOGGER.info ("sent AsyncMDN [" +
+                   aDisposition.getAsString () +
+                   "] OK(" +
+                   nHttpResponseCode +
+                   ") " +
+                   aMsg.getLoggingText ());
 
       // log & store mdn into backup folder.
       try
@@ -184,8 +194,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
     {
       final AS2Message aMsg = (AS2Message) aBaseMsg;
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Async MDN submitted" + aMsg.getLoggingText ());
+      LOGGER.info ("Async MDN submitted" + aMsg.getLoggingText ());
 
       final DispositionType aDisposition = DispositionType.createSuccess ();
 
@@ -197,8 +206,7 @@ public class AsynchMDNSenderModule extends AbstractHttpSenderModule
       }
       catch (final AS2HttpResponseException ex)
       {
-        if (LOGGER.isErrorEnabled ())
-          LOGGER.error ("Http Response Error " + ex.getMessage ());
+        LOGGER.error ("Http Response Error " + ex.getMessage ());
 
         // Resend if the HTTP Response has an error code
         ex.terminate ();

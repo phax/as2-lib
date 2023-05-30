@@ -204,8 +204,7 @@ public final class AS2Helper
                                                                     EContentTransferEncoding.BASE64);
         aMdn.setData (aSignedReport);
 
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
+        LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
       }
       catch (final AS2CertificateNotFoundException | AS2KeyNotFoundException ex)
       {
@@ -324,8 +323,7 @@ public final class AS2Helper
       eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSigningAlgorithm);
       if (eSigningAlgorithm == null)
       {
-        if (LOGGER.isWarnEnabled ())
-          LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
+        LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
       }
     }
 
@@ -435,8 +433,7 @@ public final class AS2Helper
               .putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNATURE_CERTIFICATE,
                       CertificateHelper.getPEMEncodedCertificate (aCertHolder.get ()));
 
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
+        LOGGER.info ("Successfully verified signature of MDN of message" + sLoggingText);
       }
 
     final MimeMultipart aReportParts = new MimeMultipart (aMainPart.getDataHandler ().getDataSource ());
@@ -452,8 +449,8 @@ public final class AS2Helper
         {
           final Object aPartContent = aReportPart.getContent ();
           if (LOGGER.isDebugEnabled ())
-            LOGGER.debug (aPartContent == null ? "Report part content is null"
-                                               : "Report part content is a " + aPartContent.getClass ().getName ());
+            LOGGER.debug (aPartContent == null ? "Report part content is null" : "Report part content is a " +
+                                                                                 aPartContent.getClass ().getName ());
           // XXX is this "toString" really a correct solution?
           aMDN.setText (aPartContent.toString ());
         }
@@ -462,9 +459,8 @@ public final class AS2Helper
           {
             // https://github.com/phax/as2-lib/issues/100
             final String sCTE = aReportPart.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, null);
-            try (
-                final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
-                                                                                                    sCTE))
+            try (final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
+                                                                                                     sCTE))
             {
               final InternetHeaders aDispositionHeaders = new InternetHeaders (aRealIS);
               aMDN.attrs ()

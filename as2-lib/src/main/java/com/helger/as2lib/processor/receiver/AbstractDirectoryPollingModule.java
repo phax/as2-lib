@@ -103,7 +103,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   private ICommonsMap <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions)
+                                                                                                              throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -253,12 +254,18 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
           aSentFile = new File (AS2IOHelper.getDirectoryFile (sSentDirectory), sSentFilename);
           aSentFile = AS2IOHelper.moveFile (aFile, aSentFile, false, true);
 
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("Moved '" + aFile.getAbsolutePath () + "' to '" + aSentFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
+          LOGGER.info ("Moved '" +
+                       aFile.getAbsolutePath () +
+                       "' to '" +
+                       aSentFile.getAbsolutePath () +
+                       "'" +
+                       aMsg.getLoggingText ());
         }
         catch (final IOException ex)
         {
-          new AS2Exception ("File was successfully sent but not moved to sent folder: '" + aSentFile.getAbsolutePath () + "'",
+          new AS2Exception ("File was successfully sent but not moved to sent folder: '" +
+                            aSentFile.getAbsolutePath () +
+                            "'",
                             ex).terminate ();
         }
       }
@@ -273,8 +280,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
           // Delete the file if a sent directory isn't set
           throw new AS2Exception ("File was successfully sent but not deleted: '" + aFile.getAbsolutePath () + "'");
         }
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Deleted file '" + aFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
+        LOGGER.info ("Deleted file '" + aFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
       }
     }
     catch (final AS2Exception ex)
@@ -376,7 +382,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
       aBody.setDataHandler (aByteSource.getAsDataHandler ());
 
       // Headers must be set AFTER the DataHandler
-      final String sCTE = aMsg.partnership ().getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
+      final String sCTE = aMsg.partnership ()
+                              .getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
       aBody.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
 
       // below statement is not filename related, just want to make it

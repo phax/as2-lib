@@ -164,8 +164,7 @@ public class AS2HttpClient
     }
     catch (final MalformedURLException ex)
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Failed to get URL from connection, URI: " + aURI.toASCIIString (), ex);
+      LOGGER.error ("Failed to get URL from connection, URI: " + aURI.toASCIIString (), ex);
       throw new AS2Exception (ex.getCause ());
     }
   }
@@ -220,9 +219,10 @@ public class AS2HttpClient
         {
           // Use MIME encoding here
           try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-              final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                      eCTE.getID ())
-                                                           : aDebugOS)
+               final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (
+                                                                                                                       aDebugOS,
+                                                                                                                       eCTE.getID ())
+                                                            : aDebugOS)
           {
             StreamHelper.copyByteStream ().from (aCIS).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
           }
@@ -321,8 +321,7 @@ public class AS2HttpClient
     }
     catch (final Exception ex)
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Exception while closing HttpClient connection: " + this.toString (), ex);
+      LOGGER.error ("Exception while closing HttpClient connection: " + this.toString (), ex);
     }
   }
 
@@ -364,12 +363,11 @@ public class AS2HttpClient
     }
     catch (final RuntimeException ex)
     {
-      if (LOGGER.isErrorEnabled ())
-        LOGGER.error ("Exception while setting proxy. Continue without proxy. aProxy:" +
-                      aProxy.address () +
-                      "-" +
-                      (null != aProxy.type () ? aProxy.type ().name () : "null"),
-                      ex);
+      LOGGER.error ("Exception while setting proxy. Continue without proxy. aProxy:" +
+                    aProxy.address () +
+                    "-" +
+                    (null != aProxy.type () ? aProxy.type ().name () : "null"),
+                    ex);
     }
   }
 

@@ -84,7 +84,11 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
   public static final String MSG_RECEIVER = "$" + MessageParameters.KEY_RECEIVER + "." + CPartnershipIDs.PID_AS2 + "$";
   public static final String MSG_DATE = "$" + MessageParameters.KEY_HEADERS + ".date" + "$";
   public static final String MSG_SUBJECT = "$" + MessageParameters.KEY_HEADERS + ".subject" + "$";
-  public static final String MSG_SOURCE_ADDRESS = "$" + MessageParameters.KEY_ATTRIBUTES + "." + CNetAttribute.MA_SOURCE_IP + "$";
+  public static final String MSG_SOURCE_ADDRESS = "$" +
+                                                  MessageParameters.KEY_ATTRIBUTES +
+                                                  "." +
+                                                  CNetAttribute.MA_SOURCE_IP +
+                                                  "$";
   public static final String DP_HEADER = "The message sent to Recipient " +
                                          MSG_RECEIVER +
                                          " on " +
@@ -93,7 +97,8 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                                          MSG_SUBJECT +
                                          " has been received, ";
   // Note: it should read "its integrity", not "it's integrity"!
-  public static final String DP_DECRYPTED = DP_HEADER + "the EDI Interchange was successfully decrypted and it's integrity was verified. ";
+  public static final String DP_DECRYPTED = DP_HEADER +
+                                            "the EDI Interchange was successfully decrypted and it's integrity was verified. ";
   public static final String DP_VERIFIED = DP_DECRYPTED +
                                            "In addition, the sender of the message, Sender " +
                                            MSG_SENDER +
@@ -108,12 +113,16 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
                                                           " and/or Recipient " +
                                                           MSG_RECEIVER +
                                                           " are unknown.";
-  public static final String DISP_PARSING_MIME_FAILED = DP_HEADER + "but an error occured while parsing the MIME content.";
+  public static final String DISP_PARSING_MIME_FAILED = DP_HEADER +
+                                                        "but an error occured while parsing the MIME content.";
   public static final String DISP_DECRYPTION_ERROR = DP_HEADER + "but an error occured decrypting the content.";
   public static final String DISP_DECOMPRESSION_ERROR = DP_HEADER + "but an error occured decompressing the content.";
-  public static final String DISP_VERIFY_SIGNATURE_FAILED = DP_DECRYPTED + "Authentication of the originator of the message failed.";
-  public static final String DISP_VALIDATION_FAILED = DP_VERIFIED + "An error occured while validating the received data.";
-  public static final String DISP_STORAGE_FAILED = DP_VERIFIED + "An error occured while storing the data to the file system.";
+  public static final String DISP_VERIFY_SIGNATURE_FAILED = DP_DECRYPTED +
+                                                            "Authentication of the originator of the message failed.";
+  public static final String DISP_VALIDATION_FAILED = DP_VERIFIED +
+                                                      "An error occured while validating the received data.";
+  public static final String DISP_STORAGE_FAILED = DP_VERIFIED +
+                                                   "An error occured while storing the data to the file system.";
   public static final String DISP_SUCCESS = DP_VERIFIED +
                                             "There is no guarantee however that the EDI Interchange was syntactically correct, or was received by the EDI application/translator.";
 
@@ -342,11 +351,12 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
       super ("AS2MainThread-" + ClassHelper.getClassLocalName (aOwner));
       m_aOwner = aOwner;
       m_aServerSocket = new ServerSocket ();
-      final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort) : new InetSocketAddress (sAddress, nPort);
+      final InetSocketAddress aAddr = sAddress == null ? new InetSocketAddress (nPort) : new InetSocketAddress (
+                                                                                                                sAddress,
+                                                                                                                nPort);
       m_aServerSocket.bind (aAddr);
 
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Inited " + getName () + " at " + aAddr);
+      LOGGER.info ("Inited " + getName () + " at " + aAddr);
     }
 
     @OverrideOnDemand

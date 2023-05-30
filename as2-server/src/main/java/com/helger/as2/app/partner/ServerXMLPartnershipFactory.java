@@ -101,8 +101,7 @@ public class ServerXMLPartnershipFactory extends XMLPartnershipFactory implement
         try
         {
           refreshPartnershipFactory ();
-          if (LOGGER.isInfoEnabled ())
-            LOGGER.info ("- Partnerships Reloaded -");
+          LOGGER.info ("- Partnerships Reloaded -");
         }
         catch (final AS2Exception oae)
         {

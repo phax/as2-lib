@@ -91,8 +91,7 @@ public class DispositionOptions
   private static void _checkImportance (@Nullable final String sImportance)
   {
     if (sImportance != null && !sImportance.equals (IMPORTANCE_REQUIRED) && !sImportance.equals (IMPORTANCE_OPTIONAL))
-      if (LOGGER.isWarnEnabled ())
-        LOGGER.warn ("Non-standard importance value '" + sImportance + "' used!");
+      LOGGER.warn ("Non-standard importance value '" + sImportance + "' used!");
   }
 
   /**
@@ -216,8 +215,7 @@ public class DispositionOptions
         if (eMICAlg == null)
         {
           // Ignore all unsupported MIC algorithms and continue
-          if (LOGGER.isWarnEnabled ())
-            LOGGER.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
+          LOGGER.warn ("The passed MIC algorithm '" + sRealMICAlg + "' is unsupported!");
         }
         else
         {
@@ -322,13 +320,21 @@ public class DispositionOptions
     final StringBuilder aSB = new StringBuilder ();
     if (StringHelper.hasText (m_sProtocolImportance) && StringHelper.hasText (m_sProtocol))
     {
-      aSB.append (SIGNED_RECEIPT_PROTOCOL).append ('=').append (m_sProtocolImportance).append (", ").append (m_sProtocol);
+      aSB.append (SIGNED_RECEIPT_PROTOCOL)
+         .append ('=')
+         .append (m_sProtocolImportance)
+         .append (", ")
+         .append (m_sProtocol);
     }
     if (StringHelper.hasText (m_sMICAlgImportance) && !m_aMICAlgs.isEmpty ())
     {
       if (aSB.length () > 0)
         aSB.append ("; ");
-      aSB.append (SIGNED_RECEIPT_MICALG).append ('=').append (m_sMICAlgImportance).append (", ").append (getMICAlgAsString ());
+      aSB.append (SIGNED_RECEIPT_MICALG)
+         .append ('=')
+         .append (m_sMICAlgImportance)
+         .append (", ")
+         .append (getMICAlgAsString ());
     }
 
     return aSB.toString ();
@@ -390,24 +396,27 @@ public class DispositionOptions
                 }
                 else
                 {
-                  if (LOGGER.isWarnEnabled ())
-                    LOGGER.warn ("Unsupported disposition attribute '" + sAttribute + "' with value '" + aParts[1].trim () + "' found!");
+                  LOGGER.warn ("Unsupported disposition attribute '" +
+                               sAttribute +
+                               "' with value '" +
+                               aParts[1].trim () +
+                               "' found!");
                 }
             }
             else
             {
-              if (LOGGER.isWarnEnabled ())
-                LOGGER.warn ("Failed to split disposition options parameter '" +
-                             sParameter +
-                             "' value '" +
-                             aParts[1].trim () +
-                             "' into importance and values");
+              LOGGER.warn ("Failed to split disposition options parameter '" +
+                           sParameter +
+                           "' value '" +
+                           aParts[1].trim () +
+                           "' into importance and values");
             }
           }
           else
           {
-            if (LOGGER.isWarnEnabled ())
-              LOGGER.warn ("Failed to split disposition options parameter '" + sParameter + "' into attribute and values");
+            LOGGER.warn ("Failed to split disposition options parameter '" +
+                         sParameter +
+                         "' into attribute and values");
           }
         }
       }

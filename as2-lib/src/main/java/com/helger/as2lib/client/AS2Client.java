@@ -207,8 +207,8 @@ public class AS2Client
   @Nonnull
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
-  protected AS2Message createMessage (@Nonnull final Partnership aPartnership,
-                                      @Nonnull final AS2ClientRequest aRequest) throws MessagingException
+  protected AS2Message createMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2ClientRequest aRequest)
+                                                                                                                         throws MessagingException
   {
     final AS2Message aMsg = createAS2MessageObj ();
     aMsg.setContentType (aRequest.getContentType ());
@@ -252,8 +252,8 @@ public class AS2Client
    *         In case of error
    */
   @OverrideOnDemand
-  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
-                                         @Nonnull final AS2Session aSession) throws AS2Exception
+  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession)
+                                                                                                                         throws AS2Exception
   {
     final StringMap aParams = new StringMap ();
     // TYPE is the only parameter that must be present in initDynamicComponents
@@ -264,8 +264,7 @@ public class AS2Client
 
     if (aSettings.getKeyStoreFile () != null)
     {
-      if (LOGGER.isInfoEnabled ())
-        LOGGER.info ("Loading AS2 client keystore from file " + aSettings.getKeyStoreFile ());
+      LOGGER.info ("Loading AS2 client keystore from file " + aSettings.getKeyStoreFile ());
 
       aCertFactory.setFilename (aSettings.getKeyStoreFile ().getAbsolutePath ());
       aCertFactory.setPassword (aSettings.getKeyStorePassword ());
@@ -275,21 +274,18 @@ public class AS2Client
     else
       if (aSettings.getKeyStoreBytes () != null && aSettings.getKeyStorePassword () != null)
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.info ("Loading AS2 client keystore from byte array. No changes will be saved.");
+        LOGGER.info ("Loading AS2 client keystore from byte array. No changes will be saved.");
 
         aCertFactory.setPassword (aSettings.getKeyStorePassword ());
         aCertFactory.setSaveChangesToFile (false);
-        try (
-            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
         {
           aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
         }
       }
       else
       {
-        if (LOGGER.isInfoEnabled ())
-          LOGGER.warn ("No AS2 client keystore data was provided. Signing and encryption/decryption will most likely fail.");
+        LOGGER.warn ("No AS2 client keystore data was provided. Signing and encryption/decryption will most likely fail.");
 
         // No file provided - no storage
         aCertFactory.setSaveChangesToFile (false);
