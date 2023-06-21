@@ -415,7 +415,7 @@ public final class HTTPHelper
         nBytesRead++;
         // Remember what we read but avoid unnecessary memory consumption
         if (aBAOS.size () < nMaxByteBuffer)
-          aBAOS.write (ch);
+          aBAOS.write (ch & 0xff);
 
         if (ch == '\n')
         {
