@@ -156,8 +156,8 @@ public final class ChunkedInputStreamTest
   @Test
   public void testReadTwoChunkBufferMultipleReads () throws IOException
   {
-    try (final InputStream aIS = new NonBlockingByteArrayInputStream (("2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n")
-                                                                                                                      .getBytes (StandardCharsets.ISO_8859_1));
+    final String sSrc = "2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n";
+    try (final InputStream aIS = new NonBlockingByteArrayInputStream (sSrc.getBytes (StandardCharsets.ISO_8859_1));
          final ChunkedInputStream cIS = new ChunkedInputStream (aIS))
     {
       final byte [] buf = new byte [3];
@@ -178,8 +178,8 @@ public final class ChunkedInputStreamTest
   @Test
   public void testReadTwoChunkByteMultipleReads () throws IOException
   {
-    try (final InputStream aIS = new NonBlockingByteArrayInputStream (("2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n")
-                                                                                                                      .getBytes (StandardCharsets.ISO_8859_1));
+    final String sSrc = "2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n";
+    try (final InputStream aIS = new NonBlockingByteArrayInputStream (sSrc.getBytes (StandardCharsets.ISO_8859_1));
          final ChunkedInputStream cIS = new ChunkedInputStream (aIS))
     {
       int ret = cIS.read ();
