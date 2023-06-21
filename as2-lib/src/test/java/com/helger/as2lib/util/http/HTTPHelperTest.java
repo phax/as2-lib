@@ -47,6 +47,7 @@ import org.junit.Test;
 
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
+import com.helger.commons.collection.ArrayHelper;
 import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
 import com.helger.commons.io.stream.StreamHelper;
 import com.helger.commons.io.stream.StringInputStream;
@@ -211,12 +212,11 @@ public final class HTTPHelperTest
   private static final IAS2HttpResponseHandler MOCK_RH = (nHttpResponseCode, aHeaders, aData) -> {};
   private static final IHTTPIncomingDumper INCOMING_DUMPER = null;
 
-  @Test (expected = EOFException.class)
   public void testReadChunkLenEOS () throws Exception
   {
-    final InputStream noNewLine = new StringInputStream ("1", StandardCharsets.UTF_8);
-    HTTPHelper.readChunkLen (noNewLine);
-    fail ("An EOFException should have been thrown");
+    final InputStream aIS = new StringInputStream ("1", StandardCharsets.UTF_8);
+    final int nLen = HTTPHelper.readChunkLen (aIS);
+    assertEquals (1, nLen);
   }
 
   @Test
@@ -241,6 +241,23 @@ public final class HTTPHelperTest
     final NonBlockingByteArrayInputStream noNewLine = new NonBlockingByteArrayInputStream ("\n".getBytes (StandardCharsets.UTF_8));
     final int res = HTTPHelper.readChunkLen (noNewLine);
     assertEquals ("Chunk size with header", 0, res);
+  }
+
+  @Test (expected = EOFException.class)
+  public void testReadChunkLenTotallyEmpty () throws Exception
+  {
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (ArrayHelper.EMPTY_BYTE_ARRAY);
+    HTTPHelper.readChunkLen (aIS);
+    fail ("Expected EOFException");
+  }
+
+  @Test
+  public void testReadChunkLenCrap () throws Exception
+  {
+    // Don't use UTF-8 to avoid multi-byte handling for this test
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream ("xyz\u0000\u00ff".getBytes (StandardCharsets.ISO_8859_1));
+    final int res = HTTPHelper.readChunkLen (aIS);
+    assertEquals (0, res);
   }
 
   @Test
