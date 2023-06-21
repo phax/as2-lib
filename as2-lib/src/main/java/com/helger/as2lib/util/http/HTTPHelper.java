@@ -392,10 +392,11 @@ public final class HTTPHelper
    *
    * @param aIS
    *        - input stream to read from
-   * @return Chunk length
+   * @return Chunk length. Should always be &ge; 0.
    * @throws IOException
    *         if stream ends during chunk length read
    */
+  @Nonnegative
   public static int readChunkLen (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {
     int nRes = 0;
@@ -417,7 +418,11 @@ public final class HTTPHelper
           aBAOS.write (ch);
 
         if (ch == '\n')
+        {
+          // We found the newline
           break;
+        }
+
         if (ch >= 'a' && ch <= 'f')
           ch -= ('a' - 10);
         else
