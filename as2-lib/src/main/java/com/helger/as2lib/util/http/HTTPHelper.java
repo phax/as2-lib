@@ -390,45 +390,98 @@ public final class HTTPHelper
    *
    * @param aIS
    *        - input stream to read from
-   * @return Chunk length
+   * @return Chunk length. Should always be &ge; 0.
    * @throws IOException
    *         if stream ends during chunk length read
    */
+  @Nonnegative
   public static int readChunkLen (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {
     int nRes = 0;
     boolean bHeadersStarted = false;
-    for (;;)
+    boolean bWarningEmitted = false;
+    final int nMaxByteBuffer = 128;
+    int nBytesRead = 0;
+    try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (nMaxByteBuffer))
     {
-      int ch = aIS.read ();
-      if (ch < 0)
-        throw new EOFException ("EOF while reading HTTP chunk length");
+      for (;;)
+      {
+        int ch = aIS.read ();
+        if (ch < 0)
+          throw new EOFException ("EOF while reading HTTP chunk length");
 
-      if (ch == '\n')
-        break;
+        nBytesRead++;
+        // Remember what we read but avoid unnecessary memory consumption
+        if (aBAOS.size () < nMaxByteBuffer)
+          aBAOS.write (ch & 0xff);
 
-      if (ch >= 'a' && ch <= 'f')
-        ch -= ('a' - 10);
-      else
-        if (ch >= 'A' && ch <= 'F')
-          ch -= ('A' - 10);
+        if (ch == '\n')
+        {
+          // We found the newline
+          break;
+        }
+
+        if (ch >= 'a' && ch <= 'f')
+          ch -= ('a' - 10);
         else
-          if (ch >= '0' && ch <= '9')
-            ch -= '0';
+          if (ch >= 'A' && ch <= 'F')
+            ch -= ('A' - 10);
           else
-            if (ch == ';')
-              bHeadersStarted = true;
+            if (ch >= '0' && ch <= '9')
+              ch -= '0';
             else
-            {
-              if (ch != '\r' && !bHeadersStarted)
-                LOGGER.warn ("Found unsupported character " +
-                             _debugChar (ch) +
-                             " when trying to read HTTP chunk length");
-              continue;
-            }
+              if (ch == ';')
+              {
+                // Afterwards, any char may appear until \n
+                bHeadersStarted = true;
+              }
+              else
+                if (ch == '\r')
+                {
+                  // Ignore - comes before \n
+                  continue;
+                }
+                else
+                {
+                  // Unsupported char
+                  if (!bHeadersStarted)
+                  {
+                    if (!bWarningEmitted)
+                    {
+                      LOGGER.warn ("Found unsupported character " +
+                                   _debugChar (ch) +
+                                   " when trying to read HTTP chunk length." +
+                                   " This will most likely lead to an error processing the incoming AS2 message.");
+                      bWarningEmitted = true;
+                    }
+                  }
+                  continue;
+                }
+        if (!bHeadersStarted)
+          nRes = (nRes * 16) + ch;
+      }
 
-      if (!bHeadersStarted)
-        nRes = (nRes * 16) + ch;
+      if (bWarningEmitted)
+      {
+        // Maximum per byte: ", 0xffff" - 8 chars
+        final StringBuilder aSB = new StringBuilder (aBAOS.size () * 8);
+        for (final byte b : aBAOS.toByteArray ())
+        {
+          if (aSB.length () > 0)
+            aSB.append (", ");
+          aSB.append (_debugChar (b));
+        }
+        final boolean bIsPartial = nBytesRead > aBAOS.size ();
+        LOGGER.warn ("An incoming AS2 message with HTTP Chunked Encoding had issues reading the 'chunk length'." +
+                     " A total of " +
+                     nBytesRead +
+                     " bytes were read, the determined chunk length is " +
+                     nRes +
+                     ". Processing of the message might fail. " +
+                     (bIsPartial ? "Partial" : "Full") +
+                     " debug info: " +
+                     aSB.toString ());
+      }
     }
     return nRes;
   }
