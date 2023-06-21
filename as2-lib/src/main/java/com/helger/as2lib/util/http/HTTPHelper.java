@@ -379,8 +379,9 @@ public final class HTTPHelper
   @Nonnull
   private static String _debugChar (final int n)
   {
-    return n >= 0x20 && n <= 0x7e ? "'" + Character.toString ((char) n) + "'"
-                                  : "0x" + StringHelper.getHexStringLeadingZero (n, 2);
+    return n >= 0x20 && n <= 0x7e ? "'" + Character.toString ((char) n) + "'" : "0x" +
+                                                                                StringHelper.getHexStringLeadingZero (n,
+                                                                                                                      2);
   }
 
   /**
@@ -401,7 +402,8 @@ public final class HTTPHelper
     {
       int ch = aIS.read ();
       if (ch < 0)
-        throw new EOFException ();
+        throw new EOFException ("EOF while reading HTTP chunk length");
+
       if (ch == '\n')
         break;
       if (ch >= 'a' && ch <= 'f')
@@ -414,10 +416,16 @@ public final class HTTPHelper
             ch -= '0';
           else
             if (ch == ';')
+            {
+              // Afterwards, any char may appear until \n
               bHeadersStarted = true;
+            }
             else
             {
-              LOGGER.warn ("Found unsupported character " + _debugChar (ch) + " when trying to read HTTP chunk length");
+              if (ch != '\r' && !bHeadersStarted)
+                LOGGER.warn ("Found unsupported character " +
+                             _debugChar (ch) +
+                             " when trying to read HTTP chunk length");
               continue;
             }
       if (!bHeadersStarted)
@@ -427,22 +435,41 @@ public final class HTTPHelper
   }
 
   /**
-   * Read up to (and including )CRLF.
+   * Read up to (and including) CRLF.
    *
    * @param aIS
-   *        - input stream to read from
+   *        input stream to read from
+   * @throws IOException
+   *         if stream ends during chunk length read
+   * @deprecated Since 5.1.1. Use {@link #readTillNextLine(InputStream)} instead
+   */
+  @Deprecated
+  public static void readTillNexLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
+  {
+    readTillNextLine (aIS);
+  }
+
+  /**
+   * Read up to (and including) CRLF.
+   *
+   * @param aIS
+   *        input stream to read from
    * @throws IOException
    *         if stream ends during chunk length read
    */
-  public static void readTillNexLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
+  public static void readTillNextLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {
+    int nSkipped = 0;
     while (true)
     {
       final int ch = aIS.read ();
       if (ch < 0)
-        throw new EOFException ();
+        throw new EOFException ("EOF while reading until next newline character");
       if (ch == '\n')
         break;
+      nSkipped++;
     }
+    if (LOGGER.isDebugEnabled ())
+      LOGGER.debug ("Skipped " + nSkipped + " bytes until newline");
   }
 }
