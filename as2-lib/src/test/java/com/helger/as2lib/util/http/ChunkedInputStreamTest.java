@@ -142,8 +142,7 @@ public final class ChunkedInputStreamTest
   @Test
   public void testReadTwoChunkBuffer () throws IOException
   {
-    try (final InputStream aIS = new NonBlockingByteArrayInputStream (("2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n")
-                                                                                                                      .getBytes (StandardCharsets.ISO_8859_1));
+    try (final InputStream aIS = new NonBlockingByteArrayInputStream ("2\r\n12\r\n1\na\r\n0\r\n".getBytes (StandardCharsets.ISO_8859_1));
          final ChunkedInputStream cIS = new ChunkedInputStream (aIS))
     {
       final byte [] buf = new byte [3];
@@ -156,29 +155,38 @@ public final class ChunkedInputStreamTest
   @Test
   public void testReadTwoChunkBufferMultipleReads () throws IOException
   {
-    final String sSrc = "2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n";
-    try (final InputStream aIS = new NonBlockingByteArrayInputStream (sSrc.getBytes (StandardCharsets.ISO_8859_1));
-         final ChunkedInputStream cIS = new ChunkedInputStream (aIS))
+    for (final String sSrc : new String [] { "2\n12\n1\na\n0",
+                                             "2\n12\n1\na\n0\n",
+                                             "2\r\n12\r\n1\na\r\n0",
+                                             "2\r\n12\r\n1\na\r\n0\r\n",
+                                             "2\n12\n1\na\n0\nThis is ignored",
+                                             "2\r\n12\r\n1\na\r\n0\r\nThis is ignored" })
     {
-      final byte [] buf = new byte [3];
-      int ret = cIS.read (buf, 0, 1);
-      assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
-      assertEquals ("Read one Chunk-1: correct data returned", '1', buf[0]);
-      ret = cIS.read (buf, 0, 1);
-      assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
-      assertEquals ("Read one Chunk-1: correct data returned", '2', buf[0]);
-      ret = cIS.read (buf, 0, 1);
-      assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
-      assertEquals ("Read one Chunk-1: correct data returned", 'a', buf[0]);
+      try (final InputStream aIS = new NonBlockingByteArrayInputStream (sSrc.getBytes (StandardCharsets.ISO_8859_1));
+           final ChunkedInputStream cIS = new ChunkedInputStream (aIS))
+      {
+        final byte [] buf = new byte [3];
+        int ret = cIS.read (buf, 0, 1);
+        assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
+        assertEquals ("Read one Chunk-1: correct data returned", '1', buf[0]);
+        ret = cIS.read (buf, 0, 1);
+        assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
+        assertEquals ("Read one Chunk-1: correct data returned", '2', buf[0]);
+        ret = cIS.read (buf, 0, 1);
+        assertEquals ("Read two chunk-1: 1 chars read", 1, ret);
+        assertEquals ("Read one Chunk-1: correct data returned", 'a', buf[0]);
 
-      assertThrows (EOFException.class, () -> cIS.read (buf, 0, 1));
+        // Read EOF
+        ret = cIS.read (buf, 0, 1);
+        assertEquals (-1, ret);
+      }
     }
   }
 
   @Test
   public void testReadTwoChunkByteMultipleReads () throws IOException
   {
-    final String sSrc = "2\r\n" + "12\r\n" + "1\n" + "a\r\n" + "0\r\n";
+    final String sSrc = "2\r\n12\r\n1\na\r\n0\r\n";
     try (final InputStream aIS = new NonBlockingByteArrayInputStream (sSrc.getBytes (StandardCharsets.ISO_8859_1));
          final ChunkedInputStream cIS = new ChunkedInputStream (aIS))
     {
@@ -188,6 +196,10 @@ public final class ChunkedInputStreamTest
       assertEquals ("Read one Chunk-1: correct data returned", '2', ret);
       ret = cIS.read ();
       assertEquals ("Read one Chunk-1: correct data returned", 'a', ret);
+
+      // Read EOF
+      ret = cIS.read ();
+      assertEquals (-1, ret);
     }
   }
 

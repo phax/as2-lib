@@ -377,11 +377,11 @@ public final class HTTPHelper
   }
 
   @Nonnull
-  private static String _debugChar (final int n)
+  private static String _debugByte (final int n)
   {
-    return n >= 0x20 && n <= 0x7e ? "'" + Character.toString ((char) n) + "'" : "0x" +
-                                                                                StringHelper.getHexStringLeadingZero (n,
-                                                                                                                      2);
+    if (n >= 0x20 && n <= 0x7e)
+      return "'" + Character.toString ((char) n) + "'";
+    return "0x" + StringHelper.getHexStringLeadingZero (n & 0xff, 2);
   }
 
   /**
@@ -406,37 +406,42 @@ public final class HTTPHelper
     {
       for (;;)
       {
-        int ch = aIS.read ();
-        if (ch < 0)
+        int b = aIS.read ();
+        if (b < 0)
+        {
+          // We reached the end of the input but got at least one char
+          if (nBytesRead > 0)
+            break;
           throw new EOFException ("EOF while reading HTTP chunk length");
+        }
 
         nBytesRead++;
         // Remember what we read but avoid unnecessary memory consumption
         if (aBAOS.size () < nMaxByteBuffer)
-          aBAOS.write (ch & 0xff);
+          aBAOS.write (b & 0xff);
 
-        if (ch == '\n')
+        if (b == '\n')
         {
           // We found the newline
           break;
         }
 
-        if (ch >= 'a' && ch <= 'f')
-          ch -= ('a' - 10);
+        if (b >= 'a' && b <= 'f')
+          b -= ('a' - 10);
         else
-          if (ch >= 'A' && ch <= 'F')
-            ch -= ('A' - 10);
+          if (b >= 'A' && b <= 'F')
+            b -= ('A' - 10);
           else
-            if (ch >= '0' && ch <= '9')
-              ch -= '0';
+            if (b >= '0' && b <= '9')
+              b -= '0';
             else
-              if (ch == ';')
+              if (b == ';')
               {
                 // Afterwards, any char may appear until \n
                 bHeadersStarted = true;
               }
               else
-                if (ch == '\r')
+                if (b == '\r')
                 {
                   // Ignore - comes before \n
                   continue;
@@ -448,8 +453,8 @@ public final class HTTPHelper
                   {
                     if (!bWarningEmitted)
                     {
-                      LOGGER.warn ("Found unsupported character " +
-                                   _debugChar (ch) +
+                      LOGGER.warn ("Found unsupported byte " +
+                                   _debugByte (b) +
                                    " when trying to read HTTP chunk length." +
                                    " This will most likely lead to an error processing the incoming AS2 message.");
                       bWarningEmitted = true;
@@ -458,7 +463,7 @@ public final class HTTPHelper
                   continue;
                 }
         if (!bHeadersStarted)
-          nRes = (nRes * 16) + ch;
+          nRes = (nRes * 16) + b;
       }
 
       if (bWarningEmitted)
@@ -469,7 +474,7 @@ public final class HTTPHelper
         {
           if (aSB.length () > 0)
             aSB.append (", ");
-          aSB.append (_debugChar (b));
+          aSB.append (_debugByte (b));
         }
         final boolean bIsPartial = nBytesRead > aBAOS.size ();
         LOGGER.warn ("An incoming AS2 message with HTTP Chunked Encoding had issues reading the 'chunk length'." +
