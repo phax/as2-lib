@@ -257,7 +257,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     catch (final Exception ex)
     {
-      LOGGER.error ("Error decrypting " + aMsg.getLoggingText () + ": " + ex.getMessage ());
+      LOGGER.error ("Error decrypting " + aMsg.getLoggingText (), ex);
 
       throw new AS2DispositionException (DispositionType.createError ("decryption-failed"),
                                          AbstractActiveNetModule.DISP_DECRYPTION_ERROR,
@@ -292,7 +292,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
           final X509Certificate aSenderCert = aCertFactory.getCertificateOrNull (aMsg,
                                                                                  ECertificatePartnershipType.SENDER);
-          boolean bUseCertificateInBodyPart;
+          final boolean bUseCertificateInBodyPart;
           final ETriState eUseCertificateInBodyPart = aMsg.partnership ().getVerifyUseCertificateInBodyPart ();
           if (eUseCertificateInBodyPart.isDefined ())
           {
@@ -317,8 +317,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             aExternalConsumer.accept (aCertHolder.get ());
 
           aMsg.setData (aVerifiedData);
+
           // Remember that message was signed and verified
           aMsg.attrs ().putIn (AS2Message.ATTRIBUTE_RECEIVED_SIGNED, true);
+
           // Remember the PEM encoded version of the X509 certificate that was
           // used for verification
           aMsg.attrs ()
@@ -405,6 +407,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       try
       {
         final IAS2Session aSession = m_aReceiverModule.getSession ();
+
+        // Main MDN creation
         final IMessageMDN aMdn = AS2Helper.createMDN (aSession, aMsg, aDisposition, sText);
 
         if (aMsg.isRequestingAsynchMDN ())
@@ -579,13 +583,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           bIsDecompressed = true;
         }
 
+        // Verify may fail, if our certificate is expired
         verify (aMsg, aResHelper);
 
         if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
         {
           // Per RFC5402 compression is always before encryption but can be
-          // before
-          // or after signing of message but only in one place
+          // before or after signing of message but only in one place
           if (bIsDecompressed)
           {
             throw new AS2DispositionException (DispositionType.createError ("decompression-failed"),

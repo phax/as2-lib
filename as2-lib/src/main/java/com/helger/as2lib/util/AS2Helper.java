@@ -35,6 +35,7 @@ package com.helger.as2lib.util;
 import java.io.InputStream;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.function.Consumer;
 
@@ -193,18 +194,31 @@ public final class AS2Helper
       try
       {
         final X509Certificate aSenderCert = aCertFactory.getCertificate (aMdn, ECertificatePartnershipType.SENDER);
-        final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aSenderCert);
-        final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
-                                                                    aSenderCert,
-                                                                    aSenderKey,
-                                                                    eMICAlg,
-                                                                    bIncludeCertificateInSignedContent,
-                                                                    bUseOldRFC3851MicAlgs,
-                                                                    bRemoveCmsAlgorithmProtect,
-                                                                    EContentTransferEncoding.BASE64);
-        aMdn.setData (aSignedReport);
 
-        LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
+        // Check if certificate is expired per "now"
+        final Date aNotAfter = aSenderCert.getNotAfter ();
+        if (aNotAfter != null && aNotAfter.compareTo (new Date ()) < 0)
+        {
+          LOGGER.warn ("Because our signing certificate expired per " +
+                       aNotAfter +
+                       " we cannot sign the MDN message" +
+                       aMdn.getLoggingText ());
+        }
+        else
+        {
+          final PrivateKey aSenderKey = aCertFactory.getPrivateKey (aSenderCert);
+          final MimeBodyPart aSignedReport = getCryptoHelper ().sign (aReport,
+                                                                      aSenderCert,
+                                                                      aSenderKey,
+                                                                      eMICAlg,
+                                                                      bIncludeCertificateInSignedContent,
+                                                                      bUseOldRFC3851MicAlgs,
+                                                                      bRemoveCmsAlgorithmProtect,
+                                                                      EContentTransferEncoding.BASE64);
+          aMdn.setData (aSignedReport);
+
+          LOGGER.info ("Successfully signed outgoing MDN message" + aMdn.getLoggingText ());
+        }
       }
       catch (final AS2CertificateNotFoundException | AS2KeyNotFoundException ex)
       {

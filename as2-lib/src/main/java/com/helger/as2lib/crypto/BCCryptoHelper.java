@@ -659,7 +659,7 @@ public class BCCryptoHelper implements ICryptoHelper
         if (aContainedCerts.size () > 1)
           LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
-        final X509CertificateHolder aCertHolder = ((X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts));
+        final X509CertificateHolder aCertHolder = (X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts);
         final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName)
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))
@@ -668,6 +668,7 @@ public class BCCryptoHelper implements ICryptoHelper
                        " differs from certficate contained in message\n" +
                        aCert);
 
+        // The certificate provided in the message takes precedence
         aRealX509Cert = aCert;
       }
     }
@@ -725,8 +726,7 @@ public class BCCryptoHelper implements ICryptoHelper
                                                            : "Verifying signature using the certificate contained in the MIME body part");
 
     // Call before validity check to retrieve the information about the
-    // details
-    // outside
+    // details outside
     if (aEffectiveCertificateConsumer != null)
       aEffectiveCertificateConsumer.accept (aRealX509Cert);
 
