@@ -351,7 +351,8 @@ public class BCCryptoHelper implements ICryptoHelper
 
     final String sMICEncoding = aPart.getEncoding ();
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("Using encoding '" + sMICEncoding + "' for MIC calculation");
+      LOGGER.debug (sMICEncoding != null ? "Using Content-Transfer-Encoding '" + sMICEncoding + "' for MIC calculation"
+                                         : "Using no specific Content-Transfer-Encoding for MIC calculation");
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
