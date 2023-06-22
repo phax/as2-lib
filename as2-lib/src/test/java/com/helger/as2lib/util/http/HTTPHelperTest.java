@@ -299,12 +299,12 @@ public final class HTTPHelperTest
     }
     catch (final IOException ex)
     {
-      assertEquals ("Content-Length missing", ex.getMessage ());
+      assertEquals ("Content-Length is missing and no Transfer-Encoding is specified", ex.getMessage ());
     }
   }
 
   @Test
-  public void testBadTRansferEncodingMessageRegular () throws Exception
+  public void testBadTransferEncodingMessageRegular () throws Exception
   {
     // stream
     final AS2Message aMsg = new AS2Message ();
@@ -316,7 +316,7 @@ public final class HTTPHelperTest
     }
     catch (final IOException ex)
     {
-      assertEquals ("Transfer-Encoding unimplemented: cXXhunked", ex.getMessage ());
+      assertEquals ("Transfer-Encoding unimplemented: 'cXXhunked'", ex.getMessage ());
     }
   }
 }
