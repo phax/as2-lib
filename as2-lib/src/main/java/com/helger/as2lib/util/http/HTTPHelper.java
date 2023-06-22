@@ -233,8 +233,16 @@ public final class HTTPHelper
         {
           // chunked encoding. Use also file backed stream as the message
           // might be large
+          // Application servers like Tomcat handle chunked encoding outside
+
+          final boolean bHandleChunkedEncodingHere = !aRDP.isChunkedEncodingAlreadyProcessed ();
+          if (LOGGER.isDebugEnabled ())
+            LOGGER.debug ("Handling HTTP chunked Transfer-Encoding request " +
+                          (bHandleChunkedEncodingHere ? "in here as chunked encoding" : "as already processed"));
+
           @WillNotClose
-          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (new ChunkedInputStream (aIS),
+          final TempSharedFileInputStream aSharedIS = TempSharedFileInputStream.getTempSharedFileInputStream (bHandleChunkedEncodingHere ? new ChunkedInputStream (aIS)
+                                                                                                                                         : aIS,
                                                                                                               aMsg.getMessageID ());
           aRealIS = aSharedIS;
           aMsg.setTempSharedFileInputStream (aSharedIS);
@@ -243,14 +251,14 @@ public final class HTTPHelper
         {
           // No "Content-Length" and unsupported "Transfer-Encoding"
           sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
-          throw new IOException ("Transfer-Encoding unimplemented: " + sTransferEncoding);
+          throw new IOException ("Transfer-Encoding unimplemented: '" + sTransferEncoding + "'");
         }
       }
       else
       {
         // No "Content-Length" and no "Transfer-Encoding"
         sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_LENGTH_REQUIRED);
-        throw new IOException ("Content-Length missing");
+        throw new IOException ("Content-Length is missing and no Transfer-Encoding is specified");
       }
 
       // Content-length present, or chunked encoding
@@ -279,7 +287,7 @@ public final class HTTPHelper
       }
       aBytePayload = new byte [(int) nContentLength];
 
-      // Keeps the original InputStream open and that is okay
+      // Closes the original InputStream open and that is okay
       try (final DataInputStream aDataIS = new DataInputStream (aIS))
       {
         aDataIS.readFully (aBytePayload);

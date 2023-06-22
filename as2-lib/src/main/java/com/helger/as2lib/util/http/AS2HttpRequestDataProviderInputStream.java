@@ -174,6 +174,12 @@ public class AS2HttpRequestDataProviderInputStream implements IAS2HttpRequestDat
     return StreamHelper.getBuffered (new NonClosingInputStream (m_aIS));
   }
 
+  public boolean isChunkedEncodingAlreadyProcessed ()
+  {
+    // Procesing must happen inside the library
+    return false;
+  }
+
   @Nonnull
   public String getHttpRequestMethod ()
   {
