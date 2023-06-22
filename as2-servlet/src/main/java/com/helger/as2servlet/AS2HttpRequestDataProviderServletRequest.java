@@ -77,6 +77,12 @@ final class AS2HttpRequestDataProviderServletRequest implements IAS2HttpRequestD
     return StreamHelper.getBuffered (new NonClosingInputStream (m_aRequestIS));
   }
 
+  public boolean isChunkedEncodingAlreadyProcessed ()
+  {
+    // Processed by the application server like Tomcat or Jetty outside
+    return true;
+  }
+
   @Nonnull
   @Nonempty
   public String getHttpRequestMethod ()

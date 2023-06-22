@@ -58,6 +58,14 @@ public interface IAS2HttpRequestDataProvider
   InputStream getHttpInputStream () throws IOException;
 
   /**
+   * @return <code>true</code> if chunked encoding was already processed by an
+   *         outside component (e.g. via Servlet), or <code>false</code> if it
+   *         needs to be processed internally.
+   * @since 5.0.3
+   */
+  boolean isChunkedEncodingAlreadyProcessed ();
+
+  /**
    * @return The HTTP request method used. Usually this should be
    *         <code>POST</code>.
    */
