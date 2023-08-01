@@ -1,7 +1,8 @@
 # as2-lib
 
-[![javadoc](https://javadoc.io/badge2/com.helger.as2/as2-lib/javadoc.svg)](https://javadoc.io/doc/com.helger.as2/as2-lib)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.as2/as2-lib-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.as2/as2-lib-parent-pom) 
+[![javadoc](https://javadoc.io/badge2/com.helger.as2/as2-lib/javadoc.svg)](https://javadoc.io/doc/com.helger.as2/as2-lib)
+[![CodeCov](https://codecov.io/gh/phax/ph-as2/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-as2)
 
 AS2 is a transport protocol specified in [RFC 4130](http://www.ietf.org/rfc/rfc4130.txt).
 AS2 version 1.1 adding compression is specified in [RFC 5402](http://www.ietf.org/rfc/rfc5402.txt).
