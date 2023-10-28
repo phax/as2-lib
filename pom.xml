@@ -47,8 +47,8 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:phax/as2-lib.git</connection>
-    <developerConnection>scm:git:git@github.com:phax/as2-lib.git</developerConnection>
+    <connection>scm:git:https://github.com/phax/as2-lib.git</connection>
+    <developerConnection>scm:git:https://github.com/phax/as2-lib.git</developerConnection>
     <url>http://github.com/phax/as2-lib</url>
     <tag>HEAD</tag>
   </scm>
