@@ -50,7 +50,7 @@
   <licenses>
     <license>
       <name>BSD</name>
-      <url>http://www.freebsd.org/copyright/freebsd-license.html</url>
+      <url>https://www.freebsd.org/copyright/freebsd-license.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
