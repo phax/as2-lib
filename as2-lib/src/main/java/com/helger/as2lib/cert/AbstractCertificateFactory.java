@@ -168,8 +168,9 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   @Nonempty
   private static String _debug (@Nullable final X509Certificate aCert)
   {
-    return aCert == null ? "null"
-                         : aCert.getSubjectX500Principal ().getName () + "/" + aCert.getSerialNumber ().toString ();
+    return aCert == null ? "null" : aCert.getSubjectX500Principal ().getName () +
+                                    "/" +
+                                    aCert.getSerialNumber ().toString ();
   }
 
   @Nonnull
@@ -191,8 +192,8 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions)
+                                                                                                              throws AS2Exception
   {
     debugLog ( () -> "initDynamicComponent (" + aSession + ", " + aOptions + ")");
 
@@ -430,37 +431,47 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   {
     debugLog ( () -> "getPrivateKey (" + _debug (aCert) + ")");
 
+    if (aCert == null)
+      throw new AS2CertificateNotFoundException (aCert);
+
+    final ICommonsList <String> aAllAliases = _getAllAliases ();
     String sRealAlias = null;
 
     m_aRWLock.readLock ().lock ();
     try
     {
-      // This method heuristically scans the keys tore and delivery the first
-      // result.
-      final String sAlias = m_aKeyStore.getCertificateAlias (aCert);
-      if (sAlias == null)
+      // Scan all aliases, in case the same alias is used for Key AND
+      // Certificate
+      PrivateKey aKey = null;
+      for (final String sCurAlias : aAllAliases)
       {
-        debugLog ( () -> "getCertificates -> null");
-        throw new AS2CertificateNotFoundException (aCert);
+        // Does the certificate resolved from the current alias match the
+        // requested one?
+        if (m_aKeyStore.getCertificate (sCurAlias).equals (aCert))
+        {
+          sRealAlias = getUnifiedAlias (sCurAlias);
+
+          // Check if a key entry is present as well
+          aKey = (PrivateKey) m_aKeyStore.getKey (sRealAlias, getPassword ());
+          if (aKey != null)
+            break;
+        }
       }
 
-      sRealAlias = getUnifiedAlias (sAlias);
-
-      // Find the key - is null if the alias represents a Public Certificate
-      final PrivateKey aKey = (PrivateKey) m_aKeyStore.getKey (sRealAlias, getPassword ());
       if (aKey == null)
       {
         debugLog ( () -> "getPrivateKey -> null");
-        throw new AS2KeyNotFoundException (aCert, sRealAlias, _getAllAliases (), null);
+        throw new AS2KeyNotFoundException (aCert, sRealAlias, aAllAliases, null);
       }
 
-      debugLog ( () -> "getPrivateKey -> " + aKey);
+      final PrivateKey aFinalKey = aKey;
+      debugLog ( () -> "getPrivateKey -> " + aFinalKey);
       return aKey;
     }
     catch (final GeneralSecurityException ex)
     {
       debugLog ( () -> "getPrivateKey -> " + _debug (ex));
-      throw new AS2KeyNotFoundException (aCert, sRealAlias, _getAllAliases (), ex);
+      throw new AS2KeyNotFoundException (aCert, sRealAlias, aAllAliases, ex);
     }
     finally
     {
