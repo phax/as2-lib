@@ -3,7 +3,7 @@
 
     The FreeBSD Copyright
     Copyright 1994-2008 The FreeBSD Project. All rights reserved.
-    Copyright (C) 2013-2023 Philip Helger philip[at]helger[dot]com
+    Copyright (C) 2013-2024 Philip Helger philip[at]helger[dot]com
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -33,7 +33,6 @@
     official policies, either expressed or implied, of the FreeBSD Project.
 
 -->
-<!-- Remove the underscores to enable this attributes. Default values are "true" -->
 <openas2 _CryptoVerifyUseCertificateInBodyPart="false"
          _CryptoSignIncludeCertificateInBodyPart="false">
   <certificates classname="com.helger.as2.app.cert.ServerCertificateFactory" 
