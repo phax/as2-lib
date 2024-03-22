@@ -51,21 +51,11 @@
     </developer>
   </developers>
   
-  <!-- Include here to not bloat the global scope -->  
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.mongodb</groupId>
-        <artifactId>mongodb-driver-sync</artifactId>
-        <version>4.11.1</version>
-      </dependency>
-      <dependency>
-        <groupId>de.flapdoodle.embed</groupId>
-        <artifactId>de.flapdoodle.embed.mongo</artifactId>
-        <version>3.5.4</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <!-- Include here to not bloat the global scope -->
+  <properties>
+    <mongodb-client.version>5.0.0</mongodb-client.version>
+    <flapdoodle.version>3.5.4</flapdoodle.version>
+  </properties>  
   
   <dependencies>
     <dependency>
@@ -75,6 +65,7 @@
     <dependency>
       <groupId>org.mongodb</groupId>
       <artifactId>mongodb-driver-sync</artifactId>
+      <version>${mongodb-client.version}</version>
     </dependency>
   
     <!-- test stuff -->
@@ -91,6 +82,7 @@
     <dependency>
       <groupId>de.flapdoodle.embed</groupId>
       <artifactId>de.flapdoodle.embed.mongo</artifactId>
+      <version>${flapdoodle.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
