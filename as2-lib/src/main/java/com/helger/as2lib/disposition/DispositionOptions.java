@@ -280,7 +280,7 @@ public class DispositionOptions
   @Nullable
   public ECryptoAlgorithmSign getFirstMICAlg ()
   {
-    return m_aMICAlgs.getFirst ();
+    return m_aMICAlgs.getFirstOrNull ();
   }
 
   /**

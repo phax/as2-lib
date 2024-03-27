@@ -106,7 +106,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *         in case of error
    * @deprecated Since 4.10.2. Use {@link #closeAndDelete()} instead
    */
-  @Deprecated
+  @Deprecated (forRemoval = true, since = "4.10.2")
   public void closeAll () throws IOException
   {
     closeAndDelete ();

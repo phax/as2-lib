@@ -97,7 +97,7 @@ public class AS2DispositionException extends AS2Exception
       final ICommonsList <AS2Exception> aCauses = ((AS2ProcessorException) ex).getAllCauses ();
       if (aCauses.size () == 1)
       {
-        final AS2Exception aFirst = aCauses.getFirst ();
+        final AS2Exception aFirst = aCauses.getFirstOrNull ();
         if (aFirst instanceof AS2DispositionException)
           return (AS2DispositionException) aFirst;
       }
