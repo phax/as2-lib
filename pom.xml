@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.as2</groupId>
   <artifactId>as2-lib-parent-pom</artifactId>
-  <version>5.1.3</version>
+  <version>5.1.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>as2-lib-parent-pom</name>
   <description>Base POM to build the as2-lib projects</description>
@@ -50,7 +50,7 @@
     <connection>scm:git:https://github.com/phax/as2-lib.git</connection>
     <developerConnection>scm:git:https://github.com/phax/as2-lib.git</developerConnection>
     <url>https://github.com/phax/as2-lib</url>
-    <tag>as2-lib-parent-pom-5.1.3</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <organization>
