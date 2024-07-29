@@ -145,9 +145,14 @@ public class BCCryptoHelper implements ICryptoHelper
     try
     {
       // Try regular BC first
-      Class.forName ("org.bouncycastle.jce.provider.BouncyCastleProvider");
+      final Class <?> aBCClass = Class.forName ("org.bouncycastle.jce.provider.BouncyCastleProvider");
       // Use for correct initialization
       sProvName = PBCProvider.getProvider ().getName ();
+      if (Security.getProvider (sProvName) == null)
+      {
+        // Create and add a new one
+        Security.addProvider ((Provider) aBCClass.getConstructor ().newInstance ());
+      }
     }
     catch (final Exception ex1)
     {
@@ -356,8 +361,8 @@ public class BCCryptoHelper implements ICryptoHelper
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
-        final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
-                                                                                                 sMICEncoding))
+         final OutputStream aEncodedOS = AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDigestOS,
+                                                                                                  sMICEncoding))
     {
       aPart.getDataHandler ().writeTo (aEncodedOS);
     }
@@ -456,8 +461,7 @@ public class BCCryptoHelper implements ICryptoHelper
     if (DUMP_DECRYPTED_DIR_PATH != null)
     {
       // dump decrypted
-      try (
-          final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
+      try (final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream (aDecryptedDataBodyPart.getSize ()))
       {
         aDecryptedDataBodyPart.writeTo (aBAOS);
         _dumpDecrypted (aBAOS.toByteArray ());
@@ -722,9 +726,9 @@ public class BCCryptoHelper implements ICryptoHelper
     final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug (EqualsHelper.identityEqual (aRealX509Cert,
-                                                aX509Cert) ? "Verifying signature using the provided certificate (partnership)"
-                                                           : "Verifying signature using the certificate contained in the MIME body part");
+      LOGGER.debug (EqualsHelper.identityEqual (aRealX509Cert, aX509Cert)
+                                                                          ? "Verifying signature using the provided certificate (partnership)"
+                                                                          : "Verifying signature using the certificate contained in the MIME body part");
 
     // Call before validity check to retrieve the information about the
     // details outside
