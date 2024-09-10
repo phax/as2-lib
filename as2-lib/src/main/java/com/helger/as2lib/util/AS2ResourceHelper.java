@@ -71,7 +71,10 @@ import com.helger.commons.io.stream.StreamHelper;
  */
 public class AS2ResourceHelper implements Closeable
 {
+  private static final String TEMP_FILE_PREFIX = "as2-lib-res-";
+  private static final String TEMP_FILE_SUFFIX = ".tmp";
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ResourceHelper.class);
+
   private static File s_aTempDir;
 
   /**
@@ -128,7 +131,12 @@ public class AS2ResourceHelper implements Closeable
       throw new IllegalStateException ("ResourceManager is already closing/closed!");
 
     // Create
-    final File ret = Files.createTempFile (s_aTempDir.toPath (), "as2-lib-res-", ".tmp").toFile ();
+    final File ret = s_aTempDir != null ? Files.createTempFile (s_aTempDir.toPath (),
+                                                                TEMP_FILE_PREFIX,
+                                                                TEMP_FILE_SUFFIX).toFile () : Files.createTempFile (
+                                                                                                                    TEMP_FILE_PREFIX,
+                                                                                                                    TEMP_FILE_SUFFIX)
+                                                                                                   .toFile ();
     // And remember
     m_aRWLock.writeLocked ( () -> m_aTempFiles.add (ret));
     return ret;
