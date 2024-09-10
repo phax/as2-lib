@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import javax.annotation.Nonnull;
 import javax.annotation.WillClose;
@@ -145,13 +146,13 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *         in case of IO error
    */
   @Nonnull
-  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS,
-                                                @Nonnull final String sName) throws IOException
+  protected static File storeContentToTempFile (@Nonnull @WillClose final InputStream aIS, @Nonnull final String sName)
+                                                                                                                        throws IOException
   {
     // create temp file and write steam content to it
     // name may contain ":" on Windows and that would fail the tests!
     final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (StringHelper.hasText (sName) ? sName : "tmp");
-    final File aDestFile = File.createTempFile ("AS2TempSharedFileIS", sSuffix);
+    final File aDestFile = Files.createTempFile ("AS2TempSharedFileIS", sSuffix).toFile ();
 
     try (final FileOutputStream aOS = new FileOutputStream (aDestFile))
     {

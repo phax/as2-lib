@@ -36,6 +36,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.Nonnull;
@@ -127,7 +128,7 @@ public class AS2ResourceHelper implements Closeable
       throw new IllegalStateException ("ResourceManager is already closing/closed!");
 
     // Create
-    final File ret = File.createTempFile ("as2-lib-res-", ".tmp", s_aTempDir);
+    final File ret = Files.createTempFile (s_aTempDir.toPath (), "as2-lib-res-", ".tmp").toFile ();
     // And remember
     m_aRWLock.writeLocked ( () -> m_aTempFiles.add (ret));
     return ret;
