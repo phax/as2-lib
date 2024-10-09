@@ -68,7 +68,7 @@
   </developers>
   
   <properties>
-    <log4j.version>2.24.0</log4j.version>
+    <log4j.version>2.24.1</log4j.version>
     <spring-boot.version>3.3.4</spring-boot.version>
   </properties>
  
@@ -84,7 +84,7 @@
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-css-parent-pom</artifactId>
-        <version>7.0.2</version>
+        <version>7.0.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -98,7 +98,7 @@
       <dependency>
         <groupId>com.helger.photon</groupId>
         <artifactId>ph-oton-parent-pom</artifactId>
-        <version>9.2.6</version>
+        <version>9.2.7</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
