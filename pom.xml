@@ -68,8 +68,8 @@
   </developers>
   
   <properties>
-    <log4j.version>2.24.1</log4j.version>
-    <spring-boot.version>3.3.5</spring-boot.version>
+    <log4j.version>2.24.2</log4j.version>
+    <spring-boot.version>3.4.0</spring-boot.version>
   </properties>
  
   <dependencyManagement>
