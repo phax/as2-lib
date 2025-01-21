@@ -19,8 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
 import org.bson.Document;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -37,37 +35,39 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import de.flapdoodle.embed.mongo.MongodExecutable;
-import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.ImmutableMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfig;
+import de.flapdoodle.embed.mongo.commands.MongodArguments;
 import de.flapdoodle.embed.mongo.config.Net;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.runtime.Network;
+import de.flapdoodle.embed.mongo.transitions.Mongod;
+import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess;
+import de.flapdoodle.reverse.Listener;
+import de.flapdoodle.reverse.TransitionWalker;
+import de.flapdoodle.reverse.transitions.Start;
 
 public class MongoDBPartnershipFactoryTest
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MongoDBPartnershipFactoryTest.class);
 
-  private static MongodExecutable s_aMongodExecutable;
+  private static TransitionWalker.ReachedState <RunningMongodProcess> s_aMongodExecutable;
   private static MongoClient s_aMongoClient;
   private static MongoDatabase s_aDatabase;
   private static MongoCollection <Document> s_aCollection;
   private static MongoDBPartnershipFactory s_aPartnershipFactory;
 
   @BeforeClass
-  public static void setupSpec () throws IOException
+  public static void setupSpec ()
   {
-    final MongodStarter starter = MongodStarter.getDefaultInstance ();
     final int nPort = 12345;
-    final MongodConfig mongodConfig = ImmutableMongodConfig.builder ()
-                                                           .version (Version.Main.V4_4)
-                                                           .net (new Net (nPort, Network.localhostIsIPv6 ()))
-                                                           .build ();
-    s_aMongodExecutable = starter.prepare (mongodConfig);
-    s_aMongodExecutable.start ();
+
+    s_aMongodExecutable = Mongod.builder ()
+                                .net (Start.to (Net.class).initializedWith (Net.defaults ().withPort (nPort)))
+                                .mongodArguments (Start.to (MongodArguments.class)
+                                                       .initializedWith (MongodArguments.defaults ().withAuth (false)))
+                                .build ()
+                                .start (Version.Main.V8_0, new Listener [0]);
     s_aMongoClient = MongoClients.create (MongoClientSettings.builder ()
-                                                             .applyConnectionString (new ConnectionString ("mongodb://localhost:" + nPort))
+                                                             .applyConnectionString (new ConnectionString ("mongodb://localhost:" +
+                                                                                                           nPort))
                                                              .build ());
     s_aDatabase = s_aMongoClient.getDatabase ("as2-lib-test");
     s_aCollection = s_aDatabase.getCollection ("partnerships");
@@ -81,7 +81,7 @@ public class MongoDBPartnershipFactoryTest
     if (s_aMongoClient != null)
       s_aMongoClient.close ();
     if (s_aMongodExecutable != null)
-      s_aMongodExecutable.stop ();
+      s_aMongodExecutable.close ();
   }
 
   @Test
