@@ -57,7 +57,8 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
@@ -120,9 +121,9 @@ public class AS2HttpClient
     final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ().setDefaultRequestConfig (aRequestConf);
     if (aSSLContext != null)
     {
-      final SSLConnectionSocketFactory aSSLFactory = new SSLConnectionSocketFactory (aSSLContext, aHV);
+      final TlsSocketStrategy aTlsSocketFactory = new DefaultClientTlsStrategy (aSSLContext, aHV);
       final PoolingHttpClientConnectionManager aConnMgr = PoolingHttpClientConnectionManagerBuilder.create ()
-                                                                                                   .setSSLSocketFactory (aSSLFactory)
+                                                                                                   .setTlsSocketStrategy (aTlsSocketFactory)
                                                                                                    .build ();
       aClientBuilder.setConnectionManager (aConnMgr);
     }
