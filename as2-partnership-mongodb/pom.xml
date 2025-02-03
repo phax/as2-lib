@@ -53,7 +53,7 @@
   
   <!-- Include here to not bloat the global scope -->
   <properties>
-    <mongodb-client.version>5.3.0</mongodb-client.version>
+    <mongodb-client.version>5.3.1</mongodb-client.version>
     <flapdoodle.version>4.18.1</flapdoodle.version>
   </properties>  
   
