@@ -219,12 +219,15 @@ public class AS2HttpClient
         public void writeTo (@Nonnull final OutputStream aOS) throws IOException
         {
           // Use MIME encoding here
-          try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS;
-              final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                      eCTE.getID ())
-                                                           : aDebugOS)
+          try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS)
           {
-            StreamHelper.copyByteStream ().from (aCIS).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
+            try (
+                final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                                        eCTE.getID ())
+                                                             : aDebugOS)
+            {
+              StreamHelper.copyByteStream ().from (aCIS).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
+            }
           }
           catch (final MessagingException ex)
           {
