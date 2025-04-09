@@ -73,8 +73,7 @@ public interface ICryptoHelper
    * @param aKeyStoreType
    *        Key store type to use. May not be <code>null</code>.
    * @param aIS
-   *        The input stream to load the key store from. May not be
-   *        <code>null</code>.
+   *        The input stream to load the key store from. May not be <code>null</code>.
    * @param aPassword
    *        The password to be used for loading. May not be <code>null</code>.
    * @return The loaded key store and never <code>null</code>.
@@ -87,9 +86,9 @@ public interface ICryptoHelper
                          @Nonnull char [] aPassword) throws Exception;
 
   /**
-   * Check if the passed MIME body part is encrypted. The default implementation
-   * checks if the base type of the content type is "application/pkcs7-mime" and
-   * if the parameter "smime-type" has the value "enveloped-data".
+   * Check if the passed MIME body part is encrypted. The default implementation checks if the base
+   * type of the content type is "application/pkcs7-mime" and if the parameter "smime-type" has the
+   * value "enveloped-data".
    *
    * @param aPart
    *        The part to be checked.
@@ -100,8 +99,8 @@ public interface ICryptoHelper
   boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
 
   /**
-   * Check if the passed MIME body part is signed. The default implementation
-   * checks if the base type of the content type is "multipart/signed".
+   * Check if the passed MIME body part is signed. The default implementation checks if the base
+   * type of the content type is "multipart/signed".
    *
    * @param aPart
    *        The part to be checked.
@@ -112,14 +111,12 @@ public interface ICryptoHelper
   boolean isSigned (@Nonnull MimeBodyPart aPart) throws Exception;
 
   /**
-   * Check if the passed content type indicates compression. The default
-   * implementation checks if the parameter "smime-type" has the value
-   * "compressed-data".
+   * Check if the passed content type indicates compression. The default implementation checks if
+   * the parameter "smime-type" has the value "compressed-data".
    *
    * @param sContentType
    *        The content type to be checked. May not be <code>null</code>.
-   * @return <code>true</code> if it is compressed, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if it is compressed, <code>false</code> otherwise.
    * @throws AS2Exception
    *         In case something goes wrong.
    */
@@ -133,8 +130,8 @@ public interface ICryptoHelper
    * @param eDigestAlgorithm
    *        The digest algorithm to be used. May not be <code>null</code>.
    * @param bIncludeHeaders
-   *        <code>true</code> if the MIME headers should be included,
-   *        <code>false</code> if only the content should be used.
+   *        <code>true</code> if the MIME headers should be included, <code>false</code> if only the
+   *        content should be used.
    * @return The calculated MIC and never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -163,28 +160,26 @@ public interface ICryptoHelper
    * @param aPart
    *        MIME body part to be signed. May not be <code>null</code>.
    * @param aCert
-   *        The certificate that should be added to the signed information. May
-   *        not be <code>null</code>.
+   *        The certificate that should be added to the signed information. May not be
+   *        <code>null</code>.
    * @param aKey
    *        Private key to be used for signing. May not be <code>null</code>.
    * @param eAlgorithm
    *        The algorithm to be used for signing. May not be <code>null</code>.
    * @param bIncludeCertificateInSignedContent
-   *        <code>true</code> if the passed certificate should be part of the
-   *        signed content, <code>false</code> if the certificate should not be
-   *        put in the content. E.g. for PEPPOL this must be <code>true</code>.
+   *        <code>true</code> if the passed certificate should be part of the signed content,
+   *        <code>false</code> if the certificate should not be put in the content. E.g. for PEPPOL
+   *        this must be <code>true</code>.
    * @param bUseOldRFC3851MicAlgs
-   *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
-   *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
-   *        algorithm names (e.g. <code>sha-1</code>).
+   *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g. <code>sha1</code>),
+   *        <code>false</code> to use the new RFC 5751 MIC algorithm names (e.g.
+   *        <code>sha-1</code>).
    * @param bRemoveCmsAlgorithmProtect
-   *        if <code>true</code>, the CMS attribute "AlgorithmProtect" will be
-   *        removed. This is needed in compatibility with e.g. IBM Sterling.
-   *        Default value should be <code>false</code>. Since 4.10.1. See Issue
-   *        #137.
+   *        if <code>true</code>, the CMS attribute "AlgorithmProtect" will be removed. This is
+   *        needed in compatibility with e.g. IBM Sterling. Default value should be
+   *        <code>false</code>. Since 4.10.1. See Issue #137.
    * @param eCTE
-   *        The Content-Transfer-Encoding to be used. May not be
-   *        <code>null</code>.
+   *        The Content-Transfer-Encoding to be used. May not be <code>null</code>.
    * @return The signed MIME body part. Never <code>null</code>.
    * @throws Exception
    *         In case something goes wrong.
@@ -205,18 +200,17 @@ public interface ICryptoHelper
    * @param aPart
    *        Original part
    * @param aCert
-   *        Certificate to check against or <code>null</code> if the certificate
-   *        provided in the message should be used.
+   *        Certificate to check against or <code>null</code> if the certificate provided in the
+   *        message should be used.
    * @param bUseCertificateInBodyPart
-   *        If <code>true</code> any certificate that is passed in the body part
-   *        is used for verification. If <code>false</code> only the provided
-   *        certificate is used.
-   * @param bForceVerify
-   *        <code>true</code> to force verification even if the Content-Type
-   *        header does not indicate so.
+   *        If <code>true</code> any certificate that is passed in the body part is used for
+   *        verification. If <code>false</code> only the provided certificate is used.
+   * @param bForceVerifySigned
+   *        <code>true</code> to force verification of signature even if the Content-Type header
+   *        does not indicate so.
    * @param aEffectiveCertificateConsumer
-   *        An optional consumer that takes the effective certificate that was
-   *        used for verification. May be <code>null</code>.
+   *        An optional consumer that takes the effective certificate that was used for
+   *        verification. May be <code>null</code>.
    * @param aResHelper
    *        The resource helper to use. May not be <code>null</code>.
    * @return The signed content. Never <code>null</code>.
@@ -228,7 +222,7 @@ public interface ICryptoHelper
   MimeBodyPart verify (@Nonnull MimeBodyPart aPart,
                        @Nullable X509Certificate aCert,
                        boolean bUseCertificateInBodyPart,
-                       boolean bForceVerify,
+                       boolean bForceVerifySigned,
                        @Nullable Consumer <X509Certificate> aEffectiveCertificateConsumer,
                        @Nonnull AS2ResourceHelper aResHelper) throws Exception;
 }

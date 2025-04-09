@@ -48,7 +48,6 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -648,15 +647,20 @@ public class BCCryptoHelper implements ICryptoHelper
     {
       // get signing certificates contained in the body part
       SignerId aSignerID = null;
-      final Collection <SignerInformation> aSignerCerts = aSignedParser.getSignerInfos ().getSigners ();
-      final Iterator <SignerInformation> aSignerCertIterator = aSignerCerts.iterator ();
-      if (aSignerCertIterator.hasNext ())
+      final Collection <SignerInformation> aSigners = aSignedParser.getSignerInfos ().getSigners ();
+      if (!aSigners.isEmpty ())
       {
-        final SignerInformation aSigner = aSignerCertIterator.next ();
+        // Use the first signer
+        if (aSigners.size () > 1)
+          LOGGER.warn ("Signed part contains " + aSigners.size () + " signers - using the first one!");
+
+        final SignerInformation aSigner = aSigners.iterator ().next ();
         aSignerID = aSigner.getSID ();
       }
+
       // Java 11 complains here, because getCertificates() has no generics
       // parameter
+      // Null signer ID returns empty ArrayList
       final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (aSignerID);
       if (!aContainedCerts.isEmpty ())
       {
@@ -688,7 +692,7 @@ public class BCCryptoHelper implements ICryptoHelper
   public MimeBodyPart verify (@Nonnull final MimeBodyPart aPart,
                               @Nullable final X509Certificate aX509Cert,
                               final boolean bUseCertificateInBodyPart,
-                              final boolean bForceVerify,
+                              final boolean bForceVerifySigned,
                               @Nullable final Consumer <X509Certificate> aEffectiveCertificateConsumer,
                               @Nonnull final AS2ResourceHelper aResHelper) throws GeneralSecurityException,
                                                                            IOException,
@@ -702,10 +706,10 @@ public class BCCryptoHelper implements ICryptoHelper
                     "; useCertificateInBodyPart=" +
                     bUseCertificateInBodyPart +
                     "; forceVerify=" +
-                    bForceVerify);
+                    bForceVerifySigned);
 
     // Make sure the data is signed
-    if (!bForceVerify && !isSigned (aPart))
+    if (!bForceVerifySigned && !isSigned (aPart))
       throw new GeneralSecurityException ("Content-Type indicates data isn't signed: " + aPart.getContentType ());
 
     // Get only once and check
