@@ -664,7 +664,7 @@ public class BCCryptoHelper implements ICryptoHelper
       final Collection <?> aContainedCerts = aSignedParser.getCertificates ().getMatches (aSignerID);
       if (!aContainedCerts.isEmpty ())
       {
-        // For PEPPOL the certificate is passed in
+        // E.g. for Peppol the certificate is passed in
         if (aContainedCerts.size () > 1)
           LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
@@ -674,7 +674,7 @@ public class BCCryptoHelper implements ICryptoHelper
         if (aX509Cert != null && !aX509Cert.equals (aCert))
           LOGGER.warn ("Certificate mismatch! Provided certificate\n" +
                        aX509Cert +
-                       " differs from certficate contained in message\n" +
+                       "\ndiffers from certficate contained in message\n" +
                        aCert);
 
         // The certificate provided in the message takes precedence
@@ -727,6 +727,7 @@ public class BCCryptoHelper implements ICryptoHelper
                                                                    EContentTransferEncoding.AS2_DEFAULT.getID (),
                                                                    aResHelper.createTempFile ());
 
+    // If no certificate is found, an exception is thrown
     final X509Certificate aRealX509Cert = _verifyFindCertificate (aX509Cert, bUseCertificateInBodyPart, aSignedParser);
 
     if (LOGGER.isDebugEnabled ())
