@@ -67,11 +67,13 @@
     <dependency>
       <groupId>com.helger.photon</groupId>
       <artifactId>ph-oton-core</artifactId>
+      <version>${ph-oton.version}</version>  
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.helger.photon</groupId>
       <artifactId>ph-oton-jetty</artifactId>
+      <version>${ph-oton.version}</version>  
       <scope>test</scope>
     </dependency>
   </dependencies>
