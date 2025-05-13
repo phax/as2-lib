@@ -30,7 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 11, 17, 21, 24 ]
+        # Spring Boot 3.4.5 cannot handle Java 24
+        java: [ 11, 17, 21 ]
     name: Java ${{ matrix.java }} build
 
     steps:
