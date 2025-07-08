@@ -41,6 +41,7 @@
   </licenses>
   
   <properties>
+    <spring-boot.version>3.5.3</spring-boot.version>
   </properties>
 
   <dependencies>
