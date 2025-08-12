@@ -1,9 +1,11 @@
 .idea/
 .settings/ 
+.vscode
 data/
 target/
 
 *.iml
+
 .classpath 
 .factorypath
 .project 
