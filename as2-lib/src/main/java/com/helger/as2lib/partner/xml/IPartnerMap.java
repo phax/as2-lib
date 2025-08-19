@@ -41,8 +41,8 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.collection.impl.ICommonsOrderedSet;
 
 /**
- * Read-only interface to manage the mapping from name to partner (represented
- * by a {@link StringMap}).
+ * Read-only interface to manage the mapping from name to partner (represented by a
+ * {@link StringMap}).
  *
  * @author Philip Helger
  */

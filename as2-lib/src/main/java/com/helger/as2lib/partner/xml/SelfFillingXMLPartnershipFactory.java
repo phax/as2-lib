@@ -42,17 +42,15 @@ import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.commons.annotation.OverrideOnDemand;
 
 /**
- * A special {@link XMLPartnershipFactory} that adds a new partnership if it is
- * not yet existing.
+ * A special {@link XMLPartnershipFactory} that adds a new partnership if it is not yet existing.
  *
  * @author Philip Helger
  */
 public class SelfFillingXMLPartnershipFactory extends XMLPartnershipFactory
 {
   /**
-   * Callback method that is invoked every time a new partnership is
-   * automatically added. This method is called BEFORE the main add-process is
-   * started.
+   * Callback method that is invoked every time a new partnership is automatically added. This
+   * method is called BEFORE the main add-process is started.
    *
    * @param aPartnership
    *        The partnership that will be added. Never <code>null</code>.

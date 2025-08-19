@@ -63,12 +63,10 @@ public final class AS2XMLHelper
   {}
 
   /**
-   * Get all attributes of the passed element as a map with a lowercase
-   * attribute name.
+   * Get all attributes of the passed element as a map with a lowercase attribute name.
    *
    * @param aElement
-   *        The source element to extract the attributes from. May not be
-   *        <code>null</code>.
+   *        The source element to extract the attributes from. May not be <code>null</code>.
    * @return A new map and never <code>null</code> but maybe empty.
    */
   @Nonnull
@@ -137,7 +135,8 @@ public final class AS2XMLHelper
     return ret;
   }
 
-  private static void _updateDirectories (@Nonnull final StringMap aAttributes, @Nullable final String sBaseDirectory) throws AS2Exception
+  private static void _updateDirectories (@Nonnull final StringMap aAttributes, @Nullable final String sBaseDirectory)
+                                                                                                                       throws AS2Exception
   {
     for (final Map.Entry <String, String> attrEntry : aAttributes.entrySet ())
     {

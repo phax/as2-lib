@@ -38,8 +38,8 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.Nonempty;
 
 /**
- * Exception to be thrown from {@link AS2Session} if a component with the
- * specified ID is already registered.
+ * Exception to be thrown from {@link AS2Session} if a component with the specified ID is already
+ * registered.
  *
  * @author Philip Helger
  */

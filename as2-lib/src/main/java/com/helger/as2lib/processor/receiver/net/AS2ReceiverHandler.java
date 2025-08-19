@@ -116,8 +116,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
   /**
    * @param aModule
-   *        The receiver module to be used. May not be <code>null</code>.
-   *        Required for the session and the error handling.
+   *        The receiver module to be used. May not be <code>null</code>. Required for the session
+   *        and the error handling.
    */
   public AS2ReceiverHandler (@Nonnull final AS2ReceiverModule aModule)
   {
@@ -125,8 +125,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * @return The receiver module provided in the constructor. Never
-   *         <code>null</code>.
+   * @return The receiver module provided in the constructor. Never <code>null</code>.
    */
   @Nonnull
   protected final AS2ReceiverModule getReceiverModule ()
@@ -135,9 +134,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * @return <code>true</code> if exceptions should be send in the MDN,
-   *         <code>false</code> if not. Default is
-   *         {@link #DEFAULT_SEND_EXCEPTIONS_IN_MDN}
+   * @return <code>true</code> if exceptions should be send in the MDN, <code>false</code> if not.
+   *         Default is {@link #DEFAULT_SEND_EXCEPTIONS_IN_MDN}
    * @since 4.4.2
    */
   public final boolean isSendExceptionsInMDN ()
@@ -147,8 +145,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
   /**
    * @param bSendExceptionsInMDN
-   *        <code>true</code> to send back exception in the MDN,
-   *        <code>false</code> if not.
+   *        <code>true</code> to send back exception in the MDN, <code>false</code> if not.
    * @return this for chaining
    * @since 4.4.2
    */
@@ -160,11 +157,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * This method is only evaluated, if {@link #isSendExceptionsInMDN()} returns
-   * <code>true</code>.
+   * This method is only evaluated, if {@link #isSendExceptionsInMDN()} returns <code>true</code>.
    *
-   * @return <code>true</code> if exception stack traces should be send in the
-   *         MDN, <code>false</code> if not. Default is
+   * @return <code>true</code> if exception stack traces should be send in the MDN,
+   *         <code>false</code> if not. Default is
    *         {@link #DEFAULT_SEND_EXCEPTION_STACKTRACE_IN_MDN}.
    * @since 4.4.6
    */
@@ -174,12 +170,11 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * This setting is only evaluated, if {@link #isSendExceptionsInMDN()} returns
-   * <code>true</code>.
+   * This setting is only evaluated, if {@link #isSendExceptionsInMDN()} returns <code>true</code>.
    *
    * @param bSendExceptionStackTraceInMDN
-   *        <code>true</code> to send back exception stack traces in the MDN,
-   *        <code>false</code> if not.
+   *        <code>true</code> to send back exception stack traces in the MDN, <code>false</code> if
+   *        not.
    * @return this for chaining
    * @since 4.4.6
    */
@@ -394,6 +389,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
+  // Send a synchronous MDN
   protected void sendMDN (@Nonnull final String sClientInfo,
                           @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                           @Nonnull final AS2Message aMsg,
@@ -501,8 +497,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * This method can be used to handle an incoming HTTP message AFTER the
-   * headers where extracted.
+   * This method can be used to handle an incoming HTTP message AFTER the headers where extracted.
    *
    * @param sClientInfo
    *        Client connection info
@@ -511,8 +506,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
    * @param aMsg
    *        The AS2 message that will be filled by this method
    * @param aResponseHandler
-   *        The response handler which handles HTTP error messages as well as
-   *        synchronous MDN.
+   *        The response handler which handles HTTP error messages as well as synchronous MDN.
    */
   public void handleIncomingMessage (@Nonnull final String sClientInfo,
                                      @Nonnull final DataSource aMsgData,

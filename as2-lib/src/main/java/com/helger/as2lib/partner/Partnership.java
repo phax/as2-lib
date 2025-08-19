@@ -52,10 +52,9 @@ import com.helger.commons.string.ToStringGenerator;
 import com.helger.mail.cte.EContentTransferEncoding;
 
 /**
- * This class represents a single partnership. It has a unique name, a set of
- * sender and receiver specific attributes (like AS2 ID, Email and key alias)
- * and a set of generic attributes that are interpreted depending on the
- * context.
+ * This class represents a single partnership. It has a unique name, a set of sender and receiver
+ * specific attributes (like AS2 ID, Email and key alias) and a set of generic attributes that are
+ * interpreted depending on the context.
  *
  * @author Philip Helger
  */
@@ -96,8 +95,7 @@ public class Partnership implements Serializable
    * @param sKey
    *        The name of the ID. May not be <code>null</code>.
    * @param sValue
-   *        The value to be set. It may be <code>null</code> in which case the
-   *        attribute is removed.
+   *        The value to be set. It may be <code>null</code> in which case the attribute is removed.
    */
   public void setSenderID (@Nonnull final String sKey, @Nullable final String sValue)
   {
@@ -144,8 +142,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Add all sender IDs provided in the passed map. Existing sender IDs are not
-   * altered.
+   * Add all sender IDs provided in the passed map. Existing sender IDs are not altered.
    *
    * @param aMap
    *        The map to use. May be <code>null</code>.
@@ -160,8 +157,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return The contained value if the name is not <code>null</code> and
-   *         contained in the sender IDs.
+   * @return The contained value if the name is not <code>null</code> and contained in the sender
+   *         IDs.
    */
   @Nullable
   public String getSenderID (@Nullable final String sKey)
@@ -207,8 +204,7 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return <code>true</code> if the name is not <code>null</code> and
-   *         contained in the sender IDs.
+   * @return <code>true</code> if the name is not <code>null</code> and contained in the sender IDs.
    */
   public boolean containsSenderID (@Nullable final String sKey)
   {
@@ -216,8 +212,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the sender's AS2 ID is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the sender's AS2 ID is present, <code>false</code> otherwise.
    * @see #setSenderAS2ID(String)
    * @see #getSenderAS2ID()
    */
@@ -227,8 +222,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the sender's X509 alias is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the sender's X509 alias is present, <code>false</code> otherwise.
    * @see #setSenderX509Alias(String)
    * @see #getSenderX509Alias()
    */
@@ -238,8 +232,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the sender's email address is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the sender's email address is present, <code>false</code>
+   *         otherwise.
    * @see #setSenderEmail(String)
    * @see #getSenderEmail()
    */
@@ -264,8 +258,7 @@ public class Partnership implements Serializable
    * @param sKey
    *        The name of the ID. May not be <code>null</code>.
    * @param sValue
-   *        The value to be set. It may be <code>null</code> in which case the
-   *        attribute is removed.
+   *        The value to be set. It may be <code>null</code> in which case the attribute is removed.
    */
   public void setReceiverID (@Nonnull final String sKey, @Nullable final String sValue)
   {
@@ -312,8 +305,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Add all receiver IDs provided in the passed map. Existing receiver IDs are
-   * not altered.
+   * Add all receiver IDs provided in the passed map. Existing receiver IDs are not altered.
    *
    * @param aMap
    *        The map to use. May be <code>null</code>.
@@ -328,8 +320,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return The contained value if the name is not <code>null</code> and
-   *         contained in the receiver IDs.
+   * @return The contained value if the name is not <code>null</code> and contained in the receiver
+   *         IDs.
    */
   @Nullable
   public String getReceiverID (@Nullable final String sKey)
@@ -375,8 +367,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        The name of the ID to query. May be <code>null</code>.
-   * @return <code>true</code> if the name is not <code>null</code> and
-   *         contained in the receiver IDs.
+   * @return <code>true</code> if the name is not <code>null</code> and contained in the receiver
+   *         IDs.
    */
   public boolean containsReceiverID (@Nullable final String sKey)
   {
@@ -384,8 +376,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the receiver's AS2 ID is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the receiver's AS2 ID is present, <code>false</code> otherwise.
    * @see #setReceiverAS2ID(String)
    * @see #getReceiverAS2ID()
    */
@@ -395,8 +386,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the receiver's X509 alias is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the receiver's X509 alias is present, <code>false</code>
+   *         otherwise.
    * @see #setReceiverX509Alias(String)
    * @see #getReceiverX509Alias()
    */
@@ -406,8 +397,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the receiver's email address is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if the receiver's email address is present, <code>false</code>
+   *         otherwise.
    * @see #setReceiverEmail(String)
    * @see #getReceiverEmail()
    */
@@ -432,10 +423,9 @@ public class Partnership implements Serializable
    * @param sKey
    *        The key to be used. May not be <code>null</code>.
    * @param sValue
-   *        The value to be used. If <code>null</code> an existing attribute
-   *        with the provided name will be removed.
-   * @return {@link EChange#CHANGED} if something changed. Never
-   *         <code>null</code>.
+   *        The value to be used. If <code>null</code> an existing attribute with the provided name
+   *        will be removed.
+   * @return {@link EChange#CHANGED} if something changed. Never <code>null</code>.
    */
   @Nonnull
   public EChange setAttribute (@Nonnull final String sKey, @Nullable final String sValue)
@@ -450,8 +440,8 @@ public class Partnership implements Serializable
    *
    * @param sKey
    *        Attribute name to search. May be <code>null</code>.
-   * @return <code>null</code> if the attribute name was <code>null</code> or if
-   *         no such attribute is contained.
+   * @return <code>null</code> if the attribute name was <code>null</code> or if no such attribute
+   *         is contained.
    * @see #getAttribute(String, String)
    */
   @Nullable
@@ -461,15 +451,14 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Get the value associated with the given attribute name or the default
-   * values.
+   * Get the value associated with the given attribute name or the default values.
    *
    * @param sKey
    *        Attribute name to search. May be <code>null</code>.
    * @param sDefault
    *        Default value to be returned if no such attribute is present.
-   * @return The provided default value if the attribute name was
-   *         <code>null</code> or if no such attribute is contained.
+   * @return The provided default value if the attribute name was <code>null</code> or if no such
+   *         attribute is contained.
    * @see #getAttribute(String)
    */
   @Nullable
@@ -516,9 +505,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return The MDN options corresponding to the
-   *         <code>Disposition-Notification-Options</code> header. May be
-   *         <code>null</code>.
+   * @return The MDN options corresponding to the <code>Disposition-Notification-Options</code>
+   *         header. May be <code>null</code>.
    */
   @Nullable
   public String getAS2MDNOptions ()
@@ -527,8 +515,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Set the MDN options corresponding to the
-   * <code>Disposition-Notification-Options</code> header.
+   * Set the MDN options corresponding to the <code>Disposition-Notification-Options</code> header.
    *
    * @param sValue
    *        The value to be set. May be <code>null</code>.
@@ -541,8 +528,7 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return The return URL for async MDN when sending messages. May be
-   *         <code>null</code>.
+   * @return The return URL for async MDN when sending messages. May be <code>null</code>.
    * @see #getAS2MDNTo()
    * @since 3.0.4
    */
@@ -553,8 +539,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Set the return URL for async MDNs when sending messages. When setting it,
-   * also set {@link #setAS2MDNTo(String)}.
+   * Set the return URL for async MDNs when sending messages. When setting it, also set
+   * {@link #setAS2MDNTo(String)}.
    *
    * @param sValue
    *        The async MDN url. May be <code>null</code>.
@@ -680,8 +666,7 @@ public class Partnership implements Serializable
    *
    * @param sDefault
    *        Default to be returned if none is present. May be <code>null</code>.
-   * @return The partnership Content-Transfer-Encoding or the provided default
-   *         value.
+   * @return The partnership Content-Transfer-Encoding or the provided default value.
    */
   @Nullable
   public String getContentTransferEncodingSend (@Nullable final String sDefault)
@@ -720,8 +705,7 @@ public class Partnership implements Serializable
    *
    * @param sDefault
    *        Default to be returned if none is present. May be <code>null</code>.
-   * @return The partnership Content-Transfer-Encoding or the provided default
-   *         value.
+   * @return The partnership Content-Transfer-Encoding or the provided default value.
    */
   @Nullable
   public String getContentTransferEncodingReceive (@Nullable final String sDefault)
@@ -896,10 +880,9 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g.
-   *         <code>sha1</code>) should be used, <code>false</code> if the new
-   *         RFC 5751 MIC algorithm names (e.g. <code>sha-1</code>) should be
-   *         used. Default is <code>false</code>.
+   * @return <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g. <code>sha1</code>)
+   *         should be used, <code>false</code> if the new RFC 5751 MIC algorithm names (e.g.
+   *         <code>sha-1</code>) should be used. Default is <code>false</code>.
    * @since 2.2.7
    */
   public boolean isRFC3851MICAlgs ()
@@ -908,14 +891,13 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Enable or disable the usage of the old RFC 3851 MIC algorithm names. By
-   * default this is <code>false</code>.
+   * Enable or disable the usage of the old RFC 3851 MIC algorithm names. By default this is
+   * <code>false</code>.
    *
    * @param bValue
-   *        <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g.
-   *        <code>sha1</code>) should be used, <code>false</code> if the new RFC
-   *        5751 MIC algorithm names (e.g. <code>sha-1</code>) should be used.
-   *        Default is <code>false</code>.
+   *        <code>true</code> if the "old" RFC 3851 MIC algorithm names (e.g. <code>sha1</code>)
+   *        should be used, <code>false</code> if the new RFC 5751 MIC algorithm names (e.g.
+   *        <code>sha-1</code>) should be used. Default is <code>false</code>.
    * @return {@link EChange}.
    * @since 2.2.7
    */
@@ -926,9 +908,9 @@ public class Partnership implements Serializable
   }
 
   /**
-   * @return if <code>true</code>, the CMS attribute "AlgorithmProtect" will be
-   *         removed. This is needed in compatibility with e.g. IBM Sterling.
-   *         Default value is <code>false</code>. See Issue #137.
+   * @return if <code>true</code>, the CMS attribute "AlgorithmProtect" will be removed. This is
+   *         needed in compatibility with e.g. IBM Sterling. Default value is <code>false</code>.
+   *         See Issue #137.
    * @since 4.10.1
    */
   public boolean isRemoveCmsAlgorithmProtect ()
@@ -937,13 +919,12 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Enable or disable the removal of the CMS attribute "AlgorithmProtect". By
-   * default this is <code>false</code>. This is needed in compatibility with
-   * e.g. IBM Sterling. Default value is <code>false</code>. See Issue #137.
+   * Enable or disable the removal of the CMS attribute "AlgorithmProtect". By default this is
+   * <code>false</code>. This is needed in compatibility with e.g. IBM Sterling. Default value is
+   * <code>false</code>. See Issue #137.
    *
    * @param bValue
-   *        <code>true</code> to remove the attribute, <code>false</code> to
-   *        keep it.
+   *        <code>true</code> to remove the attribute, <code>false</code> to keep it.
    * @return {@link EChange}.
    * @since 4.10.1
    */
@@ -967,9 +948,8 @@ public class Partnership implements Serializable
    * Add all provided attributes. existing attributes are not altered.
    *
    * @param aAttributes
-   *        The attributes to be added. May be <code>null</code>. If a
-   *        <code>null</code> value is contained in the map, the respective
-   *        attribute will be removed.
+   *        The attributes to be added. May be <code>null</code>. If a <code>null</code> value is
+   *        contained in the map, the respective attribute will be removed.
    */
   public void addAllAttributes (@Nullable final Map <String, String> aAttributes)
   {
@@ -977,14 +957,13 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Check if sender and receiver IDs of this partnership match the ones of the
-   * provided partnership.
+   * Check if sender and receiver IDs of this partnership match the ones of the provided
+   * partnership.
    *
    * @param aPartnership
    *        The partnership to compare to. May not be <code>null</code>.
-   * @return <code>true</code> if sender and receiver IDs of this partnership
-   *         are present in the sender and receiver IDs of the provided
-   *         partnership.
+   * @return <code>true</code> if sender and receiver IDs of this partnership are present in the
+   *         sender and receiver IDs of the provided partnership.
    */
   public boolean matches (@Nonnull final Partnership aPartnership)
   {
@@ -999,10 +978,10 @@ public class Partnership implements Serializable
    * @param aIDs
    *        The source map which must be fully contained in the aCompareTo map
    * @param aCompareTo
-   *        The map to compare to. May not be <code>null</code>. It may contain
-   *        more attributes than aIDs but must at least contain the same ones.
-   * @return <code>true</code> if aIDs is not empty and all values from aIDs are
-   *         also present in aCompareTo, <code>false</code> otherwise.
+   *        The map to compare to. May not be <code>null</code>. It may contain more attributes than
+   *        aIDs but must at least contain the same ones.
+   * @return <code>true</code> if aIDs is not empty and all values from aIDs are also present in
+   *         aCompareTo, <code>false</code> otherwise.
    */
   protected boolean compareIDs (@Nonnull final IStringMap aIDs, @Nonnull final IStringMap aCompareTo)
   {
@@ -1020,9 +999,8 @@ public class Partnership implements Serializable
   }
 
   /**
-   * Set all fields of this partnership with the data from the provided
-   * partnership. Name, sender IDs, receiver IDs and attributes are fully
-   * overwritten!
+   * Set all fields of this partnership with the data from the provided partnership. Name, sender
+   * IDs, receiver IDs and attributes are fully overwritten!
    *
    * @param aPartnership
    *        The partnership to copy the data from. May not be <code>null</code>.

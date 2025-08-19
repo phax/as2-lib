@@ -56,8 +56,8 @@ import com.helger.commons.state.EChange;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Abstract {@link IPartnershipFactory} implementation using
- * {@link PartnershipMap} as the underlying data storage object.
+ * Abstract {@link IPartnershipFactory} implementation using {@link PartnershipMap} as the
+ * underlying data storage object.
  *
  * @author Philip Helger
  */
@@ -69,9 +69,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
   private final PartnershipMap m_aPartnerships = new PartnershipMap ();
 
   /**
-   * Callback method that is invoked, when this object is modified. This method
-   * must be overridden to do something useful. A use case scenario could e.g.
-   * be automatic storage of changes.
+   * Callback method that is invoked, when this object is modified. This method must be overridden
+   * to do something useful. A use case scenario could e.g. be automatic storage of changes.
    *
    * @throws AS2Exception
    *         In case anything goes wrong
@@ -92,7 +91,8 @@ public abstract class AbstractPartnershipFactory extends AbstractDynamicComponen
       if (aRealPartnership == null)
       {
         // Found no partnership by name
-        aRealPartnership = m_aPartnerships.getPartnershipByID (aPartnership.getAllSenderIDs (), aPartnership.getAllReceiverIDs ());
+        aRealPartnership = m_aPartnerships.getPartnershipByID (aPartnership.getAllSenderIDs (),
+                                                               aPartnership.getAllReceiverIDs ());
       }
 
       if (aRealPartnership == null)

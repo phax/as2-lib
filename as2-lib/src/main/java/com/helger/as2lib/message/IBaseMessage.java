@@ -45,8 +45,8 @@ import com.helger.commons.http.CHttpHeader;
 import com.helger.commons.http.HttpHeaderMap;
 
 /**
- * Base interface for {@link IMessage} and {@link IMessageMDN}. Must be
- * Serializable, so that writing to disk for re-sending works.
+ * Base interface for {@link IMessage} and {@link IMessageMDN}. Must be Serializable, so that
+ * writing to disk for re-sending works.
  *
  * @author Philip Helger
  */

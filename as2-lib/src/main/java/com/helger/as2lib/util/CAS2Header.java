@@ -45,10 +45,9 @@ public final class CAS2Header
   public static final String DEFAULT_MIME_VERSION = "1.0";
   /**
    * 1.0: default AS2 version<br>
-   * 1.1: Designates those implementations that support compression as defined
-   * by RFC 3274 - used by us.<br>
-   * 1.2: indicate the support of the EDIINT-Features header field as defined by
-   * RFC 6017
+   * 1.1: Designates those implementations that support compression as defined by RFC 3274 - used by
+   * us.<br>
+   * 1.2: indicate the support of the EDIINT-Features header field as defined by RFC 6017
    */
   public static final String DEFAULT_AS2_VERSION = "1.1";
   /**

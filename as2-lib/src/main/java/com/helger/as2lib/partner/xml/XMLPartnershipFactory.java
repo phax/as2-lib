@@ -66,8 +66,8 @@ import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.microdom.serialize.MicroWriter;
 
 /**
- * original author unknown this release added logic to store partnerships and
- * provide methods for partner/partnership command line processor
+ * original author unknown this release added logic to store partnerships and provide methods for
+ * partner/partnership command line processor
  *
  * @author joseph mcverry
  */
@@ -106,8 +106,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session session,
-                                    @Nullable final IStringMap parameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session session, @Nullable final IStringMap parameters)
+                                                                                                               throws AS2Exception
   {
     super.initDynamicComponent (session, parameters);
 
@@ -170,8 +170,8 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     setPartnerships (aNewPartnerships);
   }
 
-  protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode,
-                                            @Nonnull final Partnership aPartnership) throws AS2Exception
+  protected void loadPartnershipAttributes (@Nonnull final IMicroElement aNode, @Nonnull final Partnership aPartnership)
+                                                                                                                         throws AS2Exception
   {
     final String sNodeName = "attribute";
     final String sNodeKeyName = "name";

@@ -75,8 +75,7 @@ public enum ECompressionType implements IHasID <String>
   }
 
   /**
-   * @return The {@link OutputCompressor} instance suitable for this compression
-   *         type.
+   * @return The {@link OutputCompressor} instance suitable for this compression type.
    */
   @Nonnull
   public abstract OutputCompressor createOutputCompressor ();

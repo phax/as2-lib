@@ -92,7 +92,8 @@ public class AS2KeyStore implements ICertificateStore
     }
   }
 
-  public void setCertificate (@Nonnull final String sAlias, @Nonnull final Certificate aCert) throws AS2CertificateException
+  public void setCertificate (@Nonnull final String sAlias, @Nonnull final Certificate aCert)
+                                                                                              throws AS2CertificateException
   {
     ValueEnforcer.notNull (sAlias, "Alias");
     ValueEnforcer.notNull (aCert, "Certificate");
@@ -169,9 +170,8 @@ public class AS2KeyStore implements ICertificateStore
     }
   }
 
-  public void setKey (@Nonnull final String sAlias,
-                      @Nonnull final Key aKey,
-                      @Nullable final char [] aPassword) throws AS2CertificateException
+  public void setKey (@Nonnull final String sAlias, @Nonnull final Key aKey, @Nullable final char [] aPassword)
+                                                                                                                throws AS2CertificateException
   {
     ValueEnforcer.notNull (sAlias, "Alias");
     ValueEnforcer.notNull (aKey, "Key");

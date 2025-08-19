@@ -81,8 +81,7 @@ public class ResendItem
   }
 
   /**
-   * @return The number of retries already performed (does not include the
-   *         original try!)
+   * @return The number of retries already performed (does not include the original try!)
    */
   @Nonnegative
   public int getRetries ()

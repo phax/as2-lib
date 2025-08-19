@@ -35,8 +35,7 @@ package com.helger.as2lib.partner;
 import com.helger.as2lib.exception.AS2Exception;
 
 /**
- * A partnership factory that can be refreshed. Was moved from as2-server to
- * as2-lib in v4.3.0.
+ * A partnership factory that can be refreshed. Was moved from as2-server to as2-lib in v4.3.0.
  *
  * @author Philip Helger
  */

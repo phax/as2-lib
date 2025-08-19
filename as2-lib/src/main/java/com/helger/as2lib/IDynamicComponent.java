@@ -41,12 +41,12 @@ import com.helger.as2lib.session.IAS2Session;
 import com.helger.commons.collection.attr.IStringMap;
 
 /**
- * The Component interface provides a standard way to dynamically create and
- * initialize an object. Component-based objects also have access to a Session,
- * which allow each component to access all components registered to it's
- * Session. Parameters for a component are defined as static strings<br>
- * Note: Any object that implements this interface must have a constructor with
- * no parameters, as these parameters should be passed to the init method.
+ * The Component interface provides a standard way to dynamically create and initialize an object.
+ * Component-based objects also have access to a Session, which allow each component to access all
+ * components registered to it's Session. Parameters for a component are defined as static
+ * strings<br>
+ * Note: Any object that implements this interface must have a constructor with no parameters, as
+ * these parameters should be passed to the init method.
  *
  * @author Aaron Silinskas
  * @see AbstractDynamicComponent
@@ -61,9 +61,9 @@ public interface IDynamicComponent
   IStringMap attrs ();
 
   /**
-   * Returns a name for the component. These names are not guaranteed to be
-   * unique, and are intended for display and logging. Generally this is the
-   * class name of the Component object, without package information.
+   * Returns a name for the component. These names are not guaranteed to be unique, and are intended
+   * for display and logging. Generally this is the class name of the Component object, without
+   * package information.
    *
    * @return name of the component
    */
@@ -71,8 +71,8 @@ public interface IDynamicComponent
   String getName ();
 
   /**
-   * Returns the Session used to initialize this Component. The returned session
-   * is also used to locate other components if needed.
+   * Returns the Session used to initialize this Component. The returned session is also used to
+   * locate other components if needed.
    *
    * @return this component's session. Never <code>null</code>.
    */
@@ -80,17 +80,15 @@ public interface IDynamicComponent
   IAS2Session getSession ();
 
   /**
-   * After creating a Component object, this method should be called to set any
-   * parameters used by the component. Component implementations typically have
-   * required parameter checking and code to start timers and threads within
-   * this method.
+   * After creating a Component object, this method should be called to set any parameters used by
+   * the component. Component implementations typically have required parameter checking and code to
+   * start timers and threads within this method.
    *
    * @param aSession
    *        the component uses this object to access other components
    * @param aParameters
-   *        configuration values for the component. All parameters will be
-   *        stored as attributes of this component. All attributes existing
-   *        before this method is called will be removed!
+   *        configuration values for the component. All parameters will be stored as attributes of
+   *        this component. All attributes existing before this method is called will be removed!
    * @throws AS2Exception
    *         If an error occurs while initializing the component
    * @throws AS2InvalidParameterException

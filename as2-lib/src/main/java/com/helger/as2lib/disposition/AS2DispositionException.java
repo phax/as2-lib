@@ -43,9 +43,8 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.collection.impl.ICommonsList;
 
 /**
- * Exception thrown in case a message disposition contains an error or a
- * warning. The content of {@link #getText()} is send back as the MDN in case of
- * a receiving error.
+ * Exception thrown in case a message disposition contains an error or a warning. The content of
+ * {@link #getText()} is send back as the MDN in case of a receiving error.
  *
  * @author Philip Helger
  */
@@ -64,8 +63,7 @@ public class AS2DispositionException extends AS2Exception
   }
 
   /**
-   * @return The disposition as provided in the constructor. Never
-   *         <code>null</code>.
+   * @return The disposition as provided in the constructor. Never <code>null</code>.
    */
   @Nonnull
   public final DispositionType getDisposition ()

@@ -45,13 +45,14 @@ import com.helger.commons.state.EChange;
 
 /**
  * Abstract {@link IPartnershipFactoryWithPartners} implementation based on
- * {@link AbstractPartnershipFactory} using {@link PartnerMap} as the underlying
- * data storage object for the partners.
+ * {@link AbstractPartnershipFactory} using {@link PartnerMap} as the underlying data storage object
+ * for the partners.
  *
  * @author Philip Helger
  */
 @ThreadSafe
-public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPartnershipFactory implements IPartnershipFactoryWithPartners
+public abstract class AbstractPartnershipFactoryWithPartners extends AbstractPartnershipFactory implements
+                                                             IPartnershipFactoryWithPartners
 {
   private final PartnerMap m_aPartners = new PartnerMap ();
 

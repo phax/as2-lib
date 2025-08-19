@@ -43,8 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.collection.ArrayHelper;
 
 /**
- * A logging wrapper around a {@link MessageDigest}. For debugging purposes
- * only.
+ * A logging wrapper around a {@link MessageDigest}. For debugging purposes only.
  *
  * @author Philip Helger
  */

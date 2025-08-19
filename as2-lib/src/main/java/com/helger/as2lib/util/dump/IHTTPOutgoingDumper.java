@@ -62,8 +62,8 @@ public interface IHTTPOutgoingDumper extends AutoCloseable
   {}
 
   /**
-   * Get notified on a single outgoing HTTP headers. For HTTP headers usually
-   * the ISO-8859-1 charset is used.
+   * Get notified on a single outgoing HTTP headers. For HTTP headers usually the ISO-8859-1 charset
+   * is used.
    *
    * @param sName
    *        HTTP header name. Never <code>null</code>.

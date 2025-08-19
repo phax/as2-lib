@@ -53,9 +53,9 @@ import com.helger.commons.string.StringHelper;
 import jakarta.mail.util.SharedFileInputStream;
 
 /**
- * Stores the content of the input {@link InputStream} in a temporary file, and
- * opens {@link SharedFileInputStream} on that file. When the stream is closed,
- * the file will be deleted, and the input stream will be closed.
+ * Stores the content of the input {@link InputStream} in a temporary file, and opens
+ * {@link SharedFileInputStream} on that file. When the stream is closed, the file will be deleted,
+ * and the input stream will be closed.
  */
 public class TempSharedFileInputStream extends SharedFileInputStream
 {
@@ -70,8 +70,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   }
 
   /**
-   * close - Do nothing, to prevent early close, as the cryptographic processing
-   * stages closes their input stream
+   * close - Do nothing, to prevent early close, as the cryptographic processing stages closes their
+   * input stream
    */
   @Override
   public void close () throws IOException
@@ -133,14 +133,13 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   }
 
   /**
-   * Stores the content of the input {@link InputStream} in a temporary file (in
-   * the system temporary directory.
+   * Stores the content of the input {@link InputStream} in a temporary file (in the system
+   * temporary directory.
    *
    * @param aIS
    *        {@link InputStream} to read from
    * @param sName
-   *        name to use in the temporary file to link it to the delivered
-   *        message. May be null
+   *        name to use in the temporary file to link it to the delivered message. May be null
    * @return The created {@link File}
    * @throws IOException
    *         in case of IO error
@@ -172,15 +171,13 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   }
 
   /**
-   * Stores the content of the input {@link InputStream} in a temporary file (in
-   * the system temporary directory, and opens {@link SharedFileInputStream} on
-   * that file.
+   * Stores the content of the input {@link InputStream} in a temporary file (in the system
+   * temporary directory, and opens {@link SharedFileInputStream} on that file.
    *
    * @param aIS
    *        {@link InputStream} to read from
    * @param sName
-   *        name to use in the temporary file to link it to the delivered
-   *        message. May be null
+   *        name to use in the temporary file to link it to the delivered message. May be null
    * @return {@link TempSharedFileInputStream} on the created temporary file.
    * @throws IOException
    *         in case of IO error

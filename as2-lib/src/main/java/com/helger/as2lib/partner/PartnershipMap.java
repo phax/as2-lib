@@ -62,8 +62,7 @@ public final class PartnershipMap implements IPartnershipMap
   {}
 
   /**
-   * Set all partnerships from the passed map. All existing partnerships are
-   * removed.
+   * Set all partnerships from the passed map. All existing partnerships are removed.
    *
    * @param aPartnerships
    *        The partnerships to be set. May not be <code>null</code>.
@@ -79,9 +78,8 @@ public final class PartnershipMap implements IPartnershipMap
    *
    * @param aPartnership
    *        The partnership to be added. May not be <code>null</code>.
-   * @return {@link EChange#CHANGED} if adding was successfully,
-   *         {@link EChange#UNCHANGED} if a partnership with the given name is
-   *         already present and nothing changed.
+   * @return {@link EChange#CHANGED} if adding was successfully, {@link EChange#UNCHANGED} if a
+   *         partnership with the given name is already present and nothing changed.
    */
   @Nonnull
   public EChange addPartnership (@Nonnull final Partnership aPartnership)
@@ -98,8 +96,7 @@ public final class PartnershipMap implements IPartnershipMap
    * Overwrite an existing partnership.
    *
    * @param aPartnership
-   *        The partnership to be set (and potentially overwritten). May not be
-   *        <code>null</code>.
+   *        The partnership to be set (and potentially overwritten). May not be <code>null</code>.
    */
   public void setPartnership (@Nonnull final Partnership aPartnership)
   {
@@ -113,8 +110,8 @@ public final class PartnershipMap implements IPartnershipMap
    *
    * @param aPartnership
    *        The partnership to be removed. May not be <code>null</code>.
-   * @return {@link EChange#CHANGED} if removal was successful,
-   *         {@link EChange#UNCHANGED} if no such partnership is contained.
+   * @return {@link EChange#CHANGED} if removal was successful, {@link EChange#UNCHANGED} if no such
+   *         partnership is contained.
    */
   @Nonnull
   public EChange removePartnership (@Nonnull final Partnership aPartnership)
@@ -134,11 +131,11 @@ public final class PartnershipMap implements IPartnershipMap
    *        Search IDs. May not be <code>null</code>.
    * @param aPartnerIDs
    *        Partner IDs. May not be <code>null</code>.
-   * @return <code>true</code> if searchIds is not empty and if all values in
-   *         searchIds match values in partnerIds. This means that partnerIds
-   *         can contain more elements than searchIds
+   * @return <code>true</code> if searchIds is not empty and if all values in searchIds match values
+   *         in partnerIds. This means that partnerIds can contain more elements than searchIds
    */
-  private static boolean _arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs, @Nonnull final IStringMap aPartnerIDs)
+  private static boolean _arePartnerIDsPresent (@Nonnull final IStringMap aSearchIDs,
+                                                @Nonnull final IStringMap aPartnerIDs)
   {
     if (aSearchIDs.isEmpty ())
       return false;

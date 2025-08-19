@@ -43,9 +43,8 @@ import com.helger.commons.annotation.OverrideOnDemand;
 import com.helger.commons.string.StringHelper;
 
 /**
- * An implementation of a file-based certificate factory using a custom key
- * store type. Since v4.6.4 this class is derived from
- * {@link AbstractCertificateFactory}.
+ * An implementation of a file-based certificate factory using a custom key store type. Since v4.6.4
+ * this class is derived from {@link AbstractCertificateFactory}.
  *
  * @author Philip Helger
  */
@@ -106,8 +105,8 @@ public class CertificateFactory extends AbstractCertificateFactory implements IS
   }
 
   /**
-   * Custom callback method that is invoked if something changes in the key
-   * store. By default the changes are written back to disk.
+   * Custom callback method that is invoked if something changes in the key store. By default the
+   * changes are written back to disk.
    *
    * @throws AS2Exception
    *         In case saving fails.

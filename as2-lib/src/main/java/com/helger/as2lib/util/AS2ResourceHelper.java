@@ -60,10 +60,9 @@ import com.helger.commons.io.file.FileIOError;
 import com.helger.commons.io.stream.StreamHelper;
 
 /**
- * A resource manager that keeps track of temporary files and other closables
- * that will be closed when this manager is closed. When calling
- * {@link #createTempFile()} a new filename is created and added to the list.
- * When using {@link #addCloseable(Closeable)} the Closable is added for
+ * A resource manager that keeps track of temporary files and other closables that will be closed
+ * when this manager is closed. When calling {@link #createTempFile()} a new filename is created and
+ * added to the list. When using {@link #addCloseable(Closeable)} the Closable is added for
  * postponed closing.
  *
  * @author Philip Helger
@@ -78,8 +77,7 @@ public class AS2ResourceHelper implements Closeable
   private static File s_aTempDir;
 
   /**
-   * @return The temp file directory to use, or <code>null</code> for the system
-   *         default.
+   * @return The temp file directory to use, or <code>null</code> for the system default.
    */
   @Nullable
   public static File getTempDir ()
@@ -91,8 +89,8 @@ public class AS2ResourceHelper implements Closeable
    * Set a temporary directory to use.
    *
    * @param aTempDir
-   *        The directory to use. It must be an existing directory. May be
-   *        <code>null</code> to use the system default.
+   *        The directory to use. It must be an existing directory. May be <code>null</code> to use
+   *        the system default.
    * @throws IllegalArgumentException
    *         If the directory does not exist
    */
@@ -117,8 +115,7 @@ public class AS2ResourceHelper implements Closeable
   {}
 
   /**
-   * @return A new temporary {@link File} that will be deleted when
-   *         {@link #close()} is called.
+   * @return A new temporary {@link File} that will be deleted when {@link #close()} is called.
    * @throws IOException
    *         When temp file creation fails.
    * @throws IllegalStateException
@@ -143,8 +140,7 @@ public class AS2ResourceHelper implements Closeable
   }
 
   /**
-   * @return A list of all known temp files. Never <code>null</code> but maybe
-   *         empty.
+   * @return A list of all known temp files. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -172,8 +168,7 @@ public class AS2ResourceHelper implements Closeable
   }
 
   /**
-   * @return A list of all known closables. Never <code>null</code> but maybe
-   *         empty.
+   * @return A list of all known closables. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -234,14 +229,12 @@ public class AS2ResourceHelper implements Closeable
   }
 
   /**
-   * Ensure the provided {@link HttpEntity} can be read more than once. If the
-   * provided entity is not repeatable a temporary file is created and a new
-   * file-based Http Entity is created.
+   * Ensure the provided {@link HttpEntity} can be read more than once. If the provided entity is
+   * not repeatable a temporary file is created and a new file-based Http Entity is created.
    *
    * @param aSrcEntity
    *        The source Http entity. May not be <code>null</code>.
-   * @return A non-<code>null</code> Http entity that can be read more than
-   *         once.
+   * @return A non-<code>null</code> Http entity that can be read more than once.
    * @throws IOException
    *         on IO error
    */

@@ -51,8 +51,7 @@ public class DateParameters extends AbstractParameterParser
    * Constructor that uses a predefined date and time for consistent tests.
    *
    * @param aZDT
-   *        The date time to use. <code>null</code> means "use current date
-   *        time"
+   *        The date time to use. <code>null</code> means "use current date time"
    */
   @VisibleForTesting
   public DateParameters (@Nullable final ZonedDateTime aZDT)

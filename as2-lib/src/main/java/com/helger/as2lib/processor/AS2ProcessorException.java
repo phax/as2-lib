@@ -56,9 +56,13 @@ public class AS2ProcessorException extends AS2Exception
   private final transient IMessageProcessor m_aProcessor;
   private final ICommonsList <AS2Exception> m_aCauses;
 
-  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor, @Nonnull @Nonempty final List <? extends AS2Exception> aCauses)
+  public AS2ProcessorException (@Nonnull final IMessageProcessor aProcessor,
+                                @Nonnull @Nonempty final List <? extends AS2Exception> aCauses)
   {
-    super ("Processor '" + ClassHelper.getClassLocalName (aProcessor) + "' threw " + (aCauses.size () == 1 ? "exception:" : "exceptions:"));
+    super ("Processor '" +
+           ClassHelper.getClassLocalName (aProcessor) +
+           "' threw " +
+           (aCauses.size () == 1 ? "exception:" : "exceptions:"));
     ValueEnforcer.notNull (aProcessor, "Processor");
     ValueEnforcer.notEmptyNoNullValue (aCauses, "causes");
 
@@ -73,7 +77,8 @@ public class AS2ProcessorException extends AS2Exception
   }
 
   @Nonnull
-  private static String _getMessage (@Nonnull @Nonempty final Iterable <? extends Throwable> aCauses, final boolean bAddStackTrace)
+  private static String _getMessage (@Nonnull @Nonempty final Iterable <? extends Throwable> aCauses,
+                                     final boolean bAddStackTrace)
   {
     final StringBuilder aSB = new StringBuilder ();
     for (final Throwable aCause : aCauses)
@@ -107,8 +112,7 @@ public class AS2ProcessorException extends AS2Exception
    * Get all causes.<br>
    * Note: before v4.10.0 this was a list of Throwable
    *
-   * @return A list of all causing exceptions. Never <code>null</code> nor
-   *         empty.
+   * @return A list of all causing exceptions. Never <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -119,8 +123,7 @@ public class AS2ProcessorException extends AS2Exception
   }
 
   /**
-   * @return A short version of "toString" without exception stack traces. Never
-   *         <code>null</code>.
+   * @return A short version of "toString" without exception stack traces. Never <code>null</code>.
    */
   @Nonnull
   public String getShortToString ()

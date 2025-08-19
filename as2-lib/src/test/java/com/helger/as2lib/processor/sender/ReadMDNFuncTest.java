@@ -77,8 +77,7 @@ public class ReadMDNFuncTest
     assertTrue (aCertRes.exists ());
 
     final HttpHeaderMap aHeaders = new HttpHeaderMap ();
-    try (
-        NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
+    try (NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
     {
       String s;
       while ((s = aBR.readLine ()) != null)
@@ -145,8 +144,7 @@ public class ReadMDNFuncTest
     }
 
     final HttpHeaderMap aHeaders = new HttpHeaderMap ();
-    try (
-        NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
+    try (NonBlockingBufferedReader aBR = new NonBlockingBufferedReader (aHeaderRes.getReader (StandardCharsets.ISO_8859_1)))
     {
       String s;
       while ((s = aBR.readLine ()) != null)

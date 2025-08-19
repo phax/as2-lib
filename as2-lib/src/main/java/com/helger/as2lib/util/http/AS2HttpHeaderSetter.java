@@ -58,13 +58,12 @@ public final class AS2HttpHeaderSetter
    * @param aConn
    *        The HTTP URL connection to use. May not be <code>null</code>.
    * @param aOutgoingDumper
-   *        An optional outgoing dumper, that will also receive all the headers.
-   *        May be <code>null</code>.
+   *        An optional outgoing dumper, that will also receive all the headers. May be
+   *        <code>null</code>.
    * @param bQuoteHeaderValues
-   *        <code>true</code> if HTTP header values should be automatically
-   *        quoted, <code>false</code> if not. This might be an interoperability
-   *        issue. The receiving side must be able to unquote according to RFC
-   *        2616.
+   *        <code>true</code> if HTTP header values should be automatically quoted,
+   *        <code>false</code> if not. This might be an interoperability issue. The receiving side
+   *        must be able to unquote according to RFC 2616.
    */
   public AS2HttpHeaderSetter (@Nonnull final AS2HttpClient aConn,
                               @Nullable final IHTTPOutgoingDumper aOutgoingDumper,

@@ -52,9 +52,11 @@ public interface IAliasedCertificateFactory extends ICertificateFactory
 
   ICommonsOrderedMap <String, X509Certificate> getCertificates () throws AS2Exception;
 
-  void addCertificate (@Nonnull @Nonempty String sAlias, @Nonnull X509Certificate aCert, boolean bOverwrite) throws AS2Exception;
+  void addCertificate (@Nonnull @Nonempty String sAlias, @Nonnull X509Certificate aCert, boolean bOverwrite)
+                                                                                                             throws AS2Exception;
 
-  void addPrivateKey (@Nonnull @Nonempty String sAlias, @Nonnull Key aKey, @Nonnull String sPassword) throws AS2Exception;
+  void addPrivateKey (@Nonnull @Nonempty String sAlias, @Nonnull Key aKey, @Nonnull String sPassword)
+                                                                                                      throws AS2Exception;
 
   void clearCertificates () throws AS2Exception;
 

@@ -77,8 +77,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   /** Path of the error directory. May contain "date" and "msg" parameters. */
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   /**
-   * Optional filename for storage in the error directory. May contain "date"
-   * and "msg" parameters.
+   * Optional filename for storage in the error directory. May contain "date" and "msg" parameters.
    *
    * @since 4.8.0
    */
@@ -86,8 +85,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   /** Path of the error directory. May contain "date" and "msg" parameters. */
   public static final String ATTR_SENT_DIRECTORY = "sentdir";
   /**
-   * Optional filename for storage in the sent directory. May contain "date" and
-   * "msg" parameters.
+   * Optional filename for storage in the sent directory. May contain "date" and "msg" parameters.
    *
    * @since 4.8.0
    */
@@ -103,8 +101,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   private ICommonsMap <String, Long> m_aTrackedFiles;
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions)
+                                                                                                              throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_OUTBOX_DIRECTORY);
@@ -129,8 +127,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
   }
 
   /**
-   * @return A map from absolute file path to the size of the file. Never
-   *         <code>null</code>.
+   * @return A map from absolute file path to the size of the file. Never <code>null</code>.
    */
   @Nonnull
   @ReturnsMutableObject
@@ -186,8 +183,8 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
     aMsg.attrs ().putIn (CFileAttribute.MA_FILENAME, aFile.getName ());
 
     /*
-     * asynch mdn logic 2007-03-12 save the file name into message object, it
-     * will be stored into pending information file
+     * asynch mdn logic 2007-03-12 save the file name into message object, it will be stored into
+     * pending information file
      */
     aMsg.attrs ().putIn (CFileAttribute.MA_PENDING_FILENAME, aFile.getName ());
 
@@ -213,9 +210,9 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         LOGGER.debug ("AS2Message was successfully handled my the MessageProcessor");
 
       /*
-       * asynch mdn logic 2007-03-12 If the return status is pending in msg's
-       * attribute "status" then copy the transmitted file to pending folder and
-       * wait for the receiver to make another HTTP call to post AsyncMDN
+       * asynch mdn logic 2007-03-12 If the return status is pending in msg's attribute "status"
+       * then copy the transmitted file to pending folder and wait for the receiver to make another
+       * HTTP call to post AsyncMDN
        */
       if (CFileAttribute.MA_STATUS_PENDING.equals (aMsg.attrs ().getAsString (CFileAttribute.MA_STATUS)))
       {

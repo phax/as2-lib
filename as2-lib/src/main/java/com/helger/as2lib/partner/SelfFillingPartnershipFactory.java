@@ -40,16 +40,14 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.annotation.OverrideOnDemand;
 
 /**
- * A special in-memory partnership factory that adds a partnership if it is not
- * existing yet.
+ * A special in-memory partnership factory that adds a partnership if it is not existing yet.
  *
  * @author Philip Helger
  */
 public class SelfFillingPartnershipFactory extends AbstractPartnershipFactory
 {
   /**
-   * Ensure that a new partnership is usable. It ensure the following properties
-   * present:
+   * Ensure that a new partnership is usable. It ensure the following properties present:
    * <ul>
    * <li>Sender X509 alias</li>
    * <li>Receiver X509 alias</li>
@@ -82,9 +80,8 @@ public class SelfFillingPartnershipFactory extends AbstractPartnershipFactory
   }
 
   /**
-   * Callback method that is invoked every time a new partnership is
-   * automatically added. This method is called BEFORE the main add-process is
-   * started.
+   * Callback method that is invoked every time a new partnership is automatically added. This
+   * method is called BEFORE the main add-process is started.
    *
    * @param aPartnership
    *        The partnership that will be added. Never <code>null</code>.

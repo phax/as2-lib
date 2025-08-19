@@ -119,7 +119,8 @@ public class AS2Message extends AbstractMessage
 
     // Requesting by request?
     // Same as regular MDN + HEADER_RECEIPT_DELIVERY_OPTION
-    if (containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) && containsHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION))
+    if (containsHeader (CHttpHeader.DISPOSITION_NOTIFICATION_TO) &&
+        containsHeader (CHttpHeader.RECEIPT_DELIVERY_OPTION))
       return true;
 
     // Default: no
@@ -127,8 +128,8 @@ public class AS2Message extends AbstractMessage
   }
 
   /**
-   * @return The URL where to send the async MDN to. May be <code>null</code> if
-   *         no MDN or a sync MDN is needed.
+   * @return The URL where to send the async MDN to. May be <code>null</code> if no MDN or a sync
+   *         MDN is needed.
    */
   @Nullable
   public String getAsyncMDNurl ()

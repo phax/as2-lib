@@ -123,7 +123,11 @@ public class CompositeParameters extends AbstractParameterParser
         aKeyBuf.append ('.').append (aKeyParts.nextToken ());
 
       if (LOGGER.isTraceEnabled ())
-        LOGGER.trace ("Nested getParameter: " + ClassHelper.getClassLocalName (aParser) + " with '" + aKeyBuf.toString () + "'");
+        LOGGER.trace ("Nested getParameter: " +
+                      ClassHelper.getClassLocalName (aParser) +
+                      " with '" +
+                      aKeyBuf.toString () +
+                      "'");
 
       return aParser.getParameter (aKeyBuf.toString ());
     }

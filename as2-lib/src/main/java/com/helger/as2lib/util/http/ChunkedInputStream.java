@@ -44,9 +44,9 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.io.stream.WrappedInputStream;
 
 /**
- * Stream to read a chunked body stream. Input stream should be at the beginning
- * of a chunk, i.e. at the body beginning (after the end of headers marker). The
- * resulting stream reads the data through the chunks.
+ * Stream to read a chunked body stream. Input stream should be at the beginning of a chunk, i.e. at
+ * the body beginning (after the end of headers marker). The resulting stream reads the data through
+ * the chunks.
  *
  * @author Ziv Harpaz
  */

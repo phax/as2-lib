@@ -70,10 +70,9 @@ import com.helger.commons.string.StringHelper;
 
 /**
  * An asynchronous, persisting, file based, polling resender module. Upon
- * {@link #handle(String, IMessage, Map)} it writes the document into a file and
- * there is a background poller task that checks for resending (see
- * {@link #resend()}). If re-sending fails, the document is moved into an error
- * folder.
+ * {@link #handle(String, IMessage, Map)} it writes the document into a file and there is a
+ * background poller task that checks for resending (see {@link #resend()}). If re-sending fails,
+ * the document is moved into an error folder.
  *
  * @author OpenAS2
  * @author Philip Helger
@@ -84,8 +83,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   /** The error directory. May contain "date" parameters. */
   public static final String ATTR_ERROR_DIRECTORY = "errordir";
   /**
-   * Optional filename for storage in the error directory. May contain "date"
-   * parameters.
+   * Optional filename for storage in the error directory. May contain "date" parameters.
    *
    * @since 4.8.0
    */
@@ -96,8 +94,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   private static final Logger LOGGER = LoggerFactory.getLogger (DirectoryResenderModule.class);
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession,
-                                    @Nullable final IStringMap aOptions) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions)
+                                                                                                              throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY);
@@ -113,8 +111,8 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
   }
 
   /**
-   * Build the filename for re-sending. The filename consists of the date and
-   * time when the document is to be re-send.
+   * Build the filename for re-sending. The filename consists of the date and time when the document
+   * is to be re-send.
    *
    * @return The filename and never <code>null</code>.
    * @throws AS2InvalidParameterException
@@ -138,10 +136,10 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
       final File aResendDir = AS2IOHelper.getDirectoryFile (getAttributeAsStringRequired (ATTR_RESEND_DIRECTORY));
       final File aResendFile = AS2IOHelper.getUniqueFile (aResendDir, getFilename ());
       try (final FileOutputStream aFOS = new FileOutputStream (aResendFile);
-          final ObjectOutputStream aOOS = new ObjectOutputStream (aFOS))
+           final ObjectOutputStream aOOS = new ObjectOutputStream (aFOS))
       {
-        String sResendAction = aOptions == null ? null
-                                                : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+        String sResendAction = aOptions == null ? null : (String) aOptions.get (
+                                                                                IProcessorResenderModule.OPTION_RESEND_ACTION);
         if (sResendAction == null)
         {
           LOGGER.warn ("The resending method is missing - default to message sending!");
@@ -198,7 +196,7 @@ public class DirectoryResenderModule extends AbstractActiveResenderModule
         final String sResendAction;
         String sRetries;
         try (final FileInputStream aFIS = new FileInputStream (aFile);
-            final ObjectInputStream aOIS = new ObjectInputStream (aFIS))
+             final ObjectInputStream aOIS = new ObjectInputStream (aFIS))
         {
           sResendAction = (String) aOIS.readObject ();
           sRetries = (String) aOIS.readObject ();

@@ -81,12 +81,12 @@ public class AS2Session implements IAS2Session
   public static void makeAS2CommandMapChanges ()
   {
     /*
-     * Adds a group of content handlers to the Mailcap <code>CommandMap</code>.
-     * These handlers are used by the JavaMail API to encode and decode
-     * information of specific mime types.
+     * Adds a group of content handlers to the Mailcap <code>CommandMap</code>. These handlers are
+     * used by the JavaMail API to encode and decode information of specific mime types.
      */
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" + DispositionDataContentHandler.class.getName ());
+    aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
+                            DispositionDataContentHandler.class.getName ());
     AccessControllerHelper.run ( () -> {
       CommandMap.setDefaultCommandMap (aCommandMap);
       return null;
@@ -232,8 +232,10 @@ public class AS2Session implements IAS2Session
   public String toString ()
   {
     return new ToStringGenerator (this).append ("Components", m_aComponents)
-                                       .append ("CryptoSignIncludeCertificateInBodyPart", m_bCryptoSignIncludeCertificateInBodyPart)
-                                       .append ("CryptoVerifyUseCertificateInBodyPart", m_bCryptoVerifyUseCertificateInBodyPart)
+                                       .append ("CryptoSignIncludeCertificateInBodyPart",
+                                                m_bCryptoSignIncludeCertificateInBodyPart)
+                                       .append ("CryptoVerifyUseCertificateInBodyPart",
+                                                m_bCryptoVerifyUseCertificateInBodyPart)
                                        .append ("HttpProxy", m_aHttpProxy)
                                        .append ("AS2VersionID", m_sAS2VersionID)
                                        .getToString ();

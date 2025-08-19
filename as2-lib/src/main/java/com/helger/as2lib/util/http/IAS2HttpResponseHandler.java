@@ -42,8 +42,8 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.io.IWriteToStream;
 
 /**
- * Abstract HTTP response handler. This abstraction layer may be used to either
- * write to a socket directly or to e.g. send an HTTP response via a servlet.
+ * Abstract HTTP response handler. This abstraction layer may be used to either write to a socket
+ * directly or to e.g. send an HTTP response via a servlet.
  *
  * @author Philip Helger
  */
@@ -51,16 +51,14 @@ import com.helger.commons.io.IWriteToStream;
 public interface IAS2HttpResponseHandler
 {
   /**
-   * Added an HTTP header to the response. This method must be called before any
-   * output is written.
+   * Added an HTTP header to the response. This method must be called before any output is written.
    *
    * @param nHttpResponseCode
    *        The HTTP response code. E.g. 200 for "HTTP OK". Must be &gt; 0.
    * @param aHeaders
    *        Headers to use. May not be <code>null</code>.
    * @param aData
-   *        Data to send as response body. May not be <code>null</code> but may
-   *        be empty.
+   *        Data to send as response body. May not be <code>null</code> but may be empty.
    * @throws IOException
    *         In case of error
    */

@@ -77,11 +77,10 @@ import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 
 /**
- * Abstract base implementation of a read-only Certificate factory that operates
- * on a {@link KeyStore} object. The only method to be implemented is
- * {@link #reinitKeyStore()} which is responsible for setting the keystore. The
- * protected method <code>setKeyStore(KeyStore)</code> may be used to work
- * around the default behaviour and provide an arbitrary implementation.
+ * Abstract base implementation of a read-only Certificate factory that operates on a
+ * {@link KeyStore} object. The only method to be implemented is {@link #reinitKeyStore()} which is
+ * responsible for setting the keystore. The protected method <code>setKeyStore(KeyStore)</code> may
+ * be used to work around the default behaviour and provide an arbitrary implementation.
  *
  * @author Philip Helger
  * @since 4.6.4
@@ -229,8 +228,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   }
 
   /**
-   * This method is responsible to create a new empty keystore based on the
-   * configured type.
+   * This method is responsible to create a new empty keystore based on the configured type.
    *
    * @throws AS2Exception
    *         In case of error
@@ -264,8 +262,8 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   }
 
   /**
-   * Overridable method to perform unifications on aliases, e.g. for lower
-   * casing when using Oracle JDKs PKCS12 implementation.
+   * Overridable method to perform unifications on aliases, e.g. for lower casing when using Oracle
+   * JDKs PKCS12 implementation.
    *
    * @param sAlias
    *        Source alias. May be <code>null</code>.
@@ -392,8 +390,8 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
   }
 
   /**
-   * Custom callback method that is invoked if something changes in the key
-   * store. By default the changes are written back to disk.
+   * Custom callback method that is invoked if something changes in the key store. By default the
+   * changes are written back to disk.
    *
    * @throws AS2Exception
    *         In case saving fails.

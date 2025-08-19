@@ -49,8 +49,8 @@ import com.helger.commons.io.stream.StreamHelper;
 import com.helger.http.EHttpVersion;
 
 /**
- * An implementation of {@link IAS2HttpResponseHandler} that writes an HTTP 1.1
- * response directly to a {@link Socket}.
+ * An implementation of {@link IAS2HttpResponseHandler} that writes an HTTP 1.1 response directly to
+ * a {@link Socket}.
  *
  * @author Philip Helger
  */
@@ -75,8 +75,7 @@ public class AS2HttpResponseHandlerSocket implements IAS2HttpResponseHandler
   }
 
   /**
-   * @return <code>true</code> if HTTP header values should be quoted,
-   *         <code>false</code> if not.
+   * @return <code>true</code> if HTTP header values should be quoted, <code>false</code> if not.
    * @since 4.4.4
    */
   public final boolean isQuoteHeaderHeaderValues ()

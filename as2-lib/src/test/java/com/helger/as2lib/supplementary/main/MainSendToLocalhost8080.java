@@ -63,9 +63,8 @@ import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
 
 /**
- * Test class to send an AS2 messages to http://localhost:8080/as2 test server
- * which can e.g. be spawned by calling <code>RunInJettyAS2DEMO</code> from the
- * "as2-demo-webapp" subproject.
+ * Test class to send an AS2 messages to http://localhost:8080/as2 test server which can e.g. be
+ * spawned by calling <code>RunInJettyAS2DEMO</code> from the "as2-demo-webapp" subproject.
  *
  * @author Philip Helger
  */

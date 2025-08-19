@@ -46,9 +46,9 @@ import com.helger.commons.annotation.Nonempty;
 import com.helger.commons.lang.EnumHelper;
 
 /**
- * This enum contains all signing supported crypto algorithms. The algorithms
- * contained in here may not be used for encryption of anything. See
- * {@link ECryptoAlgorithmCrypt} for encryption algorithms.<br>
+ * This enum contains all signing supported crypto algorithms. The algorithms contained in here may
+ * not be used for encryption of anything. See {@link ECryptoAlgorithmCrypt} for encryption
+ * algorithms.<br>
  * Note: Mendelson uses the RFC 5751 identifiers.
  *
  * @author Philip Helger
@@ -226,8 +226,8 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   }
 
   /**
-   * Returns the Signature ID as the combination of the signature algorithm and
-   * the digest algorithm.
+   * Returns the Signature ID as the combination of the signature algorithm and the digest
+   * algorithm.
    */
   @Nonnull
   @Nonempty
@@ -237,8 +237,8 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   }
 
   /**
-   * @return the MIC algorithm ID. That is the value that is added into the
-   *         "micalg" Content-Type parameter of the "Content-Type" header.
+   * @return the MIC algorithm ID. That is the value that is added into the "micalg" Content-Type
+   *         parameter of the "Content-Type" header.
    */
   @Nonnull
   @Nonempty
@@ -257,8 +257,7 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   }
 
   /**
-   * @return The algorithm name to be used for BouncyCastle to do the SMIME
-   *         packaging.
+   * @return The algorithm name to be used for BouncyCastle to do the SMIME packaging.
    */
   @Nonnull
   @Nonempty
@@ -268,9 +267,8 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   }
 
   /**
-   * @return <code>true</code> if this is an algorithm defined by RFC 3851,
-   *         <code>false</code> otherwise. Please note that some algorithms are
-   *         contained in both algorithm sets!
+   * @return <code>true</code> if this is an algorithm defined by RFC 3851, <code>false</code>
+   *         otherwise. Please note that some algorithms are contained in both algorithm sets!
    * @since 4.2.0
    */
   public boolean isRFC3851Algorithm ()
@@ -285,9 +283,8 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
   }
 
   /**
-   * @return <code>true</code> if this is an algorithm defined by RFC 5751,
-   *         <code>false</code> otherwise. Please note that some algorithms are
-   *         contained in both algorithm sets!
+   * @return <code>true</code> if this is an algorithm defined by RFC 5751, <code>false</code>
+   *         otherwise. Please note that some algorithms are contained in both algorithm sets!
    * @since 4.2.0
    */
   public boolean isRFC5751Algorithm ()

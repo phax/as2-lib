@@ -43,10 +43,9 @@ import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.state.EChange;
 
 /**
- * This partnership factory extends {@link IPartnershipFactory} by adding
- * "partners". This can be used for providing certain fixed value on a
- * per-partner basis (e.g. email address or X509 certificate alias to the key
- * store) without having redundancy data in all partnerships.
+ * This partnership factory extends {@link IPartnershipFactory} by adding "partners". This can be
+ * used for providing certain fixed value on a per-partner basis (e.g. email address or X509
+ * certificate alias to the key store) without having redundancy data in all partnerships.
  *
  * @author Philip Helger
  */
@@ -86,8 +85,7 @@ public interface IPartnershipFactoryWithPartners extends IPartnershipFactory
   IPartner getPartnerOfName (@Nullable String sPartnerName);
 
   /**
-   * @return A set with all contained partner names. Never <code>null</code> but
-   *         maybe empty.
+   * @return A set with all contained partner names. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy

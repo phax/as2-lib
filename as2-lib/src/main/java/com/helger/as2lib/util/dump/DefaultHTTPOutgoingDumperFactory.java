@@ -40,8 +40,8 @@ import javax.annotation.Nonnull;
 import com.helger.as2lib.message.IBaseMessage;
 
 /**
- * Default implementation of {@link IHTTPOutgoingDumperFactory}. Extracted as a
- * public class in v4.4.5.
+ * Default implementation of {@link IHTTPOutgoingDumperFactory}. Extracted as a public class in
+ * v4.4.5.
  *
  * @author Philip Helger
  */

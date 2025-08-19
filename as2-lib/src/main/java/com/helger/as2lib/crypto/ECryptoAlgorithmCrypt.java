@@ -99,7 +99,8 @@ public enum ECryptoAlgorithmCrypt implements ICryptoAlgorithm
   }
 
   @Nullable
-  public static ECryptoAlgorithmCrypt getFromIDOrDefault (@Nullable final String sID, @Nullable final ECryptoAlgorithmCrypt eDefault)
+  public static ECryptoAlgorithmCrypt getFromIDOrDefault (@Nullable final String sID,
+                                                          @Nullable final ECryptoAlgorithmCrypt eDefault)
   {
     // Case insensitive for #32
     return EnumHelper.getFromIDCaseInsensitiveOrDefault (ECryptoAlgorithmCrypt.class, sID, eDefault);

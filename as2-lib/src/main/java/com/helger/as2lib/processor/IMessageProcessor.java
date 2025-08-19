@@ -60,8 +60,8 @@ public interface IMessageProcessor extends IDynamicComponent
   String ATTR_PENDINGMDNINFO = "pendingmdninfo";
 
   /**
-   * @return The name of the folder that contains the messages with the pending
-   *         MDNs. May be <code>null</code>.
+   * @return The name of the folder that contains the messages with the pending MDNs. May be
+   *         <code>null</code>.
    * @see #ATTR_PENDINGMDN
    * @since 4.6.4
    */
@@ -86,8 +86,8 @@ public interface IMessageProcessor extends IDynamicComponent
   }
 
   /**
-   * @return The name of the folder that contains the pending MDN information
-   *         files. May be <code>null</code>.
+   * @return The name of the folder that contains the pending MDN information files. May be
+   *         <code>null</code>.
    * @see #ATTR_PENDINGMDNINFO
    * @since 4.6.4
    */
@@ -111,7 +111,8 @@ public interface IMessageProcessor extends IDynamicComponent
     attrs ().putIn (ATTR_PENDINGMDNINFO, sPendingMDNInfoFolder);
   }
 
-  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions) throws AS2Exception;
+  void handle (@Nonnull String sAction, @Nonnull IMessage aMsg, @Nullable Map <String, Object> aOptions)
+                                                                                                         throws AS2Exception;
 
   void addModule (@Nonnull IProcessorModule aModule);
 
@@ -133,23 +134,22 @@ public interface IMessageProcessor extends IDynamicComponent
   <T extends IProcessorModule> ICommonsList <T> getAllModulesOfClass (@Nonnull Class <T> aClass);
 
   /**
-   * @return A list of all modules, that implement the
-   *         <code>IProcessorActiveModule</code> interface. Never
-   *         <code>null</code> but maybe empty.
+   * @return A list of all modules, that implement the <code>IProcessorActiveModule</code>
+   *         interface. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
   ICommonsList <IProcessorActiveModule> getAllActiveModules ();
 
   /**
-   * Call <code>start</code> on all modules that implement the
-   * <code>IProcessorActiveModule</code> interface.
+   * Call <code>start</code> on all modules that implement the <code>IProcessorActiveModule</code>
+   * interface.
    */
   void startActiveModules ();
 
   /**
-   * Call <code>stop</code> on all modules that implement the
-   * <code>IProcessorActiveModule</code> interface.
+   * Call <code>stop</code> on all modules that implement the <code>IProcessorActiveModule</code>
+   * interface.
    */
   void stopActiveModules ();
 }

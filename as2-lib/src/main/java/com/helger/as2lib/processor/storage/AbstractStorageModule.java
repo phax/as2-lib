@@ -121,8 +121,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   /**
-   * @return The charset configured via {@link #ATTR_CHARSET} parameter or the
-   *         system default. Never <code>null</code>.
+   * @return The charset configured via {@link #ATTR_CHARSET} parameter or the system default. Never
+   *         <code>null</code>.
    */
   @Nonnull
   protected Charset getCharset ()
@@ -154,7 +154,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
   }
 
   @Override
-  public final void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions) throws AS2Exception
+  public final void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aOptions)
+                                                                                                                    throws AS2Exception
   {
     super.initDynamicComponent (aSession, aOptions);
     getAttributeAsStringRequired (ATTR_FILENAME);
@@ -178,7 +179,8 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
    */
   @Nonnull
   @OverrideOnDemand
-  protected File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException, AS2Exception
+  protected File getFile (@Nonnull final IMessage aMsg, @Nullable final String sFileParam) throws IOException,
+                                                                                           AS2Exception
   {
     final String sFilename = getFilename (aMsg, sFileParam);
 
@@ -186,10 +188,12 @@ public abstract class AbstractStorageModule extends AbstractProcessorModule impl
     final File aFile = new File (sFilename);
     AS2IOHelper.getFileOperationManager ().createDirRecursiveIfNotExisting (aFile.getParentFile ());
     // don't overwrite existing files
-    return AS2IOHelper.getUniqueFile (aFile.getParentFile (), FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
+    return AS2IOHelper.getUniqueFile (aFile.getParentFile (),
+                                      FilenameHelper.getAsSecureValidFilename (aFile.getName ()));
   }
 
-  private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS, @Nonnull final File aDestination) throws IOException
+  private static void _writeStreamToFile (@Nonnull @WillClose final InputStream aIS, @Nonnull final File aDestination)
+                                                                                                                       throws IOException
   {
     final FileOutputStream aOS = new FileOutputStream (aDestination);
     if (StreamHelper.copyInputStreamToOutputStreamAndCloseOS (aIS, aOS).isFailure ())

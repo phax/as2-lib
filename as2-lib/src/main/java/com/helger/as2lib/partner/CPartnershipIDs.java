@@ -37,9 +37,8 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.as2lib.crypto.ECompressionType;
 
 /**
- * Partnership IDs and attribute names. The IDs (starting with PID_) are using
- * for setSenderID/setReceiverID where as the attributes (starting with PA_) are
- * used with setAttribute.
+ * Partnership IDs and attribute names. The IDs (starting with PID_) are using for
+ * setSenderID/setReceiverID where as the attributes (starting with PA_) are used with setAttribute.
  *
  * @author Philip Helger
  */
@@ -66,9 +65,9 @@ public final class CPartnershipIDs
   /** Subject sent in MDN messages */
   public static final String PA_MDN_SUBJECT = "mdnsubject";
   /**
-   * If set and an error occurs while processing a document, an error MDN will
-   * not be sent. This flag was made because some AS2 products don't provide
-   * email or some other external notification when an error MDN is received.
+   * If set and an error occurs while processing a document, an error MDN will not be sent. This
+   * flag was made because some AS2 products don't provide email or some other external notification
+   * when an error MDN is received.
    */
   public static final String PA_BLOCK_ERROR_MDN = "blockerrormdn";
 
@@ -77,14 +76,14 @@ public final class CPartnershipIDs
 
   /**
    * Set this to the algorithm to use for encryption, check
-   * {@link com.helger.as2lib.crypto.ECryptoAlgorithmCrypt} constants for values
-   * (using the value of the <code>getID()</code> method)
+   * {@link com.helger.as2lib.crypto.ECryptoAlgorithmCrypt} constants for values (using the value of
+   * the <code>getID()</code> method)
    */
   public static final String PA_ENCRYPT = "encrypt";
   /**
    * Set this to the signature digest algorithm to sign sent messages, check
-   * {@link com.helger.as2lib.crypto.ECryptoAlgorithmSign} constants for values
-   * (using the value of the <code>getID()</code> method)
+   * {@link com.helger.as2lib.crypto.ECryptoAlgorithmSign} constants for values (using the value of
+   * the <code>getID()</code> method)
    */
   public static final String PA_SIGN = "sign";
   /** AS1 or AS2 */
@@ -92,20 +91,18 @@ public final class CPartnershipIDs
   /** Subject sent in messages */
   public static final String PA_SUBJECT = "subject";
   /**
-   * optional content transfer encoding value for outgoing messages. Legacy
-   * name.
+   * optional content transfer encoding value for outgoing messages. Legacy name.
    */
   public static final String PA_CONTENT_TRANSFER_ENCODING_SEND = "content_transfer_encoding";
   /**
-   * optional content transfer encoding value for incoming messages if not
-   * specified
+   * optional content transfer encoding value for incoming messages if not specified
    *
    * @since 2.2.0
    */
   public static final String PA_CONTENT_TRANSFER_ENCODING_RECEIVE = "content_transfer_encoding_receive";
   /**
-   * Optional compression type. Check {@link ECompressionType} constants for
-   * values (using the value of the <code>getID()</code> method)
+   * Optional compression type. Check {@link ECompressionType} constants for values (using the value
+   * of the <code>getID()</code> method)
    *
    * @since 2.1.0
    */
@@ -129,84 +126,76 @@ public final class CPartnershipIDs
    */
   public static final String COMPRESS_AFTER_SIGNING = "compress-after-signing";
   /**
-   * Special attribute to force decryption of a received message, even if the
-   * Content-Type header claims the messages is not encrypted. This is a
-   * work-around for non spec-compliant senders. Must be set to
-   * <code>true</code> to take effect.
+   * Special attribute to force decryption of a received message, even if the Content-Type header
+   * claims the messages is not encrypted. This is a work-around for non spec-compliant senders.
+   * Must be set to <code>true</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_FORCE_DECRYPT = "force_decrypt";
   /**
-   * Special attribute to disable decryption of a received message, even if the
-   * Content-Type header claims the messages is encrypted. This is a work-around
-   * for non spec-compliant senders. Must be set to <code>true</code> to take
-   * effect.
+   * Special attribute to disable decryption of a received message, even if the Content-Type header
+   * claims the messages is encrypted. This is a work-around for non spec-compliant senders. Must be
+   * set to <code>true</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_DISABLE_DECRYPT = "disable_decrypt";
   /**
-   * Special attribute to force signature verification of a received message,
-   * even if the Content-Type header claims the messages is not signed. This is
-   * a work-around for non spec-compliant senders. Must be set to
-   * <code>true</code> to take effect.
+   * Special attribute to force signature verification of a received message, even if the
+   * Content-Type header claims the messages is not signed. This is a work-around for non
+   * spec-compliant senders. Must be set to <code>true</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_FORCE_VERIFY = "force_verify";
   /**
-   * Special attribute to disable signature verification of a received message,
-   * even if the Content-Type header claims the messages is signed. This is a
-   * work-around for non spec-compliant senders. Must be set to
-   * <code>true</code> to take effect.
+   * Special attribute to disable signature verification of a received message, even if the
+   * Content-Type header claims the messages is signed. This is a work-around for non spec-compliant
+   * senders. Must be set to <code>true</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_DISABLE_VERIFY = "disable_verify";
   /**
-   * Indicates whether the certificate used for signing should be part of the
-   * signed content (when <code>true</code>) or not (when <code>false</code>).
-   * If not set the value of the AS2 session is used. Must be set to
-   * <code>true</code> or <code>false</code> to take effect.
+   * Indicates whether the certificate used for signing should be part of the signed content (when
+   * <code>true</code>) or not (when <code>false</code>). If not set the value of the AS2 session is
+   * used. Must be set to <code>true</code> or <code>false</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_SIGN_INCLUDE_CERT_IN_BODY_PART = "sign_include_cert_in_body_part";
   /**
-   * Define whether a certificate passed in the signed MIME body part shall be
-   * used to verify the signature (when <code>true</code>) or whether to always
-   * use the certificate provided in the partnership (when <code>false</code>).
-   * If not set the value of the AS2 session is used. Must be set to
-   * <code>true</code> or <code>false</code> to take effect.
+   * Define whether a certificate passed in the signed MIME body part shall be used to verify the
+   * signature (when <code>true</code>) or whether to always use the certificate provided in the
+   * partnership (when <code>false</code>). If not set the value of the AS2 session is used. Must be
+   * set to <code>true</code> or <code>false</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_VERIFY_USE_CERT_IN_BODY_PART = "verify_use_cert_in_body_part";
   /**
-   * Special attribute to disable decompression of a received message, even if
-   * the Content-Type header claims the messages is compressed. This is a
-   * work-around for non spec-compliant senders. Must be set to
-   * <code>true</code> to take effect.
+   * Special attribute to disable decompression of a received message, even if the Content-Type
+   * header claims the messages is compressed. This is a work-around for non spec-compliant senders.
+   * Must be set to <code>true</code> to take effect.
    *
    * @since 2.2.0
    */
   public static final String PA_DISABLE_DECOMPRESS = "disable_decompress";
 
   /**
-   * Special attribute indicating that the "old" RFC 3851 MIC algorithm names
-   * should be used (e.g. <code>sha1</code>) instead of the default RFC 5751 MIC
-   * algorithm names (e.g. <code>sha-1</code> - note the dash between "sha" and
-   * "1").
+   * Special attribute indicating that the "old" RFC 3851 MIC algorithm names should be used (e.g.
+   * <code>sha1</code>) instead of the default RFC 5751 MIC algorithm names (e.g. <code>sha-1</code>
+   * - note the dash between "sha" and "1").
    *
    * @since 2.2.7
    */
   public static final String PA_RFC3851_MICALGS = "rfc3851_micalgs";
 
   /**
-   * Special attribute indicating that the CMS attribute "AlgorithmProtect" will
-   * be removed. This is needed in compatibility with e.g. IBM Sterling. Default
-   * value is <code>false</code>. See Issue #137.
+   * Special attribute indicating that the CMS attribute "AlgorithmProtect" will be removed. This is
+   * needed in compatibility with e.g. IBM Sterling. Default value is <code>false</code>. See Issue
+   * #137.
    *
    * @since 4.10.1
    */

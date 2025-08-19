@@ -50,8 +50,7 @@ import com.helger.as2lib.message.IBaseMessage;
 public interface ICertificateFactory extends IDynamicComponent
 {
   /**
-   * Get the certificate of the specified type for the partnership defined in
-   * the provided message
+   * Get the certificate of the specified type for the partnership defined in the provided message
    *
    * @param aMsg
    *        Message to get the partnership from. May not be <code>null</code>.
@@ -64,11 +63,11 @@ public interface ICertificateFactory extends IDynamicComponent
    *         If no certificate is present
    */
   @Nonnull
-  X509Certificate getCertificate (@Nonnull IBaseMessage aMsg, @Nonnull ECertificatePartnershipType ePartnershipType) throws AS2Exception;
+  X509Certificate getCertificate (@Nonnull IBaseMessage aMsg, @Nonnull ECertificatePartnershipType ePartnershipType)
+                                                                                                                     throws AS2Exception;
 
   /**
-   * Get the certificate of the specified type for the partnership defined in
-   * the provided message
+   * Get the certificate of the specified type for the partnership defined in the provided message
    *
    * @param aMsg
    *        Message to get the partnership from. May not be <code>null</code>.

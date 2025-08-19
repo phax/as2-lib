@@ -52,8 +52,8 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Parser and domain object for disposition options. This is usually used in the
- * HTTP header "Disposition-Notification-Options".
+ * Parser and domain object for disposition options. This is usually used in the HTTP header
+ * "Disposition-Notification-Options".
  *
  * @author Philip Helger
  */
@@ -82,8 +82,8 @@ public class DispositionOptions
   {}
 
   /**
-   * Check if the passed importance value is a standard one (<code>null</code>,
-   * "optional" or "required").
+   * Check if the passed importance value is a standard one (<code>null</code>, "optional" or
+   * "required").
    *
    * @param sImportance
    *        The value to be checked.
@@ -110,8 +110,8 @@ public class DispositionOptions
   }
 
   /**
-   * @return the protocol importance (<code>null</code> or "required" or
-   *         "optional"). May be <code>null</code>.
+   * @return the protocol importance (<code>null</code> or "required" or "optional"). May be
+   *         <code>null</code>.
    */
   @Nullable
   public String getProtocolImportance ()
@@ -133,8 +133,7 @@ public class DispositionOptions
    * Set the protocol
    *
    * @param sProtocol
-   *        The protocol name (e.g. "pkcs7-signature"). May be <code>null</code>
-   *        .
+   *        The protocol name (e.g. "pkcs7-signature"). May be <code>null</code> .
    * @return this
    */
   @Nonnull
@@ -145,8 +144,7 @@ public class DispositionOptions
   }
 
   /**
-   * @return The protocol. Currently only "pkcs7-signature" or <code>null</code>
-   *         is supported.
+   * @return The protocol. Currently only "pkcs7-signature" or <code>null</code> is supported.
    */
   @Nullable
   public String getProtocol ()
@@ -170,8 +168,7 @@ public class DispositionOptions
   }
 
   /**
-   * @return the MIC algorithm importance (<code>null</code> or "required" or
-   *         "optional").
+   * @return the MIC algorithm importance (<code>null</code> or "required" or "optional").
    */
   @Nullable
   public String getMICAlgImportance ()
@@ -190,10 +187,9 @@ public class DispositionOptions
   }
 
   /**
-   * Set the MIC algorithm(s) to use. The passed string is parsed as a comma
-   * separated list. This overwrites all existing MIC algorithms. If any of the
-   * contained MIC algorithms is not supported by this library, a log message is
-   * emitted but no Exception is thrown.
+   * Set the MIC algorithm(s) to use. The passed string is parsed as a comma separated list. This
+   * overwrites all existing MIC algorithms. If any of the contained MIC algorithms is not supported
+   * by this library, a log message is emitted but no Exception is thrown.
    *
    * @param sMICAlgs
    *        The MIC algorithm(s). May be <code>null</code>.
@@ -263,8 +259,7 @@ public class DispositionOptions
   }
 
   /**
-   * @return All MIC algorithms contained. Never <code>null</code> but maybe
-   *         empty.
+   * @return All MIC algorithms contained. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -274,8 +269,8 @@ public class DispositionOptions
   }
 
   /**
-   * @return The first MIC algorithm contained in the list. May be
-   *         <code>null</code> if no MIC algorithm is set.
+   * @return The first MIC algorithm contained in the list. May be <code>null</code> if no MIC
+   *         algorithm is set.
    */
   @Nullable
   public ECryptoAlgorithmSign getFirstMICAlg ()
@@ -293,8 +288,8 @@ public class DispositionOptions
   }
 
   /**
-   * @return <code>true</code> if at least one MIC algorithm is present,
-   *         <code>false</code> if none is present.
+   * @return <code>true</code> if at least one MIC algorithm is present, <code>false</code> if none
+   *         is present.
    */
   public boolean hasMICAlg ()
   {
@@ -302,8 +297,7 @@ public class DispositionOptions
   }
 
   /**
-   * @return The MIC algorithm(s) as a comma delimited string. May be
-   *         <code>null</code>.
+   * @return The MIC algorithm(s) as a comma delimited string. May be <code>null</code>.
    */
   @Nullable
   public String getMICAlgAsString ()
@@ -355,12 +349,11 @@ public class DispositionOptions
    * signed-receipt-micalg=optional, sha1</code>
    *
    * @param sOptions
-   *        The string to parse. May be <code>null</code> in which case an empty
-   *        object will be returned.
+   *        The string to parse. May be <code>null</code> in which case an empty object will be
+   *        returned.
    * @return Never <code>null</code>.
    * @throws AS2Exception
-   *         In the very unlikely case of a programming error in
-   *         {@link StringTokenizer}.
+   *         In the very unlikely case of a programming error in {@link StringTokenizer}.
    */
   @Nonnull
   public static DispositionOptions createFromString (@Nullable final String sOptions) throws AS2Exception

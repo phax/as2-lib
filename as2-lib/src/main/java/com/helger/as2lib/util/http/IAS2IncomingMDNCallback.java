@@ -49,28 +49,25 @@ public interface IAS2IncomingMDNCallback
    * Invoked for every incoming MDN message.
    *
    * @param bSynchronousMDN
-   *        <code>true</code> if it is a synchronous MDN, <code>false</code> if
-   *        it is asynchronous.
+   *        <code>true</code> if it is a synchronous MDN, <code>false</code> if it is asynchronous.
    * @param aMDN
-   *        The MDN object itself. May be used to extract further information
-   *        when needed. Never <code>null</code>.
+   *        The MDN object itself. May be used to extract further information when needed. Never
+   *        <code>null</code>.
    * @param sSenderAS2ID
    *        The sender AS2 ID of the MDN. May be <code>null</code>.
    * @param sReceiverAS2ID
    *        The receiver AS2 ID of the MDN. May be <code>null</code>.
    * @param sDisposition
-   *        The disposition string of the MDN. Can be used to determine success
-   *        or error. May be <code>null</code>.
+   *        The disposition string of the MDN. Can be used to determine success or error. May be
+   *        <code>null</code>.
    * @param sReturnMIC
    *        The returned MIC. May be <code>null</code>.
    * @param sOriginalAS2MessageID
    *        The original AS2 message ID this MDN is referring to.
    * @param bMDNWasSigned
-   *        <code>true</code> if the MDN was electronically signed,
-   *        <code>false</code> if not.
+   *        <code>true</code> if the MDN was electronically signed, <code>false</code> if not.
    * @param bMICMatched
-   *        <code>true</code> if the MDN MIC matched the original MIC,
-   *        <code>false</code> if not.
+   *        <code>true</code> if the MDN MIC matched the original MIC, <code>false</code> if not.
    */
   void onIncomingMDN (boolean bSynchronousMDN,
                       @Nonnull IMessageMDN aMDN,

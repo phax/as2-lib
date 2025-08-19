@@ -44,8 +44,7 @@ import com.helger.commons.ValueEnforcer;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * This class contains the basic content that was received from an AS2 server as
- * a response.
+ * This class contains the basic content that was received from an AS2 server as a response.
  *
  * @author oleo Date: May 12, 2010 Time: 5:53:45 PM
  * @author Philip Helger
@@ -65,8 +64,7 @@ public class AS2ClientResponse
   {}
 
   /**
-   * Set the message ID of the message that was sent out. Any existing value
-   * will be overwritten.
+   * Set the message ID of the message that was sent out. Any existing value will be overwritten.
    *
    * @param sOriginalMessageID
    *        The original AS2 message ID. May not be <code>null</code>.
@@ -79,9 +77,8 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The message ID of the original AS2 message. May be
-   *         <code>null</code> if not set (but never <code>null</code> when
-   *         using in conjunction with {@link AS2Client}).
+   * @return The message ID of the original AS2 message. May be <code>null</code> if not set (but
+   *         never <code>null</code> when using in conjunction with {@link AS2Client}).
    */
   @Nullable
   public String getOriginalMessageID ()
@@ -102,8 +99,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return <code>true</code> if an exception is present, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if an exception is present, <code>false</code> otherwise.
    */
   public boolean hasException ()
   {
@@ -111,8 +107,8 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The stored exception. May be <code>null</code> if none is present.
-   *         This usually means that an MDN is present.
+   * @return The stored exception. May be <code>null</code> if none is present. This usually means
+   *         that an MDN is present.
    * @see #hasException()
    * @see #getMDN()
    */
@@ -135,8 +131,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return <code>true</code> if an MDN is present, <code>false</code>
-   *         otherwise.
+   * @return <code>true</code> if an MDN is present, <code>false</code> otherwise.
    */
   public boolean hasMDN ()
   {
@@ -144,8 +139,8 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The stored MDN. May be <code>null</code> if none is present.
-   *         Usually this means that an exception is present.
+   * @return The stored MDN. May be <code>null</code> if none is present. Usually this means that an
+   *         exception is present.
    * @see #hasMDN()
    * @see #getException()
    */
@@ -156,8 +151,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The message ID of the MDN if present, or <code>null</code> if no
-   *         MDN is present.
+   * @return The message ID of the MDN if present, or <code>null</code> if no MDN is present.
    * @see #hasMDN()
    */
   @Nullable
@@ -167,8 +161,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The text of the MDN if present, or <code>null</code> if no MDN is
-   *         present.
+   * @return The text of the MDN if present, or <code>null</code> if no MDN is present.
    * @see #hasMDN()
    */
   @Nullable
@@ -178,8 +171,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The disposition of the MDN if present, or <code>null</code> if no
-   *         MDN is present.
+   * @return The disposition of the MDN if present, or <code>null</code> if no MDN is present.
    * @see #hasMDN()
    */
   @Nullable
@@ -189,8 +181,8 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The MDN X509 certificate that was retrieved. May be
-   *         <code>null</code> if the MDN was not signed.
+   * @return The MDN X509 certificate that was retrieved. May be <code>null</code> if the MDN was
+   *         not signed.
    * @since 4.4.1
    */
   @Nullable
@@ -211,8 +203,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * Set the execution duration of the client request. Any existing value will
-   * be overwritten.
+   * Set the execution duration of the client request. Any existing value will be overwritten.
    *
    * @param aExecutionDuration
    *        The duration to be set. May not be <code>null</code>.
@@ -224,8 +215,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return <code>true</code> if an execution duration is present,
-   *         <code>false</code> otherwise.
+   * @return <code>true</code> if an execution duration is present, <code>false</code> otherwise.
    */
   public boolean hasExecutionDuration ()
   {
@@ -233,8 +223,8 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The execution duration or <code>null</code> if not present. When
-   *         using {@link AS2Client} the execution time is always set.
+   * @return The execution duration or <code>null</code> if not present. When using
+   *         {@link AS2Client} the execution time is always set.
    */
   @Nullable
   public Duration getExecutionDuration ()
@@ -243,8 +233,7 @@ public class AS2ClientResponse
   }
 
   /**
-   * @return The whole client response in a single string for debugging
-   *         purposes.
+   * @return The whole client response in a single string for debugging purposes.
    */
   @Nonnull
   public String getAsString ()

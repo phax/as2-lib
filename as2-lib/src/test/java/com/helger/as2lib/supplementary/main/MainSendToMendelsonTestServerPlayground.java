@@ -66,8 +66,8 @@ import jakarta.activation.DataHandler;
 import jakarta.activation.FileDataSource;
 
 /**
- * Philip's internal playground to send to Mendelson test server - don't rely on
- * this. See {@link MainSendToMendelsonTestServer} instead.
+ * Philip's internal playground to send to Mendelson test server - don't rely on this. See
+ * {@link MainSendToMendelsonTestServer} instead.
  *
  * @author Philip Helger
  */

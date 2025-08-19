@@ -46,8 +46,8 @@ import com.helger.commons.annotation.ReturnsMutableCopy;
 import com.helger.commons.collection.impl.ICommonsMap;
 
 /**
- * This interface provides configuration and resource information, and a means
- * for components to access the functionality of other components.
+ * This interface provides configuration and resource information, and a means for components to
+ * access the functionality of other components.
  *
  * @author Aaron Silinskas
  * @see IDynamicComponent
@@ -68,7 +68,8 @@ public interface IAS2Session
    * @throws AS2ComponentDuplicateException
    *         In case a component with the same ID is already present
    */
-  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent) throws AS2ComponentDuplicateException;
+  void addComponent (@Nonnull @Nonempty String sComponentID, @Nonnull IDynamicComponent aComponent)
+                                                                                                    throws AS2ComponentDuplicateException;
 
   /**
    * Gets the <code>Component</code> currently registered with an ID
@@ -96,8 +97,7 @@ public interface IAS2Session
    *
    * @return the currently registered <code>CertificateFactory</code> component
    * @throws AS2ComponentNotFoundException
-   *         If a <code>CertificateFactory</code> component has not been
-   *         registered
+   *         If a <code>CertificateFactory</code> component has not been registered
    * @see ICertificateFactory
    * @see IDynamicComponent
    */
@@ -129,48 +129,45 @@ public interface IAS2Session
   IMessageProcessor getMessageProcessor () throws AS2ComponentNotFoundException;
 
   /**
-   * @return <code>true</code> if the certificate used for signing a message
-   *         should be included in the signed MIME body part or not. Defaults to
-   *         <code>true</code>.
+   * @return <code>true</code> if the certificate used for signing a message should be included in
+   *         the signed MIME body part or not. Defaults to <code>true</code>.
    * @see #setCryptoSignIncludeCertificateInBodyPart(boolean)
    */
   boolean isCryptoSignIncludeCertificateInBodyPart ();
 
   /**
-   * Settings flag, whether a the signing certificate should be included in the
-   * signed MIME body part or not.
+   * Settings flag, whether a the signing certificate should be included in the signed MIME body
+   * part or not.
    *
    * @param bCryptoSignIncludeCertificateInBodyPart
-   *        <code>true</code> to include the signing certificate in the signed
-   *        MIME body part, <code>false</code> to not do so.
+   *        <code>true</code> to include the signing certificate in the signed MIME body part,
+   *        <code>false</code> to not do so.
    * @see #isCryptoSignIncludeCertificateInBodyPart()
    */
   void setCryptoSignIncludeCertificateInBodyPart (boolean bCryptoSignIncludeCertificateInBodyPart);
 
   /**
-   * @return <code>true</code> if any certificate passed in a message body is
-   *         used for certificate verification or <code>false</code> if only the
-   *         certificate present in the partnership factory is to be used.
-   *         Defaults to <code>true</code>.
+   * @return <code>true</code> if any certificate passed in a message body is used for certificate
+   *         verification or <code>false</code> if only the certificate present in the partnership
+   *         factory is to be used. Defaults to <code>true</code>.
    * @see #setCryptoVerifyUseCertificateInBodyPart(boolean)
    */
   boolean isCryptoVerifyUseCertificateInBodyPart ();
 
   /**
-   * Settings flag, whether a contained certificate is used for message
-   * verification.
+   * Settings flag, whether a contained certificate is used for message verification.
    *
    * @param bCryptoVerifyUseCertificateInBodyPart
-   *        <code>true</code> if any certificate passed in a message body is
-   *        used for certificate verification or <code>false</code> if only the
-   *        certificate present in the partnership factory is to be used.
+   *        <code>true</code> if any certificate passed in a message body is used for certificate
+   *        verification or <code>false</code> if only the certificate present in the partnership
+   *        factory is to be used.
    * @see #isCryptoVerifyUseCertificateInBodyPart()
    */
   void setCryptoVerifyUseCertificateInBodyPart (boolean bCryptoVerifyUseCertificateInBodyPart);
 
   /**
-   * Get the optional HTTP/HTTPS proxy settings to be used for sending AS2
-   * messages and asynchronous MDNs.
+   * Get the optional HTTP/HTTPS proxy settings to be used for sending AS2 messages and asynchronous
+   * MDNs.
    *
    * @return The HTTP/HTTPS proxy object to be used. May be <code>null</code>.
    * @see #setHttpProxy(Proxy)
@@ -179,8 +176,8 @@ public interface IAS2Session
   Proxy getHttpProxy ();
 
   /**
-   * Set the optional HTTP/HTTPS proxy settings to be used for sending AS2
-   * messages and asynchronous MDNs.
+   * Set the optional HTTP/HTTPS proxy settings to be used for sending AS2 messages and asynchronous
+   * MDNs.
    *
    * @param aHttpProxy
    *        The HTTP/HTTPS proxy object to be used. May be <code>null</code>.
@@ -190,8 +187,8 @@ public interface IAS2Session
 
   /**
    * @return The AS2 version to use. The default is
-   *         {@link com.helger.as2lib.util.CAS2Header#DEFAULT_AS2_VERSION}.
-   *         Neither <code>null</code> nor empty.
+   *         {@link com.helger.as2lib.util.CAS2Header#DEFAULT_AS2_VERSION}. Neither
+   *         <code>null</code> nor empty.
    * @since 4.6.1
    */
   @Nonnull
@@ -200,8 +197,7 @@ public interface IAS2Session
 
   /**
    * @param sAS2Version
-   *        Set the AS2 version to use. May neither be <code>null</code> nor
-   *        empty.
+   *        Set the AS2 version to use. May neither be <code>null</code> nor empty.
    * @since 4.6.1
    */
   void setAS2VersionID (@Nonnull @Nonempty String sAS2Version);

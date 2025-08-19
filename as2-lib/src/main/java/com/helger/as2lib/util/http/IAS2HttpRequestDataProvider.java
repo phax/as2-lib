@@ -58,16 +58,14 @@ public interface IAS2HttpRequestDataProvider
   InputStream getHttpInputStream () throws IOException;
 
   /**
-   * @return <code>true</code> if chunked encoding was already processed by an
-   *         outside component (e.g. via Servlet), or <code>false</code> if it
-   *         needs to be processed internally.
+   * @return <code>true</code> if chunked encoding was already processed by an outside component
+   *         (e.g. via Servlet), or <code>false</code> if it needs to be processed internally.
    * @since 5.0.3
    */
   boolean isChunkedEncodingAlreadyProcessed ();
 
   /**
-   * @return The HTTP request method used. Usually this should be
-   *         <code>POST</code>.
+   * @return The HTTP request method used. Usually this should be <code>POST</code>.
    */
   @Nullable
   String getHttpRequestMethod ();
@@ -79,15 +77,13 @@ public interface IAS2HttpRequestDataProvider
   String getHttpRequestUrl ();
 
   /**
-   * @return The HTTP request version used. Something like
-   *         <code>HTTP/1.1</code>.
+   * @return The HTTP request version used. Something like <code>HTTP/1.1</code>.
    */
   @Nonnull
   String getHttpRequestVersion ();
 
   /**
-   * @return The provided HTTP header map. Mutable map is returned. Never
-   *         <code>null</code>.
+   * @return The provided HTTP header map. Mutable map is returned. Never <code>null</code>.
    */
   @Nonnull
   HttpHeaderMap getHttpHeaderMap ();

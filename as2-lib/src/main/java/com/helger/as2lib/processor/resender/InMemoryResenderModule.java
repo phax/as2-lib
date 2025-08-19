@@ -53,9 +53,9 @@ import com.helger.commons.collection.impl.ICommonsMap;
 
 /**
  * An asynchronous, in-memory, polling based resender module. Upon
- * {@link #handle(String, IMessage, Map)} the document is added to a queue there
- * is a background poller task that checks for resending (see {@link #resend()}
- * ). If resending fails an exception is thrown.
+ * {@link #handle(String, IMessage, Map)} the document is added to a queue there is a background
+ * poller task that checks for resending (see {@link #resend()} ). If resending fails an exception
+ * is thrown.
  *
  * @author Philip Helger
  * @since 2.2.0
@@ -81,8 +81,8 @@ public class InMemoryResenderModule extends AbstractActiveResenderModule
                       @Nullable final Map <String, Object> aOptions) throws AS2Exception
   {
     // Get the action to be used
-    String sResendAction = aOptions == null ? null
-                                            : (String) aOptions.get (IProcessorResenderModule.OPTION_RESEND_ACTION);
+    String sResendAction = aOptions == null ? null : (String) aOptions.get (
+                                                                            IProcessorResenderModule.OPTION_RESEND_ACTION);
     if (sResendAction == null)
     {
       LOGGER.warn ("The resending action is missing - default to message sending!");

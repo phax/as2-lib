@@ -49,8 +49,7 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * The MIC (Message Integrity Check) value. Basically a hash value over the
- * message.
+ * The MIC (Message Integrity Check) value. Basically a hash value over the message.
  *
  * @author Philip Helger
  * @since 4.4.0
@@ -79,8 +78,7 @@ public class MIC implements ICloneable <MIC>
   }
 
   /**
-   * @return The algorithm that was used to create the MIC. Never
-   *         <code>null</code>.
+   * @return The algorithm that was used to create the MIC. Never <code>null</code>.
    */
   @Nonnull
   public ECryptoAlgorithmSign getDigestAlgorithm ()
@@ -89,9 +87,8 @@ public class MIC implements ICloneable <MIC>
   }
 
   /**
-   * @return This is the Base64-encoded message digest of the specified
-   *         algorithm. The exact layout must be
-   *         <code>&lt;Base64EncodedMIC&gt;, &lt;MICAlgorithmID&gt;</code>
+   * @return This is the Base64-encoded message digest of the specified algorithm. The exact layout
+   *         must be <code>&lt;Base64EncodedMIC&gt;, &lt;MICAlgorithmID&gt;</code>
    */
   @Nonnull
   @Nonempty
@@ -144,7 +141,8 @@ public class MIC implements ICloneable <MIC>
     if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final MIC rhs = (MIC) o;
-    return Arrays.equals (m_aMICBytes, rhs.m_aMICBytes) && _getUnified (m_eDigestAlgorithm).equals (_getUnified (rhs.m_eDigestAlgorithm));
+    return Arrays.equals (m_aMICBytes, rhs.m_aMICBytes) &&
+           _getUnified (m_eDigestAlgorithm).equals (_getUnified (rhs.m_eDigestAlgorithm));
   }
 
   @Override
@@ -156,19 +154,21 @@ public class MIC implements ICloneable <MIC>
   @Override
   public String toString ()
   {
-    return new ToStringGenerator (this).append ("MICBytes", m_aMICBytes).append ("DigestAlgorithm", m_eDigestAlgorithm).getToString ();
+    return new ToStringGenerator (this).append ("MICBytes", m_aMICBytes)
+                                       .append ("DigestAlgorithm", m_eDigestAlgorithm)
+                                       .getToString ();
   }
 
   /**
-   * Parse the provided String representation of the MIC into a {@link MIC}
-   * object. This is the reverse operation to {@link MIC#getAsAS2String()}.
+   * Parse the provided String representation of the MIC into a {@link MIC} object. This is the
+   * reverse operation to {@link MIC#getAsAS2String()}.
    *
    * @param sMIC
    *        The MIC string to parse. May be <code>null</code>.
    * @return <code>null</code> if an empty string was provided.
    * @throws IllegalArgumentException
-   *         If the layout is invalid and either the bytes could not be Base64
-   *         decoded or if an invalid signing crypto algorithm was used.
+   *         If the layout is invalid and either the bytes could not be Base64 decoded or if an
+   *         invalid signing crypto algorithm was used.
    */
   @Nullable
   public static MIC parse (@Nullable final String sMIC)

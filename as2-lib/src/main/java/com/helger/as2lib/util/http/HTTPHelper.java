@@ -97,8 +97,8 @@ public final class HTTPHelper
   /** The value of the Content-Transfer-Encoding header (if provided) */
   public static final String MA_HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING = "HTTP_ORIGINAL_CONTENT_TRANSFER_ENCODING";
   /**
-   * The original content length before any eventual decoding (only if
-   * Content-Transfer-Encoding is provided)
+   * The original content length before any eventual decoding (only if Content-Transfer-Encoding is
+   * provided)
    */
   public static final String MA_HTTP_ORIGINAL_CONTENT_LENGTH = "HTTP_ORIGINAL_CONTENT_LENGTH";
 
@@ -141,8 +141,7 @@ public final class HTTPHelper
   }
 
   /**
-   * @return the global dumper for incoming HTTP requests or <code>null</code>
-   *         if none is present
+   * @return the global dumper for incoming HTTP requests or <code>null</code> if none is present
    * @since 3.0.1
    */
   @Nullable
@@ -152,8 +151,7 @@ public final class HTTPHelper
   }
 
   /**
-   * @return the global dumper factory for incoming HTTP requests. Never
-   *         <code>null</code>.
+   * @return the global dumper factory for incoming HTTP requests. Never <code>null</code>.
    * @since 4.4.0
    */
   @Nonnull
@@ -176,12 +174,11 @@ public final class HTTPHelper
   }
 
   /**
-   * Read headers and payload from the passed input stream provider. For large
-   * file support, return {@link DataSource}. If is on, data is not read.
+   * Read headers and payload from the passed input stream provider. For large file support, return
+   * {@link DataSource}. If is on, data is not read.
    *
    * @param aRDP
-   *        The abstract input stream provider to use. May not be
-   *        <code>null</code>.
+   *        The abstract input stream provider to use. May not be <code>null</code>.
    * @param aResponseHandler
    *        The HTTP response handler to be used. May not be <code>null</code>.
    * @param aMsg
@@ -359,8 +356,8 @@ public final class HTTPHelper
   }
 
   /**
-   * Send a simple HTTP response that only contains the HTTP status code and the
-   * respective descriptive text. An empty header map us used.
+   * Send a simple HTTP response that only contains the HTTP status code and the respective
+   * descriptive text. An empty header map us used.
    *
    * @param aResponseHandler
    *        The response handler to be used.
@@ -393,8 +390,8 @@ public final class HTTPHelper
   }
 
   /**
-   * Read chunk size (including the newline ending it). Discard any other data,
-   * e.g. headers that my be there.
+   * Read chunk size (including the newline ending it). Discard any other data, e.g. headers that my
+   * be there.
    *
    * @param aIS
    *        - input stream to read from

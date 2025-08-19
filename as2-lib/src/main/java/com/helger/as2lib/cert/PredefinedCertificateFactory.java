@@ -40,9 +40,8 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.commons.ValueEnforcer;
 
 /**
- * An example implementation of a Certificate factory that uses an external
- * {@link KeyStore}. Nevertheless the password to load the key store must be set
- * via {@link #setPassword(String)}.
+ * An example implementation of a Certificate factory that uses an external {@link KeyStore}.
+ * Nevertheless the password to load the key store must be set via {@link #setPassword(String)}.
  *
  * @author Philip Helger
  * @since 4.6.4

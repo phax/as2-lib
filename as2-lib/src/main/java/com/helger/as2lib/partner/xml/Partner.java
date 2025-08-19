@@ -45,8 +45,8 @@ import com.helger.commons.hashcode.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * This class represents a single partner. A partnership consists of 2 partners
- * - a sender and a receiver.
+ * This class represents a single partner. A partnership consists of 2 partners - a sender and a
+ * receiver.
  *
  * @author Philip Helger
  * @since 2.2.0
@@ -61,7 +61,9 @@ public class Partner implements IPartner
   {
     m_aAttrs = new StringMap (aAttrs);
     if (!m_aAttrs.containsKey (PARTNER_NAME))
-      throw new IllegalArgumentException ("The provided attributes are missing the required '" + PARTNER_NAME + "' attribute!");
+      throw new IllegalArgumentException ("The provided attributes are missing the required '" +
+                                          PARTNER_NAME +
+                                          "' attribute!");
   }
 
   @Nonnull

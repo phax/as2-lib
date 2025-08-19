@@ -116,21 +116,19 @@ public final class AS2Helper
    * @param bSignMDN
    *        <code>true</code> to sign the MDN
    * @param bIncludeCertificateInSignedContent
-   *        <code>true</code> if the passed certificate should be part of the
-   *        signed content, <code>false</code> if the certificate should not be
-   *        put in the content. E.g. for PEPPOL this must be <code>true</code>.
+   *        <code>true</code> if the passed certificate should be part of the signed content,
+   *        <code>false</code> if the certificate should not be put in the content. E.g. for PEPPOL
+   *        this must be <code>true</code>.
    * @param eMICAlg
-   *        The MIC algorithm to be used. Must be present if bSignMDN is
-   *        <code>true</code>.
+   *        The MIC algorithm to be used. Must be present if bSignMDN is <code>true</code>.
    * @param bUseOldRFC3851MicAlgs
-   *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g.
-   *        <code>sha1</code>), <code>false</code> to use the new RFC 5751 MIC
-   *        algorithm names (e.g. <code>sha-1</code>).
+   *        <code>true</code> to use the old RFC 3851 MIC algorithm names (e.g. <code>sha1</code>),
+   *        <code>false</code> to use the new RFC 5751 MIC algorithm names (e.g.
+   *        <code>sha-1</code>).
    * @param bRemoveCmsAlgorithmProtect
-   *        if <code>true</code>, the CMS attribute "AlgorithmProtect" will be
-   *        removed. This is needed in compatibility with e.g. IBM Sterling.
-   *        Default value should be <code>false</code>. Since 4.10.1. See Issue
-   *        #137.
+   *        if <code>true</code>, the CMS attribute "AlgorithmProtect" will be removed. This is
+   *        needed in compatibility with e.g. IBM Sterling. Default value should be
+   *        <code>false</code>. Since 4.10.1. See Issue #137.
    * @throws Exception
    *         In case something internally goes wrong
    */
@@ -248,15 +246,12 @@ public final class AS2Helper
    * @param aSession
    *        AS2 session to be used. May not be <code>null</code>.
    * @param aMsg
-   *        The source AS2 message for which the MDN is to be created. May not
-   *        be <code>null</code>.
+   *        The source AS2 message for which the MDN is to be created. May not be <code>null</code>.
    * @param aDisposition
-   *        The disposition - either success or error. May not be
-   *        <code>null</code>.
+   *        The disposition - either success or error. May not be <code>null</code>.
    * @param sText
    *        The text to be send. May not be <code>null</code>.
-   * @return The created MDN object which is already attached to the passed
-   *         source AS2 message.
+   * @return The created MDN object which is already attached to the passed source AS2 message.
    * @throws Exception
    *         In case of an error
    */
@@ -285,6 +280,7 @@ public final class AS2Helper
     aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
     aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
     // Set the appropriate key store aliases
+    // When creating a sync MDN, this must be swapped
     aMDN.partnership ().setSenderX509Alias (aPartnership.getReceiverX509Alias ());
     aMDN.partnership ().setReceiverX509Alias (aPartnership.getSenderX509Alias ());
     // Update the partnership
@@ -463,8 +459,8 @@ public final class AS2Helper
         {
           final Object aPartContent = aReportPart.getContent ();
           if (LOGGER.isDebugEnabled ())
-            LOGGER.debug (aPartContent == null ? "Report part content is null"
-                                               : "Report part content is a " + aPartContent.getClass ().getName ());
+            LOGGER.debug (aPartContent == null ? "Report part content is null" : "Report part content is a " +
+                                                                                 aPartContent.getClass ().getName ());
           // XXX is this "toString" really a correct solution?
           aMDN.setText (aPartContent.toString ());
         }
@@ -473,9 +469,8 @@ public final class AS2Helper
           {
             // https://github.com/phax/as2-lib/issues/100
             final String sCTE = aReportPart.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, null);
-            try (
-                final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
-                                                                                                    sCTE))
+            try (final InputStream aRealIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aReportPart.getInputStream (),
+                                                                                                     sCTE))
             {
               final InternetHeaders aDispositionHeaders = new InternetHeaders (aRealIS);
               aMDN.attrs ()

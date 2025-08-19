@@ -52,8 +52,8 @@ import com.helger.commons.callback.CallbackList;
 import com.helger.commons.callback.exception.IExceptionCallback;
 
 /**
- * An implementation of {@link AbstractMessageProcessor} that uses a separate
- * thread for performing the main actions.
+ * An implementation of {@link AbstractMessageProcessor} that uses a separate thread for performing
+ * the main actions.
  *
  * @author Philip Helger
  */
@@ -67,7 +67,9 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
     @CodingStyleguideUnaware
     private final Map <String, Object> m_aOptions;
 
-    public HandleObject (@Nonnull final String sAction, @Nonnull final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+    public HandleObject (@Nonnull final String sAction,
+                         @Nonnull final IMessage aMsg,
+                         @Nullable final Map <String, Object> aOptions)
     {
       m_sAction = sAction;
       m_aMsg = aMsg;
@@ -92,7 +94,9 @@ public class AsyncMessageProcessor extends AbstractMessageProcessor
           // Block until the first object is in the queue
           final HandleObject aCurrentObject = m_aQueue.poll (1, TimeUnit.SECONDS);
           if (aCurrentObject != null)
-            AsyncMessageProcessor.this.executeAction (aCurrentObject.m_sAction, aCurrentObject.m_aMsg, aCurrentObject.m_aOptions);
+            AsyncMessageProcessor.this.executeAction (aCurrentObject.m_sAction,
+                                                      aCurrentObject.m_aMsg,
+                                                      aCurrentObject.m_aOptions);
         }
         catch (final InterruptedException ex)
         {

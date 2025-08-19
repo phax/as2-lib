@@ -172,9 +172,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   /**
-   * @return The consumer for the effective certificate upon signature
-   *         verification. May be <code>null</code>. The default is
-   *         <code>null</code>.
+   * @return The consumer for the effective certificate upon signature verification. May be
+   *         <code>null</code>. The default is <code>null</code>.
    * @since 4.4.1
    */
   @Nullable
@@ -235,15 +234,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   /**
-   * Override this method to store pending MDN messages somewhere else than on
-   * disc.
+   * Override this method to store pending MDN messages somewhere else than on disc.
    *
    * @param aMsg
-   *        The message for which an async MDN is requested. Never
-   *        <code>null</code>.
+   *        The message for which an async MDN is requested. Never <code>null</code>.
    * @param sMsgFilename
-   *        The filename (without the path), derived from the Message ID, in
-   *        which the data should be stored.
+   *        The filename (without the path), derived from the Message ID, in which the data should
+   *        be stored.
    * @return <code>null</code> if the configuration is not correct.
    * @throws AS2Exception
    *         In case of an error
@@ -274,9 +271,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   /**
-   * For storing original MIC and outgoing file into pending information file.
-   * Override this method if you want to store the pending MDN information in a
-   * separate data storage like a DB etc.
+   * For storing original MIC and outgoing file into pending information file. Override this method
+   * if you want to store the pending MDN information in a separate data storage like a DB etc.
    *
    * @param aMsg
    *        AS2Message. May not be <code>null</code>.
@@ -338,34 +334,30 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   /**
    * From RFC 4130 section 7.3.1:
    * <ul>
-   * <li>For any signed messages, the MIC to be returned is calculated on the
-   * RFC1767/RFC3023 MIME header and content. Canonicalization on the MIME
-   * headers MUST be performed before the MIC is calculated, since the sender
-   * requesting the signed receipt was also REQUIRED to canonicalize.</li>
-   * <li>For encrypted, unsigned messages, the MIC to be returned is calculated
-   * on the decrypted RFC 1767/RFC3023 MIME header and content. The content
-   * after decryption MUST be canonicalized before the MIC is calculated.</li>
-   * <li>For unsigned, unencrypted messages, the MIC MUST be calculated over the
-   * message contents without the MIME or any other RFC 2822 headers, since
-   * these are sometimes altered or reordered by Mail Transport Agents
-   * (MTAs).</li>
+   * <li>For any signed messages, the MIC to be returned is calculated on the RFC1767/RFC3023 MIME
+   * header and content. Canonicalization on the MIME headers MUST be performed before the MIC is
+   * calculated, since the sender requesting the signed receipt was also REQUIRED to
+   * canonicalize.</li>
+   * <li>For encrypted, unsigned messages, the MIC to be returned is calculated on the decrypted RFC
+   * 1767/RFC3023 MIME header and content. The content after decryption MUST be canonicalized before
+   * the MIC is calculated.</li>
+   * <li>For unsigned, unencrypted messages, the MIC MUST be calculated over the message contents
+   * without the MIME or any other RFC 2822 headers, since these are sometimes altered or reordered
+   * by Mail Transport Agents (MTAs).</li>
    * </ul>
    * So headers must be included if signing or crypting is enabled.<br>
    * <br>
    * From RFC 5402 section 4.1:
    * <ul>
-   * <li>MIC Calculation for Signed Message: For any signed message, the MIC to
-   * be returned is calculated over the same data that was signed in the
-   * original message as per [AS1]. The signed content will be a MIME bodypart
-   * that contains either compressed or uncompressed data.</li>
-   * <li>MIC Calculation for Encrypted, Unsigned Message: For encrypted,
-   * unsigned messages, the MIC to be returned is calculated over the
-   * uncompressed data content including all MIME header fields and any applied
-   * Content-Transfer-Encoding.</li>
-   * <li>MIC Calculation for Unencrypted, Unsigned Message: For unsigned,
-   * unencrypted messages, the MIC is calculated over the uncompressed data
-   * content including all MIME header fields and any applied
-   * Content-Transfer-Encoding</li>
+   * <li>MIC Calculation for Signed Message: For any signed message, the MIC to be returned is
+   * calculated over the same data that was signed in the original message as per [AS1]. The signed
+   * content will be a MIME bodypart that contains either compressed or uncompressed data.</li>
+   * <li>MIC Calculation for Encrypted, Unsigned Message: For encrypted, unsigned messages, the MIC
+   * to be returned is calculated over the uncompressed data content including all MIME header
+   * fields and any applied Content-Transfer-Encoding.</li>
+   * <li>MIC Calculation for Unencrypted, Unsigned Message: For unsigned, unencrypted messages, the
+   * MIC is calculated over the uncompressed data content including all MIME header fields and any
+   * applied Content-Transfer-Encoding</li>
    * </ul>
    * So headers must always be included if compression is enabled.
    *
@@ -438,8 +430,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     return aCompressedGenerator.generate (aData, eCompressionType.createOutputCompressor ());
   }
 
-  private static void _logMimeBodyPart (@Nonnull final MimeBodyPart aMimePart,
-                                        @Nonnull final String sContext) throws IOException, MessagingException
+  private static void _logMimeBodyPart (@Nonnull final MimeBodyPart aMimePart, @Nonnull final String sContext)
+                                                                                                               throws IOException,
+                                                                                                               MessagingException
   {
     // Should always be false in production
     if (false)
@@ -550,8 +543,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  protected MimeBodyPart secure (@Nonnull final IMessage aMsg,
-                                 @Nonnull final EContentTransferEncoding eCTE) throws Exception
+  protected MimeBodyPart secure (@Nonnull final IMessage aMsg, @Nonnull final EContentTransferEncoding eCTE)
+                                                                                                             throws Exception
   {
     final Partnership aPartnership = aMsg.partnership ();
     final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
@@ -664,8 +657,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   /**
-   * Update the HTTP headers based on the provided message, before sending takes
-   * place.
+   * Update the HTTP headers based on the provided message, before sending takes place.
    *
    * @param aHeaderSetter
    *        The connection abstraction. Never <code>null</code>.
@@ -787,6 +779,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
       aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
       // Set the appropriate key store aliases
+      // For synchronous MDN, this must be swapped
       aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
       aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
       // Update the partnership

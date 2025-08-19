@@ -73,8 +73,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 
 /**
- * A simple client that allows for sending AS2 Messages and retrieving of
- * synchronous MDNs.
+ * A simple client that allows for sending AS2 Messages and retrieving of synchronous MDNs.
  *
  * @author Philip Helger
  */
@@ -90,9 +89,8 @@ public class AS2Client
   {}
 
   /**
-   * Set the factory to create {@link AS2SenderModule} objects internally. By
-   * default a new instance of {@link AS2SenderModule} is created so you don't
-   * need to call this method.
+   * Set the factory to create {@link AS2SenderModule} objects internally. By default a new instance
+   * of {@link AS2SenderModule} is created so you don't need to call this method.
    *
    * @param aAS2SenderModuleFactory
    *        The factory to be used. May not be <code>null</code>.
@@ -129,9 +127,8 @@ public class AS2Client
   }
 
   /**
-   * Create a new {@link Partnership} object that is later used for message
-   * creation. If you override this method, please ensure to call this class'
-   * version of the method first.
+   * Create a new {@link Partnership} object that is later used for message creation. If you
+   * override this method, please ensure to call this class' version of the method first.
    *
    * @param aSettings
    *        The current client settings. Never <code>null</code>.
@@ -207,8 +204,8 @@ public class AS2Client
   @Nonnull
   @OverrideOnDemand
   @OverridingMethodsMustInvokeSuper
-  protected AS2Message createMessage (@Nonnull final Partnership aPartnership,
-                                      @Nonnull final AS2ClientRequest aRequest) throws MessagingException
+  protected AS2Message createMessage (@Nonnull final Partnership aPartnership, @Nonnull final AS2ClientRequest aRequest)
+                                                                                                                         throws MessagingException
   {
     final AS2Message aMsg = createAS2MessageObj ();
     aMsg.setContentType (aRequest.getContentType ());
@@ -229,8 +226,7 @@ public class AS2Client
   }
 
   /**
-   * @return The certificate factory instance to be used. May not be
-   *         <code>null</code>.
+   * @return The certificate factory instance to be used. May not be <code>null</code>.
    */
   @Nonnull
   @OverrideOnDemand
@@ -240,9 +236,8 @@ public class AS2Client
   }
 
   /**
-   * This method initializes the certificate factory. If you override this
-   * method, please make sure that you call
-   * <code>aSession.setCertificateFactory (aCertFactory);</code>.
+   * This method initializes the certificate factory. If you override this method, please make sure
+   * that you call <code>aSession.setCertificateFactory (aCertFactory);</code>.
    *
    * @param aSettings
    *        The AS2 client settings. Never <code>null</code>.
@@ -252,8 +247,8 @@ public class AS2Client
    *         In case of error
    */
   @OverrideOnDemand
-  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings,
-                                         @Nonnull final AS2Session aSession) throws AS2Exception
+  protected void initCertificateFactory (@Nonnull final AS2ClientSettings aSettings, @Nonnull final AS2Session aSession)
+                                                                                                                         throws AS2Exception
   {
     final StringMap aParams = new StringMap ();
     // TYPE is the only parameter that must be present in initDynamicComponents
@@ -278,8 +273,7 @@ public class AS2Client
 
         aCertFactory.setPassword (aSettings.getKeyStorePassword ());
         aCertFactory.setSaveChangesToFile (false);
-        try (
-            final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
+        try (final NonBlockingByteArrayInputStream aBAIS = new NonBlockingByteArrayInputStream (aSettings.getKeyStoreBytes ()))
         {
           aCertFactory.load (aBAIS, aSettings.getKeyStorePassword ().toCharArray ());
         }
@@ -308,8 +302,7 @@ public class AS2Client
   }
 
   /**
-   * Init the partnership factory. If you override this method, please make sure
-   * that you call
+   * Init the partnership factory. If you override this method, please make sure that you call
    * <code>aSession.setPartnershipFactory (aPartnershipFactory);</code>.
    *
    * @param aSession
@@ -327,8 +320,7 @@ public class AS2Client
   }
 
   /**
-   * Init the message processor. If you override this method, please make sure
-   * that you call
+   * Init the message processor. If you override this method, please make sure that you call
    * <code>aSession.setMessageProcessor (aMessageProcessor);</code>.
    *
    * @param aSession
@@ -357,8 +349,7 @@ public class AS2Client
   }
 
   /**
-   * Create the AS2 session to be used. This method must ensure an eventually
-   * needed proxy is set.
+   * Create the AS2 session to be used. This method must ensure an eventually needed proxy is set.
    *
    * @return The new AS2 session and never <code>null</code>.
    */
@@ -372,8 +363,8 @@ public class AS2Client
   }
 
   /**
-   * Callback method that is invoked before the main sending. This may be used
-   * to customize the message.
+   * Callback method that is invoked before the main sending. This may be used to customize the
+   * message.
    *
    * @param aSettings
    *        Client settings. Never <code>null</code>.

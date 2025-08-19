@@ -53,8 +53,7 @@ import com.helger.commons.collection.impl.ICommonsList;
 import com.helger.commons.state.EChange;
 
 /**
- * Abstract empty implementation of {@link IMessageProcessor}. It provides all
- * methods except
+ * Abstract empty implementation of {@link IMessageProcessor}. It provides all methods except
  * {@link #handle(String, com.helger.as2lib.message.IMessage, java.util.Map)}.
  *
  * @author Philip Helger
@@ -163,7 +162,12 @@ public abstract class AbstractMessageProcessor extends AbstractDynamicComponent 
     final ICommonsList <IProcessorModule> aModulesFound = new CommonsArrayList <> ();
 
     if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("  handling action '" + sAction + "' on message '" + aMsg.getMessageID () + "' with options " + aOptions);
+      LOGGER.debug ("  handling action '" +
+                    sAction +
+                    "' on message '" +
+                    aMsg.getMessageID () +
+                    "' with options " +
+                    aOptions);
 
     final ICommonsList <IProcessorModule> aAllModules = getAllModules ();
     for (final IProcessorModule aModule : aAllModules)

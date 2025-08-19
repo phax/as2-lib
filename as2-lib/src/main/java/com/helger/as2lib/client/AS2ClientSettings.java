@@ -151,8 +151,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The key store file. May be <code>null</code> if not yet set. Either
-   *         File or byte[] may be set. Never both.
+   * @return The key store file. May be <code>null</code> if not yet set. Either File or byte[] may
+   *         be set. Never both.
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
   @Nullable
@@ -162,8 +162,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The key store bytes. May be <code>null</code> if not yet set.
-   *         Either File or byte[] may be set. Never both.
+   * @return The key store bytes. May be <code>null</code> if not yet set. Either File or byte[] may
+   *         be set. Never both.
    * @see #setKeyStore(IKeyStoreType, byte[], String)
    * @since 4.3.1
    */
@@ -192,8 +192,7 @@ public class AS2ClientSettings
    * @param aFile
    *        The key store file. May not be <code>null</code>.
    * @param sPassword
-   *        The password used to open the key store. May not be
-   *        <code>null</code>.
+   *        The password used to open the key store. May not be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -212,16 +211,15 @@ public class AS2ClientSettings
   }
 
   /**
-   * Set the details of the certificate store of the client. If the keystore is
-   * provided as a byte array using this method, changes will NOT be saved.
+   * Set the details of the certificate store of the client. If the keystore is provided as a byte
+   * array using this method, changes will NOT be saved.
    *
    * @param aKeyStoreType
    *        Key store type. May not be <code>null</code>.
    * @param aBytes
    *        The key store bytes. May not be <code>null</code>.
    * @param sPassword
-   *        The password used to open the key store. May not be
-   *        <code>null</code>.
+   *        The password used to open the key store. May not be <code>null</code>.
    * @return this for chaining
    * @since 4.3.1
    */
@@ -241,8 +239,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return <code>true</code> if key store changes should be written back to
-   *         the file, <code>false</code> if not.
+   * @return <code>true</code> if key store changes should be written back to the file,
+   *         <code>false</code> if not.
    */
   public final boolean isSaveKeyStoreChangesToFile ()
   {
@@ -250,12 +248,12 @@ public class AS2ClientSettings
   }
 
   /**
-   * Change the behavior if all changes to the keystore should trigger a saving
-   * to the original file.
+   * Change the behavior if all changes to the keystore should trigger a saving to the original
+   * file.
    *
    * @param bSaveKeyStoreChangesToFile
-   *        <code>true</code> if key store changes should be written back to the
-   *        file, <code>false</code> if not.
+   *        <code>true</code> if key store changes should be written back to the file,
+   *        <code>false</code> if not.
    * @return this for chaining
    */
   @Nonnull
@@ -286,8 +284,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The senders key alias in the keystore. May be <code>null</code> if
-   *         not set.
+   * @return The senders key alias in the keystore. May be <code>null</code> if not set.
    * @see #setSenderData(String, String, String)
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
@@ -305,8 +302,7 @@ public class AS2ClientSettings
    * @param sEmailAddress
    *        Sender email address. May not be <code>null</code>.
    * @param sKeyAlias
-   *        Alias into the keystore for identifying the sender's key. May not be
-   *        <code>null</code>.
+   *        Alias into the keystore for identifying the sender's key. May not be <code>null</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -331,8 +327,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The receivers key alias in the keystore. May be <code>null</code>
-   *         if not set.
+   * @return The receivers key alias in the keystore. May be <code>null</code> if not set.
    * @see #setReceiverData(String, String, String)
    * @see #setKeyStore(IKeyStoreType, File, String)
    */
@@ -343,8 +338,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The destination URL to send the request to. May be
-   *         <code>null</code> if not set.
+   * @return The destination URL to send the request to. May be <code>null</code> if not set.
    * @see #setReceiverData(String, String, String)
    */
   @Nullable
@@ -359,11 +353,10 @@ public class AS2ClientSettings
    * @param sAS2ID
    *        Receiver AS2 ID. May not be <code>null</code>.
    * @param sKeyAlias
-   *        Alias into the keystore for identifying the receivers certificate.
-   *        May not be <code>null</code>.
+   *        Alias into the keystore for identifying the receivers certificate. May not be
+   *        <code>null</code>.
    * @param sAS2URL
-   *        Destination URL to send the request to. May not be <code>null</code>
-   *        .
+   *        Destination URL to send the request to. May not be <code>null</code> .
    * @return this for chaining
    */
   @Nonnull
@@ -378,9 +371,9 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The explicit certificate of the recipient. This might be used to
-   *         dynamically add it to the certificate factory for dynamic
-   *         partnership handling (like in PEPPOL). May be <code>null</code>.
+   * @return The explicit certificate of the recipient. This might be used to dynamically add it to
+   *         the certificate factory for dynamic partnership handling (like in PEPPOL). May be
+   *         <code>null</code>.
    * @see #setReceiverCertificate(X509Certificate)
    */
   @Nullable
@@ -390,9 +383,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * Explicitly set the receiver certificate to be used. This might be used to
-   * dynamically add it to the certificate factory for dynamic partnership
-   * handling (like in PEPPOL).
+   * Explicitly set the receiver certificate to be used. This might be used to dynamically add it to
+   * the certificate factory for dynamic partnership handling (like in PEPPOL).
    *
    * @param aReceiverCertificate
    *        The receiver certificate. May be <code>null</code>.
@@ -406,8 +398,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The algorithm used to encrypt the message. May be <code>null</code>
-   *         if not set.
+   * @return The algorithm used to encrypt the message. May be <code>null</code> if not set.
    * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
    */
   @Nullable
@@ -417,8 +408,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The ID of the algorithm used to encrypt the message. May be
-   *         <code>null</code> if not set.
+   * @return The ID of the algorithm used to encrypt the message. May be <code>null</code> if not
+   *         set.
    * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
    */
   @Nullable
@@ -428,8 +419,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The algorithm used to sign the message. May be <code>null</code> if
-   *         not set.
+   * @return The algorithm used to sign the message. May be <code>null</code> if not set.
    * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
    */
   @Nullable
@@ -439,8 +429,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The ID of the algorithm used to sign the message. May be
-   *         <code>null</code> if not set.
+   * @return The ID of the algorithm used to sign the message. May be <code>null</code> if not set.
    * @see #setEncryptAndSign(ECryptoAlgorithmCrypt, ECryptoAlgorithmSign)
    */
   @Nullable
@@ -453,11 +442,11 @@ public class AS2ClientSettings
    * Set the encryption and signing algorithms to use.
    *
    * @param eCryptAlgo
-   *        The encryption algorithm. May be <code>null</code> to indicate that
-   *        the message should not be encrypted.
+   *        The encryption algorithm. May be <code>null</code> to indicate that the message should
+   *        not be encrypted.
    * @param eSignAlgo
-   *        The signing algorithm. May be <code>null</code> to indicate that the
-   *        message should not be signed.
+   *        The signing algorithm. May be <code>null</code> to indicate that the message should not
+   *        be signed.
    * @return this for chaining.
    */
   @Nonnull
@@ -470,8 +459,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The compression type used to compress the message. May be
-   *         <code>null</code> to indicate no compression.
+   * @return The compression type used to compress the message. May be <code>null</code> to indicate
+   *         no compression.
    * @see #setCompress(ECompressionType, boolean)
    */
   @Nullable
@@ -481,11 +470,11 @@ public class AS2ClientSettings
   }
 
   /**
-   * Check if compress before sign or sign before compress is used. This flag is
-   * only evaluated if {@link #getCompressionType()} is not <code>null</code>.
+   * Check if compress before sign or sign before compress is used. This flag is only evaluated if
+   * {@link #getCompressionType()} is not <code>null</code>.
    *
-   * @return <code>true</code> to compress before signing, <code>false</code> to
-   *         sign before compressing
+   * @return <code>true</code> to compress before signing, <code>false</code> to sign before
+   *         compressing
    * @see #setCompress(ECompressionType, boolean)
    */
   public final boolean isCompressBeforeSigning ()
@@ -494,16 +483,15 @@ public class AS2ClientSettings
   }
 
   /**
-   * Enable or disable the compression of the message. Note: compression
-   * requires the receiver to support AS2 version 1.1!
+   * Enable or disable the compression of the message. Note: compression requires the receiver to
+   * support AS2 version 1.1!
    *
    * @param eCompressionType
-   *        The compression type to use. Pass <code>null</code> to not compress
-   *        the message (that is also the default).
+   *        The compression type to use. Pass <code>null</code> to not compress the message (that is
+   *        also the default).
    * @param bCompressBeforeSigning
-   *        <code>true</code> to compress the data before it is signed,
-   *        <code>false</code> to sign first and than compress the message. The
-   *        default is <code>true</code>.
+   *        <code>true</code> to compress the data before it is signed, <code>false</code> to sign
+   *        first and than compress the message. The default is <code>true</code>.
    * @return this for chaining
    */
   @Nonnull
@@ -516,8 +504,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The partnership name to be used. May be <code>null</code> if not
-   *         set.
+   * @return The partnership name to be used. May be <code>null</code> if not set.
    * @see #setPartnershipName(String)
    */
   @Nullable
@@ -541,8 +528,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return <code>true</code> if an MDN is requested at all (sync or async),
-   *         <code>false</code> if not.
+   * @return <code>true</code> if an MDN is requested at all (sync or async), <code>false</code> if
+   *         not.
    * @since 4.2.0
    */
   public final boolean isMDNRequested ()
@@ -554,8 +541,8 @@ public class AS2ClientSettings
    * Determine if an MDN is requested at all.
    *
    * @param bMDNRequested
-   *        <code>true</code> to request an MDN (is the default),
-   *        <code>false</code> to not request one.
+   *        <code>true</code> to request an MDN (is the default), <code>false</code> to not request
+   *        one.
    * @return this for chaining
    * @since 4.2.0
    */
@@ -567,12 +554,11 @@ public class AS2ClientSettings
   }
 
   /**
-   * Get the current MDN options. Since 3.0.4 the MDN options (corresponding to
-   * the 'Disposition-Notification-Options' header) may be <code>null</code>.
+   * Get the current MDN options. Since 3.0.4 the MDN options (corresponding to the
+   * 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
-   * @return The MDN options (<code>Disposition-Notification-Options</code>
-   *         header) to be used. May be <code>null</code>. The default is
-   *         defined in {@link #DEFAULT_MDN_OPTIONS}.
+   * @return The MDN options (<code>Disposition-Notification-Options</code> header) to be used. May
+   *         be <code>null</code>. The default is defined in {@link #DEFAULT_MDN_OPTIONS}.
    * @see #setMDNOptions(DispositionOptions)
    * @see #setMDNOptions(String)
    */
@@ -583,8 +569,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return <code>true</code> if MDN options are specified (the default),
-   *         <code>false</code> if not.
+   * @return <code>true</code> if MDN options are specified (the default), <code>false</code> if
+   *         not.
    * @since 3.0.4
    */
   public final boolean hasMDNOptions ()
@@ -593,12 +579,12 @@ public class AS2ClientSettings
   }
 
   /**
-   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding
-   * to the 'Disposition-Notification-Options' header) may be <code>null</code>.
+   * Set the MDN options to be used. Since 3.0.4 the MDN options (corresponding to the
+   * 'Disposition-Notification-Options' header) may be <code>null</code>.
    *
    * @param sMDNOptions
-   *        The <code>Disposition-Notification-Options</code> String to be used.
-   *        May be <code>null</code>.
+   *        The <code>Disposition-Notification-Options</code> String to be used. May be
+   *        <code>null</code>.
    * @return this for chaining
    * @see #setMDNOptions(DispositionOptions)
    */
@@ -613,8 +599,8 @@ public class AS2ClientSettings
    * Set the MDN options to be used.
    *
    * @param aDispositionOptions
-   *        The <code>Disposition-Notification-Options</code> structured object
-   *        to be used. May not be <code>null</code>.
+   *        The <code>Disposition-Notification-Options</code> structured object to be used. May not
+   *        be <code>null</code>.
    * @return this for chaining
    * @see #setMDNOptions(String)
    */
@@ -626,9 +612,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The URL for the asynchronous MDN. If this is <code>null</code> than
-   *         a synchronous MDN is requested. By default a synchronous MDN is
-   *         requested.
+   * @return The URL for the asynchronous MDN. If this is <code>null</code> than a synchronous MDN
+   *         is requested. By default a synchronous MDN is requested.
    * @since 3.0.4
    */
   @Nullable
@@ -638,8 +623,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return <code>true</code> if an asynchronous MDN is requested,
-   *         <code>false</code> if not (default).
+   * @return <code>true</code> if an asynchronous MDN is requested, <code>false</code> if not
+   *         (default).
    * @since 3.0.4
    * @see #getAsyncMDNUrl()
    */
@@ -652,8 +637,8 @@ public class AS2ClientSettings
    * Set the asynchronous MDN URL to be used.
    *
    * @param sAsyncMDNUrl
-   *        May be <code>null</code> in which case a synchronous MDN is
-   *        requested (which is also the default).
+   *        May be <code>null</code> in which case a synchronous MDN is requested (which is also the
+   *        default).
    * @return this for chaining
    * @since 3.0.4
    */
@@ -665,8 +650,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The message ID format to use. Never <code>null</code>. It defaults
-   *         to {@value #DEFAULT_MESSAGE_ID_FORMAT}.
+   * @return The message ID format to use. Never <code>null</code>. It defaults to
+   *         {@value #DEFAULT_MESSAGE_ID_FORMAT}.
    * @see #DEFAULT_MESSAGE_ID_FORMAT
    * @see #setMessageIDFormat(String)
    */
@@ -677,8 +662,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * Set the Message ID format. This string may contain placeholders as
-   * supported by the <code>com.helger.as2lib.params</code> parameters parsers.
+   * Set the Message ID format. This string may contain placeholders as supported by the
+   * <code>com.helger.as2lib.params</code> parameters parsers.
    *
    * @param sMessageIDFormat
    *        The message ID format to use. May not be <code>null</code>.
@@ -692,9 +677,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The number of retries to be performed. May be &le; 0 meaning that
-   *         no retry will happen. The default value is
-   *         {@link #DEFAULT_RETRY_COUNT}.
+   * @return The number of retries to be performed. May be &le; 0 meaning that no retry will happen.
+   *         The default value is {@link #DEFAULT_RETRY_COUNT}.
    * @see #setRetryCount(int)
    */
   public final int getRetryCount ()
@@ -718,8 +702,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The connection timeout. The default value is
-   *         {@link #DEFAULT_CONNECT_TIMEOUT}.
+   * @return The connection timeout. The default value is {@link #DEFAULT_CONNECT_TIMEOUT}.
    * @since 3.0.2
    */
   public final Timeout getConnectTimeout ()
@@ -745,8 +728,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The response/read timeout. The default value is
-   *         {@link #DEFAULT_RESPONSE_TIMEOUT}.
+   * @return The response/read timeout. The default value is {@link #DEFAULT_RESPONSE_TIMEOUT}.
    * @since 3.0.2
    */
   @Nonnull
@@ -773,8 +755,8 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return <code>true</code> if HTTP header values should be quoted according
-   *         to RFC 2616, <code>false</code> if not.
+   * @return <code>true</code> if HTTP header values should be quoted according to RFC 2616,
+   *         <code>false</code> if not.
    * @since 4.4.2
    */
   public final boolean isQuoteHeaderValues ()
@@ -783,13 +765,11 @@ public class AS2ClientSettings
   }
 
   /**
-   * Set whether HTTP header values for outgoing messages should be quoted or
-   * not according to RFC 2616. By default the headers are not quoted, as this
-   * might be an interoperability issue.
+   * Set whether HTTP header values for outgoing messages should be quoted or not according to RFC
+   * 2616. By default the headers are not quoted, as this might be an interoperability issue.
    *
    * @param bQuoteHeaderValues
-   *        <code>true</code> if quoting should be enabled, <code>false</code>
-   *        if not.
+   *        <code>true</code> if quoting should be enabled, <code>false</code> if not.
    * @return this for chaining
    * @since 4.4.2
    */
@@ -887,8 +867,7 @@ public class AS2ClientSettings
   }
 
   /**
-   * @return The custom verification certificate consumer to be used. May be
-   *         <code>null</code>.
+   * @return The custom verification certificate consumer to be used. May be <code>null</code>.
    * @since 4.4.5
    */
   @Nullable

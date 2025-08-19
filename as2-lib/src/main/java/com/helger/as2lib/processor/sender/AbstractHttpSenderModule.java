@@ -134,8 +134,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * @return The specific incoming dumper of this receiver. May be
-   *         <code>null</code>.
+   * @return The specific incoming dumper of this receiver. May be <code>null</code>.
    * @since v4.4.5
    */
   @Nullable
@@ -145,8 +144,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * Get the customized incoming dumper, falling back to the global incoming
-   * dumper if no specific dumper is set.
+   * Get the customized incoming dumper, falling back to the global incoming dumper if no specific
+   * dumper is set.
    *
    * @return The effective incoming dumper. May be <code>null</code>.
    * @since v4.4.5
@@ -165,8 +164,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * Set the specific incoming dumper of this receiver. If this is set, it
-   * overrides the global dumper.
+   * Set the specific incoming dumper of this receiver. If this is set, it overrides the global
+   * dumper.
    *
    * @param aHttpIncomingDumper
    *        The specific incoming dumper to be used. May be <code>null</code>.
@@ -188,8 +187,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * Set the http communication callback that is invoked with the most crucial
-   * data elements for easy logging.
+   * Set the http communication callback that is invoked with the most crucial data elements for
+   * easy logging.
    *
    * @param aRCC
    *        The callback object. May be <code>null</code>.
@@ -245,9 +244,9 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * Create the {@link SSLContext} to be used for https connections. By default
-   * the SSL context will trust all hosts and present no keys. Override this
-   * method in a subclass to customize this handling.
+   * Create the {@link SSLContext} to be used for https connections. By default the SSL context will
+   * trust all hosts and present no keys. Override this method in a subclass to customize this
+   * handling.
    *
    * @return The created {@link SSLContext}. May not be <code>null</code>.
    * @throws GeneralSecurityException
@@ -265,11 +264,11 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
 
   /**
    * Get the hostname verifier to be used. By default an instance of
-   * {@link HostnameVerifierVerifyAll} is returned. Override this method to
-   * change this default behavior.
+   * {@link HostnameVerifierVerifyAll} is returned. Override this method to change this default
+   * behavior.
    *
-   * @return The hostname verifier to be used. If the returned value is
-   *         <code>null</code> it will not be applied to the https connection.
+   * @return The hostname verifier to be used. If the returned value is <code>null</code> it will
+   *         not be applied to the https connection.
    */
   @Nullable
   @OverrideOnDemand
@@ -279,8 +278,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * Determine, if the SSL/TLS context should be used or not. By default this
-   * returns <code>true</code> if the URL starts with "https".
+   * Determine, if the SSL/TLS context should be used or not. By default this returns
+   * <code>true</code> if the URL starts with "https".
    *
    * @param sUrl
    *        The URL to which the request is made.
@@ -293,9 +292,8 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
   }
 
   /**
-   * Generate a HttpClient connection. It works with streams and avoids holding
-   * whole message in memory. note that bOutput, bInput, and bUseCaches are not
-   * supported
+   * Generate a HttpClient connection. It works with streams and avoids holding whole message in
+   * memory. note that bOutput, bInput, and bUseCaches are not supported
    *
    * @param sUrl
    *        URL to connect to

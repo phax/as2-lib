@@ -47,8 +47,8 @@ import com.helger.commons.http.HttpHeaderMap;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Base implementation of {@link IBaseMessage} as the base class for
- * {@link AbstractMessage} and {@link AbstractMessageMDN}.
+ * Base implementation of {@link IBaseMessage} as the base class for {@link AbstractMessage} and
+ * {@link AbstractMessageMDN}.
  *
  * @author Philip Helger
  */

@@ -54,9 +54,8 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   private IHTTPIncomingDumper m_aHttpIncomingDumper;
 
   /**
-   * @return The consumer for the effective certificate upon signature
-   *         verification. May be <code>null</code>. The default is
-   *         <code>null</code>.
+   * @return The consumer for the effective certificate upon signature verification. May be
+   *         <code>null</code>. The default is <code>null</code>.
    * @since 4.4.1
    */
   @Nullable
@@ -81,8 +80,7 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   }
 
   /**
-   * @return The specific incoming dumper of this receiver. May be
-   *         <code>null</code>.
+   * @return The specific incoming dumper of this receiver. May be <code>null</code>.
    * @since v4.4.5
    */
   @Nullable
@@ -92,8 +90,8 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   }
 
   /**
-   * Get the customized incoming dumper, falling back to the global incoming
-   * dumper if no specific dumper is set.
+   * Get the customized incoming dumper, falling back to the global incoming dumper if no specific
+   * dumper is set.
    *
    * @return The effective incoming dumper. May be <code>null</code>.
    * @since v4.4.5
@@ -112,8 +110,8 @@ public abstract class AbstractReceiverHandler implements INetModuleHandler
   }
 
   /**
-   * Set the specific incoming dumper of this receiver. If this is set, it
-   * overrides the global dumper.
+   * Set the specific incoming dumper of this receiver. If this is set, it overrides the global
+   * dumper.
    *
    * @param aHttpIncomingDumper
    *        The specific incoming dumper to be used. May be <code>null</code>.

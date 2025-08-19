@@ -48,8 +48,8 @@ import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Contains the disposition type for creating the MDN. That one determines if a
- * message processed successfully or not.
+ * Contains the disposition type for creating the MDN. That one determines if a message processed
+ * successfully or not.
  *
  * @author Philip Helger
  */
@@ -116,8 +116,8 @@ public class DispositionType
   }
 
   /**
-   * @return <code>true</code> if it is an error, <code>false</code> if not
-   *         (maybe success or warning).
+   * @return <code>true</code> if it is an error, <code>false</code> if not (maybe success or
+   *         warning).
    */
   public boolean isError ()
   {
@@ -125,8 +125,8 @@ public class DispositionType
   }
 
   /**
-   * @return <code>true</code> if it is a warning, <code>false</code> if not
-   *         (maybe success or error).
+   * @return <code>true</code> if it is a warning, <code>false</code> if not (maybe success or
+   *         error).
    */
   public boolean isWarning ()
   {
@@ -134,8 +134,8 @@ public class DispositionType
   }
 
   /**
-   * Throws a {@link AS2DispositionException} if the message is a warning or an
-   * error. If the disposition is fine this method simply returns.
+   * Throws a {@link AS2DispositionException} if the message is a warning or an error. If the
+   * disposition is fine this method simply returns.
    *
    * @param aSrcMsg
    *        The source message. May not be <code>null</code>.
@@ -218,20 +218,23 @@ public class DispositionType
   }
 
   /**
-   * @return A success disposition without additional information. Never
-   *         <code>null</code>.
+   * @return A success disposition without additional information. Never <code>null</code>.
    */
   @Nonnull
   public static DispositionType createSuccess ()
   {
-    return new DispositionType (ACTION_AUTOMATIC_ACTION, MDNACTION_MDN_SENT_AUTOMATICALLY, STATUS_PROCESSED, null, null);
+    return new DispositionType (ACTION_AUTOMATIC_ACTION,
+                                MDNACTION_MDN_SENT_AUTOMATICALLY,
+                                STATUS_PROCESSED,
+                                null,
+                                null);
   }
 
   /**
    * @param sStatusDescription
    *        The status description to be used. May not be <code>null</code>.
-   * @return An error disposition with the modifier
-   *         {@link #STATUS_MODIFIER_ERROR} and the provided status description.
+   * @return An error disposition with the modifier {@link #STATUS_MODIFIER_ERROR} and the provided
+   *         status description.
    */
   @Nonnull
   public static DispositionType createError (@Nonnull final String sStatusDescription)

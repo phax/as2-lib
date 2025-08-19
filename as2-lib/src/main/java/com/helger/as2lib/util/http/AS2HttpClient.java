@@ -133,8 +133,8 @@ public class AS2HttpClient
   }
 
   /**
-   * Set an HTTP header (replacing existing value). No modification or check on
-   * name or value happens.
+   * Set an HTTP header (replacing existing value). No modification or check on name or value
+   * happens.
    *
    * @param sName
    *        Header name. May not be <code>null</code>.
@@ -150,8 +150,8 @@ public class AS2HttpClient
   }
 
   /**
-   * @return The URL to send to. Should be the same as the one passed in the
-   *         constructor. Never <code>null</code>.
+   * @return The URL to send to. Should be the same as the one passed in the constructor. Never
+   *         <code>null</code>.
    * @throws AS2Exception
    *         in case of error (e.g. if the URI could not be converted to a URL).
    */
@@ -221,10 +221,10 @@ public class AS2HttpClient
           // Use MIME encoding here
           try (final OutputStream aDebugOS = aOutgoingDumper != null ? aOutgoingDumper.getDumpOS (aOS) : aOS)
           {
-            try (
-                final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper.getContentTransferEncodingAwareOutputStream (aDebugOS,
-                                                                                                                        eCTE.getID ())
-                                                             : aDebugOS)
+            try (final OutputStream aEncodedOS = eCTE != null ? AS2IOHelper
+                                                                           .getContentTransferEncodingAwareOutputStream (aDebugOS,
+                                                                                                                         eCTE.getID ())
+                                                              : aDebugOS)
             {
               StreamHelper.copyByteStream ().from (aCIS).closeFrom (true).to (aEncodedOS).closeTo (false).build ();
             }
@@ -375,8 +375,8 @@ public class AS2HttpClient
   }
 
   /**
-   * This method determines if something is an HTTP error or not. The following
-   * HTTP status codes are interpreted as success: 200, 201, 202, 204 and 206.
+   * This method determines if something is an HTTP error or not. The following HTTP status codes
+   * are interpreted as success: 200, 201, 202, 204 and 206.
    *
    * @param nResponseCode
    *        The HTTP status code to check.

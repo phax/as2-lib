@@ -64,7 +64,8 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
   public HTTPIncomingDumperDirectoryBased (@Nonnull final File aDumpDirectory)
   {
     ValueEnforcer.notNull (aDumpDirectory, "DumpDirectory");
-    ValueEnforcer.isTrue (FileHelper.existsDir (aDumpDirectory), () -> "DumpDirectory " + aDumpDirectory + " does not exist!");
+    ValueEnforcer.isTrue (FileHelper.existsDir (aDumpDirectory),
+                          () -> "DumpDirectory " + aDumpDirectory + " does not exist!");
     m_aDumpDirectory = aDumpDirectory;
   }
 
@@ -75,8 +76,7 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
   }
 
   /**
-   * The filename to be used to store the request in the folder provided in the
-   * constructor.
+   * The filename to be used to store the request in the folder provided in the constructor.
    *
    * @param nIndex
    *        Unique index to avoid duplicate filenames
@@ -107,7 +107,11 @@ public class HTTPIncomingDumperDirectoryBased implements IHTTPIncomingDumper
     }
     catch (final IOException ex)
     {
-      LOGGER.error ("Failed to dump HTTP request to file " + aDestinationFile.getAbsolutePath () + " and message stub " + aMsg, ex);
+      LOGGER.error ("Failed to dump HTTP request to file " +
+                    aDestinationFile.getAbsolutePath () +
+                    " and message stub " +
+                    aMsg,
+                    ex);
     }
   }
 

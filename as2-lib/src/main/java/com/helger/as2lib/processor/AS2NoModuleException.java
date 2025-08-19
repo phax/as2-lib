@@ -55,7 +55,9 @@ public class AS2NoModuleException extends AS2Exception
   private final IMessage m_aMsg;
   private final String m_sAction;
 
-  public AS2NoModuleException (@Nullable final String sAction, @Nullable final IMessage aMsg, @Nullable final Map <String, Object> aOptions)
+  public AS2NoModuleException (@Nullable final String sAction,
+                               @Nullable final IMessage aMsg,
+                               @Nullable final Map <String, Object> aOptions)
   {
     super (getAsString (sAction, aMsg, aOptions));
     m_sAction = sAction;
@@ -94,6 +96,10 @@ public class AS2NoModuleException extends AS2Exception
                                        @Nullable final IMessage aMsg,
                                        @Nullable final Map <String, Object> aOptions)
   {
-    return "AS2NoModuleException: Requested action '" + sAction + "'; Message: " + aMsg + (aOptions != null ? "; Options " + aOptions : "");
+    return "AS2NoModuleException: Requested action '" +
+           sAction +
+           "'; Message: " +
+           aMsg +
+           (aOptions != null ? "; Options " + aOptions : "");
   }
 }

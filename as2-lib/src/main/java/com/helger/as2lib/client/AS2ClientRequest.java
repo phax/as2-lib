@@ -78,8 +78,8 @@ public class AS2ClientRequest
 
   /**
    * @param sSubject
-   *        The subject to use. May neither be <code>null</code> nor empty. Has
-   *        no impact on the MIME part creation. Just declarative.
+   *        The subject to use. May neither be <code>null</code> nor empty. Has no impact on the
+   *        MIME part creation. Just declarative.
    */
   public AS2ClientRequest (@Nonnull @Nonempty final String sSubject)
   {
@@ -87,8 +87,7 @@ public class AS2ClientRequest
   }
 
   /**
-   * @return The subject as provided in the constructor. May neither be
-   *         <code>null</code> nor empty.
+   * @return The subject as provided in the constructor. May neither be <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -98,8 +97,8 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the content type to be used. Use this AFTER <code>setData</code> was
-   * called, as this may select a default MIME type.
+   * Set the content type to be used. Use this AFTER <code>setData</code> was called, as this may
+   * select a default MIME type.
    *
    * @param sContentType
    *        The content type. May neither be <code>null</code> nor empty.
@@ -113,9 +112,8 @@ public class AS2ClientRequest
   }
 
   /**
-   * @return The content type to be used. Defaults to
-   *         {@link #DEFAULT_CONTENT_TYPE}. Is overridden in the
-   *         <code>setData</code> methods.
+   * @return The content type to be used. Defaults to {@link #DEFAULT_CONTENT_TYPE}. Is overridden
+   *         in the <code>setData</code> methods.
    */
   @Nonnull
   @Nonempty
@@ -125,15 +123,15 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the content of the {@link File} as a payload. If no charset is applied
-   * ( <code>null</code>) no content type starting with "text/" may be used. The
-   * name of the file is used as the payload file name.
+   * Set the content of the {@link File} as a payload. If no charset is applied ( <code>null</code>)
+   * no content type starting with "text/" may be used. The name of the file is used as the payload
+   * file name.
    *
    * @param aFile
    *        {@link File} to read the content from. Never <code>null</code>.
    * @param aCharset
-   *        Charset to use. If it is <code>null</code> the content is set as a
-   *        byte array, if not <code>null</code> the content is set as a String.
+   *        Charset to use. If it is <code>null</code> the content is set as a byte array, if not
+   *        <code>null</code> the content is set as a String.
    * @return this
    */
   @Nonnull
@@ -148,12 +146,11 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the content of the {@link InputStream} as a payload. No charset is
-   * applied and therefore no content type starting with "text/" may be used.
+   * Set the content of the {@link InputStream} as a payload. No charset is applied and therefore no
+   * content type starting with "text/" may be used.
    *
    * @param aIS
-   *        {@link InputStream} to read the content from. Never
-   *        <code>null</code>.
+   *        {@link InputStream} to read the content from. Never <code>null</code>.
    * @return this
    */
   @Nonnull
@@ -163,15 +160,14 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the content of the {@link InputStream} as a payload. No charset is
-   * applied and therefore no content type starting with "text/" may be used.
+   * Set the content of the {@link InputStream} as a payload. No charset is applied and therefore no
+   * content type starting with "text/" may be used.
    *
    * @param aIS
-   *        {@link InputStream} to read the content from. Never
-   *        <code>null</code>.
+   *        {@link InputStream} to read the content from. Never <code>null</code>.
    * @param aCharset
-   *        Charset to use. If it is <code>null</code> the content is set as a
-   *        byte array, if not <code>null</code> the content is set as a String.
+   *        Charset to use. If it is <code>null</code> the content is set as a byte array, if not
+   *        <code>null</code> the content is set as a String.
    * @return this
    */
   @Nonnull
@@ -190,8 +186,7 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the provided byte array as data. The "Content-Type" is set to
-   * "application/octet-stream".
+   * Set the provided byte array as data. The "Content-Type" is set to "application/octet-stream".
    *
    * @param aData
    *        The data to be used. May not be <code>null</code>.
@@ -233,8 +228,8 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the provided {@link DataHandler} as data. The "Content-Type" is
-   * directly taken from the provided handler.
+   * Set the provided {@link DataHandler} as data. The "Content-Type" is directly taken from the
+   * provided handler.
    *
    * @param aDataHandler
    *        The data handler to be used. May not be <code>null</code>.
@@ -255,12 +250,10 @@ public class AS2ClientRequest
 
   /**
    * Set the filename to be used to name the content. This will add a
-   * <code>Content-Disposition: attachment; filename=...</code> header to the
-   * MIME part
+   * <code>Content-Disposition: attachment; filename=...</code> header to the MIME part
    *
    * @param sFilename
-   *        Filename to use. May be <code>null</code> to indicate none (also the
-   *        default)
+   *        Filename to use. May be <code>null</code> to indicate none (also the default)
    * @return this
    */
   @Nonnull
@@ -271,12 +264,11 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the optional Content-Transfer-Encoding to be used. By default it is
-   * determined by the data type that defines the body.
+   * Set the optional Content-Transfer-Encoding to be used. By default it is determined by the data
+   * type that defines the body.
    *
    * @param eCTE
-   *        CTE to be used. May be <code>null</code> in which case the default
-   *        CTE is used.
+   *        CTE to be used. May be <code>null</code> in which case the default CTE is used.
    * @return this for chaining
    * @since 3.0.4
    */
@@ -298,8 +290,7 @@ public class AS2ClientRequest
   }
 
   /**
-   * Set the optional Content-Description header to be used. By default non is
-   * present.
+   * Set the optional Content-Description header to be used. By default non is present.
    *
    * @param sDescription
    *        Content description to be used. May be <code>null</code>.
@@ -353,7 +344,8 @@ public class AS2ClientRequest
     {
       // Ensure Content-Type is present - required for MIC calculation etc.
       aPart.setHeader (CHttpHeader.CONTENT_TYPE,
-                       m_sContentType != null ? m_sContentType : CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
+                       m_sContentType != null ? m_sContentType : CMimeType.APPLICATION_OCTET_STREAM
+                                                                                                   .getAsStringWithoutParameters ());
     }
 
     // Set Content-Transfer-Encoding of the uncompressed, unsigned, unencrypted

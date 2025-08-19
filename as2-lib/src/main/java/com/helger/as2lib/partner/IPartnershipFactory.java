@@ -45,9 +45,8 @@ import com.helger.commons.collection.impl.ICommonsSet;
 import com.helger.commons.state.EChange;
 
 /**
- * This is the base interface for a partnership factory (it is more manager but
- * who cares). It consists of partnerships represented by {@link Partnership}
- * objects.
+ * This is the base interface for a partnership factory (it is more manager but who cares). It
+ * consists of partnerships represented by {@link Partnership} objects.
  *
  * @author original author unknown
  * @author joseph mcverry
@@ -59,10 +58,10 @@ public interface IPartnershipFactory extends IDynamicComponent
    * Add a partnership.
    *
    * @param aPartnership
-   *        The partnership to be added. May not be <code>null</code>. The name
-   *        of the partnership must be unique so that it gets added.
-   * @return {@link EChange#CHANGED} if adding was successfully,
-   *         {@link EChange#UNCHANGED} if the name is already contained.
+   *        The partnership to be added. May not be <code>null</code>. The name of the partnership
+   *        must be unique so that it gets added.
+   * @return {@link EChange#CHANGED} if adding was successfully, {@link EChange#UNCHANGED} if the
+   *         name is already contained.
    * @throws AS2Exception
    *         Generic error
    */
@@ -74,9 +73,8 @@ public interface IPartnershipFactory extends IDynamicComponent
    *
    * @param aPartnership
    *        The partnership to be removed.
-   * @return {@link EChange#CHANGED} if removal was successful,
-   *         {@link EChange#UNCHANGED} if no such partnership to be removed is
-   *         present.
+   * @return {@link EChange#CHANGED} if removal was successful, {@link EChange#UNCHANGED} if no such
+   *         partnership to be removed is present.
    * @throws AS2Exception
    *         Generic error
    */
@@ -87,12 +85,10 @@ public interface IPartnershipFactory extends IDynamicComponent
    * Get the partnership identified by the provided stub partnership.
    *
    * @param aPartnership
-   *        Stub partnership which must contain either a name or a set of sender
-   *        and receiver IDs.
+   *        Stub partnership which must contain either a name or a set of sender and receiver IDs.
    * @return The Partnership as stored in this factory. Never <code>null</code>.
    * @throws AS2Exception
-   *         If no partnership matching the provided stub partnership can be
-   *         found.
+   *         If no partnership matching the provided stub partnership can be found.
    */
   @Nonnull
   Partnership getPartnership (@Nonnull Partnership aPartnership) throws AS2Exception;
@@ -108,16 +104,14 @@ public interface IPartnershipFactory extends IDynamicComponent
   Partnership getPartnershipByName (@Nullable String sName);
 
   /**
-   * @return A set with all contained partnership names. Never <code>null</code>
-   *         but maybe empty.
+   * @return A set with all contained partnership names. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
   ICommonsSet <String> getAllPartnershipNames ();
 
   /**
-   * @return A list of all contained partnerships. Never <code>null</code> but
-   *         maybe empty.
+   * @return A list of all contained partnerships. Never <code>null</code> but maybe empty.
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -127,12 +121,11 @@ public interface IPartnershipFactory extends IDynamicComponent
    * Looks up and fills in any header info for a specific msg's partnership.
    *
    * @param aMsg
-   *        The message in which the partnership should be updated. May not be
-   *        <code>null</code> and must already contain a partnership with at
-   *        least name or sender and receiver IDs.
+   *        The message in which the partnership should be updated. May not be <code>null</code> and
+   *        must already contain a partnership with at least name or sender and receiver IDs.
    * @param bOverwrite
-   *        <code>true</code> to also set the subject of the message with the
-   *        subject stored in the partnership.
+   *        <code>true</code> to also set the subject of the message with the subject stored in the
+   *        partnership.
    * @throws AS2Exception
    *         In case of an error
    * @see #getPartnership(Partnership)
@@ -143,9 +136,9 @@ public interface IPartnershipFactory extends IDynamicComponent
    * Looks up and fills in any header info for a specific MDN's partnership
    *
    * @param aMdn
-   *        The MDN of which the partnership information should be updated. May
-   *        not be <code>null</code> and must already contain a partnership with
-   *        at least name or sender and receiver IDs.
+   *        The MDN of which the partnership information should be updated. May not be
+   *        <code>null</code> and must already contain a partnership with at least name or sender
+   *        and receiver IDs.
    * @param bOverwrite
    *        has no effect currently
    * @throws AS2Exception

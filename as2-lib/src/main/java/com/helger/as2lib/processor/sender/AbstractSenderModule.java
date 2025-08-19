@@ -51,8 +51,8 @@ import com.helger.commons.collection.impl.ICommonsMap;
 import com.helger.commons.string.StringParser;
 
 /**
- * An abstract sender module that allows for retry. It allows to configure the
- * maximum number of retries.
+ * An abstract sender module that allows for retry. It allows to configure the maximum number of
+ * retries.
  *
  * @author Philip Helger
  */

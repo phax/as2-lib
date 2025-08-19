@@ -55,8 +55,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetHeaders;
 
 /**
- * Implementation of {@link IAS2HttpRequestDataProvider} based on a
- * {@link Socket} {@link InputStream}.
+ * Implementation of {@link IAS2HttpRequestDataProvider} based on a {@link Socket}
+ * {@link InputStream}.
  *
  * @author Philip Helger
  */
@@ -71,9 +71,8 @@ public class AS2HttpRequestDataProviderInputStream implements IAS2HttpRequestDat
   private final HttpHeaderMap m_aHttpHeaders = new HttpHeaderMap ();
 
   /**
-   * Read the first line of the HTTP request InputStream and parse out HTTP
-   * method (e.g. "GET" or "POST"), request URL (e.g "/as2") and HTTP version
-   * (e.g. "HTTP/1.1")
+   * Read the first line of the HTTP request InputStream and parse out HTTP method (e.g. "GET" or
+   * "POST"), request URL (e.g "/as2") and HTTP version (e.g. "HTTP/1.1")
    *
    * @param aIS
    *        Stream to read the first line from
@@ -157,10 +156,9 @@ public class AS2HttpRequestDataProviderInputStream implements IAS2HttpRequestDat
   }
 
   /**
-   * Will return a buffered, {@link NonClosingInputStream} that when closed,
-   * will not close in source stream. This is useful when working with
-   * <code>java.net.SocketInputStream</code> as close() on a socket stream
-   * closes the {@link Socket}
+   * Will return a buffered, {@link NonClosingInputStream} that when closed, will not close in
+   * source stream. This is useful when working with <code>java.net.SocketInputStream</code> as
+   * close() on a socket stream closes the {@link Socket}
    *
    * @return {@link InputStream}
    * @throws IOException
