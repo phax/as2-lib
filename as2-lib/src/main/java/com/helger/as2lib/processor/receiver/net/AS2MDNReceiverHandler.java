@@ -110,8 +110,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
   /**
    * @param aModule
-   *        The receiver module for attributes, session etc. May not be
-   *        <code>null</code>.
+   *        The receiver module for attributes, session etc. May not be <code>null</code>.
    */
   public AS2MDNReceiverHandler (@Nonnull final AS2MDNReceiverModule aModule)
   {
@@ -119,8 +118,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
   }
 
   /**
-   * @return The receiver module passed in the constructor. Never
-   *         <code>null</code>.
+   * @return The receiver module passed in the constructor. Never <code>null</code>.
    */
   @Nonnull
   public final AS2MDNReceiverModule getModule ()
@@ -275,8 +273,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    * @since 4.10.2
    */
   @OverrideOnDemand
-  protected ESuccess deletePendingFile (@Nonnull final AS2Message aMsg,
-                                        @Nonnull final String sPendingFilename) throws AS2Exception
+  protected ESuccess deletePendingFile (@Nonnull final AS2Message aMsg, @Nonnull final String sPendingFilename)
+                                                                                                                throws AS2Exception
   {
     final File aPendingFile = new File (sPendingFilename);
     LOGGER.info ("Delete pending file '" + aPendingFile.getAbsolutePath () + "'" + aMsg.getLoggingText ());
@@ -294,8 +292,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
    *
    * @param aMsg
    *        Message
-   * @return <code>true</code> if the MDN was processed, <code>false</code> e.g.
-   *         on MIC mismatch
+   * @return <code>true</code> if the MDN was processed, <code>false</code> e.g. on MIC mismatch
    * @throws AS2Exception
    *         In case of error; e.g. MIC mismatch
    */
@@ -317,12 +314,11 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
           return false;
         }
 
-        // Cherset must be aligned with AS2SenderModule
-        try (
-            final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (StreamHelper.createReader (aIS,
-                                                                                                                           StandardCharsets.ISO_8859_1)))
+        // Charset must be aligned with AS2SenderModule
+        try (final NonBlockingBufferedReader aPendingInfoReader = new NonBlockingBufferedReader (StreamHelper.createReader (aIS,
+                                                                                                                            StandardCharsets.ISO_8859_1)))
         {
-          // Get the original mic from the first line of pending information
+          // Get the original MIC from the first line of pending information
           // file
           sOriginalMIC = aPendingInfoReader.readLine ();
           aOriginalMIC = MIC.parse (sOriginalMIC);
@@ -351,7 +347,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       // MIC was matched
       m_aMICMatchingHandler.onMICMatch (aMsg, sReturnMIC);
 
-      // delete the pendinginfo & pending file if mic is matched
+      // delete the pending info & pending file if MIC is matched
       deletePendingInfoStream (aMsg);
 
       deletePendingFile (aMsg, sPendingFilename);
@@ -400,8 +396,8 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
       aMDN.partnership ().setSenderAS2ID (aMDN.getHeader (CHttpHeader.AS2_FROM));
       aMDN.partnership ().setReceiverAS2ID (aMDN.getHeader (CHttpHeader.AS2_TO));
       // Set the appropriate keystore aliases
-      aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getReceiverX509Alias ());
-      aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getSenderX509Alias ());
+      aMDN.partnership ().setSenderX509Alias (aMsg.partnership ().getSenderX509Alias ());
+      aMDN.partnership ().setReceiverX509Alias (aMsg.partnership ().getReceiverX509Alias ());
       // Update the partnership
       getModule ().getSession ().getPartnershipFactory ().updatePartnership (aMDN, false);
 
