@@ -1,5 +1,6 @@
 .idea/
 .settings/ 
+.vscode/
 data/
 target/
 
