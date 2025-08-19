@@ -83,7 +83,7 @@ public class ExceptionParameters extends AbstractParameterParser
     Throwable aUnwrappedTarget;
     if (m_aTarget instanceof WrappedAS2Exception)
     {
-      aUnwrappedTarget = ((WrappedAS2Exception) m_aTarget).getCause ();
+      aUnwrappedTarget = m_aTarget.getCause ();
       if (aUnwrappedTarget == null)
         aUnwrappedTarget = m_aTarget;
     }
