@@ -113,14 +113,14 @@ public final class HTTPHelper
     // Set global incoming dump directory
     // New property name since v4.0.3
     String sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryIncoming");
-    if (StringHelper.hasNoText (sHttpDumpIncomingDirectory))
+    if (StringHelper.isEmpty (sHttpDumpIncomingDirectory))
     {
       // Check old name
       sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
       if (StringHelper.hasText (sHttpDumpIncomingDirectory))
         LOGGER.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
     }
-    if (StringHelper.hasText (sHttpDumpIncomingDirectory))
+    if (StringHelper.isNotEmpty (sHttpDumpIncomingDirectory))
     {
       final File aDumpDirectory = new File (sHttpDumpIncomingDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (aDumpDirectory);
