@@ -50,13 +50,16 @@ import javax.annotation.WillClose;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.DefaultSchemePortResolver;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.client5.http.routing.HttpRoutePlanner;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -100,33 +103,87 @@ public class AS2HttpClient
   private final CloseableHttpClient m_aCloseableHttpClient;
   private CloseableHttpResponse m_aCloseableHttpResponse;
 
+  /**
+   * Set {@link Proxy} into {@link RequestConfig.Builder}
+   *
+   * @param aProxy
+   *        My by <code>null</code>, in such case nothing is done.
+   * @return The http host to use as proxy. May be <code>null</code>.
+   */
+  @Nullable
+  private static HttpHost _getProxyHost (@Nonnull final Proxy aProxy)
+  {
+    try
+    {
+      final SocketAddress aSocketAddress = aProxy.address ();
+      if (aSocketAddress instanceof InetSocketAddress)
+      {
+        final InetSocketAddress aISocketAdress = (InetSocketAddress) aSocketAddress;
+        final InetAddress aInetAddr = aISocketAdress.getAddress ();
+        if (aInetAddr != null)
+        {
+          return new HttpHost (aInetAddr, aISocketAdress.getPort ());
+        }
+
+        if (LOGGER.isDebugEnabled ())
+          LOGGER.debug ("No address in proxy:" +
+                        aProxy.address () +
+                        "-" +
+                        (null != aProxy.type () ? aProxy.type ().name () : "null"));
+      }
+    }
+    catch (final RuntimeException ex)
+    {
+      LOGGER.error ("Exception while setting proxy. Continue without proxy. Proxy: " +
+                    aProxy.address () +
+                    "-" +
+                    (null != aProxy.type () ? aProxy.type ().name () : "null"),
+                    ex);
+    }
+    return null;
+  }
+
   public AS2HttpClient (@Nonnull @Nonempty final String sUrl,
                         @Nonnull final Timeout aConnectTimeout,
                         @Nonnull final Timeout aResponseTimeout,
                         @Nonnull final EHttpMethod eRequestMethod,
                         @Nullable final Proxy aProxy,
                         @Nullable final SSLContext aSSLContext,
-                        @Nullable final HostnameVerifier aHV)
+                        @Nullable final HostnameVerifier aHostnameVerifier)
   {
-    // set configuration
-    final RequestConfig.Builder aRequestConfBuilder = RequestConfig.custom ()
-                                                                   .setCookieSpec (StandardCookieSpec.STRICT)
-                                                                   .setConnectTimeout (aConnectTimeout)
-                                                                   .setResponseTimeout (aResponseTimeout)
-                                                                   .setCircularRedirectsAllowed (false);
-    // add proxy if exists
-    _setProxyToRequestConfig (aRequestConfBuilder, aProxy);
-    final RequestConfig aRequestConf = aRequestConfBuilder.build ();
-
-    final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ().setDefaultRequestConfig (aRequestConf);
+    // Connection details
+    final ConnectionConfig.Builder aConnectionConfigBuilder = ConnectionConfig.custom ()
+                                                                              .setConnectTimeout (aConnectTimeout);
+    final PoolingHttpClientConnectionManagerBuilder aConnMgrBuilder = PoolingHttpClientConnectionManagerBuilder.create ()
+                                                                                                               .setDefaultConnectionConfig (aConnectionConfigBuilder.build ());
     if (aSSLContext != null)
     {
-      final TlsSocketStrategy aTlsSocketFactory = new DefaultClientTlsStrategy (aSSLContext, aHV);
-      final PoolingHttpClientConnectionManager aConnMgr = PoolingHttpClientConnectionManagerBuilder.create ()
-                                                                                                   .setTlsSocketStrategy (aTlsSocketFactory)
-                                                                                                   .build ();
-      aClientBuilder.setConnectionManager (aConnMgr);
+      // Apply TLS configuration
+      final TlsSocketStrategy aTlsSocketFactory = new DefaultClientTlsStrategy (aSSLContext, aHostnameVerifier);
+      aConnMgrBuilder.setTlsSocketStrategy (aTlsSocketFactory);
     }
+
+    HttpRoutePlanner aRoutePlanner = null;
+    if (aProxy != null)
+    {
+      // Apply proxy configuration
+      final HttpHost aProxyHost = _getProxyHost (aProxy);
+      if (aProxyHost != null)
+      {
+        aRoutePlanner = new DefaultProxyRoutePlanner (aProxyHost, DefaultSchemePortResolver.INSTANCE);
+      }
+    }
+
+    // Request configuration
+    final RequestConfig.Builder aRequestConfBuilder = RequestConfig.custom ()
+                                                                   .setCookieSpec (StandardCookieSpec.STRICT)
+                                                                   .setResponseTimeout (aResponseTimeout)
+                                                                   .setCircularRedirectsAllowed (false);
+
+    final HttpClientBuilder aClientBuilder = HttpClientBuilder.create ()
+                                                              .setDefaultRequestConfig (aRequestConfBuilder.build ())
+                                                              .setConnectionManager (aConnMgrBuilder.build ())
+                                                              .setRoutePlanner (aRoutePlanner);
 
     m_aCloseableHttpClient = aClientBuilder.build ();
     m_aRequestBuilder = ClassicRequestBuilder.create (eRequestMethod.getName ()).setUri (sUrl);
@@ -325,52 +382,6 @@ public class AS2HttpClient
     catch (final Exception ex)
     {
       LOGGER.error ("Exception while closing HttpClient connection: " + this.toString (), ex);
-    }
-  }
-
-  /**
-   * Set {@link Proxy} into {@link RequestConfig.Builder}
-   *
-   * @param aConfBuilder
-   *        {@link RequestConfig.Builder} to set
-   * @param aProxy
-   *        My by <code>null</code>, in such case nothing is done.
-   */
-  private static void _setProxyToRequestConfig (@Nonnull final RequestConfig.Builder aConfBuilder,
-                                                @Nullable final Proxy aProxy)
-  {
-    try
-    {
-      if (aProxy != null)
-      {
-        final SocketAddress aSocketAddress = aProxy.address ();
-        if (aSocketAddress instanceof InetSocketAddress)
-        {
-          final InetSocketAddress aISocketAdress = (InetSocketAddress) aSocketAddress;
-          final InetAddress aInetAddr = aISocketAdress.getAddress ();
-          if (aInetAddr != null)
-          {
-            final HttpHost aHost = new HttpHost (aInetAddr, aISocketAdress.getPort ());
-            aConfBuilder.setProxy (aHost);
-          }
-          else
-          {
-            if (LOGGER.isDebugEnabled ())
-              LOGGER.debug ("No address in proxy:" +
-                            aProxy.address () +
-                            "-" +
-                            (null != aProxy.type () ? aProxy.type ().name () : "null"));
-          }
-        }
-      }
-    }
-    catch (final RuntimeException ex)
-    {
-      LOGGER.error ("Exception while setting proxy. Continue without proxy. Proxy: " +
-                    aProxy.address () +
-                    "-" +
-                    (null != aProxy.type () ? aProxy.type ().name () : "null"),
-                    ex);
     }
   }
 
