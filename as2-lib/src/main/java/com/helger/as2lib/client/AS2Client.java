@@ -449,7 +449,9 @@ public class AS2Client
         aSender.setConnectTimeoutMilliseconds (aSettings.getConnectTimeout ().toMilliseconds ());
         aSender.setResponseTimeoutMilliseconds (aSettings.getResponseTimeout ().toMilliseconds ());
         aSender.setQuoteHeaderValues (aSettings.isQuoteHeaderValues ());
-        aSender.setHttpOutgoingDumperFactory (aSettings.getHttpOutgoingDumperFactory ());
+        // Don't accidentally overwrite dumper factory set by system properties
+        if (aSettings.getHttpOutgoingDumperFactory () != null)
+          aSender.setHttpOutgoingDumperFactory (aSettings.getHttpOutgoingDumperFactory ());
         aSender.setHttpIncomingDumper (aSettings.getHttpIncomingDumper ());
         if (aSettings.getMICMatchingHandler () != null)
           aSender.setMICMatchingHandler (aSettings.getMICMatchingHandler ());
