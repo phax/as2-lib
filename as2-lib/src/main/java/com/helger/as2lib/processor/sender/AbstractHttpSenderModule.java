@@ -122,15 +122,15 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     return m_aHttpOutgoingDumperFactory;
   }
 
+  public final void setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
+  {
+    m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
+  }
+
   @Nullable
   public final IHTTPOutgoingDumper getHttpOutgoingDumper (@Nonnull final IBaseMessage aMsg)
   {
     return m_aHttpOutgoingDumperFactory == null ? null : m_aHttpOutgoingDumperFactory.apply (aMsg);
-  }
-
-  public final void setHttpOutgoingDumperFactory (@Nullable final IHTTPOutgoingDumperFactory aHttpOutgoingDumperFactory)
-  {
-    m_aHttpOutgoingDumperFactory = aHttpOutgoingDumperFactory;
   }
 
   /**
