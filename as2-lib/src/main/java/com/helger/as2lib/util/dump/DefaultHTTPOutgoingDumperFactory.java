@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 
 import com.helger.as2lib.message.IBaseMessage;
+import com.helger.commons.ValueEnforcer;
 
 /**
  * Default implementation of {@link IHTTPOutgoingDumperFactory}. Extracted as a public class in
@@ -53,6 +54,7 @@ public class DefaultHTTPOutgoingDumperFactory implements IHTTPOutgoingDumperFact
 
   public DefaultHTTPOutgoingDumperFactory (@Nonnull final File aDumpDirectory)
   {
+    ValueEnforcer.notNull (aDumpDirectory, "DumpDirectory");
     m_aDumpDirectory = aDumpDirectory;
   }
 
