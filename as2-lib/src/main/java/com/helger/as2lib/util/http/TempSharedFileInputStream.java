@@ -104,19 +104,6 @@ public class TempSharedFileInputStream extends SharedFileInputStream
    *
    * @throws IOException
    *         in case of error
-   * @deprecated Since 4.10.2. Use {@link #closeAndDelete()} instead
-   */
-  @Deprecated (forRemoval = true, since = "4.10.2")
-  public void closeAll () throws IOException
-  {
-    closeAndDelete ();
-  }
-
-  /**
-   * closeAll - closes the input stream, and deletes the backing file
-   *
-   * @throws IOException
-   *         in case of error
    * @since 4.10.2
    */
   public void closeAndDelete () throws IOException
@@ -149,7 +136,8 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   {
     // create temp file and write steam content to it
     // name may contain ":" on Windows and that would fail the tests!
-    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (StringHelper.isNotEmpty (sName) ? sName : "tmp");
+    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (StringHelper.isNotEmpty (sName) ? sName
+                                                                                                         : "tmp");
     final File aDestFile = Files.createTempFile ("AS2TempSharedFileIS", sSuffix).toFile ();
 
     try (final FileOutputStream aOS = new FileOutputStream (aDestFile))

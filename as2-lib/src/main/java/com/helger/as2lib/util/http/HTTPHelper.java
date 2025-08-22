@@ -503,21 +503,6 @@ public final class HTTPHelper
    *        input stream to read from
    * @throws IOException
    *         if stream ends during chunk length read
-   * @deprecated Since 5.1.1. Use {@link #readTillNextLine(InputStream)} instead
-   */
-  @Deprecated
-  public static void readTillNexLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
-  {
-    readTillNextLine (aIS);
-  }
-
-  /**
-   * Read up to (and including) CRLF.
-   *
-   * @param aIS
-   *        input stream to read from
-   * @throws IOException
-   *         if stream ends during chunk length read
    */
   public static void readTillNextLine (@Nonnull @WillNotClose final InputStream aIS) throws IOException
   {

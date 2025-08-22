@@ -63,7 +63,7 @@ public class DateParameters extends AbstractParameterParser
    * @deprecated Don't call this
    */
   @Override
-  @Deprecated
+  @Deprecated (forRemoval = false)
   public void setParameter (final String sKey, final String sValue) throws AS2InvalidParameterException
   {
     throw new AS2InvalidParameterException ("setParameter is not supported", this, sKey, sValue);

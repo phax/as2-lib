@@ -56,12 +56,12 @@ import jakarta.annotation.Nullable;
 public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
   /** See compatibility note in RFC 5751, section 3.4.3.1 */
-  @Deprecated
+  @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_MD5 instead")
   DIGEST_RSA_MD5("rsa-md5", "md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
 
   /** See compatibility note in RFC 5751, section 3.4.3.1 */
-  @Deprecated
+  @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_SHA1 or DIGEST_SHA_1 instead")
   DIGEST_RSA_SHA1("rsa-sha1", "sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
 

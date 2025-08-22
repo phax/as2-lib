@@ -45,13 +45,6 @@ public final class CAS2Info
   /** The name of this AS2 client. May not contain blanks. */
   public static final String NAME = "as2-lib";
 
-  /**
-   * The version of this AS2 client. May not contain blanks.
-   *
-   * @deprecated Use {@link CAS2Version#BUILD_VERSION} instead
-   */
-  @Deprecated
-  public static final String VERSION = CAS2Version.BUILD_VERSION;
   /** Combination of {@link #NAME} and build version separated by a blank. */
   public static final String NAME_VERSION = NAME + " " + CAS2Version.BUILD_VERSION;
 

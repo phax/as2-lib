@@ -43,7 +43,7 @@ public class RandomParameters extends AbstractParameterParser
    * @deprecated Don't call this
    */
   @Override
-  @Deprecated
+  @Deprecated (forRemoval = false)
   public void setParameter (@Nonnull final String sKey, @Nullable final String sValue)
                                                                                        throws AS2InvalidParameterException
   {
