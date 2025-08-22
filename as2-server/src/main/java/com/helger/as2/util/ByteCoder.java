@@ -35,10 +35,10 @@ package com.helger.as2.util;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
-import javax.annotation.Nonnull;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.cache.regex.RegExHelper;
 
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.regex.RegExHelper;
+import jakarta.annotation.Nonnull;
 
 /**
  * @author joseph mcverry

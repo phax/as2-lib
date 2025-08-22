@@ -36,10 +36,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import javax.annotation.concurrent.Immutable;
-
 import org.junit.Test;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.exception.AS2Exception;
 
 /**

@@ -32,10 +32,10 @@
  */
 package com.helger.as2lib.util.http;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.message.IMessageMDN;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Callback interface to be invoked for incoming MDNs to simplify logging.

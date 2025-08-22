@@ -37,12 +37,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.message.IMessage;
@@ -54,19 +52,20 @@ import com.helger.as2lib.processor.CFileAttribute;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.io.file.FileIOError;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.file.SimpleFileIO;
-import com.helger.commons.mime.CMimeType;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+import com.helger.http.CHttpHeader;
+import com.helger.io.file.FileIOError;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.file.SimpleFileIO;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
+import com.helger.mime.CMimeType;
+import com.helger.typeconvert.collection.IStringMap;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 

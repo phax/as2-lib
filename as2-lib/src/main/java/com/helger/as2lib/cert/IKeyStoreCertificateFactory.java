@@ -34,9 +34,9 @@ package com.helger.as2lib.cert;
 
 import java.security.KeyStore;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for a certificate factory that is based on a key store.

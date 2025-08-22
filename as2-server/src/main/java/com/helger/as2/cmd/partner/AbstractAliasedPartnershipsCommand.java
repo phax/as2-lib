@@ -32,13 +32,13 @@
  */
 package com.helger.as2.cmd.partner;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2.cmd.AbstractCommand;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.partner.xml.IPartnershipFactoryWithPartners;
+
+import jakarta.annotation.Nonnull;
 
 public abstract class AbstractAliasedPartnershipsCommand extends AbstractCommand
 {

@@ -34,15 +34,15 @@ package com.helger.as2lib.processor;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * AS2 exception that is thrown if no handling module was found.

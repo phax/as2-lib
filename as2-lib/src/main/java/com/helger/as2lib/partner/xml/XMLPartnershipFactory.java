@@ -37,14 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.annotation.WillClose;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.WillClose;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.params.AS2InvalidParameterException;
@@ -54,16 +51,19 @@ import com.helger.as2lib.partner.PartnershipMap;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.AS2XMLHelper;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.io.file.FileHelper;
+import com.helger.typeconvert.collection.IStringMap;
+import com.helger.typeconvert.collection.StringMap;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroDocument;
 import com.helger.xml.microdom.serialize.MicroReader;
 import com.helger.xml.microdom.serialize.MicroWriter;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * original author unknown this release added logic to store partnerships and provide methods for

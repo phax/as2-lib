@@ -36,18 +36,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.CheckForSigned;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.CheckForSigned;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.commons.CGlobal;
-import com.helger.commons.collection.attr.IStringMap;
+import com.helger.base.CGlobal;
+import com.helger.typeconvert.collection.IStringMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractActivePollingModule extends AbstractActiveReceiverModule
 {

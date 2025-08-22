@@ -35,12 +35,12 @@ package com.helger.as2lib.crypto;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.collection.ArrayHelper;
+import com.helger.base.array.ArrayHelper;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A logging wrapper around a {@link MessageDigest}. For debugging purposes only.

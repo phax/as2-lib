@@ -35,7 +35,7 @@ package com.helger.as2.app.cert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.DevelopersNote;
+import com.helger.annotation.misc.DevelopersNote;
 
 @Deprecated
 @DevelopersNote ("Use ServerCertificateFactory instead")

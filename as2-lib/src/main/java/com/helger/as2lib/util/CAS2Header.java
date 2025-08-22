@@ -32,8 +32,7 @@
  */
 package com.helger.as2lib.util;
 
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.CAS2Version;
 

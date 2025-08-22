@@ -34,9 +34,6 @@ package com.helger.as2.app.partner;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +44,10 @@ import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.partner.xml.XMLPartnershipFactory;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * original author unknown this release added logic to store partnerships and

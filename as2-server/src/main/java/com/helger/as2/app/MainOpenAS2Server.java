@@ -35,8 +35,6 @@ package com.helger.as2.app;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +44,11 @@ import com.helger.as2.cmd.ICommandRegistry;
 import com.helger.as2.cmdprocessor.AbstractCommandProcessor;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.array.ArrayHelper;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.base.string.StringHelper;
+
+import jakarta.annotation.Nullable;
 
 /**
  * original author unknown in this release added ability to have multiple

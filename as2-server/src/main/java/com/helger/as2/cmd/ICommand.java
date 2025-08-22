@@ -32,11 +32,11 @@
  */
 package com.helger.as2.cmd;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.session.IAS2Session;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public interface ICommand extends IDynamicComponent
 {

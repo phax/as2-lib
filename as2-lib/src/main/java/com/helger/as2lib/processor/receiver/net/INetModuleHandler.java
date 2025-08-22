@@ -34,9 +34,9 @@ package com.helger.as2lib.processor.receiver.net;
 
 import java.net.Socket;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for a module handler for Net interactions.

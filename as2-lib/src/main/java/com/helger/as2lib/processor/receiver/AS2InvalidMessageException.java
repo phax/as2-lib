@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.receiver;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nonnull;
 
 public class AS2InvalidMessageException extends AS2Exception
 {

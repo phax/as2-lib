@@ -34,15 +34,15 @@ package com.helger.as2.cmdprocessor;
 
 import java.io.CharArrayWriter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.helger.xml.serialize.read.SAXReader;
 import com.helger.xml.serialize.read.SAXReaderSettings;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * used to parse commands from the socket command processor message format

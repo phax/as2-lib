@@ -32,10 +32,10 @@
  */
 package com.helger.as2lib.session;
 
-import javax.annotation.Nonnull;
-
+import com.helger.annotation.Nonempty;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.Nonempty;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Exception to be thrown from {@link AS2Session} if a component with the specified ID is already

@@ -38,18 +38,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillClose;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.WillClose;
 import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.mutable.MutableLong;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.numeric.mutable.MutableLong;
+import com.helger.base.string.StringHelper;
+import com.helger.io.file.FilenameHelper;
 
+import jakarta.annotation.Nonnull;
 import jakarta.mail.util.SharedFileInputStream;
 
 /**

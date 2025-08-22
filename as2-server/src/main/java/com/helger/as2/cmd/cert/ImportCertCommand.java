@@ -43,17 +43,17 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.util.AS2Helper;
-import com.helger.commons.io.stream.NonBlockingBufferedInputStream;
+import com.helger.base.io.nonblocking.NonBlockingBufferedInputStream;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
+
+import jakarta.annotation.Nonnull;
 
 public class ImportCertCommand extends AbstractAliasedCertCommand
 {

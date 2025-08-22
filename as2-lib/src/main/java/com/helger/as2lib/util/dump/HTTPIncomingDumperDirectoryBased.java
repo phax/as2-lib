@@ -37,17 +37,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.http.CHttp;
+import com.helger.io.file.FileHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Directory based incoming HTTP dumper.

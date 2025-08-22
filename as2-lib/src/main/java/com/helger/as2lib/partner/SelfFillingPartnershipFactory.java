@@ -32,12 +32,12 @@
  */
 package com.helger.as2lib.partner;
 
-import javax.annotation.Nonnull;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.OverrideOnDemand;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A special in-memory partnership factory that adds a partnership if it is not existing yet.

@@ -37,13 +37,13 @@ import java.time.LocalDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.base.CGlobal;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.datetime.helper.PDTFactory;
 
-import com.helger.commons.CGlobal;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.datetime.PDTFactory;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class FileMonitor
 {

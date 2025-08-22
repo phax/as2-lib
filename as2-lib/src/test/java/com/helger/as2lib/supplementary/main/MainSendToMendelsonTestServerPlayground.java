@@ -55,11 +55,11 @@ import com.helger.as2lib.util.dump.HTTPIncomingDumperStreamBased;
 import com.helger.as2lib.util.dump.HTTPOutgoingDumperStreamBased;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.as2lib.util.http.HTTPHelper;
-import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.io.stream.NonClosingOutputStream;
-import com.helger.commons.mime.CMimeType;
-import com.helger.commons.system.SystemProperties;
+import com.helger.base.debug.GlobalDebug;
+import com.helger.base.io.stream.NonClosingOutputStream;
+import com.helger.base.system.SystemProperties;
 import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.mime.CMimeType;
 import com.helger.security.keystore.EKeyStoreType;
 
 import jakarta.activation.DataHandler;

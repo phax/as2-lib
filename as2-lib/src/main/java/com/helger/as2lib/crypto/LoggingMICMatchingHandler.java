@@ -32,12 +32,12 @@
  */
 package com.helger.as2lib.crypto;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.message.IMessage;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Logging implementation of {@link IMICMatchingHandler}

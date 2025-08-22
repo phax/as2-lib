@@ -36,13 +36,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.io.EAppend;
-import com.helger.commons.io.file.FileHelper;
+import com.helger.base.io.EAppend;
+import com.helger.io.file.FileHelper;
 import com.helger.security.keystore.KeyStoreHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a certificate factory that can store to a file.

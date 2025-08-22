@@ -16,10 +16,9 @@
  */
 package com.helger.as2servlet;
 
-import javax.annotation.Nonnull;
-
 import com.helger.web.scope.mgr.WebScopeManager;
 
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;

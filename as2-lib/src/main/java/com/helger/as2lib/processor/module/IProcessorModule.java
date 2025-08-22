@@ -34,13 +34,13 @@ package com.helger.as2lib.processor.module;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.processor.IMessageProcessor;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A processor module is a module that is to be used within an {@link IMessageProcessor} instance.

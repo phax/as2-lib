@@ -35,11 +35,11 @@ package com.helger.as2lib.util.dump;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-
+import com.helger.annotation.Nonnegative;
 import com.helger.as2lib.message.AS2Message;
-import com.helger.commons.io.stream.WrappedOutputStream;
+import com.helger.base.io.stream.WrappedOutputStream;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface to dump outgoing HTTP requests

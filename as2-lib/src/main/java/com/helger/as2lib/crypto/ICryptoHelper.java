@@ -39,15 +39,14 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
-
+import com.helger.annotation.WillNotClose;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.internet.MimeBodyPart;
 
 /**

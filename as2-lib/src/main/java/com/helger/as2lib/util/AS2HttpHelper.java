@@ -32,17 +32,16 @@
  */
 package com.helger.as2lib.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.codec.RFC2616Codec;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.string.StringHelper;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.codec.impl.RFC2616Codec;
+import com.helger.base.string.StringHelper;
+import com.helger.http.header.HttpHeaderMap;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.internet.ContentType;
 import jakarta.mail.internet.InternetHeaders;
 import jakarta.mail.internet.ParseException;

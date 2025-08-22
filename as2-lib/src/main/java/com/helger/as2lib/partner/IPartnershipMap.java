@@ -32,13 +32,13 @@
  */
 package com.helger.as2lib.partner;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsSet;
+import com.helger.typeconvert.collection.IStringMap;
 
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsSet;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Read-only interface for managing the name to {@link Partnership} mapping.

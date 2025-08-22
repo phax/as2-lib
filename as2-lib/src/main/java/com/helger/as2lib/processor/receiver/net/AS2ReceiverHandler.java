@@ -39,8 +39,6 @@ import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.jcajce.ZlibExpanderProvider;
 import org.bouncycastle.mail.smime.SMIMECompressedParser;
@@ -79,23 +77,24 @@ import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.TempSharedFileInputStream;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.lang.StackTraceHelper;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.state.ETriState;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.timing.StopWatch;
-import com.helger.commons.wrapper.Wrapper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.rt.StackTraceHelper;
+import com.helger.base.state.ESuccess;
+import com.helger.base.state.ETriState;
+import com.helger.base.string.StringHelper;
+import com.helger.base.timing.StopWatch;
+import com.helger.base.wrapper.Wrapper;
+import com.helger.http.CHttp;
+import com.helger.http.CHttpHeader;
+import com.helger.http.header.HttpHeaderMap;
 import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.security.certificate.CertificateHelper;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
+import jakarta.annotation.Nonnull;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 

@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.session;
 
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nullable;
 
 /**
  * Thrown from {@link AS2Session} if a component was not present.

@@ -35,10 +35,10 @@ package com.helger.as2lib.util.dump;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.commons.ValueEnforcer;
+import com.helger.base.enforce.ValueEnforcer;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Default implementation of {@link IHTTPOutgoingDumperFactory}. Extracted as a public class in

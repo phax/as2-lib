@@ -36,15 +36,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import javax.annotation.Nonnull;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.http.header.HttpHeaderMap;
+import com.helger.typeconvert.collection.StringMap;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base implementation of {@link IBaseMessage} as the base class for {@link AbstractMessage} and

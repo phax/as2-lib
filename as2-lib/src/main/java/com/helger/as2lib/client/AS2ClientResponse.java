@@ -35,13 +35,13 @@ package com.helger.as2lib.client;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.message.AS2MessageMDN;
 import com.helger.as2lib.message.IMessageMDN;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * This class contains the basic content that was received from an AS2 server as a response.

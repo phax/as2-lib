@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.sender;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Special {@link AS2Exception} with HTTP URL details

@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.crypto.BCCryptoHelper;
-import com.helger.commons.collection.CollectionHelper;
+import com.helger.collection.helper.CollectionSort;
 
 import jakarta.activation.CommandInfo;
 import jakarta.activation.CommandMap;
@@ -60,7 +60,7 @@ public final class MainListCommandMap
     }
 
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
-    for (final String sMimeType : CollectionHelper.getSorted (aCommandMap.getMimeTypes ()))
+    for (final String sMimeType : CollectionSort.getSorted (aCommandMap.getMimeTypes ()))
     {
       LOGGER.info (sMimeType);
       for (final CommandInfo aCI : aCommandMap.getAllCommands (sMimeType))

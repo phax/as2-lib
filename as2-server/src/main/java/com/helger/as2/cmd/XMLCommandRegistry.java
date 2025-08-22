@@ -35,18 +35,18 @@ package com.helger.as2.cmd;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2.app.session.AS2ServerXMLSession;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2XMLHelper;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.io.file.FileHelper;
+import com.helger.io.file.FileHelper;
+import com.helger.typeconvert.collection.IStringMap;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroReader;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class XMLCommandRegistry extends BaseCommandRegistry
 {

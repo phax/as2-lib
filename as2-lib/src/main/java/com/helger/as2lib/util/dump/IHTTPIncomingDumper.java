@@ -34,10 +34,10 @@ package com.helger.as2lib.util.dump;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.message.IBaseMessage;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface to dump incoming HTTP requests

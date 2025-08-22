@@ -40,36 +40,34 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.WillNotClose;
+import com.helger.annotation.concurrent.GuardedBy;
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.dump.HTTPIncomingDumperDirectoryBased;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.codec.IByteArrayCodec;
-import com.helger.commons.codec.IdentityCodec;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.concurrent.SimpleReadWriteLock;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.StringParser;
-import com.helger.commons.system.SystemProperties;
+import com.helger.base.codec.IByteArrayCodec;
+import com.helger.base.codec.IdentityCodec;
+import com.helger.base.concurrent.SimpleReadWriteLock;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringHex;
+import com.helger.base.string.StringParser;
+import com.helger.base.system.SystemProperties;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.http.CHttp;
+import com.helger.http.CHttpHeader;
+import com.helger.http.header.HttpHeaderMap;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.cte.IContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
@@ -77,6 +75,8 @@ import com.helger.mail.datasource.IExtendedDataSource;
 import com.helger.mail.datasource.InputStreamDataSource;
 
 import jakarta.activation.DataSource;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 
 /**
@@ -386,7 +386,7 @@ public final class HTTPHelper
   {
     if (n >= 0x20 && n <= 0x7e)
       return "'" + Character.toString ((char) n) + "'";
-    return "0x" + StringHelper.getHexStringLeadingZero (n & 0xff, 2);
+    return "0x" + StringHex.getHexStringLeadingZero (n & 0xff, 2);
   }
 
   /**

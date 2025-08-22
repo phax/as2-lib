@@ -34,28 +34,26 @@ package com.helger.as2lib.session;
 
 import java.net.Proxy;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.annotation.concurrent.NotThreadSafe;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.partner.IPartnershipFactory;
 import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.util.CAS2Header;
 import com.helger.as2lib.util.javamail.DispositionDataContentHandler;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.lang.priviledged.AccessControllerHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
 
 import jakarta.activation.CommandMap;
 import jakarta.activation.MailcapCommandMap;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Default implementation of {@link IAS2Session}
@@ -87,10 +85,7 @@ public class AS2Session implements IAS2Session
     final MailcapCommandMap aCommandMap = (MailcapCommandMap) CommandMap.getDefaultCommandMap ();
     aCommandMap.addMailcap ("message/disposition-notification;; x-java-content-handler=" +
                             DispositionDataContentHandler.class.getName ());
-    AccessControllerHelper.run ( () -> {
-      CommandMap.setDefaultCommandMap (aCommandMap);
-      return null;
-    });
+    CommandMap.setDefaultCommandMap (aCommandMap);
   }
 
   /**

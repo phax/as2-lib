@@ -16,8 +16,6 @@
  */
 package com.helger.as2servlet.example;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
@@ -28,9 +26,10 @@ import com.helger.as2servlet.AbstractAS2ReceiveBaseXServletHandler;
 import com.helger.as2servlet.AbstractAS2ReceiveXServletHandler;
 import com.helger.as2servlet.util.AS2ServletMDNReceiverModule;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
-import com.helger.commons.collection.impl.ICommonsMap;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.security.keystore.EKeyStoreType;
 
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.ServletException;
 
 /**

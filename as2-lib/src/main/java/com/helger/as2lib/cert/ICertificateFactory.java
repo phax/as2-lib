@@ -35,12 +35,12 @@ package com.helger.as2lib.cert;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.IDynamicComponent;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for a certificate factory.

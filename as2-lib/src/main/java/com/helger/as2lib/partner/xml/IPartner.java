@@ -34,12 +34,12 @@ package com.helger.as2lib.partner.xml;
 
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.name.IHasName;
+import com.helger.collection.commons.ICommonsIterable;
+import com.helger.collection.commons.ICommonsMap;
 
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.ICommonsIterable;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.name.IHasName;
+import jakarta.annotation.Nonnull;
 
 /**
  * Read-only interface for a single partner that is used in a partnership.

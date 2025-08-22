@@ -38,9 +38,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +51,11 @@ import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.processor.receiver.AbstractActiveNetModule;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.io.stream.StringInputStream;
+import com.helger.base.io.stream.StringInputStream;
+import com.helger.http.CHttp;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Store message content and optionally message headers and attributes to a file

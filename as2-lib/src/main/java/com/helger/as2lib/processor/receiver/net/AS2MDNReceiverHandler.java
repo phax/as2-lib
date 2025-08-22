@@ -39,12 +39,11 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.cert.ECertificatePartnershipType;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.crypto.IMICMatchingHandler;
@@ -72,26 +71,26 @@ import com.helger.as2lib.util.http.AS2HttpResponseHandlerSocket;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2lib.util.http.IAS2IncomingMDNCallback;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.stream.NonBlockingBufferedReader;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.io.stream.StreamHelper.CopyByteStreamBuilder;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.state.ETriState;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.StringParser;
-import com.helger.commons.timing.StopWatch;
+import com.helger.base.CGlobal;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.io.stream.StreamHelper.CopyByteStreamBuilder;
+import com.helger.base.state.ESuccess;
+import com.helger.base.state.ETriState;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringParser;
+import com.helger.base.timing.StopWatch;
+import com.helger.http.CHttp;
+import com.helger.http.CHttpHeader;
+import com.helger.io.file.FileHelper;
+import com.helger.io.file.FilenameHelper;
 import com.helger.mail.datasource.ByteArrayDataSource;
 
 import jakarta.activation.DataSource;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 
@@ -506,7 +505,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
 
     if (aIncomingDumper != null)
       aIncomingDumper.dumpIncomingRequest (aMDN.headers ().getAllHeaderLines (true),
-                                           aMDNBytes != null ? aMDNBytes : ArrayHelper.EMPTY_BYTE_ARRAY,
+                                           aMDNBytes != null ? aMDNBytes : CGlobal.EMPTY_BYTE_ARRAY,
                                            aMDN);
 
     MimeBodyPart aPart = null;

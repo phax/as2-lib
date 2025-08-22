@@ -19,9 +19,6 @@ package com.helger.as2servlet.util;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +29,14 @@ import com.helger.as2lib.processor.IMessageProcessor;
 import com.helger.as2lib.processor.module.IProcessorModule;
 import com.helger.as2lib.session.AS2Session;
 import com.helger.as2lib.util.AS2XMLHelper;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.io.file.FileHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.io.file.FileHelper;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.serialize.MicroReader;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A special {@link AS2Session} that loads its configuration from a file.

@@ -34,13 +34,13 @@ package com.helger.as2lib.disposition;
 
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.AS2ProcessorException;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.ICommonsList;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Exception thrown in case a message disposition contains an error or a warning. The content of

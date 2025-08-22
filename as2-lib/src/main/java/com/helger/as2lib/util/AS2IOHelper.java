@@ -37,29 +37,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.eclipse.angus.mail.util.QPDecoderStream;
 import org.eclipse.angus.mail.util.QPEncoderStream;
 
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.processor.receiver.AS2InvalidMessageException;
-import com.helger.commons.CGlobal;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.base64.Base64;
-import com.helger.commons.base64.Base64InputStream;
-import com.helger.commons.base64.Base64OutputStream;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.io.file.FileIOError;
-import com.helger.commons.io.file.FileOperationManager;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.file.LoggingFileOperationCallback;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.timing.StopWatch;
+import com.helger.base.CGlobal;
+import com.helger.base.codec.base64.Base64;
+import com.helger.base.codec.base64.Base64InputStream;
+import com.helger.base.codec.base64.Base64OutputStream;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringRemove;
+import com.helger.base.timing.StopWatch;
+import com.helger.http.CHttp;
+import com.helger.io.file.FileIOError;
+import com.helger.io.file.FileOperationManager;
+import com.helger.io.file.FilenameHelper;
+import com.helger.io.file.LoggingFileOperationCallback;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeUtility;
 
@@ -241,8 +241,8 @@ public final class AS2IOHelper
   public static String getFilenameFromMessageID (@Nonnull final String sMessageID)
   {
     // Remove angle brackets manually
-    String s = StringHelper.removeAll (sMessageID, '<');
-    s = StringHelper.removeAll (s, '>');
+    String s = StringRemove.removeAll (sMessageID, '<');
+    s = StringRemove.removeAll (s, '>');
     return FilenameHelper.getAsSecureValidASCIIFilename (s);
   }
 

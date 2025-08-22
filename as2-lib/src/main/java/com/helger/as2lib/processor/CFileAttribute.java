@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.processor;
 
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
 
 @Immutable
 public final class CFileAttribute

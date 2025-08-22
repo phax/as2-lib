@@ -32,10 +32,10 @@
  */
 package com.helger.as2lib.processor.receiver;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.message.IMessage;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * The module for sending AS2 messages by polling a file system directory.

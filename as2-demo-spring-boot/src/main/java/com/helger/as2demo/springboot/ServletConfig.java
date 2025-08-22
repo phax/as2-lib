@@ -19,22 +19,21 @@ package com.helger.as2demo.springboot;
 
 import java.io.File;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2servlet.AS2ReceiveXServletHandlerConstantSession;
 import com.helger.as2servlet.AS2WebAppListener;
 import com.helger.as2servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
 import com.helger.as2servlet.util.AS2ServletXMLSession;
-import com.helger.commons.exception.InitializationException;
-import com.helger.commons.http.EHttpMethod;
+import com.helger.base.exception.InitializationException;
+import com.helger.http.EHttpMethod;
 import com.helger.web.scope.mgr.WebScopeManager;
 import com.helger.xservlet.AbstractXServlet;
 

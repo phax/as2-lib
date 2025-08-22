@@ -32,17 +32,17 @@
  */
 package com.helger.as2lib.message;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.Nonempty;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.params.CompositeParameters;
 import com.helger.as2lib.params.DateParameters;
 import com.helger.as2lib.params.MessageParameters;
 import com.helger.as2lib.params.RandomParameters;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.http.CHttpHeader;
+import com.helger.http.CHttpHeader;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class AS2Message extends AbstractMessage
 {

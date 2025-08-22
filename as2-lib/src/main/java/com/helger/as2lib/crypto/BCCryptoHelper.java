@@ -53,10 +53,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillNotClose;
-
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -94,32 +90,34 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.WillNotClose;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.AS2ResourceHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.NullOutputStream;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.base.system.SystemProperties;
 import com.helger.bc.PBCProvider;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.equals.EqualsHelper;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.NullOutputStream;
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.lang.priviledged.AccessControllerHelper;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.system.SystemProperties;
+import com.helger.collection.CollectionFind;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.datetime.helper.PDTFactory;
+import com.helger.http.CHttp;
+import com.helger.http.CHttpHeader;
+import com.helger.io.file.FileHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.security.keystore.IKeyStoreType;
 
 import jakarta.activation.CommandMap;
 import jakarta.activation.MailcapCommandMap;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.ContentType;
 import jakarta.mail.internet.MimeBodyPart;
@@ -205,10 +203,7 @@ public class BCCryptoHelper implements ICryptoHelper
                             org.bouncycastle.mail.smime.handlers.x_pkcs7_mime.class.getName ());
     aCommandMap.addMailcap ("multipart/signed;; x-java-content-handler=" +
                             org.bouncycastle.mail.smime.handlers.multipart_signed.class.getName ());
-    AccessControllerHelper.run ( () -> {
-      CommandMap.setDefaultCommandMap (aCommandMap);
-      return null;
-    });
+    CommandMap.setDefaultCommandMap (aCommandMap);
   }
 
   /**
@@ -668,7 +663,7 @@ public class BCCryptoHelper implements ICryptoHelper
         if (aContainedCerts.size () > 1)
           LOGGER.warn ("Signed part contains " + aContainedCerts.size () + " certificates - using the first one!");
 
-        final X509CertificateHolder aCertHolder = (X509CertificateHolder) CollectionHelper.getFirstElement (aContainedCerts);
+        final X509CertificateHolder aCertHolder = (X509CertificateHolder) CollectionFind.getFirstElement (aContainedCerts);
         final X509Certificate aCert = new JcaX509CertificateConverter ().setProvider (m_sSecurityProviderName)
                                                                         .getCertificate (aCertHolder);
         if (aX509Cert != null && !aX509Cert.equals (aCert))

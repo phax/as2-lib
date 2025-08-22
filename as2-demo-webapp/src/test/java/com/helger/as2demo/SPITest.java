@@ -18,8 +18,8 @@ package com.helger.as2demo;
 
 import org.junit.Test;
 
-import com.helger.commons.mock.SPITestHelper;
 import com.helger.photon.core.mock.PhotonCoreValidator;
+import com.helger.unittestext.SPITestHelper;
 
 public final class SPITest
 {

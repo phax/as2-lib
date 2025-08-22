@@ -34,8 +34,8 @@ package com.helger.as2lib.cert;
 
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.typeconvert.collection.IStringMap;
 
 public class CertificateFactoryByteArray extends CertificateFactory
 {

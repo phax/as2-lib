@@ -32,11 +32,11 @@
  */
 package com.helger.as2lib.params;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
-import com.helger.commons.lang.StackTraceHelper;
+import com.helger.base.rt.StackTraceHelper;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Parameters for exception handling.

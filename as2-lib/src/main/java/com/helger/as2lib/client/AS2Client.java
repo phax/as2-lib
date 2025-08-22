@@ -36,13 +36,11 @@ import java.net.Proxy;
 import java.security.cert.X509Certificate;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.cert.AS2CertificateExistsException;
 import com.helger.as2lib.cert.AbstractCertificateFactory;
 import com.helger.as2lib.cert.CertificateFactory;
@@ -59,16 +57,17 @@ import com.helger.as2lib.processor.resender.ImmediateResenderModule;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.factory.FactoryNewInstance;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.timing.StopWatch;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.lang.clazz.FactoryNewInstance;
+import com.helger.base.timing.StopWatch;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
 import com.helger.security.certificate.CertificateHelper;
+import com.helger.typeconvert.collection.StringMap;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 

@@ -32,10 +32,10 @@
  */
 package com.helger.as2.util;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * emulates StringTokenizer

@@ -32,24 +32,26 @@
  */
 package com.helger.as2lib.disposition;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringImplode;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Parser and domain object for disposition options. This is usually used in the HTTP header
@@ -201,7 +203,7 @@ public class DispositionOptions
     m_aMICAlgs.clear ();
     if (StringHelper.isNotEmpty (sMICAlgs))
     {
-      final ICommonsList <String> aMICAlgs = StringHelper.getExploded (',', sMICAlgs.trim ());
+      final List <String> aMICAlgs = StringHelper.getExploded (',', sMICAlgs.trim ());
       for (final String sMICAlg : aMICAlgs)
       {
         // trim and lowercase
@@ -305,7 +307,7 @@ public class DispositionOptions
     if (m_aMICAlgs.isEmpty ())
       return null;
 
-    return StringHelper.getImplodedMapped (", ", m_aMICAlgs, ECryptoAlgorithmSign::getID);
+    return StringImplode.getImplodedMapped (", ", m_aMICAlgs, ECryptoAlgorithmSign::getID);
   }
 
   @Nonnull
@@ -359,7 +361,7 @@ public class DispositionOptions
   public static DispositionOptions createFromString (@Nullable final String sOptions) throws AS2Exception
   {
     final DispositionOptions ret = new DispositionOptions ();
-    if (StringHelper.hasTextAfterTrim (sOptions))
+    if (StringHelper.isNotEmptyAfterTrim (sOptions))
     {
       try
       {

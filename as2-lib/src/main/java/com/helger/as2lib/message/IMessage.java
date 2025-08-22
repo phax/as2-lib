@@ -32,12 +32,11 @@
  */
 package com.helger.as2lib.message;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.util.http.TempSharedFileInputStream;
-import com.helger.commons.http.CHttpHeader;
+import com.helger.http.CHttpHeader;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.internet.MimeBodyPart;
 
 /**

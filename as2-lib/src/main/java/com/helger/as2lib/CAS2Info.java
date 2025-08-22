@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib;
 
-import javax.annotation.concurrent.Immutable;
+import com.helger.annotation.concurrent.Immutable;
 
 /**
  * Global information constants.

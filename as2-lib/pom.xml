@@ -58,10 +58,6 @@
   <dependencies>
     <dependency>
       <groupId>com.helger.commons</groupId>
-      <artifactId>ph-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.helger.commons</groupId>
       <artifactId>ph-xml</artifactId>
     </dependency>
     <dependency>
@@ -69,12 +65,12 @@
       <artifactId>ph-bc</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.helger.web</groupId>
-      <artifactId>ph-mail</artifactId>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-http</artifactId>
     </dependency>
     <dependency>
       <groupId>com.helger.web</groupId>
-      <artifactId>ph-http</artifactId>
+      <artifactId>ph-mail</artifactId>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
@@ -89,13 +85,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.github.spotbugs</groupId>
-      <artifactId>spotbugs-annotations</artifactId>
-      <scope>compile</scope>
-      <optional>true</optional>
+      <version>${httpclient.version}</version>
     </dependency>
 
     <dependency>
@@ -106,6 +96,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.helger.commons</groupId>
+      <artifactId>ph-unittest-support-ext</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -139,7 +134,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.as2lib</Automatic-Module-Name>
             <Export-Package>com.helger.as2lib.*</Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
             <Require-Capability>osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"</Require-Capability>
             <Provide-Capability>osgi.serviceloader; osgi.serviceloader=com.helger.commons.thirdparty.IThirdPartyModuleProviderSPI</Provide-Capability>
             <!-- The latter one has precedence -->

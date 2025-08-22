@@ -32,11 +32,11 @@
  */
 package com.helger.as2.cmd;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2.cmdprocessor.AbstractCommandProcessor;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * command calls the registered command processors

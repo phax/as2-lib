@@ -44,14 +44,14 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.crypto.ICryptoHelper;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.io.EAppend;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.io.EAppend;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.collection.CollectionFind;
+import com.helger.io.file.FileHelper;
 import com.helger.security.keystore.IKeyStoreType;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * KeyStore reader and write class
@@ -113,7 +113,7 @@ public final class AS2KeyStoreHelper
     {
       final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
       final Collection <? extends Certificate> c = cf.generateCertificates (aIS);
-      return (X509Certificate) CollectionHelper.getFirstElement (c);
+      return (X509Certificate) CollectionFind.getFirstElement (c);
     }
     finally
     {

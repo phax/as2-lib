@@ -50,8 +50,8 @@ import com.helger.as2lib.crypto.ECompressionType;
 import com.helger.as2lib.crypto.ECryptoAlgorithmCrypt;
 import com.helger.as2lib.crypto.ECryptoAlgorithmSign;
 import com.helger.as2lib.util.cert.AS2KeyStoreHelper;
-import com.helger.commons.debug.GlobalDebug;
-import com.helger.commons.mime.CMimeType;
+import com.helger.base.debug.GlobalDebug;
+import com.helger.mime.CMimeType;
 import com.helger.security.keystore.EKeyStoreType;
 
 /**

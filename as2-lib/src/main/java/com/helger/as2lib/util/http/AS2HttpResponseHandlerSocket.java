@@ -36,17 +36,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.WillNotClose;
-
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.IWriteToStream;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.WillNotClose;
+import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.iface.IWriteToStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.http.CHttp;
 import com.helger.http.EHttpVersion;
+import com.helger.http.header.HttpHeaderMap;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * An implementation of {@link IAS2HttpResponseHandler} that writes an HTTP 1.1 response directly to

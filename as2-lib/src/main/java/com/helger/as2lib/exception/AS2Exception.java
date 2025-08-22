@@ -34,15 +34,15 @@ package com.helger.as2lib.exception;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.message.IMessage;
-import com.helger.commons.lang.ClassHelper;
+import com.helger.base.lang.clazz.ClassHelper;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base class for all AS2 related exceptions used in this project.

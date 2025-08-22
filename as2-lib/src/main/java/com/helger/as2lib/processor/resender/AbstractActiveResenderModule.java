@@ -35,17 +35,17 @@ package com.helger.as2lib.processor.resender;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractActiveModule;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.commons.CGlobal;
-import com.helger.commons.collection.attr.IStringMap;
+import com.helger.base.CGlobal;
+import com.helger.typeconvert.collection.IStringMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base class for an active resender module.

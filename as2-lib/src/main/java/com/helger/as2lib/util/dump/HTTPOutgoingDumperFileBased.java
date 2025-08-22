@@ -34,11 +34,11 @@ package com.helger.as2lib.util.dump;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.commons.io.file.FileHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.io.file.FileHelper;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Directory based outgoing HTTP dumper.

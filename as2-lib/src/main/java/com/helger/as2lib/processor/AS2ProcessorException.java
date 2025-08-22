@@ -34,17 +34,17 @@ package com.helger.as2lib.processor;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.lang.ClassHelper;
-import com.helger.commons.lang.StackTraceHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.base.rt.StackTraceHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.http.CHttp;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * An exception thrown the an {@link IMessageProcessor} has caught exceptions.

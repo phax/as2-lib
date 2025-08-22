@@ -34,15 +34,15 @@ package com.helger.as2lib.message;
 
 import java.io.Serializable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.as2lib.partner.Partnership;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.http.HttpHeaderMap;
+import com.helger.http.CHttpHeader;
+import com.helger.http.header.HttpHeaderMap;
+import com.helger.typeconvert.collection.IStringMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Base interface for {@link IMessage} and {@link IMessageMDN}. Must be Serializable, so that

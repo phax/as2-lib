@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.receiver;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * The module for receiving AS2 messages.

@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
 
 /**
  * Unit test class for class {@link ECryptoAlgorithmCrypt}.

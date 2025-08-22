@@ -53,11 +53,11 @@ import com.helger.as2lib.message.IMessageMDN;
 import com.helger.as2lib.util.AS2Helper;
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2ResourceHelper;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.IReadableResource;
-import com.helger.commons.io.stream.NonBlockingBufferedReader;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.http.header.HttpHeaderMap;
+import com.helger.io.resource.ClassPathResource;
+import com.helger.io.resource.IReadableResource;
 import com.helger.security.certificate.CertificateHelper;
 
 import jakarta.mail.internet.MimeBodyPart;

@@ -32,7 +32,7 @@
  */
 package com.helger.as2lib.exception;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class AS2UnsupportedException extends AS2Exception
 {

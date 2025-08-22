@@ -40,8 +40,8 @@ import java.time.ZonedDateTime;
 import org.junit.Test;
 
 import com.helger.as2lib.message.AS2Message;
-import com.helger.commons.datetime.PDTFactory;
-import com.helger.commons.datetime.PDTFormatter;
+import com.helger.datetime.format.PDTFormatter;
+import com.helger.datetime.helper.PDTFactory;
 
 /**
  * Test class for class {@link CompositeParameters}.

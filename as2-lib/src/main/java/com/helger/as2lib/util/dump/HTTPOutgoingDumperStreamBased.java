@@ -35,18 +35,18 @@ package com.helger.as2lib.util.dump;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.WillCloseWhenClosed;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.WillCloseWhenClosed;
 import com.helger.as2lib.message.AS2Message;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.http.CHttp;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Abstract outgoing HTTP dumper using an {@link OutputStream} for operations.

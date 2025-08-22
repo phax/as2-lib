@@ -35,10 +35,10 @@ package com.helger.as2lib.util.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.http.header.HttpHeaderMap;
 
-import com.helger.commons.http.HttpHeaderMap;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Provider interface to retrieve an AS2 {@link InputStream}.

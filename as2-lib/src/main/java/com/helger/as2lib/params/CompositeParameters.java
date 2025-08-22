@@ -35,16 +35,16 @@ package com.helger.as2lib.params;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.collection.impl.CommonsHashMap;
-import com.helger.commons.collection.impl.ICommonsMap;
-import com.helger.commons.lang.ClassHelper;
+import com.helger.annotation.style.ReturnsMutableObject;
+import com.helger.base.lang.clazz.ClassHelper;
+import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class CompositeParameters extends AbstractParameterParser
 {

@@ -35,19 +35,19 @@ package com.helger.as2.app.cert;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillClose;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.WillClose;
 import com.helger.as2.util.EFileMonitorEvent;
 import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
 import com.helger.as2lib.cert.CertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.params.AS2InvalidParameterException;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class ServerCertificateFactory extends CertificateFactory implements IFileMonitorListener
 {

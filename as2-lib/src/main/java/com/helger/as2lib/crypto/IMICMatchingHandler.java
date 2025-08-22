@@ -32,11 +32,11 @@
  */
 package com.helger.as2lib.crypto;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * A special handler if MIC is not matched.

@@ -97,7 +97,7 @@
           <instructions>
             <Automatic-Module-Name>com.helger.as2lib.partner.mongodb</Automatic-Module-Name>
             <Export-Package>com.helger.as2lib.partner.mongodb.*</Export-Package>
-            <Import-Package>!javax.annotation.*,*</Import-Package>
+            <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>
       </plugin>

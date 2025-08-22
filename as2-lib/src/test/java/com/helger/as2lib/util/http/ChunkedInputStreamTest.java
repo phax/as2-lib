@@ -42,10 +42,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import com.helger.base.CGlobal;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 
 /**
  * Test class for class {@link ChunkedInputStream}.
@@ -55,7 +53,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class ChunkedInputStreamTest
 {
   @Test (expected = EOFException.class)
-  @SuppressFBWarnings ("RR_NOT_CHECKED")
   public void testReadBufferFromEmpty () throws Exception
   {
     final InputStream empty = new NonBlockingByteArrayInputStream ("".getBytes ());
@@ -85,7 +82,7 @@ public final class ChunkedInputStreamTest
   @Test (expected = EOFException.class)
   public void testReadByteFromEmpty () throws Exception
   {
-    try (final InputStream empty = new NonBlockingByteArrayInputStream (ArrayHelper.EMPTY_BYTE_ARRAY);
+    try (final InputStream empty = new NonBlockingByteArrayInputStream (CGlobal.EMPTY_BYTE_ARRAY);
          final ChunkedInputStream cIS = new ChunkedInputStream (empty))
     {
       cIS.read ();

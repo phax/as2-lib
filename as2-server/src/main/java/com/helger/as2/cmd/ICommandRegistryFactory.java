@@ -32,7 +32,7 @@
  */
 package com.helger.as2.cmd;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 public interface ICommandRegistryFactory
 {

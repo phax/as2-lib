@@ -39,13 +39,10 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.cert.AS2CertificateNotFoundException;
 import com.helger.as2lib.cert.AS2KeyNotFoundException;
@@ -66,16 +63,18 @@ import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.processor.CNetAttribute;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.mime.CMimeType;
-import com.helger.commons.regex.RegExHelper;
-import com.helger.commons.state.ETriState;
-import com.helger.commons.wrapper.Wrapper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.state.ETriState;
+import com.helger.base.wrapper.Wrapper;
+import com.helger.cache.regex.RegExHelper;
+import com.helger.http.CHttp;
+import com.helger.http.CHttpHeader;
 import com.helger.mail.cte.EContentTransferEncoding;
+import com.helger.mime.CMimeType;
 import com.helger.security.certificate.CertificateHelper;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.internet.ContentType;
 import jakarta.mail.internet.InternetHeaders;
 import jakarta.mail.internet.MimeBodyPart;

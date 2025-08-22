@@ -37,8 +37,6 @@ import java.net.Proxy;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -47,6 +45,8 @@ import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IBaseMessage;
 import com.helger.as2lib.util.AS2IOHelper;
@@ -57,15 +57,16 @@ import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
 import com.helger.as2lib.util.http.AS2HttpClient;
 import com.helger.as2lib.util.http.HTTPHelper;
 import com.helger.as2lib.util.http.IAS2OutgoingHttpCallback;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.http.EHttpMethod;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.system.SystemProperties;
-import com.helger.commons.url.EURLProtocol;
-import com.helger.commons.ws.HostnameVerifierVerifyAll;
-import com.helger.commons.ws.TrustManagerTrustAll;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.system.SystemProperties;
+import com.helger.base.url.EURLProtocol;
+import com.helger.http.EHttpMethod;
+import com.helger.http.security.HostnameVerifierVerifyAll;
+import com.helger.http.security.TrustManagerTrustAll;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Abstract HTTP based sender module

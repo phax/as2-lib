@@ -18,18 +18,17 @@ package com.helger.as2servlet;
 
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillNotClose;
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.WillNotClose;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.util.http.IAS2HttpRequestDataProvider;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.stream.NonClosingInputStream;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.stream.NonClosingInputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.http.header.HttpHeaderMap;
 import com.helger.web.scope.IRequestWebScope;
 
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
 

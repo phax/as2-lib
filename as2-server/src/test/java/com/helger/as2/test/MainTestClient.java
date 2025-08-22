@@ -35,8 +35,6 @@ package com.helger.as2.test;
 import java.io.File;
 import java.util.Enumeration;
 
-import javax.annotation.Nonnull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +56,12 @@ import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
 import com.helger.as2lib.processor.sender.AS2SenderModule;
 import com.helger.as2lib.processor.sender.IProcessorSenderModule;
 import com.helger.as2lib.session.AS2Session;
-import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.system.SystemHelper;
+import com.helger.base.system.SystemHelper;
+import com.helger.io.resource.ClassPathResource;
 import com.helger.security.keystore.EKeyStoreType;
+import com.helger.typeconvert.collection.StringMap;
 
+import jakarta.annotation.Nonnull;
 import jakarta.mail.Header;
 import jakarta.mail.internet.MimeBodyPart;
 
@@ -180,10 +179,7 @@ public class MainTestClient
     aMsg.attrs ().putIn (CPartnershipIDs.PID_AS2, pidAs2);
     aMsg.attrs ().putIn (CPartnershipIDs.PID_EMAIL, "email");
 
-    MimeBodyPart aBodyPart;
-    // part = new MimeBodyPart(new FileInputStream("/tmp/tst"));
-    aBodyPart = new MimeBodyPart ();
-
+    MimeBodyPart aBodyPart = new MimeBodyPart ();
     aBodyPart.setText ("some text from mme part");
     // part.setFileName("/");
     aMsg.setData (aBodyPart);

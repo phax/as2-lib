@@ -44,13 +44,13 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.util.AS2HttpHelper;
 import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.commons.base64.Base64;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.io.stream.NonBlockingByteArrayOutputStream;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.io.stream.StringInputStream;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.codec.base64.Base64;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.io.stream.StringInputStream;
+import com.helger.base.string.StringHelper;
+import com.helger.http.CHttp;
+import com.helger.http.CHttpHeader;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mail.datasource.ByteArrayDataSource;
 

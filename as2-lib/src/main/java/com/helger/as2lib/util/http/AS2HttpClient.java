@@ -43,10 +43,6 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillClose;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
@@ -73,20 +69,24 @@ import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.WillClose;
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.util.AS2IOHelper;
 import com.helger.as2lib.util.AS2ResourceHelper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.http.EHttpMethod;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.stream.CountingInputStream;
-import com.helger.commons.io.stream.StreamHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.stream.CountingInputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.http.CHttp;
+import com.helger.http.EHttpMethod;
+import com.helger.http.header.HttpHeaderMap;
 import com.helger.mail.cte.EContentTransferEncoding;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 
 /**

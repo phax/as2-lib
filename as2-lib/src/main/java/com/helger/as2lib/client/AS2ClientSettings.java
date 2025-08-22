@@ -36,11 +36,9 @@ import java.io.File;
 import java.security.cert.X509Certificate;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.hc.core5.util.Timeout;
 
+import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.cert.IStorableCertificateFactory;
 import com.helger.as2lib.crypto.ECompressionType;
@@ -52,12 +50,14 @@ import com.helger.as2lib.processor.resender.IProcessorResenderModule;
 import com.helger.as2lib.processor.sender.AbstractHttpSenderModule;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumperFactory;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableObject;
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.http.header.HttpHeaderMap;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Settings object for a message delivery.

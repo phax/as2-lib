@@ -47,10 +47,10 @@ import org.junit.Test;
 
 import com.helger.as2lib.message.AS2Message;
 import com.helger.as2lib.util.dump.IHTTPIncomingDumper;
-import com.helger.commons.collection.ArrayHelper;
-import com.helger.commons.io.stream.NonBlockingByteArrayInputStream;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.io.stream.StringInputStream;
+import com.helger.base.CGlobal;
+import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.io.stream.StringInputStream;
 import com.helger.mail.datasource.IExtendedDataSource;
 
 public final class HTTPHelperTest
@@ -246,7 +246,7 @@ public final class HTTPHelperTest
   @Test (expected = EOFException.class)
   public void testReadChunkLenTotallyEmpty () throws Exception
   {
-    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (ArrayHelper.EMPTY_BYTE_ARRAY);
+    final NonBlockingByteArrayInputStream aIS = new NonBlockingByteArrayInputStream (CGlobal.EMPTY_BYTE_ARRAY);
     HTTPHelper.readChunkLen (aIS);
     fail ("Expected EOFException");
   }

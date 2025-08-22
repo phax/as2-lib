@@ -34,10 +34,10 @@ package com.helger.as2lib.cert;
 
 import java.security.KeyStore;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.ValueEnforcer;
+import com.helger.base.enforce.ValueEnforcer;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * An example implementation of a Certificate factory that uses an external {@link KeyStore}.

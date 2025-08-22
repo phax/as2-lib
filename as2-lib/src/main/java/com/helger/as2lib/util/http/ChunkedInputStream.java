@@ -35,13 +35,13 @@ package com.helger.as2lib.util.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.WillCloseWhenClosed;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.io.stream.WrappedInputStream;
+import com.helger.annotation.WillCloseWhenClosed;
+import com.helger.base.io.stream.WrappedInputStream;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Stream to read a chunked body stream. Input stream should be at the beginning of a chunk, i.e. at

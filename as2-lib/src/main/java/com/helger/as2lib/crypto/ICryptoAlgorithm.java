@@ -32,11 +32,11 @@
  */
 package com.helger.as2lib.crypto;
 
-import javax.annotation.Nonnull;
-
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
-import com.helger.commons.id.IHasID;
+import com.helger.base.id.IHasID;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Base interface for signing and crypting crypto algorithms.

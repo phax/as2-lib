@@ -19,7 +19,7 @@ package com.helger.as2demo.springboot;
 
 import org.junit.jupiter.api.Test;
 
-import com.helger.commons.mock.SPITestHelper;
+import com.helger.unittestext.SPITestHelper;
 
 /**
  * Test SPI definitions

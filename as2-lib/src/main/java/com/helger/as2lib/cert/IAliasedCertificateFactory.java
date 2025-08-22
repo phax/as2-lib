@@ -35,11 +35,11 @@ package com.helger.as2lib.cert;
 import java.security.Key;
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
-
+import com.helger.annotation.Nonempty;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.collection.impl.ICommonsOrderedMap;
+import com.helger.collection.commons.ICommonsOrderedMap;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Certificate factory with support for alias handling

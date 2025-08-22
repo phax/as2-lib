@@ -34,12 +34,12 @@ package com.helger.as2lib.util.http;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.WillNotClose;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.WillNotClose;
+import com.helger.base.io.iface.IWriteToStream;
+import com.helger.http.header.HttpHeaderMap;
 
-import com.helger.commons.http.HttpHeaderMap;
-import com.helger.commons.io.IWriteToStream;
+import jakarta.annotation.Nonnull;
 
 /**
  * Abstract HTTP response handler. This abstraction layer may be used to either write to a socket

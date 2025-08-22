@@ -32,14 +32,14 @@
  */
 package com.helger.as2lib.params;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.Nonempty;
 import com.helger.as2lib.message.IMessage;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.string.StringHelper;
+import com.helger.base.string.StringReplace;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.internet.ContentDisposition;
 
 public class MessageParameters extends AbstractParameterParser
@@ -139,6 +139,6 @@ public class MessageParameters extends AbstractParameterParser
   public static String getEscapedString (@Nullable final String sUnescaped)
   {
     // Based on https://github.com/phax/as2-lib/pull/19
-    return StringHelper.replaceAll (sUnescaped, "$", "$$");
+    return StringReplace.replaceAll (sUnescaped, "$", "$$");
   }
 }

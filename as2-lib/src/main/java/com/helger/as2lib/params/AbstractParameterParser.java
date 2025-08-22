@@ -32,18 +32,18 @@
  */
 package com.helger.as2lib.params;
 
+import java.util.List;
 import java.util.StringTokenizer;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.string.StringHelper;
+import com.helger.base.tostring.ToStringGenerator;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractParameterParser
 {
@@ -94,7 +94,7 @@ public abstract class AbstractParameterParser
                              @Nullable final String sDelimiters,
                              @Nonnull final String sValue) throws AS2Exception
   {
-    final ICommonsList <String> aKeys = StringHelper.getExploded (',', sFormat);
+    final List <String> aKeys = StringHelper.getExploded (',', sFormat);
 
     final StringTokenizer aValueTokens = new StringTokenizer (sValue, sDelimiters, false);
     for (final String sKey : aKeys)
@@ -135,7 +135,7 @@ public abstract class AbstractParameterParser
         if (nNextIndex < 0)
         {
           // Append the rest - we're done
-          aSB.append (sFormat.substring (nPrevIndex, sFormat.length ()));
+          aSB.append (sFormat.substring (nPrevIndex));
           break;
         }
 

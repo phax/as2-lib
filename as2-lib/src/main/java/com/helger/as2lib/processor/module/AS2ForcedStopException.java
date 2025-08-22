@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.module;
 
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nullable;
 
 public class AS2ForcedStopException extends AS2Exception
 {

@@ -32,14 +32,14 @@
  */
 package com.helger.as2.cmd.cert;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2.cmd.AbstractCommand;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
 import com.helger.as2lib.cert.IAliasedCertificateFactory;
 import com.helger.as2lib.cert.ICertificateFactory;
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nonnull;
 
 public abstract class AbstractAliasedCertCommand extends AbstractCommand
 {

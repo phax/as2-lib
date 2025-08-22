@@ -35,14 +35,14 @@ package com.helger.as2lib.processor.resender;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.Nonnegative;
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.message.IMessage;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.datetime.PDTFactory;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.datetime.helper.PDTFactory;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * This class represents a single in-memory item to be resend.

@@ -36,8 +36,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
@@ -45,6 +43,7 @@ import javax.net.ssl.SSLSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.util.CommandTokenizer;
@@ -52,23 +51,24 @@ import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.WrappedAS2Exception;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.collection.attr.StringMap;
-import com.helger.commons.collection.impl.CommonsArrayList;
-import com.helger.commons.collection.impl.CommonsLinkedHashSet;
-import com.helger.commons.collection.impl.ICommonsList;
-import com.helger.commons.collection.impl.ICommonsOrderedSet;
-import com.helger.commons.io.stream.NonBlockingBufferedReader;
-import com.helger.commons.io.stream.NonBlockingBufferedWriter;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
+import com.helger.base.io.nonblocking.NonBlockingBufferedWriter;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.CommonsLinkedHashSet;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.commons.ICommonsOrderedSet;
+import com.helger.typeconvert.collection.IStringMap;
+import com.helger.typeconvert.collection.StringMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
- * actual socket command processor takes commands from socket/port and passes
- * them to the OpenAS2Server message format &lt;command userid="abc"
- * pasword="xyz"&gt;the actual command&lt;/command&gt; when inited the valid
- * userid and password is passed, then as each command is processed the
- * processCommand method verifies the two fields correctness
+ * actual socket command processor takes commands from socket/port and passes them to the
+ * OpenAS2Server message format &lt;command userid="abc" pasword="xyz"&gt;the actual
+ * command&lt;/command&gt; when inited the valid userid and password is passed, then as each command
+ * is processed the processCommand method verifies the two fields correctness
  *
  * @author joseph mcverry
  */
@@ -93,7 +93,8 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
 
   @OverrideOnDemand
   @Nullable
-  protected String [] getEnabledAnonymousCipherSuites (@Nonnull final String [] aEnabled, @Nonnull final String [] aSupported)
+  protected String [] getEnabledAnonymousCipherSuites (@Nonnull final String [] aEnabled,
+                                                       @Nonnull final String [] aSupported)
   {
     final ICommonsOrderedSet <String> ret = new CommonsLinkedHashSet <> ();
     for (final String sSupported : aSupported)
@@ -115,7 +116,8 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
   }
 
   @Override
-  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParams) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session aSession, @Nullable final IStringMap aParams)
+                                                                                                             throws AS2Exception
   {
     final StringMap aParameters = aParams == null ? new StringMap () : new StringMap (aParams);
     final String sPort = aParameters.getAsString (ATTR_PORTID);

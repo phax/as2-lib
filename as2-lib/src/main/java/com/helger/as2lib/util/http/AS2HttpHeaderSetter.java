@@ -32,13 +32,13 @@
  */
 package com.helger.as2lib.util.http;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.util.dump.IHTTPOutgoingDumper;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.HttpHeaderMap;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.http.header.HttpHeaderMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Set HTTP header including logging

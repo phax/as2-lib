@@ -34,7 +34,7 @@ package com.helger.as2.util;
 
 import java.io.File;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public interface IFileMonitorListener
 {

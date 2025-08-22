@@ -37,15 +37,15 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillCloseWhenClosed;
-
+import com.helger.annotation.WillCloseWhenClosed;
 import com.helger.as2lib.message.IBaseMessage;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.http.CHttp;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.tostring.ToStringGenerator;
+import com.helger.http.CHttp;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Stream based incoming HTTP dumper.

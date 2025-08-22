@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>2.1.4</version>
+    <version>3.0.1</version>
   </parent>
   <groupId>com.helger.as2</groupId>
   <artifactId>as2-lib-parent-pom</artifactId>
@@ -68,6 +68,7 @@
   </developers>
   
   <properties>
+    <httpclient.version>5.5</httpclient.version>
     <log4j.version>2.25.1</log4j.version>
   </properties>
  
@@ -76,28 +77,28 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>11.2.6</version>
+        <version>12.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-css-parent-pom</artifactId>
-        <version>7.0.4</version>
+        <version>8.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>10.5.1</version>
+        <version>11.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.photon</groupId>
         <artifactId>ph-oton-parent-pom</artifactId>
-        <version>9.3.2</version>
+        <version>10.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -162,37 +163,6 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
   </dependencies>
-
-  <profiles>
-    <profile>
-      <id>java11-16</id>
-      <activation>
-        <jdk>[11,17)</jdk>
-      </activation>
-      <modules>
-        <module>as2-lib</module>
-        <module>as2-partnership-mongodb</module>
-        <module>as2-servlet</module>
-        <module>as2-demo-webapp</module>
-        <module>as2-server</module>
-        <!-- as2-demo-spring-boot requires Java 17+ -->
-      </modules>
-    </profile>
-    <profile>
-      <id>java17+</id>
-      <activation>
-        <jdk>[17,)</jdk>
-      </activation>
-      <modules>
-        <module>as2-lib</module>
-        <module>as2-partnership-mongodb</module>
-        <module>as2-servlet</module>
-        <module>as2-demo-webapp</module>
-        <module>as2-server</module>
-        <module>as2-demo-spring-boot</module>
-      </modules>
-    </profile>
-  </profiles>
 
   <build>
     <plugins>

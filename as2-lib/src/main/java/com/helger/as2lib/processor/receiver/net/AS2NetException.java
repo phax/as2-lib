@@ -34,9 +34,9 @@ package com.helger.as2lib.processor.receiver.net;
 
 import java.net.InetAddress;
 
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nullable;
 
 /**
  * @author OpenAS2

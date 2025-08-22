@@ -32,13 +32,13 @@
  */
 package com.helger.as2.cmd;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.AbstractDynamicComponent;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.session.IAS2Session;
-import com.helger.commons.collection.attr.IStringMap;
+import com.helger.typeconvert.collection.IStringMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractCommand extends AbstractDynamicComponent implements ICommand
 {

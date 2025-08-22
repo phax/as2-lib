@@ -32,15 +32,15 @@
  */
 package com.helger.as2lib.cert;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.ThreadSafe;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.concurrent.ThreadSafe;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+
+import jakarta.annotation.Nullable;
 
 /**
  * An implementation of a file-based certificate factory using a custom key store type. Since v4.6.4

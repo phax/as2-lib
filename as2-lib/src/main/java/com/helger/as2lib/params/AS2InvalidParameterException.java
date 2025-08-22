@@ -32,11 +32,11 @@
  */
 package com.helger.as2lib.params;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.Nonempty;
 import com.helger.as2lib.exception.AS2Exception;
-import com.helger.commons.annotation.Nonempty;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class AS2InvalidParameterException extends AS2Exception
 {

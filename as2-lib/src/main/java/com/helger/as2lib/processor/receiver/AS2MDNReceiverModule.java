@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.processor.receiver;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A modules for receiving AS2 async MDN messages.

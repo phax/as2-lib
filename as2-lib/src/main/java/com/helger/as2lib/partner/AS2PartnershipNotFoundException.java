@@ -32,9 +32,9 @@
  */
 package com.helger.as2lib.partner;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.exception.AS2Exception;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Exception thrown if a desired partnership is not present.

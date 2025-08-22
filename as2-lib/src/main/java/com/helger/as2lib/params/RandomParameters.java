@@ -34,8 +34,8 @@ package com.helger.as2lib.params;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class RandomParameters extends AbstractParameterParser
 {

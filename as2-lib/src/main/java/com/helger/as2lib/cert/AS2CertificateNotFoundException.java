@@ -34,11 +34,11 @@ package com.helger.as2lib.cert;
 
 import java.security.cert.X509Certificate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.Partnership;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class AS2CertificateNotFoundException extends AS2Exception
 {

@@ -32,8 +32,8 @@
  */
 package com.helger.as2lib.exception;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * An {@link AS2Exception} that wraps an existing exception easily.

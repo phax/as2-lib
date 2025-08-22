@@ -35,14 +35,14 @@ package com.helger.as2lib.processor.module;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.exception.AS2UnsupportedException;
 import com.helger.as2lib.message.IMessage;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.string.ToStringGenerator;
+import com.helger.base.tostring.ToStringGenerator;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Abstract base implementation for {@link IProcessorActiveModule} derived from

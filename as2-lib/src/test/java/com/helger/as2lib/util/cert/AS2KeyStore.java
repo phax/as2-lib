@@ -39,13 +39,13 @@ import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.ICommonsList;
+import com.helger.collection.helper.CollectionHelperExt;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.ReturnsMutableCopy;
-import com.helger.commons.collection.CollectionHelper;
-import com.helger.commons.collection.impl.ICommonsList;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class AS2KeyStore implements ICertificateStore
 {
@@ -68,7 +68,7 @@ public class AS2KeyStore implements ICertificateStore
   {
     try
     {
-      return CollectionHelper.newList (getKeyStore ().aliases ());
+      return CollectionHelperExt.createList (getKeyStore ().aliases ());
     }
     catch (final KeyStoreException kse)
     {

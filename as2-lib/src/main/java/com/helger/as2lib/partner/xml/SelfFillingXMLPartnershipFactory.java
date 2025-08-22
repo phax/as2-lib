@@ -32,14 +32,14 @@
  */
 package com.helger.as2lib.partner.xml;
 
-import javax.annotation.Nonnull;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.partner.AS2PartnershipNotFoundException;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
-import com.helger.commons.annotation.OverrideOnDemand;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * A special {@link XMLPartnershipFactory} that adds a new partnership if it is not yet existing.

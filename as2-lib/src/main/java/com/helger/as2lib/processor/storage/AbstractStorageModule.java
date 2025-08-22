@@ -39,24 +39,24 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.WillClose;
-
+import com.helger.annotation.Nonempty;
+import com.helger.annotation.WillClose;
+import com.helger.annotation.style.OverrideOnDemand;
 import com.helger.as2lib.exception.AS2Exception;
 import com.helger.as2lib.message.IMessage;
 import com.helger.as2lib.params.AS2InvalidParameterException;
 import com.helger.as2lib.processor.module.AbstractProcessorModule;
 import com.helger.as2lib.session.IAS2Session;
 import com.helger.as2lib.util.AS2IOHelper;
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.annotation.OverrideOnDemand;
-import com.helger.commons.charset.CharsetHelper;
-import com.helger.commons.collection.attr.IStringMap;
-import com.helger.commons.io.file.FilenameHelper;
-import com.helger.commons.io.stream.StreamHelper;
-import com.helger.commons.system.SystemHelper;
+import com.helger.base.charset.CharsetHelper;
+import com.helger.base.enforce.ValueEnforcer;
+import com.helger.base.io.stream.StreamHelper;
+import com.helger.base.system.SystemHelper;
+import com.helger.io.file.FilenameHelper;
+import com.helger.typeconvert.collection.IStringMap;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public abstract class AbstractStorageModule extends AbstractProcessorModule implements IProcessorStorageModule
 {

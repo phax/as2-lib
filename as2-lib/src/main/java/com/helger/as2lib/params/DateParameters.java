@@ -34,11 +34,11 @@ package com.helger.as2lib.params;
 
 import java.time.ZonedDateTime;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import com.helger.annotation.style.VisibleForTesting;
 import com.helger.as2lib.util.AS2DateHelper;
-import com.helger.commons.annotation.VisibleForTesting;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 public class DateParameters extends AbstractParameterParser
 {

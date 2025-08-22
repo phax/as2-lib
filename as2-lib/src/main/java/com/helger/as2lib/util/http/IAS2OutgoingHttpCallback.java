@@ -32,11 +32,11 @@
  */
 package com.helger.as2lib.util.http;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.helger.as2lib.crypto.MIC;
 import com.helger.mail.cte.EContentTransferEncoding;
+
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 /**
  * Remote communication callback for easy logging of remove interactions.

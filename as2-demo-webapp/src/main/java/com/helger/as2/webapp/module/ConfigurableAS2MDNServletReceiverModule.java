@@ -16,10 +16,10 @@
  */
 package com.helger.as2.webapp.module;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.processor.receiver.net.AS2MDNReceiverHandler;
 import com.helger.as2servlet.util.AS2ServletMDNReceiverModule;
+
+import jakarta.annotation.Nonnull;
 
 /**
  * Configurable version of {@link AS2ServletMDNReceiverModule}.

@@ -34,13 +34,13 @@ package com.helger.as2lib.message;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.annotation.Nonnull;
-
 import com.helger.as2lib.CAS2Info;
 import com.helger.as2lib.partner.Partnership;
 import com.helger.as2lib.util.AS2DateHelper;
-import com.helger.commons.http.CHttpHeader;
-import com.helger.commons.string.StringHelper;
+import com.helger.base.string.StringHelper;
+import com.helger.http.CHttpHeader;
+
+import jakarta.annotation.Nonnull;
 
 public class AS2MessageMDN extends AbstractMessageMDN
 {

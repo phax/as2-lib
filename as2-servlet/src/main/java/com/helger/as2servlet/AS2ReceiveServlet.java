@@ -16,9 +16,8 @@
  */
 package com.helger.as2servlet;
 
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
-import com.helger.commons.http.EHttpMethod;
+import com.helger.annotation.OverridingMethodsMustInvokeSuper;
+import com.helger.http.EHttpMethod;
 import com.helger.xservlet.AbstractXServlet;
 
 import jakarta.servlet.ServletException;

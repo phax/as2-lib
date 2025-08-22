@@ -32,8 +32,7 @@
  */
 package com.helger.as2lib.partner;
 
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.annotation.concurrent.Immutable;
 import com.helger.as2lib.crypto.ECompressionType;
 
 /**

@@ -32,10 +32,10 @@
  */
 package com.helger.as2.cmd;
 
-import javax.annotation.Nonnull;
+import com.helger.annotation.Nonempty;
+import com.helger.base.state.ISuccessIndicator;
 
-import com.helger.commons.annotation.Nonempty;
-import com.helger.commons.state.ISuccessIndicator;
+import jakarta.annotation.Nonnull;
 
 public enum ECommandResultType implements ISuccessIndicator
 {
