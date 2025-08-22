@@ -59,7 +59,7 @@ public class AS2MDNReceiveXServletHandlerFileBasedConfig extends AbstractAS2MDNR
   protected File getConfigurationFile (@Nonnull final ICommonsMap <String, String> aInitParams) throws ServletException
   {
     final String sConfigurationFilename = aInitParams.get (SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME);
-    if (StringHelper.hasNoText (sConfigurationFilename))
+    if (StringHelper.isEmpty (sConfigurationFilename))
       throw new ServletException ("Servlet Init-Parameter '" + SERVLET_INIT_PARAM_AS2_SERVLET_CONFIG_FILENAME + "' is missing or empty!");
 
     try

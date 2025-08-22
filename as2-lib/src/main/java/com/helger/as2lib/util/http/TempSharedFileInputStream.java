@@ -150,7 +150,7 @@ public class TempSharedFileInputStream extends SharedFileInputStream
   {
     // create temp file and write steam content to it
     // name may contain ":" on Windows and that would fail the tests!
-    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (StringHelper.hasText (sName) ? sName : "tmp");
+    final String sSuffix = FilenameHelper.getAsSecureValidASCIIFilename (StringHelper.isNotEmpty (sName) ? sName : "tmp");
     final File aDestFile = Files.createTempFile ("AS2TempSharedFileIS", sSuffix).toFile ();
 
     try (final FileOutputStream aOS = new FileOutputStream (aDestFile))

@@ -117,7 +117,7 @@ public final class HTTPHelper
     {
       // Check old name
       sHttpDumpIncomingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectory");
-      if (StringHelper.hasText (sHttpDumpIncomingDirectory))
+      if (StringHelper.isNotEmpty (sHttpDumpIncomingDirectory))
         LOGGER.warn ("You are using a legacy system property name `AS2.httpDumpDirectory`. Please use `AS2.httpDumpDirectoryIncoming` instead.");
     }
     if (StringHelper.isNotEmpty (sHttpDumpIncomingDirectory))
@@ -322,7 +322,7 @@ public final class HTTPHelper
     final String sCTE = aMsg.partnership ()
                             .getContentTransferEncodingReceive (EContentTransferEncoding.AS2_DEFAULT.getID ());
     final String sContentTransferEncoding = aMsg.getHeaderOrDefault (CHttpHeader.CONTENT_TRANSFER_ENCODING, sCTE);
-    if (StringHelper.hasText (sContentTransferEncoding))
+    if (StringHelper.isNotEmpty (sContentTransferEncoding))
     {
       final IContentTransferEncoding aCTE = EContentTransferEncoding.getFromIDCaseInsensitiveOrNull (sContentTransferEncoding);
       if (aCTE == null)

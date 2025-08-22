@@ -173,7 +173,7 @@ public class MIC implements ICloneable <MIC>
   @Nullable
   public static MIC parse (@Nullable final String sMIC)
   {
-    if (StringHelper.hasNoText (sMIC))
+    if (StringHelper.isEmpty (sMIC))
       return null;
 
     final StringTokenizer st = new StringTokenizer (sMIC, ", \t\r\n");

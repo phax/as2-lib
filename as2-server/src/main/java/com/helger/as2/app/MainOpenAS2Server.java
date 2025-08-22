@@ -77,7 +77,7 @@ public class MainOpenAS2Server
       // this is used by all other objects to access global configs and
       // functionality
       LOGGER.info ("Loading configuration...");
-      if (StringHelper.hasText (sConfigFilePath))
+      if (StringHelper.isNotEmpty (sConfigFilePath))
       {
         // Load config file
         aXMLSession = new AS2ServerXMLSession (sConfigFilePath);

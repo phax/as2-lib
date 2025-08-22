@@ -630,7 +630,7 @@ public class AS2ClientSettings
    */
   public final boolean isAsyncMDNRequested ()
   {
-    return StringHelper.hasText (m_sAsyncMDNUrl);
+    return StringHelper.isNotEmpty (m_sAsyncMDNUrl);
   }
 
   /**

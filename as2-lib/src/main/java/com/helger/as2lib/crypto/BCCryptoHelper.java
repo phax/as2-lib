@@ -177,7 +177,7 @@ public class BCCryptoHelper implements ICryptoHelper
       LOGGER.debug ("Using security provider '" + DEFAULT_SECURITY_PROVIDER_NAME + "'.");
 
     final String sDumpDecryptedDirectory = SystemProperties.getPropertyValueOrNull ("AS2.dumpDecryptedDirectory");
-    if (StringHelper.hasText (sDumpDecryptedDirectory))
+    if (StringHelper.isNotEmpty (sDumpDecryptedDirectory))
     {
       DUMP_DECRYPTED_DIR_PATH = new File (sDumpDecryptedDirectory);
       AS2IOHelper.getFileOperationManager ().createDirIfNotExisting (DUMP_DECRYPTED_DIR_PATH);

@@ -259,7 +259,7 @@ public abstract class AbstractActiveNetModule extends AbstractActiveReceiverModu
 
       final String sErrorFilename = aParams.format (getErrorFormat ());
       final String sErrorDirectory = aParams.format (getErrorDirectory ());
-      if (StringHelper.hasText (sErrorDirectory))
+      if (StringHelper.isNotEmpty (sErrorDirectory))
       {
         final File aMsgErrorFile = AS2IOHelper.getUniqueFile (AS2IOHelper.getDirectoryFile (sErrorDirectory),
                                                               FilenameHelper.getAsSecureValidFilename (sErrorFilename));

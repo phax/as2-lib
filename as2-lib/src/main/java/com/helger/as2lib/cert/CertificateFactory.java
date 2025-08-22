@@ -98,7 +98,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements IS
 
     // And than load by filename
     final String sFilename = getFilename ();
-    if (StringHelper.hasText (sFilename))
+    if (StringHelper.isNotEmpty (sFilename))
       load (sFilename, getPassword ());
 
     debugLog ( () -> "reinitKeyStore -> done");
@@ -121,7 +121,7 @@ public class CertificateFactory extends AbstractCertificateFactory implements IS
     if (isSaveChangesToFile ())
     {
       final String sFilename = getFilename ();
-      if (StringHelper.hasText (sFilename))
+      if (StringHelper.isNotEmpty (sFilename))
         save (sFilename, getPassword ());
       else
       {

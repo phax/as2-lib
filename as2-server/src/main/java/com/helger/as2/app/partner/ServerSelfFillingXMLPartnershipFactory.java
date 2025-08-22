@@ -77,7 +77,7 @@ public class ServerSelfFillingXMLPartnershipFactory extends SelfFillingXMLPartne
     if (!bCreateMonitor && m_aFileMonitor != null)
     {
       final String sFilename = m_aFileMonitor.getFilename ();
-      bCreateMonitor = StringHelper.hasText (sFilename) && !sFilename.equals (getFilename ());
+      bCreateMonitor = StringHelper.isNotEmpty (sFilename) && !sFilename.equals (getFilename ());
     }
 
     if (bCreateMonitor)

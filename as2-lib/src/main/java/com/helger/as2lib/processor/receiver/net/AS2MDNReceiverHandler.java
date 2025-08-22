@@ -191,7 +191,7 @@ public class AS2MDNReceiverHandler extends AbstractReceiverHandler
     final String sPendingInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getModule ().getSession ()
                                                                                         .getMessageProcessor ()
                                                                                         .getPendingMDNInfoFolder ());
-    if (StringHelper.hasNoText (sPendingInfoFolder))
+    if (StringHelper.isEmpty (sPendingInfoFolder))
     {
       LOGGER.error ("The pending MDN info folder is not properly configured. Cannot check for async MDNs.");
       return null;

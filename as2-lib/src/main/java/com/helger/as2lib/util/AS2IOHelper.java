@@ -249,7 +249,7 @@ public final class AS2IOHelper
   @Nullable
   public static String getSafeFileAndFolderName (@Nullable final String s)
   {
-    if (StringHelper.hasNoText (s))
+    if (StringHelper.isEmpty (s))
       return s;
 
     final File aBase = new File (FilenameHelper.getPathUsingUnixSeparator (s));

@@ -52,7 +52,7 @@ public final class ECryptoAlgorithmCryptTest
   {
     for (final ECryptoAlgorithmCrypt e : ECryptoAlgorithmCrypt.values ())
     {
-      assertTrue (StringHelper.hasText (e.getID ()));
+      assertTrue (StringHelper.isNotEmpty (e.getID ()));
       assertNotNull (e.getOID ());
       assertSame (e, ECryptoAlgorithmCrypt.getFromIDOrNull (e.getID ()));
       assertSame (e, ECryptoAlgorithmCrypt.getFromIDOrDefault (e.getID (), ECryptoAlgorithmCrypt.CRYPT_3DES));

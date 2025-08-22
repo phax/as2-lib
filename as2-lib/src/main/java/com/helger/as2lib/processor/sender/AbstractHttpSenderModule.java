@@ -96,7 +96,7 @@ public abstract class AbstractHttpSenderModule extends AbstractSenderModule
     // Set global outgoing dump directory (since v4.0.3)
     // This is contained for backwards compatibility only
     final String sHttpDumpOutgoingDirectory = SystemProperties.getPropertyValueOrNull ("AS2.httpDumpDirectoryOutgoing");
-    if (StringHelper.hasText (sHttpDumpOutgoingDirectory))
+    if (StringHelper.isNotEmpty (sHttpDumpOutgoingDirectory))
     {
       LOGGER.info ("Using '" +
                    sHttpDumpOutgoingDirectory +

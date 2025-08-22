@@ -254,7 +254,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // The file that is written
     final String sPendingMDNInfoFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
                                                                                             .getPendingMDNInfoFolder ());
-    if (StringHelper.hasNoText (sPendingMDNInfoFolder))
+    if (StringHelper.isEmpty (sPendingMDNInfoFolder))
     {
       LOGGER.error ("The pending MDN info folder is not properly configured. Cannot store async MDN data.");
       return null;
@@ -295,7 +295,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       // from somewhere else
       final String sPendingMDNFolder = AS2IOHelper.getSafeFileAndFolderName (getSession ().getMessageProcessor ()
                                                                                           .getPendingMDNFolder ());
-      if (StringHelper.hasNoText (sPendingMDNFolder))
+      if (StringHelper.isEmpty (sPendingMDNFolder))
       {
         LOGGER.error ("The pending MDN folder is not properly configured. Cannot store async MDN data.");
         return;

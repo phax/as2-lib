@@ -142,7 +142,7 @@ public final class MimeBodyPartFuncTest
     final InternetHeaders aHeaders = new InternetHeaders (aIS);
     final String sCTE = aHeaders.getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING)[0];
 
-    if (StringHelper.hasText (sCTE))
+    if (StringHelper.isNotEmpty (sCTE))
       aIS = AS2IOHelper.getContentTransferEncodingAwareInputStream (aIS, sCTE);
 
     // Read the payload

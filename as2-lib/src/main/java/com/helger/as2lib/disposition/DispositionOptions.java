@@ -199,7 +199,7 @@ public class DispositionOptions
   public DispositionOptions setMICAlg (@Nullable final String sMICAlgs)
   {
     m_aMICAlgs.clear ();
-    if (StringHelper.hasText (sMICAlgs))
+    if (StringHelper.isNotEmpty (sMICAlgs))
     {
       final ICommonsList <String> aMICAlgs = StringHelper.getExploded (',', sMICAlgs.trim ());
       for (final String sMICAlg : aMICAlgs)
@@ -312,7 +312,7 @@ public class DispositionOptions
   public String getAsString ()
   {
     final StringBuilder aSB = new StringBuilder ();
-    if (StringHelper.hasText (m_sProtocolImportance) && StringHelper.hasText (m_sProtocol))
+    if (StringHelper.isNotEmpty (m_sProtocolImportance) && StringHelper.isNotEmpty (m_sProtocol))
     {
       aSB.append (SIGNED_RECEIPT_PROTOCOL)
          .append ('=')
@@ -320,7 +320,7 @@ public class DispositionOptions
          .append (", ")
          .append (m_sProtocol);
     }
-    if (StringHelper.hasText (m_sMICAlgImportance) && !m_aMICAlgs.isEmpty ())
+    if (StringHelper.isNotEmpty (m_sMICAlgImportance) && !m_aMICAlgs.isEmpty ())
     {
       if (aSB.length () > 0)
         aSB.append ("; ");

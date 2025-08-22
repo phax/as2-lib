@@ -91,7 +91,7 @@ public class MessageParameters extends AbstractParameterParser
   {
     String sReturnFilename = "noContentDispositionFilename";
     final String sFilename = m_aTarget.getContentDisposition ();
-    if (StringHelper.hasText (sFilename))
+    if (StringHelper.isNotEmpty (sFilename))
     {
       try
       {

@@ -139,11 +139,11 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
     }
 
     m_sUserID = aParameters.getAsString (ATTR_USERID);
-    if (StringHelper.hasNoText (m_sUserID))
+    if (StringHelper.isEmpty (m_sUserID))
       throw new AS2Exception ("missing 'userid' parameter");
 
     m_sPassword = aParameters.getAsString (ATTR_PASSWORD);
-    if (StringHelper.hasNoText (m_sPassword))
+    if (StringHelper.isEmpty (m_sPassword))
       throw new AS2Exception ("missing 'password' parameter");
 
     try

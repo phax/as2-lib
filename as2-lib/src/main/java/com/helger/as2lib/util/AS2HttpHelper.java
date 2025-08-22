@@ -58,7 +58,7 @@ public final class AS2HttpHelper
   @Nullable
   public static ContentType parseContentType (@Nullable final String sContentType)
   {
-    if (StringHelper.hasText (sContentType))
+    if (StringHelper.isNotEmpty (sContentType))
     {
       // Auto decode is possible
       final String sRealContentType = RFC2616Codec.isMaybeEncoded (sContentType) ? new RFC2616Codec ().getDecodedAsString (sContentType)

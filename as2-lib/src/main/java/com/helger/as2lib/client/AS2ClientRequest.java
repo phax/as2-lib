@@ -355,7 +355,7 @@ public class AS2ClientRequest
     if (m_eCTE != null)
       aPart.setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, m_eCTE.getID ());
 
-    if (StringHelper.hasText (m_sContentDescription))
+    if (StringHelper.isNotEmpty (m_sContentDescription))
       aPart.setHeader (CHttpHeader.CONTENT_DESCRIPTION, m_sContentDescription);
   }
 }

@@ -52,9 +52,9 @@ public final class ECryptoAlgorithmSignTest
   {
     for (final ECryptoAlgorithmSign e : ECryptoAlgorithmSign.values ())
     {
-      assertTrue (StringHelper.hasText (e.getID ()));
+      assertTrue (StringHelper.isNotEmpty (e.getID ()));
       assertNotNull (e.getOID ());
-      assertTrue (StringHelper.hasText (e.getSignAlgorithmName ()));
+      assertTrue (StringHelper.isNotEmpty (e.getSignAlgorithmName ()));
       assertSame (e, ECryptoAlgorithmSign.getFromIDOrNull (e.getID ()));
       assertSame (e, ECryptoAlgorithmSign.getFromIDOrDefault (e.getID (), ECryptoAlgorithmSign.DIGEST_MD5));
       assertSame (e, ECryptoAlgorithmSign.getFromIDOrThrow (e.getID ()));

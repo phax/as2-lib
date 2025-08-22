@@ -171,7 +171,7 @@ public class DispositionType
     if (m_sStatusModifier != null)
     {
       aSB.append ('/').append (m_sStatusModifier).append (':');
-      if (StringHelper.hasText (m_sStatusDescription))
+      if (StringHelper.isNotEmpty (m_sStatusDescription))
         aSB.append (' ').append (m_sStatusDescription);
     }
     return aSB.toString ();
@@ -191,7 +191,7 @@ public class DispositionType
   @Nonnull
   public static DispositionType createFromString (@Nullable final String sDisposition) throws AS2Exception
   {
-    if (StringHelper.hasNoText (sDisposition))
+    if (StringHelper.isEmpty (sDisposition))
       throw new AS2Exception ("Disposition type is empty");
 
     try
