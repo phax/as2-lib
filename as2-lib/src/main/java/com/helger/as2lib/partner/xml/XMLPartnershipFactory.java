@@ -299,29 +299,29 @@ public class XMLPartnershipFactory extends AbstractPartnershipFactoryWithPartner
     }
 
     final IMicroDocument aDoc = new MicroDocument ();
-    final IMicroElement eRoot = aDoc.appendElement ("partnerships");
+    final IMicroElement eRoot = aDoc.addElement ("partnerships");
     for (final IPartner aPartner : getAllPartners ())
     {
-      final IMicroElement ePartner = eRoot.appendElement ("partner");
+      final IMicroElement ePartner = eRoot.addElement ("partner");
       for (final Map.Entry <String, String> aAttr : aPartner)
         ePartner.setAttribute (aAttr.getKey (), aAttr.getValue ());
     }
 
     for (final Partnership aPartnership : getAllPartnerships ())
     {
-      final IMicroElement ePartnership = eRoot.appendElement ("partnership");
+      final IMicroElement ePartnership = eRoot.addElement ("partnership");
       ePartnership.setAttribute (ATTR_PARTNERSHIP_NAME, aPartnership.getName ());
 
-      final IMicroElement eSender = ePartnership.appendElement ("sender");
+      final IMicroElement eSender = ePartnership.addElement ("sender");
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllSenderIDs ().entrySet ())
         eSender.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
-      final IMicroElement eReceiver = ePartnership.appendElement ("receiver");
+      final IMicroElement eReceiver = ePartnership.addElement ("receiver");
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllReceiverIDs ().entrySet ())
         eReceiver.setAttribute (aAttr.getKey (), aAttr.getValue ());
 
       for (final Map.Entry <String, String> aAttr : aPartnership.getAllAttributes ().entrySet ())
-        ePartnership.appendElement ("attribute")
+        ePartnership.addElement ("attribute")
                     .setAttribute ("name", aAttr.getKey ())
                     .setAttribute ("value", aAttr.getValue ());
     }

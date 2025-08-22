@@ -64,7 +64,6 @@ public final class CommandResult
 
   public CommandResult (final Exception e)
   {
-    super ();
     m_eType = ECommandResultType.TYPE_EXCEPTION;
     addResult (e);
   }
@@ -107,7 +106,7 @@ public final class CommandResult
   {
     final IMicroContainer aCont = new MicroContainer ();
     for (final Serializable x : m_aResults)
-      aCont.appendElement ("result").appendText (x.toString ());
+      aCont.addElement ("result").addText (x.toString ());
     return MicroWriter.getNodeAsString (aCont);
   }
 

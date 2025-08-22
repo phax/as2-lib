@@ -68,13 +68,14 @@ public class AddPartnershipCommand extends AbstractAliasedPartnershipsCommand
   }
 
   @Override
-  public CommandResult execute (final IPartnershipFactoryWithPartners partFx, final Object [] params) throws AS2Exception
+  public CommandResult execute (final IPartnershipFactoryWithPartners partFx, final Object [] params)
+                                                                                                      throws AS2Exception
   {
     if (params.length < 3)
       return new CommandResult (ECommandResultType.TYPE_INVALID_PARAM_COUNT, getUsage ());
 
     final IMicroDocument doc = new MicroDocument ();
-    final IMicroElement root = doc.appendElement ("partnership");
+    final IMicroElement root = doc.addElement ("partnership");
 
     for (int nIndex = 0; nIndex < params.length; nIndex++)
     {
@@ -87,13 +88,13 @@ public class AddPartnershipCommand extends AbstractAliasedPartnershipsCommand
       else
         if (nIndex == 1)
         {
-          final IMicroElement elem = root.appendElement ("sender");
+          final IMicroElement elem = root.addElement ("sender");
           elem.setAttribute ("name", param);
         }
         else
           if (nIndex == 2)
           {
-            final IMicroElement elem = root.appendElement ("receiver");
+            final IMicroElement elem = root.addElement ("receiver");
             elem.setAttribute ("name", param);
           }
           else
@@ -104,7 +105,7 @@ public class AddPartnershipCommand extends AbstractAliasedPartnershipsCommand
             else
               if (pos > 0)
               {
-                final IMicroElement elem = root.appendElement ("attribute");
+                final IMicroElement elem = root.addElement ("attribute");
                 elem.setAttribute ("name", param.substring (0, pos));
                 elem.setAttribute ("value", param.substring (pos + 1));
               }
@@ -114,7 +115,8 @@ public class AddPartnershipCommand extends AbstractAliasedPartnershipsCommand
     }
 
     final XMLPartnershipFactory aXMLPartnershipFactory = (XMLPartnershipFactory) partFx;
-    final Partnership aPartnership = aXMLPartnershipFactory.loadPartnership (root, aXMLPartnershipFactory.getPartnerMap ());
+    final Partnership aPartnership = aXMLPartnershipFactory.loadPartnership (root,
+                                                                             aXMLPartnershipFactory.getPartnerMap ());
     if (aXMLPartnershipFactory.getPartnershipByName (aPartnership.getName ()) != null)
       return new CommandResult (ECommandResultType.TYPE_ERROR,
                                 "A partnership with name '" + aPartnership.getName () + "' is already present!");

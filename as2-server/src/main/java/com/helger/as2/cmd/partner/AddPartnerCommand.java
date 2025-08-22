@@ -68,7 +68,8 @@ public class AddPartnerCommand extends AbstractAliasedPartnershipsCommand
   }
 
   @Override
-  public CommandResult execute (final IPartnershipFactoryWithPartners partFx, final Object [] params) throws AS2Exception
+  public CommandResult execute (final IPartnershipFactoryWithPartners partFx, final Object [] params)
+                                                                                                      throws AS2Exception
   {
     if (params.length < 1)
     {
@@ -76,7 +77,7 @@ public class AddPartnerCommand extends AbstractAliasedPartnershipsCommand
     }
 
     final IMicroDocument doc = new MicroDocument ();
-    final IMicroElement root = doc.appendElement ("partner");
+    final IMicroElement root = doc.addElement ("partner");
 
     for (int i = 0; i < params.length; i++)
     {
