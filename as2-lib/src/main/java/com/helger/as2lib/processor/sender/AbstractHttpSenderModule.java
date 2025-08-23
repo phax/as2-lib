@@ -60,10 +60,10 @@ import com.helger.as2lib.util.http.IAS2OutgoingHttpCallback;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.base.system.SystemProperties;
-import com.helger.base.url.EURLProtocol;
 import com.helger.http.EHttpMethod;
 import com.helger.http.security.HostnameVerifierVerifyAll;
 import com.helger.http.security.TrustManagerTrustAll;
+import com.helger.url.protocol.EURLProtocol;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
