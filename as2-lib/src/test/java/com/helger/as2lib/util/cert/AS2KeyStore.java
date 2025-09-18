@@ -41,8 +41,8 @@ import java.util.Enumeration;
 
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.enforce.ValueEnforcer;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
-import com.helger.collection.helper.CollectionHelperExt;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -68,7 +68,7 @@ public class AS2KeyStore implements ICertificateStore
   {
     try
     {
-      return CollectionHelperExt.createList (getKeyStore ().aliases ());
+      return new CommonsArrayList <> (getKeyStore ().aliases ());
     }
     catch (final KeyStoreException kse)
     {

@@ -68,7 +68,6 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsOrderedMap;
-import com.helger.collection.helper.CollectionHelperExt;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 import com.helger.typeconvert.collection.IStringMap;
@@ -559,7 +558,7 @@ public abstract class AbstractCertificateFactory extends AbstractDynamicComponen
     try
     {
       // Make a copy to be sure
-      for (final String sAlias : CollectionHelperExt.createList (m_aKeyStore.aliases ()))
+      for (final String sAlias : new CommonsArrayList <> (m_aKeyStore.aliases ()))
       {
         m_aKeyStore.deleteEntry (sAlias);
         nDeleted++;
