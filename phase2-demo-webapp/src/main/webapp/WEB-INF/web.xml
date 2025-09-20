@@ -23,18 +23,18 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
   metadata-complete="true">
-  <description>as2-lib Demo WebApp</description>
+  <description>phase2 Demo WebApp</description>
   <error-page>
     <location>/index.html</location>
   </error-page>
   
   <listener>
-    <listener-class>com.helger.as2.webapp.servlet.AS2WebAppListener</listener-class>
+    <listener-class>com.helger.phase2.webapp.servlet.AS2WebAppListener</listener-class>
   </listener>
   
   <servlet>
     <servlet-name>AS2ReceiveServlet</servlet-name>
-    <servlet-class>com.helger.as2.webapp.servlet.AS2ReceiveServlet</servlet-class>
+    <servlet-class>com.helger.phase2.webapp.servlet.AS2ReceiveServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>AS2ReceiveServlet</servlet-name>
@@ -43,7 +43,7 @@
   
   <servlet>
     <servlet-name>AS2MDNReceiveServlet</servlet-name>
-    <servlet-class>com.helger.as2.webapp.servlet.AS2MDNReceiveServlet</servlet-class>
+    <servlet-class>com.helger.phase2.webapp.servlet.AS2MDNReceiveServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>AS2MDNReceiveServlet</servlet-name>

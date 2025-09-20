@@ -154,6 +154,8 @@ public final class AS2XMLHelper
   private static Map <String, String> PHASE2_PACKAGE_MAP = new LinkedHashMap <> ();
   static
   {
+    // Order is important
+    PHASE2_PACKAGE_MAP.put ("com.helger.as2.", "com.helger.phase2.server.");
     PHASE2_PACKAGE_MAP.put ("com.helger.as2lib.", "com.helger.phase2.");
     PHASE2_PACKAGE_MAP.put ("com.helger.as2servlet.", "com.helger.phase2.servlet.");
   }
