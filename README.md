@@ -1,6 +1,6 @@
 # as2-lib
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.helger.as2/as2-lib-parent-pom/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.helger.as2/as2-lib-parent-pom) 
+[![Maven Central](https://img.shields.io/maven-central/v/com.helger.as2/as2-lib-parent-pom)](https://img.shields.io/maven-central/v/com.helger.as2/as2-lib-parent-pom)
 [![javadoc](https://javadoc.io/badge2/com.helger.as2/as2-lib/javadoc.svg)](https://javadoc.io/doc/com.helger.as2/as2-lib)
 [![CodeCov](https://codecov.io/gh/phax/ph-as2/branch/master/graph/badge.svg)](https://codecov.io/gh/phax/ph-as2)
 
