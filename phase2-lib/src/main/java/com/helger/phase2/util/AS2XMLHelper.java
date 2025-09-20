@@ -32,6 +32,7 @@
  */
 package com.helger.phase2.util;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -150,28 +151,37 @@ public final class AS2XMLHelper
     }
   }
 
-  @Nonnull
-  public static <T extends IDynamicComponent> T createComponent (@Nonnull final IMicroElement aElement,
-                                                                 @Nonnull final Class <T> aClass,
-                                                                 @Nonnull final IAS2Session aSession,
-                                                                 @Nullable final String sBaseDirectory) throws AS2Exception
+  private static Map <String, String> PHASE2_PACKAGE_MAP = new LinkedHashMap <> ();
+  static
   {
-    ValueEnforcer.notNull (aElement, "Element");
-    ValueEnforcer.notNull (aClass, "Class");
-    ValueEnforcer.notNull (aSession, "Session");
+    PHASE2_PACKAGE_MAP.put ("com.helger.as2lib.", "com.helger.phase2.");
+    PHASE2_PACKAGE_MAP.put ("com.helger.as2servlet.", "com.helger.phase2.servlet.");
+  }
 
-    // Read 'classname' attribute
-    final String sClassName = aElement.getAttributeValue ("classname");
-    if (sClassName == null)
-      throw new AS2Exception ("Missing 'classname' attribute");
+  @Nonnull
+  private static String _convertToPhase2 (@Nonnull final String sClassName)
+  {
+    // Check for package mappings
+    for (final var e : PHASE2_PACKAGE_MAP.entrySet ())
+      if (sClassName.startsWith (e.getKey ()))
+        return e.getValue () + sClassName.substring (e.getKey ().length ());
+    return sClassName;
+  }
 
+  @Nonnull
+  private static <T extends IDynamicComponent> T _createComponent (@Nonnull final IMicroElement aElement,
+                                                                   final String sClassName,
+                                                                   @Nonnull final Class <T> aClass,
+                                                                   @Nonnull final IAS2Session aSession,
+                                                                   @Nullable final String sBaseDirectory) throws AS2Exception
+  {
     try
     {
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Trying to instantiate '" + sClassName + "' as a " + aClass);
 
-      // Instantiate class
-      final T aObj = GenericReflection.newInstance (sClassName, aClass);
+      // Instantiate class (no logging)
+      final T aObj = GenericReflection.newInstance (sClassName, aClass, ex -> {});
       if (aObj == null)
         throw new AS2Exception ("Failed to instantiate '" + sClassName + "' as " + aClass.getName ());
 
@@ -198,6 +208,54 @@ public final class AS2XMLHelper
     catch (final Exception ex)
     {
       throw new AS2Exception ("Error creating component: " + sClassName, ex);
+    }
+  }
+
+  @Nonnull
+  public static <T extends IDynamicComponent> T createComponent (@Nonnull final IMicroElement aElement,
+                                                                 @Nonnull final Class <T> aClass,
+                                                                 @Nonnull final IAS2Session aSession,
+                                                                 @Nullable final String sBaseDirectory) throws AS2Exception
+  {
+    ValueEnforcer.notNull (aElement, "Element");
+    ValueEnforcer.notNull (aClass, "Class");
+    ValueEnforcer.notNull (aSession, "Session");
+
+    // Read 'classname' attribute
+    final String sClassName = aElement.getAttributeValue ("classname");
+    if (sClassName == null)
+      throw new AS2Exception ("Missing 'classname' attribute");
+
+    try
+    {
+      return _createComponent (aElement, sClassName, aClass, aSession, sBaseDirectory);
+    }
+    catch (final AS2Exception ex)
+    {
+      // Convert old package name to new package name
+      final String sPhase2ClassName = _convertToPhase2 (sClassName);
+      if (sClassName.equals (sPhase2ClassName))
+      {
+        // No name change - error
+        throw ex;
+      }
+
+      // Try creation with changed name
+      try
+      {
+        final T ret = _createComponent (aElement, sPhase2ClassName, aClass, aSession, sBaseDirectory);
+        LOGGER.warn ("The configured class name '" +
+                     sClassName +
+                     "' is incorrect. Please use '" +
+                     sPhase2ClassName +
+                     "' instead");
+        return ret;
+      }
+      catch (final AS2Exception ex2)
+      {
+        // Fails also with the changed name - throw original exception
+        throw ex;
+      }
     }
   }
 }

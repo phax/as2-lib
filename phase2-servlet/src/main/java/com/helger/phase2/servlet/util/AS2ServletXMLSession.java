@@ -22,6 +22,7 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.WillClose;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.io.file.FileHelper;
 import com.helger.phase2.cert.ICertificateFactory;
@@ -58,7 +59,9 @@ public class AS2ServletXMLSession extends AS2Session
   {
     ValueEnforcer.notNull (aFile, "File");
     if (!aFile.exists ())
-      throw new AS2Exception ("AS2ServletXMLSession configuration file '" + aFile.getAbsolutePath () + "' does not exist!");
+      throw new AS2Exception ("AS2ServletXMLSession configuration file '" +
+                              aFile.getAbsolutePath () +
+                              "' does not exist!");
     m_aConfigFile = aFile;
     m_sBaseDirectory = aFile.getParentFile ().getAbsolutePath ();
     LOGGER.info ("Loading AS2 configuration file '" + aFile.getAbsolutePath ());
@@ -80,21 +83,30 @@ public class AS2ServletXMLSession extends AS2Session
   private void _loadCertificateFactory (@Nonnull final IMicroElement aElement) throws AS2Exception
   {
     LOGGER.info ("Loading certificates");
-    final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement, ICertificateFactory.class, this, m_sBaseDirectory);
+    final ICertificateFactory aFactory = AS2XMLHelper.createComponent (aElement,
+                                                                       ICertificateFactory.class,
+                                                                       this,
+                                                                       m_sBaseDirectory);
     setCertificateFactory (aFactory);
   }
 
   private void _loadPartnershipFactory (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("Loading partnerships");
-    final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode, IPartnershipFactory.class, this, m_sBaseDirectory);
+    final IPartnershipFactory aFactory = AS2XMLHelper.createComponent (eRootNode,
+                                                                       IPartnershipFactory.class,
+                                                                       this,
+                                                                       m_sBaseDirectory);
     setPartnershipFactory (aFactory);
   }
 
   private void _loadProcessorModule (@Nonnull final IMessageProcessor aMsgProcessor,
                                      @Nonnull final IMicroElement eModule) throws AS2Exception
   {
-    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule, IProcessorModule.class, this, m_sBaseDirectory);
+    final IProcessorModule aProcessorModule = AS2XMLHelper.createComponent (eModule,
+                                                                            IProcessorModule.class,
+                                                                            this,
+                                                                            m_sBaseDirectory);
     aMsgProcessor.addModule (aProcessorModule);
     LOGGER.info ("  Loaded processor module " + aProcessorModule.getName ());
   }
@@ -102,14 +114,17 @@ public class AS2ServletXMLSession extends AS2Session
   private void _loadMessageProcessor (final IMicroElement eRootNode) throws AS2Exception
   {
     LOGGER.info ("Loading message processor");
-    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode, IMessageProcessor.class, this, m_sBaseDirectory);
+    final IMessageProcessor aMsgProcessor = AS2XMLHelper.createComponent (eRootNode,
+                                                                          IMessageProcessor.class,
+                                                                          this,
+                                                                          m_sBaseDirectory);
     setMessageProcessor (aMsgProcessor);
 
     for (final IMicroElement eModule : eRootNode.getAllChildElements ("module"))
       _loadProcessorModule (aMsgProcessor, eModule);
   }
 
-  private void _load (@Nullable final InputStream aIS) throws AS2Exception
+  private void _load (@Nullable @WillClose final InputStream aIS) throws AS2Exception
   {
     if (aIS != null)
     {
