@@ -89,7 +89,7 @@ public final class MainSendToLocalhost8080
     aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/localhost/certs.p12"), "test");
 
     // Fixed sender
-    aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "openas2a_alias");
+    aSettings.setSenderData ("mycompanyAS2", "phax.phase2@github.com", "openas2a_alias");
 
     // Fixed receiver - key alias must be "openas2b_alias"
     aSettings.setReceiverData ("openas2b_alias", "openas2b_alias", "http://localhost:8080/as2");
@@ -112,14 +112,14 @@ public final class MainSendToLocalhost8080
 
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
-    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
+    aSettings.setMessageIDFormat ("github-phax-phase2-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeout (Timeout.ofSeconds (10));
     aSettings.setResponseTimeout (Timeout.ofSeconds (10));
     aSettings.setHttpOutgoingDumperFactory (aOutgoingDumperFactory);
 
     // Build client request
-    final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
+    final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from phase2");
     aRequest.setData (new DataHandler (new FileDataSource (new File ("src/test/resources/external/mendelson/testcontent.attachment"))));
     aRequest.setContentType (CMimeType.TEXT_PLAIN.getAsString ());
 

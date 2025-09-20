@@ -119,8 +119,8 @@
             <Bundle-ClassPath>
               WEB-INF/classes,
               WEB-INF/lib/activation-1.1.1.jar,
-              WEB-INF/lib/as2-lib-4.4.3-SNAPSHOT.jar,
-              WEB-INF/lib/as2-servlet-4.4.3-SNAPSHOT.jar,
+              WEB-INF/lib/phase2-lib-4.4.3-SNAPSHOT.jar,
+              WEB-INF/lib/phase2-servlet-4.4.3-SNAPSHOT.jar,
               WEB-INF/lib/bcmail-jdk15on-1.62.jar,
               WEB-INF/lib/bcpkix-jdk15on-1.62.jar,
               WEB-INF/lib/bcprov-jdk15on-1.62.jar,

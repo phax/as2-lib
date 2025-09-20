@@ -36,6 +36,6 @@ public class MainRunTestAS2Server
 {
   public static void main (final String [] args)
   {
-    new MainOpenAS2Server ().start ("src/main/resources/config/config.xml");
+    new MainPhase2Server ().start ("src/main/resources/config/config.xml");
   }
 }

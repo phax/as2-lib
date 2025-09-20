@@ -56,14 +56,14 @@ import jakarta.annotation.Nullable;
  *
  * @author joseph mcverry
  */
-public class MainOpenAS2Server
+public class MainPhase2Server
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (MainOpenAS2Server.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger (MainPhase2Server.class);
   private static final String SERVER_NAME = CPhase2Info.NAME_VERSION + " Server";
 
   public static void main (final String [] args)
   {
-    new MainOpenAS2Server ().start (ArrayHelper.getFirst (args));
+    new MainPhase2Server ().start (ArrayHelper.getFirst (args));
   }
 
   public void start (@Nullable final String sConfigFilePath)

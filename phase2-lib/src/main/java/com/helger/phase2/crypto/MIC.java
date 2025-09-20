@@ -105,7 +105,7 @@ public class MIC implements ICloneable <MIC>
   }
 
   /**
-   * Special unification for https://github.com/phax/as2-lib/issues/75
+   * Special unification for https://github.com/phax/phase2/issues/75
    *
    * @param eAlgorithm
    *        Source algorithm. May not be <code>null</code>.

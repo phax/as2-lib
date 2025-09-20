@@ -70,7 +70,7 @@ import jakarta.annotation.Nullable;
  */
 public class AS2ResourceHelper implements Closeable
 {
-  private static final String TEMP_FILE_PREFIX = "as2-lib-res-";
+  private static final String TEMP_FILE_PREFIX = "phase2-res-";
   private static final String TEMP_FILE_SUFFIX = ".tmp";
   private static final Logger LOGGER = LoggerFactory.getLogger (AS2ResourceHelper.class);
 

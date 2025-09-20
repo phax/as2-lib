@@ -69,7 +69,7 @@ public class MongoDBPartnershipFactoryTest
                                                              .applyConnectionString (new ConnectionString ("mongodb://localhost:" +
                                                                                                            nPort))
                                                              .build ());
-    s_aDatabase = s_aMongoClient.getDatabase ("as2-lib-test");
+    s_aDatabase = s_aMongoClient.getDatabase ("phase2-test");
     s_aCollection = s_aDatabase.getCollection ("partnerships");
     s_aPartnershipFactory = new MongoDBPartnershipFactory (s_aCollection, LOGGER);
     s_aDatabase.drop ();

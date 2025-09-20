@@ -43,7 +43,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 /**
- * Define the supported SMIME compression types for as2-lib.
+ * Define the supported SMIME compression types for phase2.
  *
  * @author Philip Helger
  */

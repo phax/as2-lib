@@ -138,7 +138,7 @@ public class MessageParameters extends AbstractParameterParser
   @Nullable
   public static String getEscapedString (@Nullable final String sUnescaped)
   {
-    // Based on https://github.com/phax/as2-lib/pull/19
+    // Based on https://github.com/phax/phase2/pull/19
     return StringReplace.replaceAll (sUnescaped, "$", "$$");
   }
 }

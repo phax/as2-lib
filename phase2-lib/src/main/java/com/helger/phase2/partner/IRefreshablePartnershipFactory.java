@@ -35,7 +35,7 @@ package com.helger.phase2.partner;
 import com.helger.phase2.exception.AS2Exception;
 
 /**
- * A partnership factory that can be refreshed. Was moved from as2-server to as2-lib in v4.3.0.
+ * A partnership factory that can be refreshed.
  *
  * @author Philip Helger
  */
@@ -43,7 +43,7 @@ public interface IRefreshablePartnershipFactory extends IPartnershipFactory
 {
   /**
    * Refresh the partnership factory.
-   * 
+   *
    * @throws AS2Exception
    *         On error
    */

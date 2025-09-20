@@ -108,7 +108,7 @@ public final class MainSendToMendelsonTestServerPlayground
     aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/external/mendelson/key3.pfx"), "test");
 
     // Fixed sender
-    aSettings.setSenderData ("mycompanyAS2", "phax.as2-lib@github.com", "key3");
+    aSettings.setSenderData ("mycompanyAS2", "phax.phase2@github.com", "key3");
 
     // Fixed receiver - key alias must be "mendelsontestAS2"
     aSettings.setReceiverData ("mendelsontestAS2",
@@ -148,14 +148,14 @@ public final class MainSendToMendelsonTestServerPlayground
 
     aSettings.setEncryptAndSign (eCryptAlgo, eSignAlgo);
     aSettings.setCompress (eCompress, bCompressBeforeSigning);
-    aSettings.setMessageIDFormat ("github-phax-as2-lib-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
+    aSettings.setMessageIDFormat ("github-phax-phase2-$date.uuuuMMdd-HHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$");
     aSettings.setRetryCount (1);
     aSettings.setConnectTimeout (Timeout.ofSeconds (10));
     aSettings.setResponseTimeout (Timeout.ofSeconds (10));
     aSettings.setHttpOutgoingDumperFactory (aOutgoingDumperFactory);
 
     // Build client request
-    final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from as2-lib");
+    final AS2ClientRequest aRequest = new AS2ClientRequest ("AS2 test message from phase2");
     if (false)
       aRequest.setData (new File ("src/test/resources/mendelson/testcontent.attachment"), StandardCharsets.ISO_8859_1);
     else

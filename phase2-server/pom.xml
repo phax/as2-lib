@@ -171,7 +171,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>com.helger.as2.app.MainOpenAS2Server</mainClass>
+              <mainClass>com.helger.phase2.server.app.MainPhase2Server</mainClass>
             </manifest>
           </archive>
         </configuration>
