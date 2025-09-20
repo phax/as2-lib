@@ -17,7 +17,7 @@
     limitations under the License.
 
 -->
-<openas2>
+<phase2>
   <certificates classname="com.helger.phase2.cert.CertificateFactory"
                 type="pkcs12"
                 filename="%home%/certs.p12"
@@ -47,4 +47,4 @@
     <!-- Only needed to receive asynchronous MDNs -->
     <module classname="com.helger.phase2.servlet.util.AS2ServletMDNReceiverModule" />        
   </processor>
-</openas2>
+</phase2>

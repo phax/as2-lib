@@ -23,7 +23,3 @@ To import a public certificate:
 To import a public certificate and it's private key:
 
 #>cert import <x509 alias> <.p12 filename> <password to access private key in .p12 file>
-
-
-
-

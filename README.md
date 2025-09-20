@@ -1,4 +1,4 @@
-# phase2
+# phase2 (formerly known as "as2-lib")
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.helger.as2/as2-lib-parent-pom)](https://img.shields.io/maven-central/v/com.helger.as2/as2-lib-parent-pom)
 [![javadoc](https://javadoc.io/badge2/com.helger.as2/as2-lib/javadoc.svg)](https://javadoc.io/doc/com.helger.as2/as2-lib)
@@ -16,7 +16,7 @@ This library is a fork of [OpenAS2](http://sourceforge.net/projects/openas2/) wh
 I then split the project into a common library part (the "as2-lib" submodule) and a server part (the "as2-server" submodule) which contains a stand alone (socket) server.
 The library project also contains a simple AS2 client which can be used to send messages to other AS2 servers (as part of "as2-lib").
 
-Per 09/2025 the library was renamed to "phase2" to match the name of the library [phase4](https://github.com/phax/phase4) which is an AS4 implementation.
+Per 09/2025 the library was renamed to "phase2" to match the name of the library [phase4](https://github.com/phax/phase4) which is an OpenSource AS4 implementation.
 
 ---
 
