@@ -18,26 +18,26 @@
 
 -->
 <openas2>
-  <certificates classname="com.helger.as2lib.cert.CertificateFactory"
+  <certificates classname="com.helger.phase2.cert.CertificateFactory"
                 type="pkcs12"
                 filename="%home%/certs.p12"
                 password="test"
                 interval="300"/>
-  <partnerships classname="com.helger.as2lib.partner.SelfFillingPartnershipFactory"
+  <partnerships classname="com.helger.phase2.partner.SelfFillingPartnershipFactory"
                 filename="%home%/partnerships.xml"/>
 
-  <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
+  <processor classname="com.helger.phase2.processor.DefaultMessageProcessor"
              pendingMDN="data/pendingMDN"
              pendingMDNinfo="data/pendinginfoMDN">
     <!-- Required to receive messages -->
     <!-- port is required internally - simply ignore it for servlets -->
-    <module classname="com.helger.as2servlet.util.AS2ServletReceiverModule"      
+    <module classname="com.helger.phase2.servlet.util.AS2ServletReceiverModule"      
             port="10080"
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
 
     <!-- Example module for storing incoming messages -->
-    <module classname="com.helger.as2lib.processor.storage.MessageFileModule"
+    <module classname="com.helger.phase2.processor.storage.MessageFileModule"
             filename="data/inbox/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
             header="data/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
             protocol="as2"
@@ -45,6 +45,6 @@
             charset="utf-8" />    
 
     <!-- Only needed to receive asynchronous MDNs -->
-    <module classname="com.helger.as2servlet.util.AS2ServletMDNReceiverModule" />        
+    <module classname="com.helger.phase2.servlet.util.AS2ServletMDNReceiverModule" />        
   </processor>
 </openas2>

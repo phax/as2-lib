@@ -59,10 +59,9 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 /**
- * original author unknown in this release made the process a thread so it can
- * be shared with other command processors like the SocketCommandProcessor
- * created innerclass CommandTokenizer so it could handle quotes and spaces
- * within quotes
+ * original author unknown in this release made the process a thread so it can be shared with other
+ * command processors like the SocketCommandProcessor created innerclass CommandTokenizer so it
+ * could handle quotes and spaces within quotes
  *
  * @author joseph mcverry
  */
@@ -71,7 +70,7 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
   public static final String COMMAND_NOT_FOUND = "Error: command not found";
   public static final String COMMAND_ERROR = "Error executing command";
   public static final String EXIT_COMMAND = "exit";
-  public static final String PROMPT = "AS2>";
+  public static final String PROMPT = "phase2>";
 
   private static final Logger LOGGER = LoggerFactory.getLogger (StreamCommandProcessor.class);
 
@@ -84,7 +83,8 @@ public class StreamCommandProcessor extends AbstractCommandProcessor
     m_aWriter = new BufferedWriter (new OutputStreamWriter (System.out));
   }
 
-  public void initDynamicComponent (@Nonnull final IAS2Session session, @Nullable final IStringMap parameters) throws AS2Exception
+  public void initDynamicComponent (@Nonnull final IAS2Session session, @Nullable final IStringMap parameters)
+                                                                                                               throws AS2Exception
   {}
 
   @Nonnull

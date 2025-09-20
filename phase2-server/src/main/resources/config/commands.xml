@@ -35,25 +35,25 @@
 -->
 <commands>
   <multicommand name="cert" description="Certificate commands">
-    <command classname="com.helger.as2.cmd.cert.ImportCertCommand" />
-    <command classname="com.helger.as2.cmd.cert.ImportCertInEncodedStreamCommand" />
-    <command classname="com.helger.as2.cmd.cert.ListCertCommand" />
-    <command classname="com.helger.as2.cmd.cert.DeleteCertCommand" />
-    <command classname="com.helger.as2.cmd.cert.ClearCertsCommand" />
-    <command classname="com.helger.as2.cmd.cert.ViewCertCommand" />
+    <command classname="com.helger.phase2.server.cmd.cert.ImportCertCommand" />
+    <command classname="com.helger.phase2.server.cmd.cert.ImportCertInEncodedStreamCommand" />
+    <command classname="com.helger.phase2.server.cmd.cert.ListCertCommand" />
+    <command classname="com.helger.phase2.server.cmd.cert.DeleteCertCommand" />
+    <command classname="com.helger.phase2.server.cmd.cert.ClearCertsCommand" />
+    <command classname="com.helger.phase2.server.cmd.cert.ViewCertCommand" />
   </multicommand>
   <multicommand name="partner" description="Partner commands">
-    <command classname="com.helger.as2.cmd.partner.ListPartnersCommand" />
-    <command classname="com.helger.as2.cmd.partner.AddPartnerCommand" />
-    <command classname="com.helger.as2.cmd.partner.DeletePartnerCommand" />
-    <command classname="com.helger.as2.cmd.partner.ViewPartnerCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.ListPartnersCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.AddPartnerCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.DeletePartnerCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.ViewPartnerCommand" />
   </multicommand>
   <multicommand name="partnership" description="Partnership commands">
-    <command classname="com.helger.as2.cmd.partner.RefreshPartnershipsCommand" />
-    <command classname="com.helger.as2.cmd.partner.ListPartnershipsCommand" />
-    <command classname="com.helger.as2.cmd.partner.AddPartnershipCommand" />
-    <command classname="com.helger.as2.cmd.partner.DeletePartnershipCommand" />
-    <command classname="com.helger.as2.cmd.partner.StorePartnershipsCommand" />
-    <command classname="com.helger.as2.cmd.partner.ViewPartnershipCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.RefreshPartnershipsCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.ListPartnershipsCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.AddPartnershipCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.DeletePartnershipCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.StorePartnershipsCommand" />
+    <command classname="com.helger.phase2.server.cmd.partner.ViewPartnershipCommand" />
   </multicommand>
 </commands>

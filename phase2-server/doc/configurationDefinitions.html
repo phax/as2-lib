@@ -77,7 +77,7 @@
   <h3>
     Format: XML
     </h2>
-    <h3>Processor Class: com.helger.as2.processor.CommandProcessor</h3>
+    <h3>Processor Class: com.helger.phase2.server.cmdprocessor.StreamCommandProcessor</h3>
     <h3>This file requires modification to work with your application</h3>
     <h3>File Layout</h3>
     <ul>
@@ -93,7 +93,7 @@
                 <dt>classname
                 <dd>
                   describes the Java class to process the certificate file. <br> for example: <cite>
-                    com.helger.as2.cert.CertificateFactory </cite>
+                    com.helger.phase2.cert.CertificateFactory </cite>
                 <dt>type
                 <dd>
                   defines the file type of the file containing the certificates <br> for example: <cite>
@@ -121,7 +121,7 @@
                 <dt>classname
                 <dd>
                   describes the Java class to process the partnerships file <br> for example: <cite>
-                    com.helger.as2.partner.XMLPartnershipFactory </cite>
+                    com.helger.phase2.partner.xml.XMLPartnershipFactory </cite>
                 <dt>defines the file name containing the partnerships definitions
                 <dd>
                   describes <br> for example: <cite> %home%\partnerships.xml </cite>
@@ -136,8 +136,8 @@
                 <dt>classname
                 <dd>
                   describes the Java class to process the command file <br> for more information see <A
-                    HREF="#commandFile">Command File</A> <br> for example: <cite>
-                    com.helger.as2.app.XMLCommandRegistry </cite>
+                    HREF="#commandFile">Command File</A> <br> for example: 
+                    <cite>com.helger.phase2.server.cmd.XMLCommandRegistry</cite>
                 <dt>filename
                 <dd>
                   defines the name of the file command all possible commands <br> for example: <cite>
@@ -152,8 +152,8 @@
               <dl>
                 <dt>classname
                 <dd>
-                  describes the default Java class to handle outgoing message <br> for example: <cite>
-                    com.helger.as2.processor.DefaultProcessor </cite>
+                  describes the default Java class to handle outgoing message <br> for example: 
+                    <cite>com.helger.phase2.processor.DefaultMessageProcessor</cite>
               </dl>
 
               <li>Node:<b> module </b> <br>Module that sends out AS2 messages.
@@ -165,7 +165,7 @@
                     <dt>classname
                     <dd>
                       describes the Java class to send outgoing Messages <br> for example: <cite>
-                        com.helger.as2.processor.sender.AS2SenderModule </cite>
+                        com.helger.phase2.processor.sender.AS2SenderModule </cite>
                     <dt>retry
                     <dd>
                       defines the number of attempts for sending a message,default is -1 aka infinite. <br>for
@@ -189,7 +189,7 @@
                     <dt>classname
                     <dd>
                       describes the Java class to send asynch MDN <br> for example: <cite>
-                        com.helger.as2.processor.sender.AsynchMDNSenderModule </cite>
+                        com.helger.phase2.processor.sender.AsynchMDNSenderModule </cite>
                     <dt>retry
                     <dd>
                       defines the number of attempts for sending a message, default value is -1 (infinite.) <br>for
@@ -216,7 +216,7 @@
                     <dd>
                       describes the Java class to process files to be sent to the AS2SenderModule for its delivery
                       process. <br> for example: <cite>
-                        com.helger.as2.processor.receiver.AS2DirectoryPollingModule </cite>
+                        com.helger.phase2.processor.receiver.AS2DirectoryPollingModule </cite>
                     <dt>outboxdir
                     <dd>
                       defines the directory where files are to be found. <br> for example: <cite>
@@ -257,7 +257,7 @@
                     <dd>
                       describes the Java class to process files for a particular trading partner that are sent to the
                       AS2SenderModule for its delivery process. <br> for example: <cite>
-                        com.helger.as2.processor.receiver.AS2DirectoryPollingModule </cite>
+                        com.helger.phase2.processor.receiver.AS2DirectoryPollingModule </cite>
                     <dt>outboxdir
                     <dd>
                       defines the directory where outgoing message are defined. <br> for example: <cite>
@@ -292,7 +292,7 @@
                     <dt>classname
                     <dd>
                       describes the Java class to process incoming MDNs <br> for example: <cite>
-                        com.helger.as2.processor.storage.MDNFileModule </cite>
+                        com.helger.phase2.processor.storage.MDNFileModule </cite>
                     <dt>filename
                     <dd>
                       describes <br> for example: <cite>
@@ -315,7 +315,7 @@
                     <dt>classname
                     <dd>
                       describes the Java class to process and store incoming messages <br> for example: <cite>
-                        com.helger.as2.processor.storage.MessageFileModule </cite>
+                        com.helger.phase2.processor.storage.MessageFileModule </cite>
                     <dt>filename
                     <dd>
                       describes the location and formatted filename of the stored MDNs. <br> for example: <cite>
@@ -338,7 +338,7 @@
                     <dt>classname
                     <dd>
                       describes the Java class to process handle incoming modules <br> for example: <cite>
-                        com.helger.as2.processor.receiver.AS2ReceiverModule </cite>
+                        com.helger.phase2.processor.receiver.AS2ReceiverModule </cite>
                     <dt>port
                     <dd>
                       defines the port the server listens on. <br> for example: <cite> 10080 </cite>
@@ -361,7 +361,7 @@
                     <dt>classname
                     <dd>
                       describes the Java class to rehandle messages <br> for example: <cite>
-                        com.helger.as2.processor.resender.DirectoryResenderModule </cite>
+                        com.helger.phase2.processor.resender.DirectoryResenderModule </cite>
                     <dt>resenddir
                     <dd>
                       defines the directory to find message to resend <br> for example: <cite> %home%\resend
@@ -396,7 +396,7 @@
     <h3>
       Format: XML
       </h2>
-      <h3>Processor Class: com.helger.as2.????</h3>
+      <h3>Processor Class: com.helger.phase2.????</h3>
       <h3>This file requires modification to work with your application</h3>
       <h3>File Layout</h3>
       <ul>
@@ -482,7 +482,7 @@
       <h3>
         Format: XML
         </h2>
-        <h3>Processor Class: com.helger.as2.????</h3>
+        <h3>Processor Class: com.helger.phase2.????</h3>
         <h3>This file DOES NOT require modification to work with your application</h3>
         <h3>File Layout</h3>
 

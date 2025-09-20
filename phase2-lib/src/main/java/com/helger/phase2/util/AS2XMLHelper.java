@@ -155,6 +155,7 @@ public final class AS2XMLHelper
   static
   {
     // Order is important
+    PHASE2_PACKAGE_MAP.put ("com.helger.as2.webapp.", "com.helger.phase2.webapp.");
     PHASE2_PACKAGE_MAP.put ("com.helger.as2.", "com.helger.phase2.server.");
     PHASE2_PACKAGE_MAP.put ("com.helger.as2lib.", "com.helger.phase2.");
     PHASE2_PACKAGE_MAP.put ("com.helger.as2servlet.", "com.helger.phase2.servlet.");

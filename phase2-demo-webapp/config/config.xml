@@ -18,31 +18,31 @@
 
 -->
 <openas2>
-  <certificates classname="com.helger.as2lib.cert.CertificateFactory" 
+  <certificates classname="com.helger.phase2.cert.CertificateFactory" 
                 type="pkcs12"
                 filename="%home%/certs.p12"
                 password="test"
                 interval="300"/>    
-  <partnerships classname="com.helger.as2lib.partner.SelfFillingPartnershipFactory"
+  <partnerships classname="com.helger.phase2.partner.SelfFillingPartnershipFactory"
                 filename="%home%/partnerships.xml"/>
 
-  <processor classname="com.helger.as2lib.processor.DefaultMessageProcessor"
+  <processor classname="com.helger.phase2.processor.DefaultMessageProcessor"
              pendingMDN="data/pendingMDN"
              pendingMDNinfo="data/pendinginfoMDN">
     <!-- Required to receive messages -->
     <!-- port is required internally - simply ignore it for servlets -->
-    <module classname="com.helger.as2.webapp.module.ConfigurableAS2ServletReceiverModule"      
+    <module classname="com.helger.phase2.webapp.module.ConfigurableAS2ServletReceiverModule"      
             port="10080"
             errordir="data/inbox/error"
             errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
 
     <!-- Only needed to receive asynchronous MDNs -->
-    <module classname="com.helger.as2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
+    <module classname="com.helger.phase2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
 
 <!-- Test for #129 -->
 <!-- 
     <module enabled="true"
-            classname="com.helger.as2lib.processor.receiver.AS2DirectoryPollingModule"
+            classname="com.helger.phase2.processor.receiver.AS2DirectoryPollingModule"
             outboxdir="C:\dev\git\phase2\as2-demo-webapp/data/toopenas2a/"
             errordir="C:\dev\git\phase2\as2-demo-webapp/data/toopenas2a/errors/$date.YYYY$/$date.MM$"
             stored_error_filename="$msg.attributes.filename$-$date.YYYY$-$date.MM$-$msg.headers.message-id$"
@@ -52,10 +52,10 @@
             defaults="sender.as2_id=openas2b, receiver.as2_id=openas2a"
             sendfilename="true"
             mimetype="application/EDI-X12"/>
-    <module classname="com.helger.as2lib.processor.sender.AS2SenderModule" />
+    <module classname="com.helger.phase2.processor.sender.AS2SenderModule" />
  -->
  
     <!-- Custom handler for incoming AS2 messages -->
-    <module classname="com.helger.as2.webapp.module.MyHandlerModule"/>        
+    <module classname="com.helger.phase2.webapp.module.MyHandlerModule"/>        
   </processor>
 </openas2>

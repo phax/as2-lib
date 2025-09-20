@@ -202,7 +202,7 @@ public abstract class AbstractDirectoryPollingModule extends AbstractActivePolli
         throw new AS2InvalidMessageException ("No Data");
 
       // Transmit the message - requires a module installed that implements the
-      // "send" action (like com.helger.as2lib.processor.sender.AS2SenderModule)
+      // "send" action (like com.helger.phase2.processor.sender.AS2SenderModule)
       getSession ().getMessageProcessor ().handle (IProcessorSenderModule.DO_SEND, aMsg, null);
 
       if (LOGGER.isDebugEnabled ())

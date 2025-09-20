@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.style.OverrideOnDemand;
+import com.helger.base.CGlobal;
 import com.helger.base.io.nonblocking.NonBlockingBufferedReader;
 import com.helger.base.io.nonblocking.NonBlockingBufferedWriter;
 import com.helger.base.string.StringHelper;
@@ -112,7 +113,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
       }
     }
     ret.addAll (aEnabled);
-    return ret.toArray (new String [0]);
+    return ret.toArray (CGlobal.EMPTY_STRING_ARRAY);
   }
 
   @Override

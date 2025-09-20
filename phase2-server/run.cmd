@@ -32,4 +32,4 @@
 @REM
 
 @echo off
-"%JAVA_HOME%\bin\java" -cp "standalone/*" com.helger.as2.app.MainOpenAS2Server standalone/config/config.xml
+"%JAVA_HOME%\bin\java" -cp "standalone/*" com.helger.phase2.server.app.MainPhase2Server standalone/config/config.xml
