@@ -34,11 +34,11 @@ package com.helger.as2.cmd;
 
 import java.util.Locale;
 
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.session.IAS2Session;
 import com.helger.base.array.ArrayHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.session.IAS2Session;
 import com.helger.typeconvert.collection.IStringMap;
 
 import jakarta.annotation.Nonnull;

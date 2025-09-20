@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2.util.EFileMonitorEvent;
 import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.exception.WrappedAS2Exception;
-import com.helger.as2lib.params.AS2InvalidParameterException;
-import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
 import com.helger.base.string.StringHelper;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.exception.WrappedAS2Exception;
+import com.helger.phase2.params.AS2InvalidParameterException;
+import com.helger.phase2.partner.xml.SelfFillingXMLPartnershipFactory;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

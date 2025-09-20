@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.annotation.style.OverrideOnDemand;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.message.AS2Message;
-import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
-import com.helger.as2lib.util.AS2HttpHelper;
-import com.helger.as2lib.util.http.IAS2HttpResponseHandler;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.http.CHttpHeader;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.message.AS2Message;
+import com.helger.phase2.processor.receiver.net.AS2ReceiverHandler;
+import com.helger.phase2.util.AS2HttpHelper;
+import com.helger.phase2.util.http.IAS2HttpResponseHandler;
 
 import jakarta.activation.DataSource;
 import jakarta.annotation.Nonnull;

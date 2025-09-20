@@ -32,9 +32,9 @@
  */
 package com.helger.as2.cmd;
 
-import com.helger.as2lib.AbstractDynamicComponent;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.session.IAS2Session;
+import com.helger.phase2.AbstractDynamicComponent;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.session.IAS2Session;
 import com.helger.typeconvert.collection.IStringMap;
 
 import jakarta.annotation.Nonnull;

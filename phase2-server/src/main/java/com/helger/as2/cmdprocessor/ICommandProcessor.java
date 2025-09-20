@@ -35,8 +35,8 @@ package com.helger.as2.cmdprocessor;
 import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.cmd.ICommandRegistry;
-import com.helger.as2lib.exception.AS2Exception;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.phase2.exception.AS2Exception;
 
 import jakarta.annotation.Nonnull;
 

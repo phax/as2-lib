@@ -16,8 +16,8 @@
  */
 package com.helger.as2.webapp.module;
 
-import com.helger.as2lib.processor.receiver.net.AS2ReceiverHandler;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
+import com.helger.phase2.processor.receiver.net.AS2ReceiverHandler;
 
 import jakarta.annotation.Nonnull;
 

@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.Partnership;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.partner.Partnership;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;

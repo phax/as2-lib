@@ -42,11 +42,11 @@ import com.helger.as2.app.session.AS2ServerXMLSession;
 import com.helger.as2.cmd.CommandManager;
 import com.helger.as2.cmd.ICommandRegistry;
 import com.helger.as2.cmdprocessor.AbstractCommandProcessor;
-import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.exception.AS2Exception;
 import com.helger.base.array.ArrayHelper;
 import com.helger.base.lang.clazz.ClassHelper;
 import com.helger.base.string.StringHelper;
+import com.helger.phase2.CAS2Info;
+import com.helger.phase2.exception.AS2Exception;
 
 import jakarta.annotation.Nullable;
 

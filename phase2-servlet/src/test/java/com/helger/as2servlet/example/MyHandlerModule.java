@@ -21,10 +21,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.message.IMessage;
-import com.helger.as2lib.processor.module.AbstractProcessorModule;
-import com.helger.as2lib.processor.storage.IProcessorStorageModule;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.message.IMessage;
+import com.helger.phase2.processor.module.AbstractProcessorModule;
+import com.helger.phase2.processor.storage.IProcessorStorageModule;
 
 public class MyHandlerModule extends AbstractProcessorModule implements IProcessorStorageModule
 {

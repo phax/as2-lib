@@ -35,9 +35,9 @@ package com.helger.as2.cmd.cert;
 import com.helger.as2.cmd.AbstractCommand;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
-import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.cert.ICertificateFactory;
-import com.helger.as2lib.exception.AS2Exception;
+import com.helger.phase2.cert.IAliasedCertificateFactory;
+import com.helger.phase2.cert.ICertificateFactory;
+import com.helger.phase2.exception.AS2Exception;
 
 import jakarta.annotation.Nonnull;
 

@@ -32,8 +32,8 @@
  */
 package com.helger.as2.cmd;
 
-import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.session.IAS2Session;
+import com.helger.phase2.IDynamicComponent;
+import com.helger.phase2.session.IAS2Session;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

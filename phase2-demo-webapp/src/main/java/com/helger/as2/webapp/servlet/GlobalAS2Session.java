@@ -19,10 +19,10 @@ package com.helger.as2.webapp.servlet;
 import java.io.File;
 
 import com.helger.annotation.concurrent.Immutable;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.session.AS2ComponentNotFoundException;
 import com.helger.as2servlet.util.AS2ServletXMLSession;
 import com.helger.base.exception.InitializationException;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.session.AS2ComponentNotFoundException;
 
 /**
  * Wrapper around the global AS2 session.

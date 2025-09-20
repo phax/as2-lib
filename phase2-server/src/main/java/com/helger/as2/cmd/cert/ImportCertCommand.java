@@ -45,11 +45,11 @@ import java.util.Enumeration;
 
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
-import com.helger.as2lib.cert.IAliasedCertificateFactory;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.exception.WrappedAS2Exception;
-import com.helger.as2lib.util.AS2Helper;
 import com.helger.base.io.nonblocking.NonBlockingBufferedInputStream;
+import com.helger.phase2.cert.IAliasedCertificateFactory;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.exception.WrappedAS2Exception;
+import com.helger.phase2.util.AS2Helper;
 import com.helger.security.keystore.EKeyStoreType;
 import com.helger.security.keystore.IKeyStoreType;
 

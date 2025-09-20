@@ -21,11 +21,11 @@ import java.io.InputStream;
 import com.helger.annotation.Nonempty;
 import com.helger.annotation.WillNotClose;
 import com.helger.annotation.concurrent.Immutable;
-import com.helger.as2lib.util.http.IAS2HttpRequestDataProvider;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.io.stream.NonClosingInputStream;
 import com.helger.base.io.stream.StreamHelper;
 import com.helger.http.header.HttpHeaderMap;
+import com.helger.phase2.util.http.IAS2HttpRequestDataProvider;
 import com.helger.web.scope.IRequestWebScope;
 
 import jakarta.annotation.Nonnull;

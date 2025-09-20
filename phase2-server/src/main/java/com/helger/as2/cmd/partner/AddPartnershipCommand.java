@@ -34,10 +34,10 @@ package com.helger.as2.cmd.partner;
 
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ECommandResultType;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.Partnership;
-import com.helger.as2lib.partner.xml.IPartnershipFactoryWithPartners;
-import com.helger.as2lib.partner.xml.XMLPartnershipFactory;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.partner.Partnership;
+import com.helger.phase2.partner.xml.IPartnershipFactoryWithPartners;
+import com.helger.phase2.partner.xml.XMLPartnershipFactory;
 import com.helger.xml.microdom.IMicroDocument;
 import com.helger.xml.microdom.IMicroElement;
 import com.helger.xml.microdom.MicroDocument;

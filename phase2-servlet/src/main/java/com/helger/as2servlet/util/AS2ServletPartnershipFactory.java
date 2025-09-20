@@ -16,8 +16,8 @@
  */
 package com.helger.as2servlet.util;
 
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.xml.SelfFillingXMLPartnershipFactory;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.partner.xml.SelfFillingXMLPartnershipFactory;
 
 /**
  * A specialized {@link SelfFillingXMLPartnershipFactory} that automatically

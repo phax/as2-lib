@@ -33,8 +33,8 @@
 package com.helger.as2.cmd;
 
 import com.helger.annotation.style.ReturnsMutableCopy;
-import com.helger.as2lib.IDynamicComponent;
 import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.phase2.IDynamicComponent;
 
 import jakarta.annotation.Nonnull;
 

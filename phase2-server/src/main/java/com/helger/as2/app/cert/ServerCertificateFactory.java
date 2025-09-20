@@ -42,9 +42,9 @@ import com.helger.annotation.WillClose;
 import com.helger.as2.util.EFileMonitorEvent;
 import com.helger.as2.util.FileMonitor;
 import com.helger.as2.util.IFileMonitorListener;
-import com.helger.as2lib.cert.CertificateFactory;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.params.AS2InvalidParameterException;
+import com.helger.phase2.cert.CertificateFactory;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.params.AS2InvalidParameterException;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;

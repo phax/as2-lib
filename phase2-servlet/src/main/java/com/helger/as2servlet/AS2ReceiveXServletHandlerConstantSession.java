@@ -16,10 +16,10 @@
  */
 package com.helger.as2servlet;
 
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.session.AS2Session;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.session.AS2Session;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.ServletException;

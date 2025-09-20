@@ -37,14 +37,14 @@ import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.annotation.style.UnsupportedOperation;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.cmd.ICommandRegistry;
-import com.helger.as2lib.IDynamicComponent;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.session.IAS2Session;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.lang.clazz.ClassHelper;
 import com.helger.collection.commons.CommonsLinkedHashMap;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.collection.commons.ICommonsOrderedMap;
+import com.helger.phase2.IDynamicComponent;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.session.IAS2Session;
 import com.helger.typeconvert.collection.StringMap;
 
 import jakarta.annotation.Nonnull;

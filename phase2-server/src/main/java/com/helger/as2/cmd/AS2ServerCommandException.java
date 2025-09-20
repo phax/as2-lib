@@ -32,7 +32,7 @@
  */
 package com.helger.as2.cmd;
 
-import com.helger.as2lib.exception.AS2Exception;
+import com.helger.phase2.exception.AS2Exception;
 
 public class AS2ServerCommandException extends AS2Exception
 {

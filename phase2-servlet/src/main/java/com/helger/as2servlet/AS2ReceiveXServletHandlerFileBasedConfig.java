@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.IOException;
 
 import com.helger.annotation.style.OverrideOnDemand;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.session.AS2Session;
 import com.helger.as2servlet.util.AS2ServletXMLSession;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.session.AS2Session;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.ServletException;

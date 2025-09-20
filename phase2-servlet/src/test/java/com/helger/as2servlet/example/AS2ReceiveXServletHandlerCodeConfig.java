@@ -16,17 +16,17 @@
  */
 package com.helger.as2servlet.example;
 
-import com.helger.as2lib.cert.CertificateFactory;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.partner.SelfFillingPartnershipFactory;
-import com.helger.as2lib.processor.DefaultMessageProcessor;
-import com.helger.as2lib.processor.sender.AsynchMDNSenderModule;
-import com.helger.as2lib.session.AS2Session;
 import com.helger.as2servlet.AbstractAS2ReceiveBaseXServletHandler;
 import com.helger.as2servlet.AbstractAS2ReceiveXServletHandler;
 import com.helger.as2servlet.util.AS2ServletMDNReceiverModule;
 import com.helger.as2servlet.util.AS2ServletReceiverModule;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.phase2.cert.CertificateFactory;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.partner.SelfFillingPartnershipFactory;
+import com.helger.phase2.processor.DefaultMessageProcessor;
+import com.helger.phase2.processor.sender.AsynchMDNSenderModule;
+import com.helger.phase2.session.AS2Session;
 import com.helger.security.keystore.EKeyStoreType;
 
 import jakarta.annotation.Nonnull;

@@ -16,8 +16,8 @@
  */
 package com.helger.as2servlet.util;
 
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.processor.receiver.AS2ReceiverModule;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.processor.receiver.AS2ReceiverModule;
 
 /**
  * A specialized {@link AS2ReceiverModule} implementation that disables the

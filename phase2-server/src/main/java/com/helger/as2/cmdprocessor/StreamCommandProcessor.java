@@ -45,14 +45,14 @@ import org.slf4j.LoggerFactory;
 import com.helger.as2.cmd.CommandResult;
 import com.helger.as2.cmd.ICommand;
 import com.helger.as2.util.CommandTokenizer;
-import com.helger.as2lib.CAS2Info;
-import com.helger.as2lib.exception.AS2Exception;
-import com.helger.as2lib.exception.WrappedAS2Exception;
-import com.helger.as2lib.session.IAS2Session;
 import com.helger.base.concurrent.ThreadHelper;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.phase2.CAS2Info;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.exception.WrappedAS2Exception;
+import com.helger.phase2.session.IAS2Session;
 import com.helger.typeconvert.collection.IStringMap;
 
 import jakarta.annotation.Nonnull;
