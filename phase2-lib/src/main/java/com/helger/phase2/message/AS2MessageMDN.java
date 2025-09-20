@@ -36,7 +36,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.helger.base.string.StringHelper;
 import com.helger.http.CHttpHeader;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.partner.Partnership;
 import com.helger.phase2.util.AS2DateHelper;
 
@@ -65,7 +65,7 @@ public class AS2MessageMDN extends AbstractMessageMDN
   {
     final StringBuilder aSB = new StringBuilder ();
     final String sDateFormat = partnership ().getDateFormat (DEFAULT_DATE_FORMAT);
-    aSB.append ('<').append (CAS2Info.NAME).append ('-').append (AS2DateHelper.getFormattedDateNow (sDateFormat));
+    aSB.append ('<').append (CPhase2Info.NAME).append ('-').append (AS2DateHelper.getFormattedDateNow (sDateFormat));
 
     final int nRandom = ThreadLocalRandom.current ().nextInt (10_000);
     aSB.append ('-').append (StringHelper.getLeadingZero (nRandom, 4));

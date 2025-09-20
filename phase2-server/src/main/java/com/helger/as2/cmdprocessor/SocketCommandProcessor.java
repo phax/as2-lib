@@ -54,7 +54,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsLinkedHashSet;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsOrderedSet;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.exception.AS2Exception;
 import com.helger.phase2.exception.WrappedAS2Exception;
 import com.helger.phase2.session.IAS2Session;
@@ -249,7 +249,7 @@ public class SocketCommandProcessor extends AbstractCommandProcessor
     }
     catch (final AS2Exception ex)
     {
-      LOGGER.error ("Error running command processor " + CAS2Info.NAME_VERSION, ex);
+      LOGGER.error ("Error running command processor " + CPhase2Info.NAME_VERSION, ex);
     }
   }
 }

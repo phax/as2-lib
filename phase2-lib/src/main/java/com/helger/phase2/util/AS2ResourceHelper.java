@@ -54,7 +54,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.io.file.FileHelper;
 import com.helger.io.file.FileIOError;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -193,7 +193,7 @@ public class AS2ResourceHelper implements Closeable
       if (aCloseables.isNotEmpty ())
       {
         if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Closing " + aCloseables.size () + " " + CAS2Info.NAME_VERSION + " stream handles");
+          LOGGER.debug ("Closing " + aCloseables.size () + " " + CPhase2Info.NAME_VERSION + " stream handles");
 
         for (final Closeable aCloseable : aCloseables)
           StreamHelper.close (aCloseable);
@@ -208,7 +208,7 @@ public class AS2ResourceHelper implements Closeable
       if (aFiles.isNotEmpty ())
       {
         if (LOGGER.isDebugEnabled ())
-          LOGGER.debug ("Deleting " + aFiles.size () + " temporary " + CAS2Info.NAME_VERSION + " files");
+          LOGGER.debug ("Deleting " + aFiles.size () + " temporary " + CPhase2Info.NAME_VERSION + " files");
 
         for (final File aFile : aFiles)
         {
@@ -218,7 +218,7 @@ public class AS2ResourceHelper implements Closeable
           final FileIOError aError = AS2IOHelper.getFileOperationManager ().deleteFileIfExisting (aFile);
           if (aError.isFailure ())
             LOGGER.warn ("  Failed to delete temporary " +
-                         CAS2Info.NAME_VERSION +
+                         CPhase2Info.NAME_VERSION +
                          " file " +
                          aFile.getAbsolutePath () +
                          ": " +

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2025 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.as2.webapp.module;
+package com.helger.phase2.servlet.util;
 
-import com.helger.phase2.processor.receiver.net.AS2MDNReceiverHandler;
-import com.helger.phase2.servlet.util.AS2ServletMDNReceiverModule;
-
-import jakarta.annotation.Nonnull;
+import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.partner.xml.SelfFillingXMLPartnershipFactory;
 
 /**
- * Configurable version of {@link AS2ServletMDNReceiverModule}.
+ * A specialized {@link SelfFillingXMLPartnershipFactory} that automatically
+ * stores partnerships to a file.
  *
  * @author Philip Helger
  */
-public class ConfigurableAS2MDNServletReceiverModule extends AS2ServletMDNReceiverModule
+public class AS2ServletPartnershipFactory extends SelfFillingXMLPartnershipFactory
 {
   @Override
-  @Nonnull
-  public AS2MDNReceiverHandler createHandler ()
+  protected void markAsChanged () throws AS2Exception
   {
-    final AS2MDNReceiverHandler ret = super.createHandler ();
-    // Customize receive handler if you like
-    return ret;
+    // Store every time something changed
+    storePartnership ();
   }
 }

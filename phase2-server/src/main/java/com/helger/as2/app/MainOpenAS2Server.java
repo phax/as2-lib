@@ -45,7 +45,7 @@ import com.helger.as2.cmdprocessor.AbstractCommandProcessor;
 import com.helger.base.array.ArrayHelper;
 import com.helger.base.lang.clazz.ClassHelper;
 import com.helger.base.string.StringHelper;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.exception.AS2Exception;
 
 import jakarta.annotation.Nullable;
@@ -59,7 +59,7 @@ import jakarta.annotation.Nullable;
 public class MainOpenAS2Server
 {
   private static final Logger LOGGER = LoggerFactory.getLogger (MainOpenAS2Server.class);
-  private static final String SERVER_NAME = CAS2Info.NAME_VERSION + " Server";
+  private static final String SERVER_NAME = CPhase2Info.NAME_VERSION + " Server";
 
   public static void main (final String [] args)
   {

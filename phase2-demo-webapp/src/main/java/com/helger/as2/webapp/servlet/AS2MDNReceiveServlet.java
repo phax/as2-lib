@@ -17,8 +17,8 @@
 package com.helger.as2.webapp.servlet;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
-import com.helger.as2servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
 import com.helger.http.EHttpMethod;
+import com.helger.phase2.servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
 import com.helger.xservlet.AbstractXServlet;
 
 import jakarta.servlet.ServletException;

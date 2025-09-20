@@ -30,27 +30,28 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.phase2.cert;
+package com.helger.phase2;
 
-import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
-import com.helger.phase2.exception.AS2Exception;
-import com.helger.phase2.session.IAS2Session;
-import com.helger.typeconvert.collection.IStringMap;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
-public class CertificateFactoryByteArray extends CertificateFactory
+import org.junit.Test;
+
+/**
+ * Test class for class {@link CPhase2Version}
+ *
+ * @author Philip Helger
+ */
+public final class CPhase2VersionTest
 {
-  @Override
-  public void initDynamicComponent (final IAS2Session aSession, final IStringMap aOptions) throws AS2Exception
+  @Test
+  public void testBasic ()
   {
-    // Ensure no filename is present
-    aOptions.remove (ATTR_FILENAME);
+    assertNotEquals ("undefined", CPhase2Version.BUILD_VERSION);
+    assertNotEquals ("undefined", CPhase2Version.BUILD_TIMESTAMP);
 
-    // Init base class
-    super.initDynamicComponent (aSession, aOptions);
-
-    // What is the intention here...?
-    // FIXME
-    final byte [] myKeyStoreBytes = {};
-    load (new NonBlockingByteArrayInputStream (myKeyStoreBytes), "myPw".toCharArray ());
+    // Check variable resolution
+    assertFalse (CPhase2Version.BUILD_VERSION.contains ("${"));
+    assertFalse (CPhase2Version.BUILD_TIMESTAMP.contains ("${"));
   }
 }

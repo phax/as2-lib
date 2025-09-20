@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2025 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.as2.webapp.servlet;
+package com.helger.phase2.servlet;
 
 import com.helger.web.scope.mgr.WebScopeManager;
 
@@ -24,11 +24,10 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
 /**
- * A very simple listener, specifically modified for this demo application. Use
- * this as a &lt;listener&gt; in your <code>web.xml</code>.
+ * A very simple listener, that setups the framework for running the AS2
+ * servlet. Use this as a &lt;listener&gt; in your <code>web.xml</code>.
  *
  * @author Philip Helger
- * @since 4.8.0
  */
 public class AS2WebAppListener implements ServletContextListener
 {
@@ -38,11 +37,11 @@ public class AS2WebAppListener implements ServletContextListener
    *
    * @param aSC
    *        The servlet context. May not be <code>null</code>.
+   * @since 4.4.5
    */
   public static void staticInit (@Nonnull final ServletContext aSC)
   {
-    com.helger.phase2.servlet.AS2WebAppListener.staticInit (aSC);
-    GlobalAS2Session.ensureClassIsLoaded ();
+    WebScopeManager.onGlobalBegin (aSC);
   }
 
   public void contextInitialized (@Nonnull final ServletContextEvent aSCE)
@@ -52,11 +51,12 @@ public class AS2WebAppListener implements ServletContextListener
   }
 
   /**
-   * Do the global shutdown.
+   * Do the global shutdown when not using the {@link ServletContextListener}.
+   *
+   * @since 4.4.5
    */
   public static void staticDestroy ()
   {
-    GlobalAS2Session.shutDown ();
     WebScopeManager.onGlobalEnd ();
   }
 

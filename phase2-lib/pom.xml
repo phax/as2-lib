@@ -43,7 +43,7 @@
   <artifactId>phase2-lib</artifactId>
   <packaging>bundle</packaging>
   <name>phase2-lib</name>
-  <description>Open AS2 fork - library part</description>
+  <description>phase2 library part</description>
   <url>https://github.com/phax/phase2/phase2-lib</url>
   <inceptionYear>2013</inceptionYear>
   <licenses>
@@ -128,7 +128,30 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.phase2</Automatic-Module-Name>
-            <Export-Package>com.helger.phase2.*</Export-Package>
+            <Export-Package>
+              com.helger.phase2,
+              com.helger.phase2.cert,
+              com.helger.phase2.client,
+              com.helger.phase2.crypto,
+              com.helger.phase2.disposition,
+              com.helger.phase2.exception,
+              com.helger.phase2.message,
+              com.helger.phase2.params,
+              com.helger.phase2.partner,
+              com.helger.phase2.partner.xml,
+              com.helger.phase2.processor,
+              com.helger.phase2.processor.module,
+              com.helger.phase2.processor.receiver,
+              com.helger.phase2.processor.receiver.net,
+              com.helger.phase2.processor.resender,
+              com.helger.phase2.processor.sender,
+              com.helger.phase2.processor.storage,
+              com.helger.phase2.session,
+              com.helger.phase2.util,
+              com.helger.phase2.util.dump,
+              com.helger.phase2.util.http,
+              com.helger.phase2.util.javamail
+            </Export-Package>
             <Import-Package>!jakarta.annotation.*,*</Import-Package>
             <Include-Resource>{maven-resources},phase2-version.properties=target/classes/phase2-version.properties</Include-Resource>
           </instructions>

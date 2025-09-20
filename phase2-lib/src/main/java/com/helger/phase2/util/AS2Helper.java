@@ -51,7 +51,7 @@ import com.helger.http.CHttp;
 import com.helger.http.CHttpHeader;
 import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mime.CMimeType;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.cert.AS2CertificateNotFoundException;
 import com.helger.phase2.cert.AS2KeyNotFoundException;
 import com.helger.phase2.cert.ECertificatePartnershipType;
@@ -270,7 +270,7 @@ public final class AS2Helper
     final AS2MessageMDN aMDN = new AS2MessageMDN (aMsg);
     aMDN.headers ().setHeader (CHttpHeader.AS2_VERSION, aSession.getAS2VersionID ());
     aMDN.headers ().setHeader (CHttpHeader.DATE, AS2DateHelper.getFormattedDateNow (CAS2Header.DEFAULT_DATE_FORMAT));
-    aMDN.headers ().setHeader (CHttpHeader.SERVER, CAS2Info.NAME_VERSION);
+    aMDN.headers ().setHeader (CHttpHeader.SERVER, CPhase2Info.NAME_VERSION);
     aMDN.headers ().setHeader (CHttpHeader.MIME_VERSION, CAS2Header.DEFAULT_MIME_VERSION);
     aMDN.headers ().setHeader (CHttpHeader.AS2_FROM, aPartnership.getReceiverAS2ID ());
     aMDN.headers ().setHeader (CHttpHeader.AS2_TO, aPartnership.getSenderAS2ID ());
@@ -311,7 +311,7 @@ public final class AS2Helper
     aMDN.setText (new MessageParameters (aMsg).format (sText));
     aMDN.attrs ()
         .putIn (AS2MessageMDN.MDNA_REPORTING_UA,
-                CAS2Info.NAME_VERSION +
+                CPhase2Info.NAME_VERSION +
                                                  "@" +
                                                  aMsg.attrs ().getAsString (CNetAttribute.MA_DESTINATION_IP) +
                                                  ":" +

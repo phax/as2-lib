@@ -34,7 +34,7 @@ package com.helger.phase2.message;
 
 import com.helger.annotation.Nonempty;
 import com.helger.http.CHttpHeader;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.params.AS2InvalidParameterException;
 import com.helger.phase2.params.CompositeParameters;
 import com.helger.phase2.params.DateParameters;
@@ -57,7 +57,7 @@ public class AS2Message extends AbstractMessage
   public static final String ATTRIBUTE_MIC = "MIC";
 
   public static final String PROTOCOL_AS2 = "as2";
-  public static final String DEFAULT_ID_FORMAT = CAS2Info.NAME +
+  public static final String DEFAULT_ID_FORMAT = CPhase2Info.NAME +
                                                  "-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
 
   public AS2Message ()

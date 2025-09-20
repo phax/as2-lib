@@ -33,14 +33,14 @@
 package com.helger.phase2.util;
 
 import com.helger.annotation.concurrent.Immutable;
-import com.helger.phase2.CAS2Info;
-import com.helger.phase2.CAS2Version;
+import com.helger.phase2.CPhase2Info;
+import com.helger.phase2.CPhase2Version;
 
 @Immutable
 public final class CAS2Header
 {
   public static final String DEFAULT_CONNECTION = "close, TE";
-  public static final String DEFAULT_USER_AGENT = CAS2Info.NAME + "/AS2Sender-" + CAS2Version.BUILD_VERSION;
+  public static final String DEFAULT_USER_AGENT = CPhase2Info.NAME + "/AS2Sender-" + CPhase2Version.BUILD_VERSION;
   public static final String DEFAULT_MIME_VERSION = "1.0";
   /**
    * 1.0: default AS2 version<br>

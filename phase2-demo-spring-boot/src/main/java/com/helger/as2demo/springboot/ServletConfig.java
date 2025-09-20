@@ -26,13 +26,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
-import com.helger.as2servlet.AS2ReceiveXServletHandlerConstantSession;
-import com.helger.as2servlet.AS2WebAppListener;
-import com.helger.as2servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
-import com.helger.as2servlet.util.AS2ServletXMLSession;
 import com.helger.base.exception.InitializationException;
 import com.helger.http.EHttpMethod;
 import com.helger.phase2.exception.AS2Exception;
+import com.helger.phase2.servlet.AS2ReceiveXServletHandlerConstantSession;
+import com.helger.phase2.servlet.AS2WebAppListener;
+import com.helger.phase2.servlet.mdn.AS2MDNReceiveXServletHandlerConstantSession;
+import com.helger.phase2.servlet.util.AS2ServletXMLSession;
 import com.helger.phase2.session.AS2ComponentNotFoundException;
 import com.helger.web.scope.mgr.WebScopeManager;
 import com.helger.xservlet.AbstractXServlet;

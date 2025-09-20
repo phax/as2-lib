@@ -96,7 +96,9 @@
         <configuration>
           <instructions>
             <Automatic-Module-Name>com.helger.phase2.partner.mongodb</Automatic-Module-Name>
-            <Export-Package>com.helger.phase2.partner.mongodb.*</Export-Package>
+            <Export-Package>
+              com.helger.phase2.partner.mongodb
+            </Export-Package>
             <Import-Package>!jakarta.annotation.*,*</Import-Package>
           </instructions>
         </configuration>

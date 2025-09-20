@@ -42,7 +42,7 @@ import com.helger.annotation.style.ReturnsMutableObject;
 import com.helger.base.enforce.ValueEnforcer;
 import com.helger.base.string.StringHelper;
 import com.helger.http.header.HttpHeaderMap;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.cert.IStorableCertificateFactory;
 import com.helger.phase2.crypto.ECompressionType;
 import com.helger.phase2.crypto.ECryptoAlgorithmCrypt;
@@ -89,7 +89,7 @@ public class AS2ClientSettings
    *
    * @see #setMessageIDFormat(String)
    */
-  public static final String DEFAULT_MESSAGE_ID_FORMAT = CAS2Info.NAME +
+  public static final String DEFAULT_MESSAGE_ID_FORMAT = CPhase2Info.NAME +
                                                          "-$date.ddMMuuuuHHmmssZ$-$rand.1234$@$msg.sender.as2_id$_$msg.receiver.as2_id$";
   /** By default no retry happens. */
   public static final int DEFAULT_RETRY_COUNT = IProcessorResenderModule.DEFAULT_RETRIES;

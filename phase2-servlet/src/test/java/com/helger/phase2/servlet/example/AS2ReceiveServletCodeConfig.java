@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2025 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.as2.webapp.servlet;
+package com.helger.phase2.servlet.example;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.http.EHttpMethod;
-import com.helger.phase2.servlet.AS2ReceiveXServletHandlerConstantSession;
+import com.helger.phase2.servlet.AS2ReceiveServlet;
 import com.helger.xservlet.AbstractXServlet;
 
 import jakarta.servlet.ServletException;
@@ -26,14 +26,15 @@ import jakarta.servlet.ServletException;
 /**
  * This is the main servlet that takes AS2 messages and processes them. This
  * servlet is configured to accept only POST requests. The logic for receiving
- * is contained in {@link AS2ReceiveXServletHandlerConstantSession}.
+ * is contained in {@link AS2ReceiveXServletHandlerCodeConfig}.<br>
+ * This is an alternative implementation to {@link AS2ReceiveServlet} which uses
+ * a file to set the configuration.
  *
  * @author Philip Helger
- * @since 4.8.0
  */
-public class AS2ReceiveServlet extends AbstractXServlet
+public class AS2ReceiveServletCodeConfig extends AbstractXServlet
 {
-  public AS2ReceiveServlet ()
+  public AS2ReceiveServletCodeConfig ()
   {}
 
   @Override
@@ -42,8 +43,6 @@ public class AS2ReceiveServlet extends AbstractXServlet
   {
     // Multipart is handled specifically inside
     settings ().setMultipartEnabled (false);
-    handlerRegistry ().registerHandler (EHttpMethod.POST,
-                                        new AS2ReceiveXServletHandlerConstantSession (GlobalAS2Session.AS2_SESSION),
-                                        false);
+    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2ReceiveXServletHandlerCodeConfig (), false);
   }
 }

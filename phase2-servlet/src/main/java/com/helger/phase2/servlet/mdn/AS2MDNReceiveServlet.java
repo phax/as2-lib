@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2025 Philip Helger (www.helger.com)
+ * Copyright (C) 2015-2025 Philip Helger (www.helger.com)
  * philip[at]helger[dot]com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.helger.as2.webapp.servlet;
+package com.helger.phase2.servlet.mdn;
 
 import com.helger.annotation.OverridingMethodsMustInvokeSuper;
 import com.helger.http.EHttpMethod;
-import com.helger.phase2.servlet.AS2ReceiveXServletHandlerConstantSession;
 import com.helger.xservlet.AbstractXServlet;
 
 import jakarta.servlet.ServletException;
 
 /**
- * This is the main servlet that takes AS2 messages and processes them. This
- * servlet is configured to accept only POST requests. The logic for receiving
- * is contained in {@link AS2ReceiveXServletHandlerConstantSession}.
+ * This is the main servlet that takes async AS2 MDN messages and processes
+ * them. This servlet is configured to accept only POST requests. The logic for
+ * receiving is contained in
+ * {@link AS2MDNReceiveXServletHandlerFileBasedConfig}.
  *
  * @author Philip Helger
- * @since 4.8.0
+ * @since 4.6.4
  */
-public class AS2ReceiveServlet extends AbstractXServlet
+public class AS2MDNReceiveServlet extends AbstractXServlet
 {
-  public AS2ReceiveServlet ()
+  public AS2MDNReceiveServlet ()
   {}
 
   @Override
@@ -42,8 +42,6 @@ public class AS2ReceiveServlet extends AbstractXServlet
   {
     // Multipart is handled specifically inside
     settings ().setMultipartEnabled (false);
-    handlerRegistry ().registerHandler (EHttpMethod.POST,
-                                        new AS2ReceiveXServletHandlerConstantSession (GlobalAS2Session.AS2_SESSION),
-                                        false);
+    handlerRegistry ().registerHandler (EHttpMethod.POST, new AS2MDNReceiveXServletHandlerFileBasedConfig (), false);
   }
 }

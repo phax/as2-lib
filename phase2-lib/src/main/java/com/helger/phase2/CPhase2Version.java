@@ -30,27 +30,56 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.phase2.cert;
+package com.helger.phase2;
 
-import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
-import com.helger.phase2.exception.AS2Exception;
-import com.helger.phase2.session.IAS2Session;
-import com.helger.typeconvert.collection.IStringMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CertificateFactoryByteArray extends CertificateFactory
+import com.helger.annotation.concurrent.Immutable;
+import com.helger.base.rt.NonBlockingProperties;
+import com.helger.base.rt.PropertiesHelper;
+import com.helger.io.resource.ClassPathResource;
+
+/**
+ * Contains application wide constants.
+ *
+ * @author Philip Helger
+ */
+@Immutable
+public final class CPhase2Version
 {
-  @Override
-  public void initDynamicComponent (final IAS2Session aSession, final IStringMap aOptions) throws AS2Exception
+  /** Current version - from properties file */
+  public static final String BUILD_VERSION;
+  /** Build timestamp - from properties file */
+  public static final String BUILD_TIMESTAMP;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (CPhase2Version.class);
+
+  static
   {
-    // Ensure no filename is present
-    aOptions.remove (ATTR_FILENAME);
-
-    // Init base class
-    super.initDynamicComponent (aSession, aOptions);
-
-    // What is the intention here...?
-    // FIXME
-    final byte [] myKeyStoreBytes = {};
-    load (new NonBlockingByteArrayInputStream (myKeyStoreBytes), "myPw".toCharArray ());
+    String sProjectVersion = null;
+    String sProjectTimestamp = null;
+    final NonBlockingProperties p = PropertiesHelper.loadProperties (ClassPathResource.getInputStream ("phase2-version.properties",
+                                                                                                       CPhase2Version.class.getClassLoader ()));
+    if (p != null)
+    {
+      sProjectVersion = p.get ("version");
+      sProjectTimestamp = p.get ("timestamp");
+    }
+    if (sProjectVersion == null)
+    {
+      sProjectVersion = "undefined";
+      LOGGER.warn ("Failed to load phase2 version number");
+    }
+    BUILD_VERSION = sProjectVersion;
+    if (sProjectTimestamp == null)
+    {
+      sProjectTimestamp = "undefined";
+      LOGGER.warn ("Failed to load phase2 build timestamp");
+    }
+    BUILD_TIMESTAMP = sProjectTimestamp;
   }
+
+  private CPhase2Version ()
+  {}
 }

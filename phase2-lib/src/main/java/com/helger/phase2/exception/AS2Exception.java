@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.lang.clazz.ClassHelper;
-import com.helger.phase2.CAS2Info;
+import com.helger.phase2.CPhase2Info;
 import com.helger.phase2.message.IMessage;
 
 import jakarta.annotation.Nonnull;
@@ -90,7 +90,7 @@ public class AS2Exception extends Exception
                                 @Nullable final IMessage aSrcMsg,
                                 @Nullable final Throwable aCause)
   {
-    LOGGER.info (CAS2Info.NAME_VERSION +
+    LOGGER.info (CPhase2Info.NAME_VERSION +
                  " " +
                  ClassHelper.getClassLocalName (aExceptionClass) +
                  " " +

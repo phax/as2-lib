@@ -30,27 +30,27 @@
  * are those of the authors and should not be interpreted as representing
  * official policies, either expressed or implied, of the FreeBSD Project.
  */
-package com.helger.phase2.cert;
+package com.helger.phase2;
 
-import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
-import com.helger.phase2.exception.AS2Exception;
-import com.helger.phase2.session.IAS2Session;
-import com.helger.typeconvert.collection.IStringMap;
+import com.helger.annotation.concurrent.Immutable;
 
-public class CertificateFactoryByteArray extends CertificateFactory
+/**
+ * Global information constants.
+ *
+ * @author Philip Helger
+ */
+@Immutable
+public final class CPhase2Info
 {
-  @Override
-  public void initDynamicComponent (final IAS2Session aSession, final IStringMap aOptions) throws AS2Exception
-  {
-    // Ensure no filename is present
-    aOptions.remove (ATTR_FILENAME);
+  /**
+   * The name of this AS2 client. May not contain blanks.<br>
+   * Old name before v6: "as2-lib"
+   */
+  public static final String NAME = "phase2";
 
-    // Init base class
-    super.initDynamicComponent (aSession, aOptions);
+  /** Combination of {@link #NAME} and build version separated by a blank. */
+  public static final String NAME_VERSION = NAME + " " + CPhase2Version.BUILD_VERSION;
 
-    // What is the intention here...?
-    // FIXME
-    final byte [] myKeyStoreBytes = {};
-    load (new NonBlockingByteArrayInputStream (myKeyStoreBytes), "myPw".toCharArray ());
-  }
+  private CPhase2Info ()
+  {}
 }
