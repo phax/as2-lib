@@ -239,6 +239,38 @@ public final class AS2Helper
     // (size));
   }
 
+  @Nullable
+  public static MIC createMICOnReception (@Nonnull final AS2Message aMsg) throws Exception
+  {
+    final Partnership aPartnership = aMsg.partnership ();
+
+    final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
+    final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
+
+    ECryptoAlgorithmSign eSigningAlgorithm = aDispositionOptions.getFirstMICAlg ();
+    if (eSigningAlgorithm == null)
+    {
+      // Try from partnership (#93)
+      final String sSigningAlgorithm = aPartnership.getSigningAlgorithm ();
+      eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSigningAlgorithm);
+      if (eSigningAlgorithm == null)
+      {
+        LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
+      }
+    }
+
+    if (eSigningAlgorithm == null)
+      return null;
+
+    // If the source message was signed or encrypted, include the headers -
+    // see message sending for details
+    final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null ||
+                                         aPartnership.getEncryptAlgorithm () != null ||
+                                         aPartnership.getCompressionType () != null;
+
+    return getCryptoHelper ().calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
+  }
+
   /**
    * Create a new MDN
    *
@@ -255,10 +287,10 @@ public final class AS2Helper
    *         In case of an error
    */
   @Nonnull
-  public static IMessageMDN createMDN (@Nonnull final IAS2Session aSession,
-                                       @Nonnull final AS2Message aMsg,
-                                       @Nonnull final DispositionType aDisposition,
-                                       @Nonnull final String sText) throws Exception
+  public static IMessageMDN createSyncMDN (@Nonnull final IAS2Session aSession,
+                                           @Nonnull final AS2Message aMsg,
+                                           @Nonnull final DispositionType aDisposition,
+                                           @Nonnull final String sText) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMsg, "AS2Message");
@@ -324,29 +356,8 @@ public final class AS2Helper
     final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
-    ECryptoAlgorithmSign eSigningAlgorithm = aDispositionOptions.getFirstMICAlg ();
-    if (eSigningAlgorithm == null)
-    {
-      // Try from partnership (#93)
-      final String sSigningAlgorithm = aPartnership.getSigningAlgorithm ();
-      eSigningAlgorithm = ECryptoAlgorithmSign.getFromIDOrNull (sSigningAlgorithm);
-      if (eSigningAlgorithm == null)
-      {
-        LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
-      }
-    }
-
-    MIC aMIC = null;
-    if (eSigningAlgorithm != null)
-    {
-      // If the source message was signed or encrypted, include the headers -
-      // see message sending for details
-      final boolean bIncludeHeadersInMIC = aPartnership.getSigningAlgorithm () != null ||
-                                           aPartnership.getEncryptAlgorithm () != null ||
-                                           aPartnership.getCompressionType () != null;
-
-      aMIC = getCryptoHelper ().calculateMIC (aMsg.getData (), eSigningAlgorithm, bIncludeHeadersInMIC);
-    }
+    // Calculate MIC
+    final MIC aMIC = createMICOnReception (aMsg);
     if (aMIC != null)
       aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
 

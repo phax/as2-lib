@@ -63,6 +63,7 @@ import com.helger.mail.datasource.ByteArrayDataSource;
 import com.helger.phase2.cert.ECertificatePartnershipType;
 import com.helger.phase2.cert.ICertificateFactory;
 import com.helger.phase2.crypto.ICryptoHelper;
+import com.helger.phase2.crypto.MIC;
 import com.helger.phase2.disposition.AS2DispositionException;
 import com.helger.phase2.disposition.DispositionType;
 import com.helger.phase2.exception.AS2Exception;
@@ -406,7 +407,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         final IAS2Session aSession = m_aReceiverModule.getSession ();
 
         // Main MDN creation
-        final IMessageMDN aMdn = AS2Helper.createMDN (aSession, aMsg, aDisposition, sText);
+        final IMessageMDN aMdn = AS2Helper.createSyncMDN (aSession, aMsg, aDisposition, sText);
 
         if (aMsg.isRequestingAsynchMDN ())
         {
@@ -570,6 +571,18 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // message
         decrypt (aMsg, aResHelper);
 
+        // TODO Calculate MIC before decompress #140
+        MIC aBeforeDecompressMIC;
+        try
+        {
+          aBeforeDecompressMIC = AS2Helper.createMICOnReception (aMsg);
+        }
+        catch (final Exception ex)
+        {
+          // Ignore error
+          aBeforeDecompressMIC = null;
+        }
+
         if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
         {
           if (LOGGER.isTraceEnabled ())
@@ -697,7 +710,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
             // Just send a HTTP OK
             HTTPHelper.sendSimpleHTTPResponse (aResponseHandler, CHttp.HTTP_OK);
-            LOGGER.info ("sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
+            LOGGER.info ("Sent HTTP OK " + sClientInfo + aMsg.getLoggingText ());
           }
         }
         catch (final Exception ex)
@@ -718,7 +731,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       {
         // close and delete the temporary shared stream if it exists
         final TempSharedFileInputStream sis = aMsg.getTempSharedFileInputStream ();
-        if (null != sis)
+        if (sis != null)
         {
           try
           {
@@ -767,11 +780,10 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
     else
     {
-      if (aMsgDataSource instanceof ByteArrayDataSource)
+      if (aMsgDataSource instanceof final ByteArrayDataSource aBADS)
       {
         LOGGER.info ("received " +
-                     AS2IOHelper.getTransferRate (((ByteArrayDataSource) aMsgDataSource).directGetBytes ().length,
-                                                  aSW) +
+                     AS2IOHelper.getTransferRate (aBADS.directGetBytes ().length, aSW) +
                      " from " +
                      sClientInfo +
                      aMsg.getLoggingText ());
