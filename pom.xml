@@ -22,15 +22,15 @@
   <parent>
     <groupId>com.helger</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>2.1.4</version>
+    <version>3.0.2</version>
   </parent>
-  <groupId>com.helger.as2</groupId>
-  <artifactId>as2-lib-parent-pom</artifactId>
-  <version>5.1.8-SNAPSHOT</version>
+  <groupId>com.helger.phase2</groupId>
+  <artifactId>phase2-parent-pom</artifactId>
+  <version>6.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>as2-lib-parent-pom</name>
-  <description>Base POM to build the as2-lib projects</description>
-  <url>https://github.com/phax/as2-lib</url>
+  <name>phase2-parent-pom</name>
+  <description>Base POM to build the phase2 projects</description>
+  <url>https://github.com/phax/phase2</url>
   <inceptionYear>2013</inceptionYear>
 
   <licenses>
@@ -47,9 +47,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/phax/as2-lib.git</connection>
-    <developerConnection>scm:git:https://github.com/phax/as2-lib.git</developerConnection>
-    <url>https://github.com/phax/as2-lib</url>
+    <connection>scm:git:https://github.com/phax/phase2.git</connection>
+    <developerConnection>scm:git:https://github.com/phax/phase2.git</developerConnection>
+    <url>https://github.com/phax/phase2</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -68,6 +68,7 @@
   </developers>
   
   <properties>
+    <httpclient.version>5.5</httpclient.version>
     <log4j.version>2.25.1</log4j.version>
   </properties>
  
@@ -76,28 +77,28 @@
       <dependency>
         <groupId>com.helger.commons</groupId>
         <artifactId>ph-commons-parent-pom</artifactId>
-        <version>11.2.6</version>
+        <version>12.0.2-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger</groupId>
         <artifactId>ph-css-parent-pom</artifactId>
-        <version>7.0.4</version>
+        <version>8.0.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.web</groupId>
         <artifactId>ph-web-parent-pom</artifactId>
-        <version>10.5.1</version>
+        <version>11.1.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.photon</groupId>
         <artifactId>ph-oton-parent-pom</artifactId>
-        <version>9.3.2</version>
+        <version>10.0.1</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -134,23 +135,23 @@
       </dependency>
 
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-lib</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-lib</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-partnership-mongodb</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-partnership-mongodb</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-servlet</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-server</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-server</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
@@ -163,46 +164,17 @@
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>java11-16</id>
-      <activation>
-        <jdk>[11,17)</jdk>
-      </activation>
-      <modules>
-        <module>as2-lib</module>
-        <module>as2-partnership-mongodb</module>
-        <module>as2-servlet</module>
-        <module>as2-demo-webapp</module>
-        <module>as2-server</module>
-        <!-- as2-demo-spring-boot requires Java 17+ -->
-      </modules>
-    </profile>
-    <profile>
-      <id>java17+</id>
-      <activation>
-        <jdk>[17,)</jdk>
-      </activation>
-      <modules>
-        <module>as2-lib</module>
-        <module>as2-partnership-mongodb</module>
-        <module>as2-servlet</module>
-        <module>as2-demo-webapp</module>
-        <module>as2-server</module>
-        <module>as2-demo-spring-boot</module>
-      </modules>
-    </profile>
-  </profiles>
+  <modules>
+    <module>phase2-lib</module>
+    <module>phase2-partnership-mongodb</module>
+    <module>phase2-servlet</module>
+    <module>phase2-demo-webapp</module>
+    <module>phase2-server</module>
+    <module>phase2-demo-spring-boot</module>
+  </modules>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <source>8</source>
-        </configuration>
-      </plugin> 
       <plugin>
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>

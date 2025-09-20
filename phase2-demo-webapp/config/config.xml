@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Copyright (C) 2018-2025 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<openas2>
+  <certificates classname="com.helger.phase2.cert.CertificateFactory" 
+                type="pkcs12"
+                filename="%home%/certs.p12"
+                password="test"
+                interval="300"/>    
+  <partnerships classname="com.helger.phase2.partner.SelfFillingPartnershipFactory"
+                filename="%home%/partnerships.xml"/>
+
+  <processor classname="com.helger.phase2.processor.DefaultMessageProcessor"
+             pendingMDN="data/pendingMDN"
+             pendingMDNinfo="data/pendinginfoMDN">
+    <!-- Required to receive messages -->
+    <!-- port is required internally - simply ignore it for servlets -->
+    <module classname="com.helger.phase2.webapp.module.ConfigurableAS2ServletReceiverModule"      
+            port="10080"
+            errordir="data/inbox/error"
+            errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
+
+    <!-- Only needed to receive asynchronous MDNs -->
+    <module classname="com.helger.phase2.webapp.module.ConfigurableAS2MDNServletReceiverModule" />        
+
+<!-- Test for #129 -->
+<!-- 
+    <module enabled="true"
+            classname="com.helger.phase2.processor.receiver.AS2DirectoryPollingModule"
+            outboxdir="C:\dev\git\phase2\as2-demo-webapp/data/toopenas2a/"
+            errordir="C:\dev\git\phase2\as2-demo-webapp/data/toopenas2a/errors/$date.YYYY$/$date.MM$"
+            stored_error_filename="$msg.attributes.filename$-$date.YYYY$-$date.MM$-$msg.headers.message-id$"
+            sentdir="C:\dev\git\phase2\as2-demo-webapp/data/$msg.sender.as2_id$-$msg.receiver.as2_id$/sent/$date.YYYY$/$date.MM$"
+            stored_sent_filename="$msg.attributes.filename$-$msg.headers.message-id$"
+            interval="5"
+            defaults="sender.as2_id=openas2b, receiver.as2_id=openas2a"
+            sendfilename="true"
+            mimetype="application/EDI-X12"/>
+    <module classname="com.helger.phase2.processor.sender.AS2SenderModule" />
+ -->
+ 
+    <!-- Custom handler for incoming AS2 messages -->
+    <module classname="com.helger.phase2.webapp.module.MyHandlerModule"/>        
+  </processor>
+</openas2>

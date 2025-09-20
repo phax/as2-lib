@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    The FreeBSD Copyright
+    Copyright 1994-2008 The FreeBSD Project. All rights reserved.
+    Copyright (C) 2013-2025 Philip Helger philip[at]helger[dot]com
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+       1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+
+       2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY
+    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    The views and conclusions contained in the software and documentation
+    are those of the authors and should not be interpreted as representing
+    official policies, either expressed or implied, of the FreeBSD Project.
+
+-->
+<phase2 _CryptoVerifyUseCertificateInBodyPart="false"
+        _CryptoSignIncludeCertificateInBodyPart="false">
+  <certificates classname="com.helger.phase2.server.app.cert.ServerCertificateFactory" 
+                type="pkcs12"
+                filename="%home%/certs.p12"
+                password="test"
+                interval="300"/>    
+  <partnerships classname="com.helger.phase2.server.app.partner.ServerXMLPartnershipFactory"
+                filename="%home%/partnerships.xml"/>
+
+  <commands classname="com.helger.phase2.server.cmd.XMLCommandRegistry"
+             filename="%home%/commands.xml"/>
+  <commandProcessors>
+    <commandProcessor classname="com.helger.phase2.server.cmdprocessor.StreamCommandProcessor"/>
+    <commandProcessor classname="com.helger.phase2.server.cmdprocessor.SocketCommandProcessor"  
+                      portId="4321" userid="userID" password="pWd"/>
+  </commandProcessors>
+
+  <processor classname="com.helger.phase2.processor.DefaultMessageProcessor"
+             pendingMDN="data/pendingMDN3"
+             pendingMDNinfo="data/pendinginfoMDN3">
+    <module classname="com.helger.phase2.processor.sender.AS2SenderModule" />
+    
+    <!-- This will parse the filename to get a sender and receiver. For instance a file
+      named OpenAS2A-OpenAS2B.1234 would be sent from OpenAS2A to OpenAS2B. -->
+    <module classname="com.helger.phase2.processor.receiver.AS2DirectoryPollingModule"
+            outboxdir="data/toAny"
+            errordir="data/toAny/error"      
+            interval="5"
+            delimiters="-."
+            format="sender.as2_id, receiver.as2_id, attributes.fileid"      
+            mimetype="application/EDI-X12"/>
+    <!--  Special directory for sending messages to "OpenAS2A" -->
+    <module classname="com.helger.phase2.processor.receiver.AS2DirectoryPollingModule"
+            outboxdir="data/toOpenAS2A/"
+            errordir="data/toOpenAS2A/error"      
+            interval="5"      
+            defaults="sender.as2_id=OpenAS2B, receiver.as2_id=OpenAS2A"      
+            mimetype="application/EDI-X12"/>          
+    <!--  Special directory for sending messages to "OpenAS2B" -->
+    <module classname="com.helger.phase2.processor.receiver.AS2DirectoryPollingModule"
+            outboxdir="data/toOpenAS2B"
+            errordir="data/toOpenAS2B/error"      
+            interval="5"      
+            defaults="sender.as2_id=OpenAS2A, receiver.as2_id=OpenAS2B"      
+            sendFilename="true"
+            mimetype="application/EDI-X12"/>
+    <module classname="com.helger.phase2.processor.storage.MDNFileModule"
+            filename="data/mdn/$date.uuuu$/$date.MM$/$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$"      
+            protocol="as2"
+            tempdir="data/temp"
+            charset="utf-8" />
+    <module classname="com.helger.phase2.processor.storage.MessageFileModule"
+            filename="data/inbox/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"
+            header="data/inbox/msgheaders/$date.uuuu$/$date.MM$/$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$"    
+            protocol="as2"
+            tempdir="data/temp"
+            charset="utf-8" />    
+    <module classname="com.helger.phase2.processor.receiver.AS2ReceiverModule"      
+            port="10080"
+            errordir="data/inbox/error"
+            errorformat="$msg.sender.as2_id$, $msg.receiver.as2_id$, $msg.headers.message-id$"/>        
+    <module classname="com.helger.phase2.processor.receiver.AS2MDNReceiverModule"      
+            port="10081"/>
+    <module classname="com.helger.phase2.processor.resender.DirectoryResenderModule"
+            resenddir="data/resend"
+            errordir="data/resend/error"
+            resenddelay="60"/>      
+  </processor>
+</phase2>

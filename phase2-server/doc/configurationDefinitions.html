@@ -1,0 +1,568 @@
+<!--
+
+    The FreeBSD Copyright
+    Copyright 1994-2008 The FreeBSD Project. All rights reserved.
+    Copyright (C) 2013-2025 Philip Helger philip[at]helger[dot]com
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+
+       1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+
+       2. Redistributions in binary form must reproduce the above copyright
+       notice, this list of conditions and the following disclaimer in the
+       documentation and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY
+    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR
+    CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+    EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    The views and conclusions contained in the software and documentation
+    are those of the authors and should not be interpreted as representing
+    official policies, either expressed or implied, of the FreeBSD Project.
+
+-->
+<HTML>
+<HEAD>
+<title>OpenAS2 Configuration Document</title>
+<META NAME="Author" CONTENT="Joe McVerry - American Coders, Ltd">
+<META NAME="Keywords" CONTENT="OPEN AS2 OPENAS2">
+<META NAME="Description" CONTENT="To describe the configuration of the OpenAS2 package">
+<style type="text/css">
+* { 
+  font-family: sans-serif;
+}
+</style>
+</HEAD>
+
+<BODY>
+  <h2>Note: this document is out of date!</h2>
+  
+  <h1>The Files And Variables Used In The OpenAS2 Package.</h1>
+  <font size=+2>
+    <DL>
+      <DT>
+        <a href="#configFile">The Configuration File</a>
+      <DD>The main configuration file
+      <dt>
+        <a href="#certFile">The Certificate File</a>
+      <dd>Defines encryption certificates.
+      <DT>
+        <a href="#partnersFile">The Partnerships File</a>
+      <DD>Where to describe you and your trading partners
+      <DT>
+        <a href="#commandFile">The Commands File</a>
+      <DD>List of commands available to the OpenAS2 server application.
+      <DT>
+        <a href="#variables">Variables</a>
+      <dd>Describes variables used in the configuration files.
+    </DL>
+  </font>
+  <h4>This document as of August 16, 2010</h4>
+
+  <hr>
+  <h1>
+    <a name="configFile">The Configuration File</a>
+  </h1>
+  <h3>
+    Format: XML
+    </h2>
+    <h3>Processor Class: com.helger.phase2.server.cmdprocessor.StreamCommandProcessor</h3>
+    <h3>This file requires modification to work with your application</h3>
+    <h3>File Layout</h3>
+    <ul>
+      <li>Node:<b> openas2 </b>
+        <ul>
+
+          <li>Node:<b> certificates </b>
+            <ul>
+
+              <br>
+              <b> Attributes </b>
+              <dl>
+                <dt>classname
+                <dd>
+                  describes the Java class to process the certificate file. <br> for example: <cite>
+                    com.helger.phase2.cert.CertificateFactory </cite>
+                <dt>type
+                <dd>
+                  defines the file type of the file containing the certificates <br> for example: <cite>
+                    pkcs12 </cite> or <cite> jks </cite> or
+                <dt>filename
+                <dd>
+                  defines the file name containing the certificates <br> for example: <cite>
+                    %home%\certs.p12 </cite>
+                <dt>password
+                <dd>
+                  opens the file using this password <br> for example: <cite> test </cite>
+                <dt>interval
+                <dd>
+                  describes how often the file should be check up for updates. Specified in seconds. <br> for
+                  example: <cite> 300 </cite>
+              </dl>
+            </ul>
+          <li>Node:<b> partnerships </b> <br> Describes the OpenAS2 classes to handle the trading partner
+            identifications.
+            <ul>
+
+              <br>
+              <b> Attributes </b>
+              <dl>
+                <dt>classname
+                <dd>
+                  describes the Java class to process the partnerships file <br> for example: <cite>
+                    com.helger.phase2.partner.xml.XMLPartnershipFactory </cite>
+                <dt>defines the file name containing the partnerships definitions
+                <dd>
+                  describes <br> for example: <cite> %home%\partnerships.xml </cite>
+              </dl>
+            </ul>
+          <li>Node:<b> commands </b> <br> Describes the OpenAS2 command classes to use
+            <ul>
+
+              <br>
+              <b> Attributes </b>
+              <dl>
+                <dt>classname
+                <dd>
+                  describes the Java class to process the command file <br> for more information see <A
+                    HREF="#commandFile">Command File</A> <br> for example: 
+                    <cite>com.helger.phase2.server.cmd.XMLCommandRegistry</cite>
+                <dt>filename
+                <dd>
+                  defines the name of the file command all possible commands <br> for example: <cite>
+                    %home%\commands.xml </cite>
+              </dl>
+            </ul>
+          <li>Node:<b> processor </b> <br> Describes the OpenAS2 class to handle the message processors.
+            <ul>
+
+              <br>
+              <b> Attributes </b>
+              <dl>
+                <dt>classname
+                <dd>
+                  describes the default Java class to handle outgoing message <br> for example: 
+                    <cite>com.helger.phase2.processor.DefaultMessageProcessor</cite>
+              </dl>
+
+              <li>Node:<b> module </b> <br>Module that sends out AS2 messages.
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to send outgoing Messages <br> for example: <cite>
+                        com.helger.phase2.processor.sender.AS2SenderModule </cite>
+                    <dt>retry
+                    <dd>
+                      defines the number of attempts for sending a message,default is -1 aka infinite. <br>for
+                      example <cite>retries="3"</cite> will stop sending the message after 3 failures.
+                    <dt>connecttimeout
+                    <dd>
+                      defines the millisecond count before a connection times out. default value is 30000 or 30 seconds.
+                      <br>for example <cite>connecttimeout="60000"</cite> will time out after 60 seconds.
+                    <dt>readtimeout
+                    <dd>
+                      defines the millisecond count before a read times out. default value is 30000 or 30 seconds. <br>for
+                      example <cite>readtimeout="60000"</cite> will time out after 60 seconds.
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b> <br>Module that sends out AS2 MDNs asynchronously.
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to send asynch MDN <br> for example: <cite>
+                        com.helger.phase2.processor.sender.AsynchMDNSenderModule </cite>
+                    <dt>retry
+                    <dd>
+                      defines the number of attempts for sending a message, default value is -1 (infinite.) <br>for
+                      example <cite>retries="3"</cite> will stop sending the message after 3 failures.
+                    <dt>connecttimeout
+                    <dd>
+                      defines the millisecond count before a connection times out. default value is 30000 or 30 seconds.
+                      <br>for example <cite>connecttimeout="60000"</cite> will time out after 60 seconds.
+                    <dt>readtimeout
+                    <dd>
+                      defines the millisecond count before a read times out. default value is 30000 or 30 seconds. <br>for
+                      example <cite>readtimeout="60000"</cite> will time out after 60 seconds.
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b> <br> The following will describe a module to process outgoing message
+                placed in a generic directory. The module determines the receiver and send from the file name placed in
+                the directory (see <A HREF="#messageFormat">format</A> attribute). This module will look for files in
+                specified directory and file names to send to the default message processor.
+                <ul>
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to process files to be sent to the AS2SenderModule for its delivery
+                      process. <br> for example: <cite>
+                        com.helger.phase2.processor.receiver.AS2DirectoryPollingModule </cite>
+                    <dt>outboxdir
+                    <dd>
+                      defines the directory where files are to be found. <br> for example: <cite>
+                        %home%\toAny </cite>
+                    <dt>errordir
+                    <dd>
+                      defines directory where files containing errors are redirected to. <br> for example: <cite>
+                        %home%\toAny\error </cite>
+                    <dt>interval
+                    <dd>
+                      describes how often the directory is to be checked for work. Specified in seconds. Default is 30
+                      seconds. <br> for example: <cite> 5 </cite>
+                    <dt>delimiters
+                    <dd>
+                      defines the characters used to parse the incoming file name. Characters are separate the tokens:
+                      sender, receiver and file id. <br> for example: <cite> -. </cite>
+                    <dt>
+                      <a name="messageFormat">format</a>
+                    <dd>
+                      describes the file name by the tokens sender, receiver and file id. May be in any order. Sender id
+                      and receiver id are as defined in the partnership.xml file. <br> for example: <cite>
+                        sender.as2_id, receiver.as2_id, attributes.fileid </cite> <br>or <cite>attributes.mimetype,
+                        attributes.mimesubtype, sender.name, receiver.name</cite>
+                    </dd>
+                    <dt>mimetype</dt>
+                    <dd>
+                      describes the outgoing message mime message type. <br> for example: <cite>
+                        application/EDI-X12 </cite>
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b>
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to process files for a particular trading partner that are sent to the
+                      AS2SenderModule for its delivery process. <br> for example: <cite>
+                        com.helger.phase2.processor.receiver.AS2DirectoryPollingModule </cite>
+                    <dt>outboxdir
+                    <dd>
+                      defines the directory where outgoing message are defined. <br> for example: <cite>
+                        %home%\toOpenAS2A\ </cite>
+                    <dt>errordir
+                    <dd>
+                      defines the directory where erroneous messages are left. <br> for example: <cite>
+                        %home%\toOpenAS2A\error </cite>
+                    <dt>interval
+                    <dd>
+                      describes how often the incoming directory is searched. Defined in seconds, default is 30 seconds.
+                      <br> for example: <cite> 5 </cite>
+                    <dt>defaults
+                    <dd>
+                      describes the AS2 sender and receiver ids as defined in the partnership.xml file. <br> for
+                      example: <cite> defaults="sender.as2_id=OpenAS2A, receiver.as2_id=OpenAS2B" </cite>
+                    <dt>protocol
+                    <dd>
+                      describes the AS2 protocol, which is AS2. <br> for example: <cite> as2 </cite>
+                    <dt>mimetype
+                    <dd>
+                      describes the outgoing message mime message type. <br> for example: <cite>
+                        application/EDI-X12 </cite>
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b>
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to process incoming MDNs <br> for example: <cite>
+                        com.helger.phase2.processor.storage.MDNFileModule </cite>
+                    <dt>filename
+                    <dd>
+                      describes <br> for example: <cite>
+                        %home%\mdn\$date.uuuu$\$date.MM$\$mdn.msg.sender.as2_id$-$mdn.msg.receiver.as2_id$-$mdn.msg.headers.message-id$
+                      </cite>
+                    <dt>protocol
+                    <dd>
+                      describes <br> for example: <cite> as2 </cite>
+                    <dt>tempdir
+                    <dd>
+                      describes <br> for example: <cite> %home%\temp </cite>
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b> Defines the module to handle messages.
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to process and store incoming messages <br> for example: <cite>
+                        com.helger.phase2.processor.storage.MessageFileModule </cite>
+                    <dt>filename
+                    <dd>
+                      describes the location and formatted filename of the stored MDNs. <br> for example: <cite>
+                        %home%\inbox\$msg.sender.as2_id$-$msg.receiver.as2_id$-$msg.headers.message-id$ </cite>
+                    <dt>protocol
+                    <dd>
+                      describes the AS2 protocol <br> for example: <cite> as2 </cite>
+                    <dt>tempdir (Optional)
+                    <dd>
+                      defines temporary directory used to store MDNs during message processing. <br> for example: <cite>
+                        %home%\temp </cite>
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b>
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to process handle incoming modules <br> for example: <cite>
+                        com.helger.phase2.processor.receiver.AS2ReceiverModule </cite>
+                    <dt>port
+                    <dd>
+                      defines the port the server listens on. <br> for example: <cite> 10080 </cite>
+                    <dt>errordir
+                    <dd>
+                      defines directory where invalid incoming messages are stored. <br> for example: <cite>
+                        %home%\inbox\error </cite>
+                    <dt>errorformat
+                    <dd>
+                      defines the format of filenames for invalid incoming messages. <br> for example: <cite>
+                        sender.as2_id, receiver.as2_id, headers.message-id </cite>
+                  </dl>
+                </ul>
+              <li>Node:<b> module </b>
+                <ul>
+
+                  <br>
+                  <b> Attributes </b>
+                  <dl>
+                    <dt>classname
+                    <dd>
+                      describes the Java class to rehandle messages <br> for example: <cite>
+                        com.helger.phase2.processor.resender.DirectoryResenderModule </cite>
+                    <dt>resenddir
+                    <dd>
+                      defines the directory to find message to resend <br> for example: <cite> %home%\resend
+                      </cite>
+                    <dt>errordir
+                    <dd>
+                      defines the director to store resend messages that are in error. <br> for example: <cite>
+                        %home%\resend\error </cite>
+                    <dt>resenddelay
+                    <dd>
+                      defines the wait time between resends. Defined in seconds. Default is 60. <br> for example: <cite>
+                        600 </cite>
+                  </dl>
+                </ul>
+            </ul>
+        </ul>
+    </ul>
+
+
+
+    <hr>
+
+    <h1>
+      <a name="certFile">The Certificate File</a>
+    </h1>
+    <hr>
+    <h1>
+      <a name="partnersFile">The Partnerships File</a>
+    </h1>
+    Where to describe you and your trading partners
+
+    <h3>
+      Format: XML
+      </h2>
+      <h3>Processor Class: com.helger.phase2.????</h3>
+      <h3>This file requires modification to work with your application</h3>
+      <h3>File Layout</h3>
+      <ul>
+        <li>Node: <b> partnerships </b> <br>The root node.
+          <ul>
+            <li>Node: <b> partner </b> <br>partner definition <br> <b> Attributes </b>
+              <dl>
+                <dt>name
+                <dd>
+                  partner name as defined in OpenAS2 configuration file. <br> <cite> OpenAS2A </cite>
+                <dt>as2_id
+                <dd>
+                  partner name as defined in partnership node <br> <cite> OpenAS2A </cite>
+                <dt>x509_alias
+                <dd>
+                  Alias as defined in certificate file <br> <cite> OpenAS2A </cite>
+                <dt>email
+                <dd>
+                  E-mail address of partner <br> <cite> as2a@MySillyMailerServer.com </cite>
+              </dl>
+            <li>Node: <b> partnership </b> <br>defines partner relationships between sender and receiver
+              <ul>
+
+                <li>Node: <b>partnership </b> <br> <b> Attributes </b>
+                  <dl>
+                    <dt>name
+                    <dd>
+                      Unique name of partnership relation. See filename parsing above. <br> <cite>
+                        OpenAS2A-OpenAS2B </cite>
+                  </dl>
+                <li>Node: <b>sender </b> <br> <b> Attributes </b>
+                  <dl>
+                    <dt>name
+                    <dd>
+                      Unique name of Sender <br> <cite> OpenAS2A </cite>
+                  </dl>
+                <li>Node: <b>receiver </b> <br> <b> Attributes </b>
+                  <dl>
+                    <dt>name
+                    <dd>
+                      Unique name of receiver <br> <cite> OpenAS2B </cite>
+                  </dl>
+                  <p>
+                    <i>The following is a list of nodes that use the node name of <b>attribute</b>. The subnodes of
+                      <b>attribute</b> use a name/value node naming pair structure.
+                    </i>
+                <li>Node: <b>attribute </b> <br> <b> name </b> is <b> protocol </b> defines the protocol to
+                  use with this partner. <br> <b> value </b> is <b> as2 </b> <br> <cite>
+                    name="protocol" value="as2" </cite>
+                  </dl>
+                <li>Node: <b>attribute </b> <br> <b> name </b> is <b> subject </b> defines text used in E-mail
+                  subject line <br> <b> value </b> <br> <cite> name="subject" value="From OpenAS2A to
+                    OpenAS2B" </cite>
+                <li>Node: <b>attribute </b> <br> <b> name </b> is <b> as2_url </b> defines partners AS2
+                  server's URL <br> <b> value </b> <br> <cite> name="as2_url"
+                    value="http://www.MyPartnerAS2Machine.com:10080"/>
+                    <li>Node: <b>attribute </b> <br> <b> name </b> is <b> as2_mdn_to </b> defines MDN server's
+                      URL <br> <b> value </b> <br> <cite> name="as2_url"
+                        value="http://www.MyPartnerAS2Machine.com:10080" <cite> <cite> name="as2_mdn_to"
+                            value="http://www.MyAS2Machine.com:10081" <cite>
+                              <li>Node: <b>attribute </b> <br> <b> name </b> is <b> as2_receipt_option </b>
+                                defines asynchronous MDN server's URL <br> <b> value </b> <br> <cite>
+                                  name="as2_receipt_option" value="http://www.MyAS2Machine.com:10081" <cite>
+                                    <li>Node: <b>attribute </b> <br> <b> name </b> is <b> as2_mdn_options
+                                    </b> defines MDN option values for E-mail header <br> <b> value </b> <br> <cite>
+                                        name="as2_mdn_options" value="signed-receipt-protocol=optional, pkcs7-signature;
+                                        signed-receipt-micalg=optional, sha1" </cite>
+                                  <li>Node: <b>attribute </b> <br> <b> name </b> is <b> encrypt </b> defines
+                                      encrypting algorithm name for E-mail header <br> <b> value </b> <br>
+                                    <cite> name="encrypt" value="3des" </cite>
+                                  <li>Node: <b>attribute (optional) </b> <br> <b> name </b> is <b>
+                                        content_type_encoding </b> defines what the header field should display <br> <b>
+                                        value </b> 8bit (default), binary, ... <br> <cite>
+                                        name="content_transfer_encoding" value="binary"</cite>
+              </ul>
+          </ul>
+      </ul>
+
+      <h1>
+        <a name="commandFile">The Commands File<a>
+      </h1>
+      List of commands available to the OpenAS2 server Application.
+      <h3>
+        Format: XML
+        </h2>
+        <h3>Processor Class: com.helger.phase2.????</h3>
+        <h3>This file DOES NOT require modification to work with your application</h3>
+        <h3>File Layout</h3>
+
+        <ul>
+          <li>Node: <b> commands </b> the root node
+            <ul>
+              <li>Node: <b> multicommand </b>
+                <dl>
+                  <dl>
+                    attribute
+                    <dt>name
+                    <dd>value "cert|part", certificate commands or partnership commands
+                    <dt>description
+                    <dd>value is some useful text
+                  </dl>
+                  <ul>
+                    <li>Node: <b> command </b>
+                      <dl>
+                        <dl>
+                          attribute
+                          <dt>classname
+                          <dd>value is a OpenAS2 classname that will process a command
+                        </dl>
+                  </ul>
+            </ul>
+        </ul>
+
+
+
+
+
+        <hr>
+        <h1>
+          <a name="variables">Variables</a>
+        </h1>
+        Describes variables used in the configuration files.
+        <ul>
+          <dl>
+            <dt>%home% for the home directory
+            <dd>
+              gets the home directory
+              <p>
+            <dt>$date.xxx$ for date parameters
+            <dd>
+              where xxx is any valid character formatting string defined in java.text.SimpleDateFormat <br>for
+              example:<cite> $date.YYYYY$ </cite> gets the four digit year
+              <p>
+            <dt>$msg.xxx$, from the incoming message, used by MessageFileModule
+            <dd>
+              where xxx can be any of the following values to get
+              <ul>
+                <li>sender
+                <li>receiver
+                <li>attributes
+                <li>headers
+              </ul>
+              <br>for example:<cite> $msg.sender$ </cite> gets the sender id on the message
+              <p>
+            <dt>$mdn.xxx$ for message mdn parameters, used by EmailLogger and MDNFileModule
+            <dd>
+              where xxx can be any of the following values to get
+              <ul>
+                <li>msg
+                <li>sender
+                <li>receiver
+                <li>text
+                <li>attributes
+                <li>headers
+              </ul>
+              <br>for example:<cite> $mdn.text$ </cite> gets the text portion of the MDN
+              <p>
+            <dt>$exception.xxx$, used by EmailLogger
+            <dd>
+              where xxx can be any of the follow ing values to get
+              <ul>
+                <li>name
+                <li>message
+                <li>trace
+                <li>terminated
+              </ul>
+              <br>for example:<cite> $exception.trace$ </cite> gets the trace log of the exception
+</BODY>
+</HTML>
