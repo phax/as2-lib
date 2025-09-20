@@ -334,7 +334,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     }
   }
 
-  protected void decompress (@Nonnull final IMessage aMsg) throws AS2DispositionException
+  protected void decompress (@Nonnull final IMessage aMsg, @Nonnull final AS2ResourceHelper aResHelper)
+                                                                                                        throws AS2DispositionException
   {
     try
     {
@@ -368,7 +369,8 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // The default buffer size in BufferedInputStream is 8192
         final SMIMECompressedParser aCompressedParser = new SMIMECompressedParser (aMsg.getData ());
         // TODO: get buffer from configuration
-        aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressedParser.getContent (aExpander));
+        aDecompressedPart = SMIMEUtil.toMimeBodyPart (aCompressedParser.getContent (aExpander),
+                                                      aResHelper.createTempFile ());
 
         // Update the message object
         aMsg.setData (aDecompressedPart);
@@ -378,7 +380,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         LOGGER.info ("Successfully decompressed incoming AS2 message" + aMsg.getLoggingText ());
       }
     }
-    catch (final SMIMEException | CMSException | MessagingException ex)
+    catch (final SMIMEException | CMSException | MessagingException | IOException ex)
     {
       LOGGER.error ("Error decompressing received message", ex);
 
@@ -572,7 +574,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         {
           if (LOGGER.isTraceEnabled ())
             LOGGER.trace ("Decompressing received message before checking signature...");
-          decompress (aMsg);
+          decompress (aMsg, aResHelper);
           bIsDecompressed = true;
         }
 
@@ -595,7 +597,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
               LOGGER.trace ("Decompressing received message after verifying signature...");
             else
               LOGGER.trace ("Decompressing received message after decryption...");
-          decompress (aMsg);
+          decompress (aMsg, aResHelper);
           bIsDecompressed = true;
         }
 
