@@ -391,12 +391,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   }
 
   // Send a synchronous MDN
-  protected void sendMDN (@Nonnull final String sClientInfo,
-                          @Nonnull final IAS2HttpResponseHandler aResponseHandler,
-                          @Nonnull final AS2Message aMsg,
-                          @Nonnull final DispositionType aDisposition,
-                          @Nonnull final String sText,
-                          @Nonnull final ESuccess eSuccess)
+  protected void sendSyncMDN (@Nonnull final String sClientInfo,
+                              @Nonnull final IAS2HttpResponseHandler aResponseHandler,
+                              @Nonnull final AS2Message aMsg,
+                              @Nonnull final DispositionType aDisposition,
+                              @Nonnull final String sText,
+                              @Nonnull final ESuccess eSuccess)
   {
     final boolean bAllowErrorMDN = !aMsg.partnership ().isBlockErrorMDN ();
     if (eSuccess.isSuccess () || bAllowErrorMDN)
@@ -683,12 +683,12 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
               LOGGER.trace ("AS2 message is requesting an MDN");
 
             // Transmit a success MDN if requested
-            sendMDN (sClientInfo,
-                     aResponseHandler,
-                     aMsg,
-                     DispositionType.createSuccess (),
-                     AbstractActiveNetModule.DISP_SUCCESS,
-                     ESuccess.SUCCESS);
+            sendSyncMDN (sClientInfo,
+                         aResponseHandler,
+                         aMsg,
+                         DispositionType.createSuccess (),
+                         AbstractActiveNetModule.DISP_SUCCESS,
+                         ESuccess.SUCCESS);
           }
           else
           {
@@ -707,7 +707,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final AS2DispositionException ex)
       {
-        sendMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
+        sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
         m_aReceiverModule.handleError (aMsg, ex);
       }
       catch (final AS2Exception ex)
