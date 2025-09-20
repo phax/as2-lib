@@ -42,8 +42,11 @@ import com.helger.annotation.concurrent.Immutable;
 @Immutable
 public final class CAS2Info
 {
-  /** The name of this AS2 client. May not contain blanks. */
-  public static final String NAME = "as2-lib";
+  /**
+   * The name of this AS2 client. May not contain blanks.<br>
+   * Old name before v6: "as2-lib"
+   */
+  public static final String NAME = "phase2";
 
   /** Combination of {@link #NAME} and build version separated by a blank. */
   public static final String NAME_VERSION = NAME + " " + CAS2Version.BUILD_VERSION;

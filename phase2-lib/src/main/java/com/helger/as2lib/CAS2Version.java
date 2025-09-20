@@ -59,7 +59,7 @@ public final class CAS2Version
   {
     String sProjectVersion = null;
     String sProjectTimestamp = null;
-    final NonBlockingProperties p = PropertiesHelper.loadProperties (ClassPathResource.getInputStream ("as2-lib-version.properties",
+    final NonBlockingProperties p = PropertiesHelper.loadProperties (ClassPathResource.getInputStream ("phase2-version.properties",
                                                                                                        CAS2Version.class.getClassLoader ()));
     if (p != null)
     {
@@ -69,13 +69,13 @@ public final class CAS2Version
     if (sProjectVersion == null)
     {
       sProjectVersion = "undefined";
-      LOGGER.warn ("Failed to load as2-lib version number");
+      LOGGER.warn ("Failed to load phase2 version number");
     }
     BUILD_VERSION = sProjectVersion;
     if (sProjectTimestamp == null)
     {
       sProjectTimestamp = "undefined";
-      LOGGER.warn ("Failed to load as2-lib build timestamp");
+      LOGGER.warn ("Failed to load phase2 build timestamp");
     }
     BUILD_TIMESTAMP = sProjectTimestamp;
   }

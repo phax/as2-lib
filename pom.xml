@@ -24,13 +24,13 @@
     <artifactId>parent-pom</artifactId>
     <version>3.0.2</version>
   </parent>
-  <groupId>com.helger.as2</groupId>
-  <artifactId>as2-lib-parent-pom</artifactId>
+  <groupId>com.helger.phase2</groupId>
+  <artifactId>phase2-parent-pom</artifactId>
   <version>6.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>as2-lib-parent-pom</name>
-  <description>Base POM to build the as2-lib projects</description>
-  <url>https://github.com/phax/as2-lib</url>
+  <name>phase2-parent-pom</name>
+  <description>Base POM to build the phase2 projects</description>
+  <url>https://github.com/phax/phase2</url>
   <inceptionYear>2013</inceptionYear>
 
   <licenses>
@@ -47,9 +47,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/phax/as2-lib.git</connection>
-    <developerConnection>scm:git:https://github.com/phax/as2-lib.git</developerConnection>
-    <url>https://github.com/phax/as2-lib</url>
+    <connection>scm:git:https://github.com/phax/phase2.git</connection>
+    <developerConnection>scm:git:https://github.com/phax/phase2.git</developerConnection>
+    <url>https://github.com/phax/phase2</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -135,23 +135,23 @@
       </dependency>
 
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-lib</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-lib</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-partnership-mongodb</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-partnership-mongodb</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-servlet</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.helger.as2</groupId>
-        <artifactId>as2-server</artifactId>
+        <groupId>com.helger.phase2</groupId>
+        <artifactId>phase2-server</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
@@ -165,23 +165,16 @@
   </dependencies>
 
   <modules>
-    <module>as2-lib</module>
-    <module>as2-partnership-mongodb</module>
-    <module>as2-servlet</module>
-    <module>as2-demo-webapp</module>
-    <module>as2-server</module>
-    <module>as2-demo-spring-boot</module>
+    <module>phase2-lib</module>
+    <module>phase2-partnership-mongodb</module>
+    <module>phase2-servlet</module>
+    <module>phase2-demo-webapp</module>
+    <module>phase2-server</module>
+    <module>phase2-demo-spring-boot</module>
   </modules>
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <source>8</source>
-        </configuration>
-      </plugin> 
       <plugin>
         <groupId>org.cyclonedx</groupId>
         <artifactId>cyclonedx-maven-plugin</artifactId>
