@@ -89,7 +89,7 @@ public final class MainSendToLocalhost8080
     aSettings.setKeyStore (EKeyStoreType.PKCS12, new File ("src/test/resources/localhost/certs.p12"), "test");
 
     // Fixed sender
-    aSettings.setSenderData ("mycompanyAS2", "phax.phase2@github.com", "openas2a_alias");
+    aSettings.setSenderData ("mycompanyAS2", "phax.phase2@helger.com", "openas2a_alias");
 
     // Fixed receiver - key alias must be "openas2b_alias"
     aSettings.setReceiverData ("openas2b_alias", "openas2b_alias", "http://localhost:8080/as2");
