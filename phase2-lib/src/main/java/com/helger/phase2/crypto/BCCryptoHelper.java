@@ -327,7 +327,10 @@ public class BCCryptoHelper implements ICryptoHelper
 
     MessageDigest aMessageDigest = MessageDigest.getInstance (aMICAlg.getId (), m_sSecurityProviderName);
     if (false)
+    {
+      // Enable for development debugging only
       aMessageDigest = new LoggingMessageDigest (aMessageDigest);
+    }
 
     if (bIncludeHeaders)
     {
@@ -350,8 +353,10 @@ public class BCCryptoHelper implements ICryptoHelper
 
     final String sMICEncoding = aPart.getEncoding ();
     if (LOGGER.isDebugEnabled ())
+    {
       LOGGER.debug (sMICEncoding != null ? "Using Content-Transfer-Encoding '" + sMICEncoding + "' for MIC calculation"
                                          : "Using no specific Content-Transfer-Encoding for MIC calculation");
+    }
 
     // No need to canonicalize here - see issue #12
     try (final DigestOutputStream aDigestOS = new DigestOutputStream (new NullOutputStream (), aMessageDigest);
