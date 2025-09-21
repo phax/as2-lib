@@ -55,57 +55,73 @@ import jakarta.annotation.Nullable;
  */
 public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
 {
-  /** See compatibility note in RFC 5751, section 3.4.3.1 */
+  /**
+   * See compatibility note in RFC 5751, section 3.4.3.1
+   */
   @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_MD5 instead")
   DIGEST_RSA_MD5("rsa-md5", "md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
 
-  /** See compatibility note in RFC 5751, section 3.4.3.1 */
+  /**
+   * See compatibility note in RFC 5751, section 3.4.3.1
+   */
   @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_SHA1 or DIGEST_SHA_1 instead")
   DIGEST_RSA_SHA1("rsa-sha1", "sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
 
-  /** Same for RFC 3851 and RFC 5751 */
+  /**
+   * Same for RFC 3851 and RFC 5751
+   */
   DIGEST_MD5 ("md5", "md5", PKCSObjectIdentifiers.md5, "MD5WITHRSA"),
 
   /**
    * Old version as of RFC 3851.
    */
+  @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_SHA_1 instead")
   DIGEST_SHA1("sha1", "sha1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
 
   /**
    * Old version as of RFC 3851.
    */
+  @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_SHA_256 instead")
   DIGEST_SHA256("sha256", "sha256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
 
   /**
    * Old version as of RFC 3851.
    */
+  @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_SHA_384 instead")
   DIGEST_SHA384("sha384", "sha384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+
   /**
    * Old version as of RFC 3851.
    */
+  @Deprecated (forRemoval = false)
   @DevelopersNote ("Use DIGEST_SHA_512 instead")
   DIGEST_SHA512("sha512", "sha512", NISTObjectIdentifiers.id_sha512, "SHA512WITHRSA"),
+
   /**
    * New version as of RFC 5751.
    */
   DIGEST_SHA_1 ("sha-1", "sha-1", OIWObjectIdentifiers.idSHA1, "SHA1WITHRSA"),
+
   /**
    * New version as of RFC 5751.
    */
   DIGEST_SHA_224 ("sha-224", "sha-224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA"),
+
   /**
    * New version as of RFC 5751.
    */
   DIGEST_SHA_256 ("sha-256", "sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+
   /**
    * New version as of RFC 5751.
    */
   DIGEST_SHA_384 ("sha-384", "sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+
   /**
    * New version as of RFC 5751.
    */
@@ -117,18 +133,21 @@ public enum ECryptoAlgorithmSign implements ICryptoAlgorithm
    * @since 5.0.1 and 5.1.1
    */
   DIGEST_SHA2_224 ("sha2_224", "sha-224", NISTObjectIdentifiers.id_sha224, "SHA224WITHRSA"),
+
   /**
    * Non-compliant version of SHA-256 algorithm
    *
    * @since 5.0.1 and 5.1.1
    */
   DIGEST_SHA2_256 ("sha2_256", "sha-256", NISTObjectIdentifiers.id_sha256, "SHA256WITHRSA"),
+
   /**
    * Non-compliant version of SHA-384 algorithm
    *
    * @since 5.0.1 and 5.1.1
    */
   DIGEST_SHA2_384 ("sha2_384", "sha-384", NISTObjectIdentifiers.id_sha384, "SHA384WITHRSA"),
+
   /**
    * Non-compliant version of SHA-512 algorithm
    *

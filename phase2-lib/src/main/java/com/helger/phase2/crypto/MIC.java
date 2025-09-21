@@ -115,22 +115,15 @@ public class MIC implements ICloneable <MIC>
   @Nonnull
   private static ECryptoAlgorithmSign _getUnified (@Nonnull final ECryptoAlgorithmSign eAlgorithm)
   {
-    switch (eAlgorithm)
+    return switch (eAlgorithm)
     {
-      case DIGEST_RSA_MD5:
-        return ECryptoAlgorithmSign.DIGEST_MD5;
-      case DIGEST_RSA_SHA1:
-      case DIGEST_SHA1:
-        return ECryptoAlgorithmSign.DIGEST_SHA_1;
-      case DIGEST_SHA256:
-        return ECryptoAlgorithmSign.DIGEST_SHA_256;
-      case DIGEST_SHA384:
-        return ECryptoAlgorithmSign.DIGEST_SHA_384;
-      case DIGEST_SHA512:
-        return ECryptoAlgorithmSign.DIGEST_SHA_512;
-      default:
-        return eAlgorithm;
-    }
+      case DIGEST_RSA_MD5 -> ECryptoAlgorithmSign.DIGEST_MD5;
+      case DIGEST_RSA_SHA1, DIGEST_SHA1 -> ECryptoAlgorithmSign.DIGEST_SHA_1;
+      case DIGEST_SHA256 -> ECryptoAlgorithmSign.DIGEST_SHA_256;
+      case DIGEST_SHA384 -> ECryptoAlgorithmSign.DIGEST_SHA_384;
+      case DIGEST_SHA512 -> ECryptoAlgorithmSign.DIGEST_SHA_512;
+      default -> eAlgorithm;
+    };
   }
 
   @Override

@@ -356,10 +356,12 @@ public final class AS2Helper
     final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
 
-    // Calculate MIC
-    final MIC aMIC = createMICOnReception (aMsg);
-    if (aMIC != null)
-      aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
+    {
+      // Calculate MIC
+      final MIC aMIC = createMICOnReception (aMsg);
+      if (aMIC != null)
+        aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
+    }
 
     boolean bSignMDN = false;
     boolean bIncludeCertificateInSignedContent = false;
