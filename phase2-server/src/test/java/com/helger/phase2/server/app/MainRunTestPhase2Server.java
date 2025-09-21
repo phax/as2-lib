@@ -32,7 +32,7 @@
  */
 package com.helger.phase2.server.app;
 
-public class MainRunTestAS2Server
+public class MainRunTestPhase2Server
 {
   public static void main (final String [] args)
   {
