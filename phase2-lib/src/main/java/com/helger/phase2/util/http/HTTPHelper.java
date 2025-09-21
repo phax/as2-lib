@@ -284,7 +284,7 @@ public final class HTTPHelper
       }
       aBytePayload = new byte [(int) nContentLength];
 
-      // Closes the original InputStream open and that is okay
+      // Closes the original InputStream and that is okay
       try (final DataInputStream aDataIS = new DataInputStream (aIS))
       {
         aDataIS.readFully (aBytePayload);
@@ -335,9 +335,9 @@ public final class HTTPHelper
         final IByteArrayCodec aCodec = aCTE.createCodec ();
 
         // TODO: Handle decoding when large file support is on
-        if (!(aCodec instanceof IdentityCodec <?>) && aPayload instanceof ByteArrayDataSource)
+        if (!(aCodec instanceof IdentityCodec <?>) && aPayload instanceof final ByteArrayDataSource aBADS)
         {
-          byte [] aActualBytes = ((ByteArrayDataSource) aPayload).directGetBytes ();
+          byte [] aActualBytes = aBADS.directGetBytes ();
           // Remember original length before continuing
           final int nOriginalContentLength = aActualBytes.length;
 
