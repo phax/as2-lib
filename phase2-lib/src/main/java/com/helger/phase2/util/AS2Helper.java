@@ -278,6 +278,8 @@ public final class AS2Helper
    *        AS2 session to be used. May not be <code>null</code>.
    * @param aMsg
    *        The source AS2 message for which the MDN is to be created. May not be <code>null</code>.
+   * @param aIncomingMIC
+   *        The MIC of the incoming message. May not be <code>null</code>.
    * @param aDisposition
    *        The disposition - either success or error. May not be <code>null</code>.
    * @param sText
@@ -289,11 +291,13 @@ public final class AS2Helper
   @Nonnull
   public static IMessageMDN createSyncMDN (@Nonnull final IAS2Session aSession,
                                            @Nonnull final AS2Message aMsg,
+                                           @Nullable final MIC aIncomingMIC,
                                            @Nonnull final DispositionType aDisposition,
                                            @Nonnull final String sText) throws Exception
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMsg, "AS2Message");
+    ValueEnforcer.notNull (aIncomingMIC, "IncomingMIC");
     ValueEnforcer.notNull (aDisposition, "Disposition");
     ValueEnforcer.notNull (sText, "Text");
 
@@ -353,15 +357,13 @@ public final class AS2Helper
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_ORIG_MESSAGEID, aMsg.getHeader (CHttpHeader.MESSAGE_ID));
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
+    // MIC may be null when called from the Exception handler of receiving
+    final MIC aRealIncomingMIC = aIncomingMIC != null ? aIncomingMIC : createMICOnReception (aMsg);
+    if (aRealIncomingMIC != null)
+      aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aRealIncomingMIC.getAsAS2String ());
+
     final String sDispositionOptions = aMsg.getHeader (CHttpHeader.DISPOSITION_NOTIFICATION_OPTIONS);
     final DispositionOptions aDispositionOptions = DispositionOptions.createFromString (sDispositionOptions);
-
-    {
-      // Calculate MIC
-      final MIC aMIC = createMICOnReception (aMsg);
-      if (aMIC != null)
-        aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aMIC.getAsAS2String ());
-    }
 
     boolean bSignMDN = false;
     boolean bIncludeCertificateInSignedContent = false;

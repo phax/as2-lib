@@ -1013,11 +1013,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
       // Calculate MIC after compress/sign/crypt was handled, because the
       // message data might change if compression before signing is active.
-      final MIC aMIC;
-      if (aMsg.isRequestingMDN ())
-        aMIC = calculateAndStoreMIC (aMsg);
-      else
-        aMIC = null;
+      final MIC aMIC = aMsg.isRequestingMDN () ? calculateAndStoreMIC (aMsg) : null;
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");

@@ -96,6 +96,7 @@ import com.helger.security.certificate.CertificateHelper;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 
@@ -395,6 +396,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
   protected void sendSyncMDN (@Nonnull final String sClientInfo,
                               @Nonnull final IAS2HttpResponseHandler aResponseHandler,
                               @Nonnull final AS2Message aMsg,
+                              @Nullable final MIC aIncomingMIC,
                               @Nonnull final DispositionType aDisposition,
                               @Nonnull final String sText,
                               @Nonnull final ESuccess eSuccess)
@@ -407,7 +409,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         final IAS2Session aSession = m_aReceiverModule.getSession ();
 
         // Main MDN creation
-        final IMessageMDN aMdn = AS2Helper.createSyncMDN (aSession, aMsg, aDisposition, sText);
+        final IMessageMDN aMdn = AS2Helper.createSyncMDN (aSession, aMsg, aIncomingMIC, aDisposition, sText);
 
         if (aMsg.isRequestingAsynchMDN ())
         {
@@ -519,6 +521,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
     // handler, to avoid the decrypted content gets removed (see issue #135)
     try (final AS2ResourceHelper aResHelper = new AS2ResourceHelper ())
     {
+      MIC aIncomingMIC = null;
       try
       {
         final IAS2Session aSession = m_aReceiverModule.getSession ();
@@ -562,6 +565,17 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                               () -> AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND);
         }
 
+        // Calculate MIC before decrypt and decompress (see #140)
+        try
+        {
+          aIncomingMIC = AS2Helper.createMICOnReception (aMsg);
+        }
+        catch (final Exception ex)
+        {
+          // Ignore error
+          throw WrappedAS2Exception.wrap (ex);
+        }
+
         // Per RFC5402 compression is always before encryption but can be before
         // or after signing of message but only in one place
         final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
@@ -570,18 +584,6 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
         // Decrypt and verify signature of the data, and attach data to the
         // message
         decrypt (aMsg, aResHelper);
-
-        // TODO Calculate MIC before decompress #140
-        MIC aBeforeDecompressMIC;
-        try
-        {
-          aBeforeDecompressMIC = AS2Helper.createMICOnReception (aMsg);
-        }
-        catch (final Exception ex)
-        {
-          // Ignore error
-          aBeforeDecompressMIC = null;
-        }
 
         if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
         {
@@ -699,6 +701,7 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
             sendSyncMDN (sClientInfo,
                          aResponseHandler,
                          aMsg,
+                         aIncomingMIC,
                          DispositionType.createSuccess (),
                          AbstractActiveNetModule.DISP_SUCCESS,
                          ESuccess.SUCCESS);
@@ -720,7 +723,13 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
       }
       catch (final AS2DispositionException ex)
       {
-        sendSyncMDN (sClientInfo, aResponseHandler, aMsg, ex.getDisposition (), ex.getText (), ESuccess.FAILURE);
+        sendSyncMDN (sClientInfo,
+                     aResponseHandler,
+                     aMsg,
+                     aIncomingMIC,
+                     ex.getDisposition (),
+                     ex.getText (),
+                     ESuccess.FAILURE);
         m_aReceiverModule.handleError (aMsg, ex);
       }
       catch (final AS2Exception ex)
