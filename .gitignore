@@ -6,7 +6,8 @@ target/
 
 *.iml
 
-.classpath 
+.classpath
+.DS_Store 
 .factorypath
 .project 
 zz
