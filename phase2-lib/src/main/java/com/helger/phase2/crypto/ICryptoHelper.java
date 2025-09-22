@@ -41,7 +41,6 @@ import java.util.function.Consumer;
 
 import com.helger.annotation.WillNotClose;
 import com.helger.mail.cte.EContentTransferEncoding;
-import com.helger.phase2.exception.AS2Exception;
 import com.helger.phase2.util.AS2ResourceHelper;
 import com.helger.security.keystore.IKeyStoreType;
 
@@ -92,10 +91,8 @@ public interface ICryptoHelper
    * @param aPart
    *        The part to be checked.
    * @return <code>true</code> if it is encrypted, <code>false</code> otherwise.
-   * @throws Exception
-   *         In case something goes wrong.
    */
-  boolean isEncrypted (@Nonnull MimeBodyPart aPart) throws Exception;
+  boolean isEncrypted (@Nonnull MimeBodyPart aPart);
 
   /**
    * Check if the passed MIME body part is signed. The default implementation checks if the base
@@ -104,10 +101,8 @@ public interface ICryptoHelper
    * @param aPart
    *        The part to be checked.
    * @return <code>true</code> if it is signed, <code>false</code> otherwise.
-   * @throws Exception
-   *         In case something goes wrong.
    */
-  boolean isSigned (@Nonnull MimeBodyPart aPart) throws Exception;
+  boolean isSigned (@Nonnull MimeBodyPart aPart);
 
   /**
    * Check if the passed content type indicates compression. The default implementation checks if
@@ -116,10 +111,8 @@ public interface ICryptoHelper
    * @param sContentType
    *        The content type to be checked. May not be <code>null</code>.
    * @return <code>true</code> if it is compressed, <code>false</code> otherwise.
-   * @throws AS2Exception
-   *         In case something goes wrong.
    */
-  boolean isCompressed (@Nonnull String sContentType) throws AS2Exception;
+  boolean isCompressed (@Nonnull String sContentType);
 
   /**
    * Calculate the MIC

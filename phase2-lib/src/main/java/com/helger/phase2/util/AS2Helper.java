@@ -256,6 +256,11 @@ public final class AS2Helper
       if (eSigningAlgorithm == null)
       {
         LOGGER.warn ("The partnership signing algorithm name '" + sSigningAlgorithm + "' is unknown.");
+
+        // If no valid algorithm is defined, fall back to the defaults
+        final boolean bUseRFC3851MICAlg = aPartnership.isRFC3851MICAlgs ();
+        eSigningAlgorithm = bUseRFC3851MICAlg ? ECryptoAlgorithmSign.DEFAULT_RFC_3851
+                                              : ECryptoAlgorithmSign.DEFAULT_RFC_5751;
       }
     }
 
@@ -297,7 +302,6 @@ public final class AS2Helper
   {
     ValueEnforcer.notNull (aSession, "AS2Session");
     ValueEnforcer.notNull (aMsg, "AS2Message");
-    ValueEnforcer.notNull (aIncomingMIC, "IncomingMIC");
     ValueEnforcer.notNull (aDisposition, "Disposition");
     ValueEnforcer.notNull (sText, "Text");
 
@@ -331,14 +335,9 @@ public final class AS2Helper
 
     aMDN.headers ().setHeader (CHttpHeader.FROM, aPartnership.getReceiverEmail ());
     final String sSubject = aMDN.partnership ().getMDNSubject ();
-    if (sSubject != null)
-    {
-      aMDN.headers ().setHeader (CHttpHeader.SUBJECT, new MessageParameters (aMsg).format (sSubject));
-    }
-    else
-    {
-      aMDN.headers ().setHeader (CHttpHeader.SUBJECT, "Your Requested MDN Response");
-    }
+    aMDN.headers ()
+        .setHeader (CHttpHeader.SUBJECT,
+                    sSubject != null ? new MessageParameters (aMsg).format (sSubject) : "Your Requested MDN Response");
 
     // Content-Transfer-Encoding for outgoing MDNs
     final String sCTE = aPartnership.getContentTransferEncodingSend (EContentTransferEncoding.AS2_DEFAULT.getID ());
@@ -358,7 +357,12 @@ public final class AS2Helper
     aMDN.attrs ().putIn (AS2MessageMDN.MDNA_DISPOSITION, aDisposition.getAsString ());
 
     // MIC may be null when called from the Exception handler of receiving
-    final MIC aRealIncomingMIC = aIncomingMIC != null ? aIncomingMIC : createMICOnReception (aMsg);
+    MIC aRealIncomingMIC = aIncomingMIC;
+    if (aRealIncomingMIC == null)
+    {
+      LOGGER.warn ("No MIC of the received message was provided (most likely due to an errorneous message), so trying to calculate it now - this may lead to a MIC mismatch...");
+      aRealIncomingMIC = createMICOnReception (aMsg);
+    }
     if (aRealIncomingMIC != null)
       aMDN.attrs ().putIn (AS2MessageMDN.MDNA_MIC, aRealIncomingMIC.getAsAS2String ());
 
@@ -372,7 +376,7 @@ public final class AS2Helper
       if (aDispositionOptions.isProtocolRequired () || aDispositionOptions.hasMICAlg ())
       {
         // Sign if required or if optional and a MIC algorithm is present
-        bSignMDN = true;
+        bSignMDN = aDispositionOptions.hasMICAlg ();
 
         // Include certificate in signed content?
         final ETriState eIncludeCertificateInSignedContent = aPartnership.getIncludeCertificateInSignedContent ();

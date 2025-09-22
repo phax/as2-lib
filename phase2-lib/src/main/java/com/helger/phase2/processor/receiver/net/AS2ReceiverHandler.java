@@ -37,6 +37,7 @@ import java.net.Socket;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import org.bouncycastle.cms.CMSException;
@@ -565,26 +566,15 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
                                               () -> AbstractActiveNetModule.DISP_PARTNERSHIP_NOT_FOUND);
         }
 
-        // Calculate MIC before decrypt and decompress (see #140)
-        try
-        {
-          aIncomingMIC = AS2Helper.createMICOnReception (aMsg);
-        }
-        catch (final Exception ex)
-        {
-          // Ignore error
-          throw WrappedAS2Exception.wrap (ex);
-        }
-
-        // Per RFC5402 compression is always before encryption but can be before
-        // or after signing of message but only in one place
-        final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
-        boolean bIsDecompressed = false;
-
         // Decrypt and verify signature of the data, and attach data to the
         // message
         decrypt (aMsg, aResHelper);
 
+        // Per RFC5402 compression is always before encryption but can be before
+        // or after signing of message but only in one place
+        final ICryptoHelper aCryptoHelper = AS2Helper.getCryptoHelper ();
+
+        boolean bIsDecompressed = false;
         if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
         {
           if (LOGGER.isTraceEnabled ())
@@ -595,6 +585,46 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
 
         // Verify may fail, if our certificate is expired
         verify (aMsg, aResHelper);
+
+        // Calculate MIC state signed by the sender (might have been compressed
+        // or not) (see #140)
+        // Do this only after the partnership was determined
+        // Do this after decryption
+        final boolean bIsSigned = aCryptoHelper.isSigned (aMsg.getData ());
+        if (bIsSigned)
+          try
+          {
+
+            // Copy all Content-related headers to the MIME part. Maintain the order of the source
+            // message. This is relevant for MIC calculation
+            if (true)
+              aMsg.headers ().forEachSingleHeader ( (k, v) -> {
+                if (k.toLowerCase (Locale.ROOT).startsWith ("content-") &&
+                    !CHttpHeader.CONTENT_TYPE.equalsIgnoreCase (k) &&
+                    !CHttpHeader.CONTENT_LENGTH.equalsIgnoreCase (k))
+                  try
+                  {
+                    // Don't overwrite
+                    if (aMsg.getData ().getHeader (k) == null)
+                    {
+                      LOGGER.info ("  Setting MIME part header '" + k + "' to '" + v + "'");
+                      aMsg.getData ().setHeader (k, v);
+                    }
+                  }
+                  catch (final MessagingException ex)
+                  {
+                    LOGGER.error ("Error storing header '" + k + "' with value '" + v + "' in MimeBodyPart");
+                  }
+              }, false);
+
+            // From signed payload
+            aIncomingMIC = AS2Helper.createMICOnReception (aMsg);
+          }
+          catch (final Exception ex)
+          {
+            // Ignore error
+            throw WrappedAS2Exception.wrap (ex);
+          }
 
         if (aCryptoHelper.isCompressed (aMsg.getContentType ()))
         {
@@ -615,6 +645,18 @@ public class AS2ReceiverHandler extends AbstractReceiverHandler
           decompress (aMsg, aResHelper);
           bIsDecompressed = true;
         }
+
+        if (!bIsSigned)
+          try
+          {
+            // From uncompressed payload
+            aIncomingMIC = AS2Helper.createMICOnReception (aMsg);
+          }
+          catch (final Exception ex)
+          {
+            // Ignore error
+            throw WrappedAS2Exception.wrap (ex);
+          }
 
         if (LOGGER.isTraceEnabled ())
           try

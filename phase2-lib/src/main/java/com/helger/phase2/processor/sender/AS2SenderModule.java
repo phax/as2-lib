@@ -58,6 +58,7 @@ import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringParser;
 import com.helger.base.system.ENewLineMode;
 import com.helger.base.timing.StopWatch;
+import com.helger.base.wrapper.Wrapper;
 import com.helger.http.CHttpHeader;
 import com.helger.http.EHttpMethod;
 import com.helger.http.header.HttpHeaderMap;
@@ -67,6 +68,7 @@ import com.helger.mail.cte.EContentTransferEncoding;
 import com.helger.mime.CMimeType;
 import com.helger.phase2.cert.ECertificatePartnershipType;
 import com.helger.phase2.cert.ICertificateFactory;
+import com.helger.phase2.client.AS2ClientSettings;
 import com.helger.phase2.crypto.ECompressionType;
 import com.helger.phase2.crypto.ECryptoAlgorithmCrypt;
 import com.helger.phase2.crypto.ECryptoAlgorithmSign;
@@ -447,22 +449,23 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  public static MimeBodyPart secureMimeBodyPart (@Nonnull final MimeBodyPart aSrcPart,
-                                                 @Nonnull final EContentTransferEncoding eCTE,
-                                                 @Nullable final ECompressionType eCompressionType,
-                                                 final boolean bCompressBeforeSign,
-                                                 @Nullable final Consumer <MimeBodyPart> aCompressBeforeSignCallback,
-                                                 @Nullable final ECryptoAlgorithmSign eSignAlgorithm,
-                                                 @Nullable final X509Certificate aSenderCert,
-                                                 @Nullable final PrivateKey aSenderKey,
-                                                 final boolean bIncludeCertificateInSignedContent,
-                                                 final boolean bUseRFC3851MICAlg,
-                                                 final boolean bRemoveCmsAlgorithmProtect,
-                                                 @Nullable final ECryptoAlgorithmCrypt eCryptAlgorithm,
-                                                 @Nullable final X509Certificate aReceiverCert,
-                                                 @Nonnull final String sLoggingText) throws Exception
+  public MimeBodyPart secureMimeBodyPart (@Nonnull final AS2Message aMsg,
+                                          @Nonnull final EContentTransferEncoding eCTE,
+                                          @Nullable final ECompressionType eCompressionType,
+                                          final boolean bCompressBeforeSign,
+                                          @Nullable final Consumer <MimeBodyPart> aCompressBeforeSignCallback,
+                                          @Nullable final ECryptoAlgorithmSign eSignAlgorithm,
+                                          @Nullable final X509Certificate aSenderCert,
+                                          @Nullable final PrivateKey aSenderKey,
+                                          final boolean bIncludeCertificateInSignedContent,
+                                          final boolean bUseRFC3851MICAlg,
+                                          final boolean bRemoveCmsAlgorithmProtect,
+                                          @Nullable final ECryptoAlgorithmCrypt eCryptAlgorithm,
+                                          @Nullable final X509Certificate aReceiverCert,
+                                          @Nonnull final Consumer <MIC> aMICConsumer,
+                                          @Nonnull final String sLoggingText) throws Exception
   {
-    ValueEnforcer.notNull (aSrcPart, "SrcPart");
+    ValueEnforcer.notNull (aMsg, "Msg");
     ValueEnforcer.notNull (eCTE, "ContentTransferEncoding");
     if (eCompressionType != null)
     {
@@ -479,8 +482,15 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       ValueEnforcer.notNull (aReceiverCert, "ReceiverCert");
     }
 
-    MimeBodyPart aDataBP = aSrcPart;
+    MimeBodyPart aDataBP = aMsg.getData ();
     _logMimeBodyPart (aDataBP, "source");
+
+    if (eSignAlgorithm == null)
+    {
+      // Here's the correct place to calculate MIC for signing
+      final MIC aMIC = aMsg.isRequestingMDN () ? calculateAndStoreMIC (aMsg) : null;
+      aMICConsumer.accept (aMIC);
+    }
 
     if (eCompressionType != null && bCompressBeforeSign)
     {
@@ -500,6 +510,10 @@ public class AS2SenderModule extends AbstractHttpSenderModule
 
     if (eSignAlgorithm != null)
     {
+      // Here's the correct place to calculate MIC for signing
+      final MIC aMIC = aMsg.isRequestingMDN () ? calculateAndStoreMIC (aMsg) : null;
+      aMICConsumer.accept (aMIC);
+
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Signing outbound message...");
 
@@ -542,8 +556,9 @@ public class AS2SenderModule extends AbstractHttpSenderModule
   }
 
   @Nonnull
-  protected MimeBodyPart secure (@Nonnull final IMessage aMsg, @Nonnull final EContentTransferEncoding eCTE)
-                                                                                                             throws Exception
+  protected MimeBodyPart secure (@Nonnull final AS2Message aMsg,
+                                 @Nonnull final EContentTransferEncoding eCTE,
+                                 @Nonnull final Consumer <MIC> aMICConsumer) throws Exception
   {
     final Partnership aPartnership = aMsg.partnership ();
     final ICertificateFactory aCertFactory = getSession ().getCertificateFactory ();
@@ -551,7 +566,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
     // Get compression parameters
     // If compression is enabled, by default is is compressed before signing
     ECompressionType eCompressionType = null;
-    boolean bCompressBeforeSign = true;
+    boolean bCompressBeforeSign = AS2ClientSettings.DEFAULT_COMPRESS_BEFORE_SIGNING;
     Consumer <MimeBodyPart> aCompressBeforeSignCallback = null;
     {
       final String sCompressionType = aPartnership.getCompressionType ();
@@ -632,6 +647,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       if (aMsg.getData ().getHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING) == null)
         aMsg.getData ().setHeader (CHttpHeader.CONTENT_TRANSFER_ENCODING, eCTE.getID ());
     }
+
     if (eCompressionType != null && eSignAlgorithm == null && eCryptAlgorithm == null)
     {
       // Compression only - set the respective content type
@@ -639,7 +655,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
           .setHeader (CHttpHeader.CONTENT_TYPE, CMimeType.APPLICATION_OCTET_STREAM.getAsStringWithoutParameters ());
     }
 
-    return secureMimeBodyPart (aMsg.getData (),
+    return secureMimeBodyPart (aMsg,
                                eCTE,
                                eCompressionType,
                                bCompressBeforeSign,
@@ -652,6 +668,7 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                bRemoveCmsAlgorithmProtect,
                                eCryptAlgorithm,
                                aReceiverCert,
+                               aMICConsumer,
                                aMsg.getLoggingText ());
   }
 
@@ -1009,11 +1026,8 @@ public class AS2SenderModule extends AbstractHttpSenderModule
                                                                                                         EContentTransferEncoding.AS2_DEFAULT);
 
       // compress and/or sign and/or encrypt the message if needed
-      final MimeBodyPart aSecuredData = secure (aMsg, eCTE);
-
-      // Calculate MIC after compress/sign/crypt was handled, because the
-      // message data might change if compression before signing is active.
-      final MIC aMIC = aMsg.isRequestingMDN () ? calculateAndStoreMIC (aMsg) : null;
+      final Wrapper <MIC> aMICWrapper = new Wrapper <> ();
+      final MimeBodyPart aSecuredData = secure (aMsg, eCTE, aMICWrapper::set);
 
       if (LOGGER.isDebugEnabled ())
         LOGGER.debug ("Setting message content type to '" + aSecuredData.getContentType () + "'");
@@ -1023,7 +1037,13 @@ public class AS2SenderModule extends AbstractHttpSenderModule
       {
         final IHTTPIncomingDumper aIncomingDumper = getEffectiveHttpIncomingDumper ();
         // Use no CTE, because it was set on all MIME parts
-        _sendViaHTTP (aMsg, aSecuredData, aMIC, true ? null : eCTE, aOutgoingDumper, aIncomingDumper, aResHelper);
+        _sendViaHTTP (aMsg,
+                      aSecuredData,
+                      aMICWrapper.get (),
+                      (EContentTransferEncoding) null,
+                      aOutgoingDumper,
+                      aIncomingDumper,
+                      aResHelper);
       }
     }
     catch (final AS2HttpResponseException ex)

@@ -47,7 +47,6 @@ import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -108,7 +107,6 @@ import com.helger.http.CHttp;
 import com.helger.http.CHttpHeader;
 import com.helger.io.file.FileHelper;
 import com.helger.mail.cte.EContentTransferEncoding;
-import com.helger.phase2.exception.AS2Exception;
 import com.helger.phase2.util.AS2HttpHelper;
 import com.helger.phase2.util.AS2IOHelper;
 import com.helger.phase2.util.AS2ResourceHelper;
@@ -260,13 +258,23 @@ public class BCCryptoHelper implements ICryptoHelper
     return aKeyStore;
   }
 
-  public boolean isEncrypted (@Nonnull final MimeBodyPart aPart) throws MessagingException
+  public boolean isEncrypted (@Nonnull final MimeBodyPart aPart)
   {
     ValueEnforcer.notNull (aPart, "Part");
 
+    String sContentType;
+    try
+    {
+      sContentType = aPart.getContentType ();
+    }
+    catch (final MessagingException ex)
+    {
+      sContentType = null;
+    }
+
     // Content-Type is sthg like this if encrypted:
     // application/pkcs7-mime; name=smime.p7m; smime-type=enveloped-data
-    final ContentType aContentType = AS2HttpHelper.parseContentType (aPart.getContentType ());
+    final ContentType aContentType = AS2HttpHelper.parseContentType (sContentType);
     if (aContentType == null)
       return false;
 
@@ -278,11 +286,20 @@ public class BCCryptoHelper implements ICryptoHelper
     return sSmimeType != null && sSmimeType.equalsIgnoreCase ("enveloped-data");
   }
 
-  public boolean isSigned (@Nonnull final MimeBodyPart aPart) throws MessagingException
+  public boolean isSigned (@Nonnull final MimeBodyPart aPart)
   {
     ValueEnforcer.notNull (aPart, "Part");
 
-    final ContentType aContentType = AS2HttpHelper.parseContentType (aPart.getContentType ());
+    String sContentType;
+    try
+    {
+      sContentType = aPart.getContentType ();
+    }
+    catch (final MessagingException ex)
+    {
+      sContentType = null;
+    }
+    final ContentType aContentType = AS2HttpHelper.parseContentType (sContentType);
     if (aContentType == null)
       return false;
 
@@ -290,7 +307,7 @@ public class BCCryptoHelper implements ICryptoHelper
     return sBaseType.equalsIgnoreCase ("multipart/signed");
   }
 
-  public boolean isCompressed (@Nonnull final String sContentType) throws AS2Exception
+  public boolean isCompressed (@Nonnull final String sContentType)
   {
     ValueEnforcer.notNull (sContentType, "ContentType");
 
@@ -332,23 +349,33 @@ public class BCCryptoHelper implements ICryptoHelper
       aMessageDigest = new LoggingMessageDigest (aMessageDigest);
     }
 
+    final int nHeadersIncluded;
+    final StringBuilder aHeadersIncluded = new StringBuilder ();
     if (bIncludeHeaders)
     {
       // Start hashing the header
-      final Enumeration <String> aHeaderLines = aPart.getAllHeaderLines ();
-      while (aHeaderLines.hasMoreElements ())
+      final ICommonsList <String> aHeaderLines = new CommonsArrayList <> (aPart.getAllHeaderLines ());
+      for (final String sHeaderLine : aHeaderLines)
       {
-        final String sHeaderLine = aHeaderLines.nextElement ();
-
         aMessageDigest.update (AS2IOHelper.getAllAsciiBytes (sHeaderLine));
         aMessageDigest.update (EOL_BYTES);
 
         if (LOGGER.isDebugEnabled ())
           LOGGER.debug ("Using header line '" + sHeaderLine + "' for MIC calculation");
+
+        // For debug logging only
+        if (aHeadersIncluded.length () > 0)
+          aHeadersIncluded.append (':');
+        aHeadersIncluded.append (sHeaderLine.substring (0, sHeaderLine.indexOf (':')));
       }
 
       // The CRLF separator between header and content
       aMessageDigest.update (EOL_BYTES);
+      nHeadersIncluded = aHeaderLines.size ();
+    }
+    else
+    {
+      nHeadersIncluded = -1;
     }
 
     final String sMICEncoding = aPart.getEncoding ();
@@ -372,8 +399,14 @@ public class BCCryptoHelper implements ICryptoHelper
     // Perform Base64 encoding and append algorithm ID
     final MIC ret = new MIC (aMIC, eDigestAlgorithm);
 
-    if (LOGGER.isDebugEnabled ())
-      LOGGER.debug ("  Calculated MIC = " + ret.getAsAS2String ());
+    LOGGER.info ("  Calculated MIC[" +
+                 eDigestAlgorithm +
+                 "][" +
+                 nHeadersIncluded +
+                 " headers; " +
+                 aHeadersIncluded.toString () +
+                 "] = " +
+                 ret.getAsAS2String ());
 
     return ret;
   }
@@ -715,11 +748,9 @@ public class BCCryptoHelper implements ICryptoHelper
     // Get only once and check
     // Throws "ParseException" if it is not a MIME message
     final Object aContent = aPart.getContent ();
-    if (!(aContent instanceof MimeMultipart))
+    if (!(aContent instanceof final MimeMultipart aMainPart))
       throw new IllegalStateException ("Expected Part content to be MimeMultipart but it isn't. It is " +
                                        ClassHelper.getClassName (aContent));
-    final MimeMultipart aMainPart = (MimeMultipart) aContent;
-
     // SMIMESignedParser uses "7bit" as the default - AS2 wants "binary"
     final SMIMESignedParser aSignedParser = new SMIMESignedParser (new JcaDigestCalculatorProviderBuilder ().setProvider (m_sSecurityProviderName)
                                                                                                             .build (),

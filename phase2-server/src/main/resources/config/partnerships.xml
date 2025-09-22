@@ -34,8 +34,10 @@
 
 -->
 <partnerships>
-	<partner name="OpenAS2A" as2_id="OpenAS2A" x509_alias="OpenAS2A_alias" email="OpenAS2 A email"/>
-	<partner name="OpenAS2B" as2_id="OpenAS2B" x509_alias="OpenAS2B_alias" email="OpenAS2 B email"/>	
+  <partner name="OpenAS2A" as2_id="OpenAS2A" x509_alias="OpenAS2A_alias" email="phase2 A email"/>
+  <partner name="OpenAS2B" as2_id="OpenAS2B" x509_alias="OpenAS2B_alias" email="phase2 B email"/>  
+  <partner name="TestSenderAS2"   as2_id="TestSenderAS2"   x509_alias="OpenAS2A_alias" email="phase2 A email"/>
+  <partner name="TestReceiverAS2" as2_id="TestReceiverAS2" x509_alias="OpenAS2B_alias" email="phase2 B email"/>  
 
 	<partnership name="OpenAS2A-OpenAS2B">
 		<sender name="OpenAS2A"/>
@@ -60,5 +62,18 @@
 		<attribute name="encrypt" value="3des"/>
 		<attribute name="sign" value="sha1"/>
 	</partnership>
+  
+  <!-- This is for the MainSendToLocalhost10080 test in phase2-lib -->
+  <partnership name="local-test-1">
+    <sender name="TestSenderAS2"/>
+    <receiver name="TestReceiverAS2"/>
+    <attribute name="protocol" value="as2"/>
+    <attribute name="subject" value="From TestSenderAS2 to TestReceiverAS2"/>
+    <attribute name="as2_url" value="http://localhost:10080"/>
+    <attribute name="as2_mdn_to" value="http://localhost:10080"/>
+    <attribute name="as2_mdn_options" value="signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha-256"/>
+    <attribute name="encrypt" value="aes128-gcm"/>
+    <attribute name="sign" value="sha-256"/>
+  </partnership>
 </partnerships>
 
